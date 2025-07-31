@@ -19,11 +19,11 @@ MonoBehaviour:
     From: 0
     NameToFullName: []
     BindInfos:
-    - TypeName: SpriteRenderer
-      PathToRoot: Triangle
-      MemberName: Triangle
+    - TypeName: CircleCollider2D
+      PathToRoot: HitBox
+      MemberName: HitBox
     ScriptsFolder: Assets/Scripts/Game
-    ClassName: Enemy
+    ClassName: Player
     Namespace: ProjectBlood
     MainCode: 
     DesignerCode: 
