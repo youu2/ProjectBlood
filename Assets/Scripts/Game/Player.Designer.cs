@@ -1,9 +1,11 @@
-// Generate Id:b96bd56b-e0ed-4258-94a3-9d493c4554a2
+// Generate Id:8d84db9c-3dc5-497e-a5be-76ce59e76242
 using UnityEngine;
 
 namespace ProjectBlood
 {
 	public partial class Player
 	{
+		public UnityEngine.Rigidbody2D SelfRigidbody2D;
+		
 	}
 }
