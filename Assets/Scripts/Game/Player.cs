@@ -6,7 +6,7 @@ namespace ProjectBlood
 {
 	public partial class Player : ViewController
 	{
-		public float moveSpeed = 3;
+		public float moveSpeed = 3.0f;
 		void Start()
 		{
 			// Code Here

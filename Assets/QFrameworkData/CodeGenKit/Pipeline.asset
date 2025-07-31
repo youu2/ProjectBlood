@@ -18,9 +18,12 @@ MonoBehaviour:
     GameObject: {fileID: 0}
     From: 0
     NameToFullName: []
-    BindInfos: []
+    BindInfos:
+    - TypeName: SpriteRenderer
+      PathToRoot: Triangle
+      MemberName: Triangle
     ScriptsFolder: Assets/Scripts/Game
-    ClassName: Player
+    ClassName: Enemy
     Namespace: ProjectBlood
     MainCode: 
     DesignerCode: 
