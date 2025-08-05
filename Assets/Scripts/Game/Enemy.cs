@@ -12,9 +12,11 @@ namespace ProjectBlood
 		}
 		void Update()
 		{
-			var player = FindObjectOfType<Player>();
-			var direction = (player.transform.position - transform.position).normalized;
-			transform.Translate(direction*Time.deltaTime*moveSpeed);
+			if (Player.player1)
+			{
+				var direction = (Player.player1.transform.position - transform.position).normalized;
+				transform.Translate(direction * Time.deltaTime * moveSpeed);
+			}
         }
     }
 }
