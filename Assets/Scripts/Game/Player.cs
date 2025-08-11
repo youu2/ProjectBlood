@@ -7,7 +7,7 @@ namespace ProjectBlood
 {
 	public partial class Player : ViewController
 	{
-		public float moveSpeed = 3.0f;
+		public float moveSpeed = 3.5f;
 		public static Player player1;
 		private void Awake()
 		{
@@ -21,6 +21,7 @@ namespace ProjectBlood
 			HitBox.OnTriggerEnter2DEvent(Collider2D =>
 			{
 				this.DestroyGameObjGracefully();
+				UIKit.OpenPanel<UIGameOverPanel>();
 			}).UnRegisterWhenGameObjectDestroyed(gameObject);
 		}
 		void Update()
