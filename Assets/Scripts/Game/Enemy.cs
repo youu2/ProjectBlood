@@ -32,6 +32,13 @@ namespace ProjectBlood
 				var direction = (Player.player1.transform.position - transform.position).normalized;
 				transform.Translate(direction * Time.deltaTime * moveSpeed);
 			}
+
+			// death of enemy
+			if (currentHealth <= 0)
+			{
+				this.DestroyGameObjGracefully();
+				UIKit.OpenPanel<UIGamePassPanel>();
+			}
 		}
 
 		public void TakeDamage(float Damage)
