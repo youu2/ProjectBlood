@@ -155,7 +155,7 @@ MonoBehaviour:
   PrefabFolder: Assets/Art/Prefab
   ArchitectureFullTypeName: 
   ViewControllerFullTypeName: 
-  moveSpeed: 2
+  moveSpeed: 1.5
   currentHealth: 100
   Triangle: {fileID: 550326710537839587}
 --- !u!114 &560438733336014486

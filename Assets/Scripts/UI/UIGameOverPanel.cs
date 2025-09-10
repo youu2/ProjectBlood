@@ -21,6 +21,7 @@ namespace ProjectBlood
 				{
 					this.CloseSelf();
 					SceneManager.LoadScene("SampleScene");
+					Global.ResetLevel();
 				}
 			}).UnRegisterWhenGameObjectDestroyed(gameObject);
 

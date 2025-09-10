@@ -64,8 +64,7 @@ public class enemySpawner : MonoBehaviour
 
 			// Convert polar coordinates to Cartesian coordinates
 			Vector2 randomPos = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * distance;
-			// Convert the random 2D position into 3D coordinates with the same y as the player
-			return randomPos;
+			return new Vector2(player.position.x + randomPos.x, player.position.y + randomPos.y);
 		}
 		else return new Vector2();
     }

@@ -18,6 +18,11 @@ namespace ProjectBlood
 			{
 				ExpText.text = "Exp: " + Exp;
 			}).UnRegisterWhenGameObjectDestroyed(gameObject);
+
+			Global.Level.RegisterWithInitValue(Level =>
+			{
+				LevelText.text = "Level: " + Level;
+			}).UnRegisterWhenGameObjectDestroyed(gameObject);
 		}
 		
 		protected override void OnOpen(IUIData uiData = null)

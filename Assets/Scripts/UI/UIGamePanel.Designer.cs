@@ -5,19 +5,22 @@ using QFramework;
 
 namespace ProjectBlood
 {
-	// Generate Id:3afce3ec-4fef-4a41-87c3-90bfc653313b
+	// Generate Id:b28200bd-1790-491e-ae6e-c4ae60c46388
 	public partial class UIGamePanel
 	{
 		public const string Name = "UIGamePanel";
 		
 		[SerializeField]
 		public TMPro.TextMeshProUGUI ExpText;
+		[SerializeField]
+		public TMPro.TextMeshProUGUI LevelText;
 		
 		private UIGamePanelData mPrivateData = null;
 		
 		protected override void ClearUIComponents()
 		{
 			ExpText = null;
+			LevelText = null;
 			
 			mData = null;
 		}
