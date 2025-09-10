@@ -7,8 +7,8 @@ namespace ProjectBlood
 	{
 		private float _currentSeconds = 0;
 		private float _attackRange = 5;
-		private float _attackDamage = 20;
-		private float _AttackInterval = 2;
+		private float _attackDamage = 35;
+		private float _AttackInterval = 1.5f;
 		void Start()
 		{
 			// Code Here

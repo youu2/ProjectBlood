@@ -19,8 +19,8 @@ MonoBehaviour:
     From: 0
     NameToFullName: []
     BindInfos: []
-    ScriptsFolder: Assets/Scripts/Game/Abilities
-    ClassName: BlazingCircle
+    ScriptsFolder: Assets/Scripts/Game
+    ClassName: InGameUIControler
     Namespace: ProjectBlood
     MainCode: 
     DesignerCode: 

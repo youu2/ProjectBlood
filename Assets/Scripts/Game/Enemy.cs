@@ -37,6 +37,7 @@ namespace ProjectBlood
 			if (currentHealth <= 0)
 			{
 				this.DestroyGameObjGracefully();
+				Global.Exp.Value++;
 				UIKit.OpenPanel<UIGamePassPanel>();
 			}
 		}
