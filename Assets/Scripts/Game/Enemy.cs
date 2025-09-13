@@ -41,7 +41,7 @@ namespace ProjectBlood
 				var direction = (Player.player1.transform.position - transform.position).normalized;
 				transform.Translate(direction * Time.deltaTime * moveSpeed);
 			}
-			
+
 		}
 
 		public void TakeDamage(float Damage)
@@ -72,6 +72,9 @@ namespace ProjectBlood
 		// Death process (Flash first, then destroy, avoid enemy disappearing directly)
         private IEnumerator DeathSequence()
         {
+			// Drop experience item, destroy
+			Global.AddExp(1);
+
             isDying = true;
             moveSpeed = 0f;
 			if (allColliders != null)
@@ -94,9 +97,7 @@ namespace ProjectBlood
 				}
 			}
             yield return new WaitForSeconds(0.15f);
-
-            // Drop experience item, destroy
-            Global.AddExp(1);
+			
             this.DestroyGameObjGracefully();
         }
 

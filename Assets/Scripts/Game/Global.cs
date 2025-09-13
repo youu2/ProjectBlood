@@ -33,6 +33,7 @@ namespace ProjectBlood
         {
             Level.Value = 1;
             Exp.Value = 0;
+            Time.timeScale = 1;
         }
 
 
