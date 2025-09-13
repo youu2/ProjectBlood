@@ -23,6 +23,20 @@ namespace ProjectBlood
 			{
 				LevelText.text = "Level: " + Level;
 			}).UnRegisterWhenGameObjectDestroyed(gameObject);
+
+			Global.Level.Register(Level =>
+			{
+				Time.timeScale = 0;
+				BtnUpgrade.Show();
+			}).UnRegisterWhenGameObjectDestroyed(gameObject);
+
+			BtnUpgrade.Hide();
+
+			BtnUpgrade.onClick.AddListener(() =>
+			{
+				Time.timeScale = 1;
+				BtnUpgrade.Hide();
+			});
 		}
 		
 		protected override void OnOpen(IUIData uiData = null)
