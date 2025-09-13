@@ -10,6 +10,7 @@ namespace ProjectBlood
     {
         public static BindableProperty<int> Exp = new BindableProperty<int>(0);
         public static BindableProperty<int> Level = new BindableProperty<int>(1);
+        public static BindableProperty<int> BlazingCircleDamage = new BindableProperty<int>(35);
 
         private const int MAX_EXP = 5;
 
@@ -22,9 +23,9 @@ namespace ProjectBlood
             if (Exp.Value >= MAX_EXP)
             {
                 Level.Value++;
-                Exp.Value = 0;
+                Exp.Value -= MAX_EXP;
 
-                Debug.Log("Level Up! current LV: " + Level.Value);
+                //Debug.Log("Level Up! current LV: " + Level.Value);
             }
         }
 

@@ -9,24 +9,33 @@ namespace ProjectBlood
 		private SpriteRenderer spriteRenderer;
 		public float moveSpeed = 2.0f;
 		public float currentHealth = 100.0f;
-		private Color originalColor;
+		private Color originalColor;  // Restore the original color after flash
+		private bool isDying = false; // Avoid repeating death process.
+		private Collider2D[] allColliders;
+        private Rigidbody2D rb;
 
-        void Awake()
-        {
-            spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+		void Awake()
+		{
+			spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+			rb = GetComponent<Rigidbody2D>();
+
+            // get all 2D colliders on itself and child objects
+            allColliders = GetComponentsInChildren<Collider2D>(true);
 
 			if (spriteRenderer == null)
-            Debug.LogError("Enemy: SpriteRenderer not found!");
+				Debug.LogError("Enemy: SpriteRenderer not found!");
 
-        	originalColor = spriteRenderer.color;
-        }
+			originalColor = spriteRenderer.color;
+		}
 
-        void Start()
+		void Start()
 		{
 			// Code Here
 		}
 		void Update()
 		{
+			if (isDying) return;  // stop moving during death process
+
 			if (Player.player1)
 			{
 				var direction = (Player.player1.transform.position - transform.position).normalized;
@@ -34,28 +43,73 @@ namespace ProjectBlood
 			}
 
 			// death of enemy
-			if (currentHealth <= 0)
-			{
-				this.DestroyGameObjGracefully();
-				Global.AddExp(1);
-				// UIKit.OpenPanel<UIGamePassPanel>();
-			}
+			// if (currentHealth <= 0)
+			// {
+			// 	this.DestroyGameObjGracefully();
+			// 	Global.AddExp(1);
+			// 	// UIKit.OpenPanel<UIGamePassPanel>();
+			// }
 		}
 
 		public void TakeDamage(float Damage)
 		{
+			if (isDying) return;
 			this.currentHealth -= Damage;
-			StartCoroutine(FlashWhite());
+			if (currentHealth <= 0f)
+            {
+                StartCoroutine(DeathSequence()); // Resulting in death: Start the death coroutine
+            }
+            else
+            {
+                StartCoroutine(FlashWhite());    // flash after hit
+            }
 		}
 
 		// flash after the enemy is hit
 		private IEnumerator FlashWhite()
 		{
-			spriteRenderer.color = Color.white;  // flash
-			//Debug.Log("Flash start");
-			yield return new WaitForSeconds(0.15f);
-			spriteRenderer.color = originalColor; // restore original color
-			//Debug.Log("Flash end");
+			if (spriteRenderer != null)
+			{
+				spriteRenderer.color = Color.white;  // flash
+				yield return new WaitForSeconds(0.25f);
+				spriteRenderer.color = originalColor; // restore original color
+			}
+		}
+
+		// Death process (Flash first, then destroy, avoid enemy disappearing directly)
+        private IEnumerator DeathSequence()
+        {
+            isDying = true;
+            moveSpeed = 0f;
+			if (allColliders != null)
+            {
+                foreach (var c in allColliders) if (c) c.enabled = false;
+            }
+
+            // flash before death
+			if (spriteRenderer != null)
+			{
+				for (int i = 0; i < 3; i++)
+				{
+					spriteRenderer.color = Color.white;
+
+					yield return new WaitForSeconds(0.1f);
+
+					spriteRenderer.color = Color.red;
+
+					yield return new WaitForSeconds(0.1f);
+				}
+			}
+            yield return new WaitForSeconds(0.15f);
+
+            // Drop experience item, destroy
+            Global.AddExp(1);
+            this.DestroyGameObjGracefully();
+        }
+
+		public SpriteRenderer getSprite()
+		{
+			return spriteRenderer;
 		}
     }
 }

@@ -36,6 +36,8 @@ namespace ProjectBlood
 			{
 				Time.timeScale = 1;
 				BtnUpgrade.Hide();
+				Global.BlazingCircleDamage.Value += 20;
+				//BlazingCircle.upgrade();
 			});
 		}
 		
