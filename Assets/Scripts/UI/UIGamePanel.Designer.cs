@@ -5,7 +5,7 @@ using QFramework;
 
 namespace ProjectBlood
 {
-	// Generate Id:cf5abf12-2685-48b3-a1e4-e2ac2906966e
+	// Generate Id:abfc15de-8c7a-42e9-a9ed-e945a43a02fd
 	public partial class UIGamePanel
 	{
 		public const string Name = "UIGamePanel";
@@ -15,6 +15,8 @@ namespace ProjectBlood
 		[SerializeField]
 		public TMPro.TextMeshProUGUI LevelText;
 		[SerializeField]
+		public TMPro.TextMeshProUGUI TimeText;
+		[SerializeField]
 		public UnityEngine.UI.Button BtnUpgrade;
 		
 		private UIGamePanelData mPrivateData = null;
@@ -23,6 +25,7 @@ namespace ProjectBlood
 		{
 			ExpText = null;
 			LevelText = null;
+			TimeText = null;
 			BtnUpgrade = null;
 			
 			mData = null;

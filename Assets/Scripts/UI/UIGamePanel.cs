@@ -30,6 +30,11 @@ namespace ProjectBlood
 				BtnUpgrade.Show();
 			}).UnRegisterWhenGameObjectDestroyed(gameObject);
 
+			Global.RemainingTime.RegisterWithInitValue(Second =>
+			{
+				TimeText.text = "Countdown: " + Second;
+			}).UnRegisterWhenGameObjectDestroyed(gameObject);
+
 			BtnUpgrade.Hide();
 
 			BtnUpgrade.onClick.AddListener(() =>
@@ -39,6 +44,12 @@ namespace ProjectBlood
 				Global.BlazingCircleDamage.Value += 20;
 				//BlazingCircle.upgrade();
 			});
+
+			// ActionKit.OnUpdate.Register(() =>
+			// {
+			// 	Global.RemainingTime.Value -= Time.deltaTime;
+			// }).UnRegisterWhenGameObjectDestroyed(gameObject);
+
 		}
 		
 		protected override void OnOpen(IUIData uiData = null)

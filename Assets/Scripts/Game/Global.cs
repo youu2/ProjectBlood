@@ -10,7 +10,8 @@ namespace ProjectBlood
     {
         public static BindableProperty<int> Exp = new BindableProperty<int>(0);
         public static BindableProperty<int> Level = new BindableProperty<int>(1);
-        public static BindableProperty<int> BlazingCircleDamage = new BindableProperty<int>(35);
+        public static BindableProperty<float> BlazingCircleDamage = new BindableProperty<float>(35.0f);
+        public static BindableProperty<float> RemainingTime  = new BindableProperty<float>(180);
 
         private const int MAX_EXP = 5;
 
@@ -34,6 +35,7 @@ namespace ProjectBlood
             Level.Value = 1;
             Exp.Value = 0;
             Time.timeScale = 1;
+            RemainingTime.Value = 180;
         }
 
 
