@@ -13,14 +13,15 @@ namespace ProjectBlood
 		protected override void OnInit(IUIData uiData = null)
 		{
 			mData = uiData as UIGamePassPanelData ?? new UIGamePassPanelData();
-			// please add init code here
 
+			Time.timeScale = 0;
 			ActionKit.OnUpdate.Register(() =>
 			{
 				if (Input.GetKeyDown(KeyCode.Space))
 				{
 					this.CloseSelf();
 					SceneManager.LoadScene("SampleScene");
+					Global.ResetLevel();
 				}
 			}).UnRegisterWhenGameObjectDestroyed(gameObject);
 		}
@@ -36,9 +37,10 @@ namespace ProjectBlood
 		protected override void OnHide()
 		{
 		}
-		
+
 		protected override void OnClose()
 		{
+			Time.timeScale = 1;
 		}
 	}
 }

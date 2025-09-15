@@ -30,6 +30,7 @@ namespace ProjectBlood
             }
         }
 
+        // restart data
         public static void ResetLevel()
         {
             Level.Value = 1;

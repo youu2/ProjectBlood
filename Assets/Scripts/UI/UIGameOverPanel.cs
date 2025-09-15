@@ -14,7 +14,7 @@ namespace ProjectBlood
 		{
 			mData = uiData as UIGameOverPanelData ?? new UIGameOverPanelData();
 			// please add init code here
-
+			Time.timeScale = 0;
 			ActionKit.OnUpdate.Register(() =>
 			{
 				if (Input.GetKeyDown(KeyCode.Space))
@@ -45,9 +45,10 @@ namespace ProjectBlood
 		protected override void OnHide()
 		{
 		}
-		
+
 		protected override void OnClose()
 		{
+			Time.timeScale = 1;
 		}
 	}
 }

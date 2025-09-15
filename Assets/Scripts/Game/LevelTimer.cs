@@ -1,6 +1,7 @@
 // LevelTimer.cs
 using System;
 using System.Collections;
+using QFramework;
 using UnityEngine;
 
 namespace ProjectBlood
@@ -58,7 +59,7 @@ namespace ProjectBlood
                 }
                 yield return null;
             }
-
+            UIKit.OpenPanel<UIGamePassPanel>();
             OnTimerFinished?.Invoke();
         }
 
