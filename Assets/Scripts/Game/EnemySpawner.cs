@@ -1,17 +1,24 @@
 // reference from my anothor project abyss(MIGA)
 using System.Collections;
 using System.Linq;
+using ProjectBlood;
+using QFramework;
 using UnityEngine;
 
-public class enemySpawner : MonoBehaviour
+public class EnemySpawner : MonoBehaviour
 {
-	[SerializeField] private GameObject[] normalEnemies;
+	// [SerializeField] private GameObject[] normalEnemies;
+	[SerializeField] private WavesSystem waves;
 	[SerializeField] private Transform player;
 	[SerializeField] private float maxSpawnRadius = 50f;
 	[SerializeField] private float minSpawnRadius = 20f;
 	[SerializeField] private float enemySpawnInterval = 15f;
-	[SerializeField] private float EnemyNum = 3f; // The number of normal enemies generated once
-
+	[SerializeField] private int enemyNum; // The number of normal enemies generated once
+	//private int maxCumulativeNum; // limitation of enemy generated in one wave
+	//private int cumulativeNum;  // cumulative number of generated enemies so far
+	private int maxCurrentNum;  // limit the num of active enemies 
+	private int totalNum;	// The total number of enemies generated
+	// private static int currentNum;      // current number of active enemies
 
 	private void Start()
 	{
@@ -27,31 +34,42 @@ public class enemySpawner : MonoBehaviour
 				// Wait for the specified interval before spawning
 				yield return new WaitForSeconds(enemySpawnInterval);
 
-				for (int i = 0; i <= EnemyNum; i++)
+				maxCurrentNum = waves.getWave1MaxActive();
+				enemyNum = waves.getWave1SingleSpawnNum();
+				totalNum = waves.getWave1TotalNum();
+				for (int i = 0; i < enemyNum; i++)
 				{
-					GameObject enemyToSpawn = normalEnemies[Random.Range(0, normalEnemies.Length)];
-
-					// Generate a random position within the specified radius range
-					Vector2 spawnPosition = GetValidSpawnPosition();
-
-					if (enemyToSpawn != null)
+					if (Global.currentNum.Value < maxCurrentNum && Global.cumulativeNum.Value < totalNum)
 					{
-						Instantiate(enemyToSpawn, spawnPosition, Quaternion.identity);
-					}
-					else
-					{
-						Debug.LogWarning("Enemy to spawn is null.");
+						Debug.Log("current waves: " + Global.CurrentWaves.Value);
+						GameObject[] selectedEnemyArray = waves.SelectEnemiesByWaves();
+						GameObject enemyToSpawn = selectedEnemyArray[Random.Range(0, selectedEnemyArray.Length)];
+
+						// Generate a random position within the specified radius range
+						Vector2 spawnPosition = GetValidSpawnPosition();
+
+						if (enemyToSpawn != null)
+						{
+							Instantiate(enemyToSpawn, spawnPosition, Quaternion.identity);
+							Global.currentNum.Value += 1;
+							//cumulativeNum += 1;
+							Global.cumulativeNum.Value += 1;
+						}
+						else
+						{
+							Debug.LogWarning("Enemy to spawn is null.");
+						}
 					}
 				}
-				
+
 			}
 		}
 	}
-	
+
 
 	// Get a random valid spawn position within the specified min and max radius
-    private Vector2 GetValidSpawnPosition()
-    {
+	private Vector2 GetValidSpawnPosition()
+	{
 		if (player)
 		{
 			float distance;
@@ -67,6 +85,6 @@ public class enemySpawner : MonoBehaviour
 			return new Vector2(player.position.x + randomPos.x, player.position.y + randomPos.y);
 		}
 		else return new Vector2();
-    }
+	}
 
 }

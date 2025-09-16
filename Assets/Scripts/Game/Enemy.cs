@@ -97,7 +97,8 @@ namespace ProjectBlood
 				}
 			}
             yield return new WaitForSeconds(0.15f);
-			
+			// enemySpawner.EnemyDestroyed();
+			Global.currentNum.Value -= 1;
             this.DestroyGameObjGracefully();
         }
 

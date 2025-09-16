@@ -8,9 +8,10 @@ namespace ProjectBlood
 {
     public class LevelTimer : MonoBehaviour
     {
-        public int startSeconds = 180;
-        public bool autoStart = true;
-        public bool useUnscaledTime = false; // true => not affected by Time.timeScale
+        [SerializeField] private int startSeconds = 180;
+        [SerializeField] private bool autoStart = true;
+        [SerializeField] private bool useUnscaledTime = false; // true => not affected by Time.timeScale
+        [SerializeField] private WavesSystem waves;
         public static event Action OnTimerFinished;
         public static event Action<int> OnTimerTick; // show the remaining seconds
 
@@ -18,6 +19,7 @@ namespace ProjectBlood
 
         Coroutine _co;
         bool _paused;
+        float secondAccumulator = 0f;
 
         void OnEnable()
         {
@@ -33,7 +35,7 @@ namespace ProjectBlood
             _co = StartCoroutine(TimerCo());
         }
 
-        public void Pause()  { _paused = true; }
+        public void Pause() { _paused = true; }
         public void Resume() { _paused = false; }
         public void StopTimer()
         {
@@ -42,9 +44,10 @@ namespace ProjectBlood
 
         IEnumerator TimerCo()
         {
-            float secondAccumulator = 0f;
-            while (Remaining > 0)
+            secondAccumulator = 0f;
+            while (true)
             {
+                // Countdown timer
                 float dt = useUnscaledTime ? Time.unscaledDeltaTime : Time.deltaTime;
                 if (!_paused)
                 {
@@ -57,15 +60,59 @@ namespace ProjectBlood
                         OnTimerTick?.Invoke(Remaining);
                     }
                 }
+                // yield return null;
+                // clear enemy => next wave
+                if (Global.currentNum.Value <= 0 && Global.cumulativeNum.Value >= waves.getWave1TotalNum())
+                {
+                    Global.CurrentWaves.Value += 1;
+                    waves.FinishWave();
+
+                    resetWave();
+
+                    if (Global.CurrentWaves.Value >= waves.maxWavesNum && Global.currentNum.Value <= 0)
+                    {
+                        UIKit.OpenPanel<UIGamePassPanel>(); //Survive until the last wave => pass the level
+                        OnTimerFinished?.Invoke();
+                        yield break;
+                    }
+
+                    yield return null;
+                    continue;
+                }
+
+                //UIKit.OpenPanel<UIGamePassPanel>(); //Survive until the countdown ends => pass the level
+                // countdown ends => next wave
+                if (Remaining <= 0 && Global.CurrentWaves.Value < waves.maxWavesNum)
+                {
+                    Global.CurrentWaves.Value += 1;
+                    waves.FinishWave();
+                    resetWave();
+                    yield return null;
+                    continue;
+                }
+                // clear the enemies of the last wave => pass the level 
+                if (Global.CurrentWaves.Value >= waves.maxWavesNum && Global.currentNum.Value <= 0
+                && Global.cumulativeNum.Value >= waves.getWave1TotalNum())
+                {
+                    UIKit.OpenPanel<UIGamePassPanel>(); //Survive until the last wave => pass the level
+                    OnTimerFinished?.Invoke();
+                    yield break;
+                }
                 yield return null;
             }
-            UIKit.OpenPanel<UIGamePassPanel>();
-            OnTimerFinished?.Invoke();
         }
 
         void UpdateGlobal(int value)
         {
             Global.RemainingTime.Value = value;
+        }
+
+        void resetWave()
+        {
+            // if(Global.CurrentWaves.Value < waves.maxWavesNum) 
+            Remaining = startSeconds; // reset time limit
+            secondAccumulator = 0f;             // Clear the accumulated dt
+            UpdateGlobal(Remaining);            // Push to UI
         }
     }
 }
