@@ -35,7 +35,7 @@ namespace ProjectBlood
             }
         }
 
-        // restart data
+        // restart game
         public static void ResetLevel()
         {
             Level.Value = 1;

@@ -1,45 +1,158 @@
-using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using ProjectBlood;
 using UnityEngine;
 
+
+[System.Serializable]
+public class EnemyDefinition
+{
+    public GameObject prefab;  // Enemy prefab
+    public int strength;       // Relative strength (higher = stronger)
+}
+
 public class WavesSystem : MonoBehaviour
 {
-    [SerializeField] private GameObject[] wave1EnemyPool;
-    [SerializeField] private GameObject[] wave2EnemyPool;
-    [SerializeField] private GameObject[] wave3EnemyPool;
-    [SerializeField] public int maxWavesNum = 3;   // The total number of enemy waves generated
-    [SerializeField] private int increaseTotalNum = 5;  // The increase in the total number of enemy generated between each two consecutive waves
-    [SerializeField] private int increaseMaxActive = 3;  // The increase in the total number of enemy generated between each two consecutive waves
-    // [SerializeField] private int maxActiveEnemiesNum = 5;  // The max number of active enemies at the same time, limite the density of enemies
-    [SerializeField] private int increaseSingleSpawnNum = 2; // Increase the number of enemies generated in a single time by waves
-    [SerializeField] private int wave1TotalNum = 15;  // The total number of enemies generated in first wave
-    [SerializeField] private int wave1MaxActive = 8;  // The max number of active enemies at the same time in first wave, limite the density of enemies
-    [SerializeField] private int wave1SingleSpawnNum = 3;  // The number of enemies generated at a single time
-    [SerializeField] private int spawnInterval = 5;  // The interval between each enemy generation
+    [Header("Enemy pools")]
+    [Tooltip("All enemies with strength value, will be sorted by strength automatically.")]
+    [SerializeField] private EnemyDefinition[] allEnemies;   // total pool
 
-    // The system can provide different enemy pools according to different waves.
-    public GameObject[] SelectEnemiesByWaves()
+    [Tooltip("Max enemy types in current pool.")]
+    [SerializeField] private int maxCurrentPoolSize = 3;
+
+    [Tooltip("How many waves between each pool update.")]
+    [SerializeField] private int wavesPerPoolUpdate = 5;
+
+    // ======= Old wave difficulty parameters (kept) =======
+    [SerializeField] public int maxWavesNum = 3;        // not strictly needed now, keep if you use it elsewhere
+    [SerializeField] private int increaseTotalNum = 5;
+    [SerializeField] private int increaseMaxActive = 3;
+    [SerializeField] private int increaseSingleSpawnNum = 2;
+    [SerializeField] private int wave1TotalNum = 15;
+    [SerializeField] private int wave1MaxActive = 8;
+    [SerializeField] private int wave1SingleSpawnNum = 3;
+    [SerializeField] private int spawnInterval = 5;
+
+    // ======= Internal state =======
+    private List<EnemyDefinition> sortedAllEnemies;   // total pool sorted by strength
+    private List<EnemyDefinition> currentPool = new List<EnemyDefinition>();  // current pool (≤ maxCurrentPoolSize)
+    private int nextEnemyGlobalIndex = 0;             // next index in sortedAllEnemies to unlock
+    private int lastUpdatedWave = 0;                  // the wave when we last updated currentPool
+
+    private void Awake()
     {
-        int waveNum = Global.CurrentWaves.Value;
-        if (waveNum == 1)
-        {
-            return wave1EnemyPool;
-        }
-        else if (waveNum == 2)
-        {
-            return wave2EnemyPool;
-        }
-        else if (waveNum == 3)
-        {
-            return wave3EnemyPool;
-        }
-        return null;
+        InitEnemyPools();
     }
 
-    // increase the difficulty between waves automatically
+    private void Update()
+    {
+        UpdateCurrentPoolByWave();
+    }
+
+    /// <summary>
+    /// Initialize total pool and build initial current pool.
+    /// </summary>
+    private void InitEnemyPools()
+    {
+        if (allEnemies == null || allEnemies.Length == 0)
+        {
+            Debug.LogWarning("WavesSystem: allEnemies is empty.");
+            sortedAllEnemies = new List<EnemyDefinition>();
+            return;
+        }
+
+        // Sort all enemies ascending by strength
+        sortedAllEnemies = allEnemies
+            .OrderBy(e => e.strength)
+            .ToList();
+
+        currentPool.Clear();
+        nextEnemyGlobalIndex = 0;
+        lastUpdatedWave = Global.CurrentWaves.Value;
+
+        // Fill current pool from weakest to stronger, up to maxCurrentPoolSize
+        for (int i = 0; i < maxCurrentPoolSize && nextEnemyGlobalIndex < sortedAllEnemies.Count; i++)
+        {
+            currentPool.Add(sortedAllEnemies[nextEnemyGlobalIndex]);
+            nextEnemyGlobalIndex++;
+        }
+    }
+
+    /// <summary>
+    /// Check wave number and update current pool every wavesPerPoolUpdate waves.
+    /// </summary>
+    private void UpdateCurrentPoolByWave()
+    {
+        int currentWave = Global.CurrentWaves.Value;
+
+        // safeguard
+        if (currentWave <= 0 || sortedAllEnemies == null || sortedAllEnemies.Count == 0)
+            return;
+
+        // Only update when we have passed enough waves
+        if (currentWave - lastUpdatedWave >= wavesPerPoolUpdate)
+        {
+            lastUpdatedWave = currentWave;
+            PromoteNextEnemyIntoCurrentPool();
+        }
+    }
+
+    /// <summary>
+    /// Promote the next strongest enemy from total pool into current pool.
+    /// If current pool is full, remove the weakest one first.
+    /// </summary>
+    private void PromoteNextEnemyIntoCurrentPool()
+    {
+        if (nextEnemyGlobalIndex >= sortedAllEnemies.Count)
+        {
+            // No more enemies to unlock
+            Debug.Log("WavesSystem: no more enemies to promote.");
+            return;
+        }
+
+        EnemyDefinition nextStrongest = sortedAllEnemies[nextEnemyGlobalIndex];
+        nextEnemyGlobalIndex++;
+
+        if (currentPool.Count < maxCurrentPoolSize)
+        {
+            currentPool.Add(nextStrongest);
+        }
+        else
+        {
+            // Remove the weakest in current pool
+            EnemyDefinition weakest = currentPool
+                .OrderBy(e => e.strength)
+                .First();
+
+            currentPool.Remove(weakest);
+            currentPool.Add(nextStrongest);
+        }
+
+        Debug.Log($"WavesSystem: promoted enemy {nextStrongest.prefab.name} into current pool.");
+    }
+
+    // ================== Interface used by EnemySpawner ==================
+
+    /// <summary>
+    /// Return current enemy pool as GameObject array.
+    /// EnemySpawner will randomly choose one from this pool.
+    /// </summary>
+    public GameObject[] SelectEnemiesByWaves()
+    {
+        // If currentPool is empty (for some reason), fall back to total pool
+        if (currentPool.Count == 0 && sortedAllEnemies != null)
+        {
+            return sortedAllEnemies.Select(e => e.prefab).ToArray();
+        }
+
+        return currentPool.Select(e => e.prefab).ToArray();
+    }
+
+    // ================== Difficulty auto-growth (kept from your old code) ==================
+
     public void FinishWave()
     {
+        // You can still use this if you want number-based difficulty growth
         if (Global.CurrentWaves.Value <= maxWavesNum)
         {
             wave1MaxActive += increaseMaxActive;
@@ -47,10 +160,9 @@ public class WavesSystem : MonoBehaviour
             wave1SingleSpawnNum += increaseSingleSpawnNum;
             Global.ResetWave();
         }
-
     }
 
-    // getter
+    // getters for EnemySpawner
     public int getWave1TotalNum()
     {
         return wave1TotalNum;
