@@ -64,25 +64,22 @@ namespace ProjectBlood
                 // clear enemy => next wave
                 if (Global.currentNum.Value <= 0 && Global.cumulativeNum.Value >= waves.getWave1TotalNum())
                 {
-                    Global.CurrentWaves.Value += 1;
-                    waves.FinishWave();
-
-                    resetWave();
-
-                    if (Global.CurrentWaves.Value >= waves.maxWavesNum && Global.currentNum.Value <= 0)
+                    if (Global.CurrentWaves.Value >= Global.maxWavesNum.Value && Global.currentNum.Value <= 0)
                     {
                         UIKit.OpenPanel<UIGamePassPanel>(); //Survive until the last wave => pass the level
                         OnTimerFinished?.Invoke();
                         yield break;
                     }
-
+                    Global.CurrentWaves.Value += 1;
+                    waves.FinishWave();
+                    resetWave();
                     yield return null;
                     continue;
                 }
 
                 //UIKit.OpenPanel<UIGamePassPanel>(); //Survive until the countdown ends => pass the level
                 // countdown ends => next wave
-                if (Remaining <= 0 && Global.CurrentWaves.Value < waves.maxWavesNum)
+                if (Remaining <= 0 && Global.CurrentWaves.Value < Global.maxWavesNum.Value)
                 {
                     Global.CurrentWaves.Value += 1;
                     waves.FinishWave();
@@ -91,7 +88,7 @@ namespace ProjectBlood
                     continue;
                 }
                 // clear the enemies of the last wave => pass the level 
-                if (Global.CurrentWaves.Value >= waves.maxWavesNum && Global.currentNum.Value <= 0
+                if (Global.CurrentWaves.Value >= Global.maxWavesNum.Value && Global.currentNum.Value <= 0
                 && Global.cumulativeNum.Value >= waves.getWave1TotalNum())
                 {
                     UIKit.OpenPanel<UIGamePassPanel>(); //Survive until the last wave => pass the level

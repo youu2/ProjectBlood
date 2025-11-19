@@ -24,7 +24,7 @@ public class WavesSystem : MonoBehaviour
     [SerializeField] private int wavesPerPoolUpdate = 5;
 
     // ======= Old wave difficulty parameters (kept) =======
-    [SerializeField] public int maxWavesNum = 3;        // not strictly needed now, keep if you use it elsewhere
+    [SerializeField] public int maxWavesNum = 3;        // not strictly needed now, saved in Global
     [SerializeField] private int increaseTotalNum = 5;
     [SerializeField] private int increaseMaxActive = 3;
     [SerializeField] private int increaseSingleSpawnNum = 2;
@@ -148,12 +148,12 @@ public class WavesSystem : MonoBehaviour
         return currentPool.Select(e => e.prefab).ToArray();
     }
 
-    // ================== Difficulty auto-growth (kept from your old code) ==================
+    // ================== Difficulty auto-growth ==================
 
     public void FinishWave()
     {
-        // You can still use this if you want number-based difficulty growth
-        if (Global.CurrentWaves.Value <= maxWavesNum)
+        // increase the difficulty between waves automatically
+        if (Global.CurrentWaves.Value <= Global.maxWavesNum.Value)
         {
             wave1MaxActive += increaseMaxActive;
             wave1TotalNum += increaseTotalNum;

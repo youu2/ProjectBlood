@@ -43,6 +43,9 @@ namespace ProjectBlood
             Time.timeScale = 1;
             RemainingTime.Value = 180;
             CurrentWaves.Value = 1;
+            cumulativeNum.Value = 0;
+            currentNum.Value = 0;
+            BlazingCircleDamage.Value = 35.0f;
         }
 
         public static void ResetWave()
