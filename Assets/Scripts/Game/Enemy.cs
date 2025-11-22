@@ -49,7 +49,9 @@ namespace ProjectBlood
 			if (isDying) return;
 			this.currentHealth -= Damage;
 			if (currentHealth <= 0f)
-            {
+			{
+				// Drop experience item, destroy enemy
+				Global.GenerateExp(this.gameObject);
                 StartCoroutine(DeathSequence()); // Resulting in death: Start the death coroutine
             }
             else
@@ -72,10 +74,8 @@ namespace ProjectBlood
 		// Death process (Flash first, then destroy, avoid enemy disappearing directly)
         private IEnumerator DeathSequence()
 		{
-			// TODO:
-			// Drop experience item, destroy
-			// Global.AddExp(1);
-
+			// Drop experience item, destroy enemy
+			// Global.GenerateExp(this.gameObject);
             isDying = true;
             moveSpeed = 0f;
 			if (allColliders != null)

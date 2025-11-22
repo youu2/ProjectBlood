@@ -455,13 +455,15 @@ GameObject:
   - component: {fileID: 748113300}
   - component: {fileID: 748113299}
   - component: {fileID: 748113298}
+  - component: {fileID: 748113302}
+  - component: {fileID: 748113303}
   m_Layer: 0
   m_Name: Exp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &748113298
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -576,13 +578,43 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 748113297}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.135, y: 1.573, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 6.33256, y: 1.0137212, z: 0.010404872}
   m_LocalScale: {x: 0.25, y: 0.8, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1454553319}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &748113302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 748113297}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d51f3a7c41ab0346b49ae50d456bece, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MarkType: 0
+  CustomComponentName: Exp
+  CustomComment: 
+  mComponentName: ProjectBlood.Exp
+--- !u!114 &748113303
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 748113297}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a21930eda712a8b49bfc4b4479627421, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sortingBase: 0
+  offset: 0
 --- !u!4 &772733349 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1868232341004934165, guid: 166b3e10d277fe64683c28e2a42d860d, type: 3}
@@ -1031,6 +1063,59 @@ MonoBehaviour:
   ArchitectureFullTypeName: 
   ViewControllerFullTypeName: 
   owner: {fileID: 0}
+--- !u!1 &1454553317
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1454553319}
+  - component: {fileID: 1454553318}
+  m_Layer: 0
+  m_Name: DropManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1454553318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1454553317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 196693324b4d73f4283ab7a4c5a9ed34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Namespace: ProjectBlood
+  ScriptName: DropManager
+  ScriptsFolder: Assets/Scripts/Game
+  GeneratePrefab: 0
+  PrefabFolder: Assets/Art/Prefab
+  ArchitectureFullTypeName: 
+  ViewControllerFullTypeName: 
+  Exp: {fileID: 748113298}
+--- !u!4 &1454553319
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1454553317}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -3.19756, y: 0.55927867, z: -0.010404872}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 748113301}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1561332267
 GameObject:
   m_ObjectHideFlags: 0
@@ -1260,4 +1345,4 @@ SceneRoots:
   - {fileID: 922034753}
   - {fileID: 1588736225}
   - {fileID: 1127192534}
-  - {fileID: 748113301}
+  - {fileID: 1454553319}

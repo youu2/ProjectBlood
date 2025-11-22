@@ -18,9 +18,12 @@ MonoBehaviour:
     GameObject: {fileID: 0}
     From: 0
     NameToFullName: []
-    BindInfos: []
+    BindInfos:
+    - TypeName: ProjectBlood.Exp
+      PathToRoot: Exp
+      MemberName: Exp
     ScriptsFolder: Assets/Scripts/Game
-    ClassName: CollectBox
+    ClassName: DropManager
     Namespace: ProjectBlood
     MainCode: 
     DesignerCode: 

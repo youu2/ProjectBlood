@@ -55,6 +55,13 @@ namespace ProjectBlood
             // RemainingTime.Value = 180;
             cumulativeNum.Value = 0;
         }
+
+        public static void GenerateExp(GameObject enemy)
+        {
+            DropManager.Instance.Exp.Instantiate()
+                .Position(enemy.Position())
+                .Show();
+        }
     }
 
 }
