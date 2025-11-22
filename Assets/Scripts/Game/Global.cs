@@ -16,7 +16,8 @@ namespace ProjectBlood
         public static BindableProperty<int> cumulativeNum = new BindableProperty<int>(0);   // cumulative number of generated enemies so far
         public static BindableProperty<int> CurrentWaves = new BindableProperty<int>(1);
         //[SerializeField] private int maxWavesNum = 3;   // The total number of enemy waves generated
-        public static BindableProperty<int> maxWavesNum = new BindableProperty<int>(3);
+        public static BindableProperty<int> maxWavesNum = new BindableProperty<int>(10);  // The total number of enemy waves generated
+        public static BindableProperty<float> BCAttackInterval = new BindableProperty<float>(1.5f); // attack interval of Blazing Circle
 
         private const int MAX_EXP = 5;
 
@@ -46,6 +47,7 @@ namespace ProjectBlood
             cumulativeNum.Value = 0;
             currentNum.Value = 0;
             BlazingCircleDamage.Value = 35.0f;
+            BCAttackInterval.Value = 1.5f;
         }
 
         public static void ResetWave()

@@ -9,7 +9,7 @@ namespace ProjectBlood
 		private float _currentSeconds = 0;
 		private float _attackRange = 5;
 		//private float _attackDamage = 35;
-		private float _AttackInterval = 1.5f;
+		//private float _AttackInterval = 1.5f;
 		void Start()
 		{
 			// Code Here
@@ -18,7 +18,7 @@ namespace ProjectBlood
 		void Update()
 		{
 			_currentSeconds += Time.deltaTime;
-			if (_currentSeconds >= _AttackInterval)
+			if (_currentSeconds >= Global.BCAttackInterval.Value)
 			{
 				_currentSeconds = 0;
 				var enemies = FindObjectsByType<Enemy>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);

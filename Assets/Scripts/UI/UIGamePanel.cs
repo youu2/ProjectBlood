@@ -27,7 +27,8 @@ namespace ProjectBlood
 			Global.Level.Register(Level =>
 			{
 				Time.timeScale = 0;
-				BtnUpgrade.Show();
+				UpgradeRoot.Show();
+				// BtnUpgradeDamage.Show();
 			}).UnRegisterWhenGameObjectDestroyed(gameObject);
 
 			Global.RemainingTime.RegisterWithInitValue(Second =>
@@ -35,14 +36,25 @@ namespace ProjectBlood
 				TimeText.text = "Countdown: " + Second;
 			}).UnRegisterWhenGameObjectDestroyed(gameObject);
 
-			BtnUpgrade.Hide();
+			// BtnUpgradeDamage.Hide();
+			// BtnUpgradeAttackSpeed.Hide();
+			UpgradeRoot.Hide();
 
-			BtnUpgrade.onClick.AddListener(() =>
+			BtnUpgradeDamage.onClick.AddListener(() =>
 			{
 				Time.timeScale = 1;
-				BtnUpgrade.Hide();
-				Global.BlazingCircleDamage.Value += 20;
+				// BtnUpgradeDamage.Hide();
+				UpgradeRoot.Hide();
+				Global.BlazingCircleDamage.Value *= 1.2f;
 				//BlazingCircle.upgrade();
+			});
+
+			BtnUpgradeAttackSpeed.onClick.AddListener(() =>
+			{
+				Time.timeScale = 1;
+				// BtnUpgradeAttackSpeed.Hide();
+				UpgradeRoot.Hide();
+				Global.BCAttackInterval.Value *= 0.91f;
 			});
 
 			// ActionKit.OnUpdate.Register(() =>

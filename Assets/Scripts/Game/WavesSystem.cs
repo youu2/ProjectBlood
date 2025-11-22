@@ -23,8 +23,8 @@ public class WavesSystem : MonoBehaviour
     [Tooltip("How many waves between each pool update.")]
     [SerializeField] private int wavesPerPoolUpdate = 5;
 
-    // ======= Old wave difficulty parameters (kept) =======
-    [SerializeField] public int maxWavesNum = 3;        // not strictly needed now, saved in Global
+    // ======= wave difficulty parameters =======
+    //[SerializeField] public int maxWavesNum = 3;        // not strictly needed now, saved in Global
     [SerializeField] private int increaseTotalNum = 5;
     [SerializeField] private int increaseMaxActive = 3;
     [SerializeField] private int increaseSingleSpawnNum = 2;

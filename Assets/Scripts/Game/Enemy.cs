@@ -64,7 +64,7 @@ namespace ProjectBlood
 			if (spriteRenderer != null)
 			{
 				spriteRenderer.color = Color.white;  // flash
-				yield return new WaitForSeconds(0.25f);
+				yield return new WaitForSeconds(0.18f);
 				spriteRenderer.color = originalColor; // restore original color
 			}
 		}
@@ -89,11 +89,11 @@ namespace ProjectBlood
 				{
 					spriteRenderer.color = Color.white;
 
-					yield return new WaitForSeconds(0.1f);
+					yield return new WaitForSeconds(0.08f);
 
 					spriteRenderer.color = Color.red;
 
-					yield return new WaitForSeconds(0.1f);
+					yield return new WaitForSeconds(0.08f);
 				}
 			}
             yield return new WaitForSeconds(0.15f);

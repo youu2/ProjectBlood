@@ -329,7 +329,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 8
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -492,10 +492,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a01d6268a71c2c64eabdb040140c6d1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  normalEnemies:
-  - {fileID: 2522205301686272252, guid: 166b3e10d277fe64683c28e2a42d860d, type: 3}
-  wave1EnemyPool: []
-  wave2EnemyPool: []
   waves: {fileID: 1127192533}
   player: {fileID: 505099872}
   maxSpawnRadius: 20
@@ -647,12 +643,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2620b80123f3ef44e81607836a81544b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wave1EnemyPool:
-  - {fileID: 2522205301686272252, guid: 166b3e10d277fe64683c28e2a42d860d, type: 3}
-  wave2EnemyPool:
-  - {fileID: 2522205301686272252, guid: 166b3e10d277fe64683c28e2a42d860d, type: 3}
-  wave3EnemyPool:
-  - {fileID: 2522205301686272252, guid: 166b3e10d277fe64683c28e2a42d860d, type: 3}
+  allEnemies:
+  - prefab: {fileID: 2522205301686272252, guid: 166b3e10d277fe64683c28e2a42d860d, type: 3}
+    strength: 0
+  - prefab: {fileID: 2522205301686272252, guid: 166b3e10d277fe64683c28e2a42d860d, type: 3}
+    strength: 1
+  - prefab: {fileID: 2522205301686272252, guid: 166b3e10d277fe64683c28e2a42d860d, type: 3}
+    strength: 2
+  maxCurrentPoolSize: 3
+  wavesPerPoolUpdate: 5
   maxWavesNum: 3
   increaseTotalNum: 5
   increaseMaxActive: 3
