@@ -20,7 +20,7 @@ namespace ProjectBlood
         public static BindableProperty<float> BCAttackInterval = new BindableProperty<float>(1.5f); // attack interval of Blazing Circle
         public static BindableProperty<int> MAX_EXP = new BindableProperty<int>(5);
 
-        // upgrade after getting 5 exp
+        // level up after getting 5 exp, then increase the required exp by 10%
         public static void AddExp(int amount)
         {
             Exp.Value += amount;
@@ -46,6 +46,7 @@ namespace ProjectBlood
             currentNum.Value = 0;
             BlazingCircleDamage.Value = 35.0f;
             BCAttackInterval.Value = 1.5f;
+            MAX_EXP.Value = 5;
         }
 
         public static void ResetWave()

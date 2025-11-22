@@ -71,9 +71,10 @@ namespace ProjectBlood
 
 		// Death process (Flash first, then destroy, avoid enemy disappearing directly)
         private IEnumerator DeathSequence()
-        {
+		{
+			// TODO:
 			// Drop experience item, destroy
-			Global.AddExp(1);
+			// Global.AddExp(1);
 
             isDying = true;
             moveSpeed = 0f;

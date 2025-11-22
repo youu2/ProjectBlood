@@ -18,12 +18,9 @@ MonoBehaviour:
     GameObject: {fileID: 0}
     From: 0
     NameToFullName: []
-    BindInfos:
-    - TypeName: ProjectBlood.Enemy
-      PathToRoot: Enemy
-      MemberName: Enemy
+    BindInfos: []
     ScriptsFolder: Assets/Scripts/Game
-    ClassName: EnemySpawner
+    ClassName: CollectBox
     Namespace: ProjectBlood
     MainCode: 
     DesignerCode: 

@@ -15,11 +15,12 @@ namespace ProjectBlood
 		}
 		void Start()
 		{
-			// Code Here
-			"Hello world".LogInfo();
-
-			HitBox.OnTriggerEnter2DEvent(Collider2D =>
+			HitBox.OnTriggerEnter2DEvent((Collider2D col)=>
 			{
+				var hitBox = col.GetComponent<HitBox>();
+				// If the object colliding with the player 
+				// does not have the ability to cause damage, skip the death process.
+				if (hitBox == null) return;
 				this.DestroyGameObjGracefully();
 				UIKit.OpenPanel<UIGameOverPanel>();
 			}).UnRegisterWhenGameObjectDestroyed(gameObject);

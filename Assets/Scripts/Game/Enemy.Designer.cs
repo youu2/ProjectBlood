@@ -1,4 +1,4 @@
-// Generate Id:97de1206-21e1-4c6f-af90-a03befa33fd8
+// Generate Id:d431519f-7da1-42e5-b119-89fd986a2e4f
 using UnityEngine;
 
 namespace ProjectBlood
@@ -6,6 +6,8 @@ namespace ProjectBlood
 	public partial class Enemy
 	{
 		public SpriteRenderer Triangle;
+		
+		public CircleCollider2D HitBox;
 		
 	}
 }
