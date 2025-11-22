@@ -16,7 +16,7 @@ namespace ProjectBlood
 
 			Global.Exp.RegisterWithInitValue(Exp =>
 			{
-				ExpText.text = "Exp: " + Exp;
+				ExpText.text = "Exp: " + Exp + "/" + Global.MAX_EXP;
 			}).UnRegisterWhenGameObjectDestroyed(gameObject);
 
 			Global.Level.RegisterWithInitValue(Level =>

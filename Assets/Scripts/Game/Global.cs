@@ -18,20 +18,18 @@ namespace ProjectBlood
         //[SerializeField] private int maxWavesNum = 3;   // The total number of enemy waves generated
         public static BindableProperty<int> maxWavesNum = new BindableProperty<int>(10);  // The total number of enemy waves generated
         public static BindableProperty<float> BCAttackInterval = new BindableProperty<float>(1.5f); // attack interval of Blazing Circle
-
-        private static int MAX_EXP = 5;
-
+        public static BindableProperty<int> MAX_EXP = new BindableProperty<int>(5);
 
         // upgrade after getting 5 exp
         public static void AddExp(int amount)
         {
             Exp.Value += amount;
 
-            if (Exp.Value >= MAX_EXP)
+            if (Exp.Value >= MAX_EXP.Value)
             {
                 Level.Value++;
-                Exp.Value -= MAX_EXP;
-                MAX_EXP = Mathf.CeilToInt(MAX_EXP * 1.1f);
+                Exp.Value -= MAX_EXP.Value;
+                MAX_EXP.Value = Mathf.CeilToInt(MAX_EXP.Value * 1.1f);
                 //Debug.Log("Level Up! current LV: " + Level.Value);
             }
         }

@@ -652,7 +652,6 @@ MonoBehaviour:
     strength: 2
   maxCurrentPoolSize: 3
   wavesPerPoolUpdate: 5
-  maxWavesNum: 3
   increaseTotalNum: 5
   increaseMaxActive: 3
   increaseSingleSpawnNum: 2
@@ -685,6 +684,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1128872228}
   - component: {fileID: 1128872229}
+  - component: {fileID: 1128872230}
   m_Layer: 0
   m_Name: Square
   m_TagString: Untagged
@@ -747,7 +747,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 10
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -759,6 +759,20 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1128872230
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1128872227}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a21930eda712a8b49bfc4b4479627421, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sortingBase: 0
+  offset: 0
 --- !u!1 &1561332267
 GameObject:
   m_ObjectHideFlags: 0
