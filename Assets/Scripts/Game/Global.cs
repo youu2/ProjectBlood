@@ -19,7 +19,7 @@ namespace ProjectBlood
         public static BindableProperty<int> maxWavesNum = new BindableProperty<int>(10);  // The total number of enemy waves generated
         public static BindableProperty<float> BCAttackInterval = new BindableProperty<float>(1.5f); // attack interval of Blazing Circle
 
-        private const int MAX_EXP = 5;
+        private static int MAX_EXP = 5;
 
 
         // upgrade after getting 5 exp
@@ -31,7 +31,7 @@ namespace ProjectBlood
             {
                 Level.Value++;
                 Exp.Value -= MAX_EXP;
-
+                MAX_EXP = Mathf.CeilToInt(MAX_EXP * 1.1f);
                 //Debug.Log("Level Up! current LV: " + Level.Value);
             }
         }
