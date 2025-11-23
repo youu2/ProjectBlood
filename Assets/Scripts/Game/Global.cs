@@ -23,6 +23,26 @@ namespace ProjectBlood
         public static BindableProperty<int> maxWavesNum = new BindableProperty<int>(10);  // The total number of enemy waves generated
         public static BindableProperty<float> BCAttackInterval = new BindableProperty<float>(1.5f); // attack interval of Blazing Circle
         public static BindableProperty<int> MAX_EXP = new BindableProperty<int>(5);
+        public static BindableProperty<float> CoinDropRate = new BindableProperty<float>(0.30f); // 30% chance to drop coins
+
+        [RuntimeInitializeOnLoadMethod]
+        public static void Initialize()
+        {
+            // Load from PlayerPrefs
+			Global.LegacyPoint.Value = PlayerPrefs.GetInt("LegacyPoint", 0);
+            CoinDropRate.Value = PlayerPrefs.GetFloat("CoinDropRate", 0.30f);
+
+            // Register change callbacks
+			LegacyPoint.Register(legacy =>
+			{
+				PlayerPrefs.SetInt("LegacyPoint", legacy);
+			});
+
+			CoinDropRate.Register(coinDropRate =>
+			{
+				PlayerPrefs.SetFloat("CoinDropRate", coinDropRate);
+			});
+        }
 
         // level up after getting 5 exp, then increase the required exp by 10%
         public static void AddExp(int amount)
@@ -85,23 +105,19 @@ namespace ProjectBlood
 
         public static void GenerateCoin(GameObject enemy)
         {
-
             DropManager.Instance.Coin.Instantiate()
-                .Position(enemy.Position())
+                .Position(enemy.Position() + new Vector3(0.5f, 0.5f, 0))  // slight offset for better visibility
                 .Show();
         }
         
         public static void GenerateDrops(GameObject enemy)
         {
             var rand = Random.Range(0f, 100.0f);
-            if (rand < 80.0f)
-            {
-                GenerateExp(enemy);
-            }
-            else
+            if (rand < CoinDropRate.Value * 100)
             {
                 GenerateCoin(enemy);
             }
+            GenerateExp(enemy);
         }
     }
 }

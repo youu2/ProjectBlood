@@ -67,16 +67,12 @@ namespace ProjectBlood
 			// 	Global.RemainingTime.Value -= Time.deltaTime;
 			// }).UnRegisterWhenGameObjectDestroyed(gameObject);
 
-			// Init from PlayerPrefs
-			Global.LegacyPoint.Value = PlayerPrefs.GetInt("LegacyPoint", 0);
-
-			// Register change callback
-			Global.LegacyPoint.Register(legacy =>
+			// display Legacy Point
+			Global.LegacyPoint.RegisterWithInitValue(legacy =>
 			{
-				PlayerPrefs.SetInt("LegacyPoint", legacy);
 				LegacyText.text = "Lagacy: " + legacy;
 			}).UnRegisterWhenGameObjectDestroyed(gameObject);
-			LegacyText.text = "Legacy: " + Global.LegacyPoint.Value;
+
 		}
 		
 		protected override void OnOpen(IUIData uiData = null)
