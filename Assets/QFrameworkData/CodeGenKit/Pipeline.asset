@@ -19,6 +19,9 @@ MonoBehaviour:
     From: 0
     NameToFullName: []
     BindInfos:
+    - TypeName: ProjectBlood.Coin
+      PathToRoot: Coin
+      MemberName: Coin
     - TypeName: ProjectBlood.Exp
       PathToRoot: Exp
       MemberName: Exp

@@ -20,7 +20,9 @@ namespace ProjectBlood
 				var hitBox = col.GetComponent<HitBox>();
 				// If the object colliding with the player 
 				// does not have the ability to cause damage, skip the death process.
-				if (hitBox == null) return;
+				if (hitBox == null) return; 
+				// Gain Legacy points equal to current level upon death
+				Global.SettleLegacyPoints();
 				this.DestroyGameObjGracefully();
 				UIKit.OpenPanel<UIGameOverPanel>();
 			}).UnRegisterWhenGameObjectDestroyed(gameObject);

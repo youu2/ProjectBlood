@@ -173,6 +173,7 @@ MonoBehaviour:
   moveSpeed: 1.5
   currentHealth: 100
   Triangle: {fileID: 550326710537839587}
+  HitBox: {fileID: 601041111778738526}
 --- !u!114 &560438733336014486
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -199,6 +200,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3834297130427543305}
   - component: {fileID: 601041111778738526}
+  - component: {fileID: 9108039631810944670}
   m_Layer: 0
   m_Name: HitBox
   m_TagString: Untagged
@@ -256,3 +258,23 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.3
+--- !u!114 &9108039631810944670
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2931501622836772028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4e31330a7583d945a89657424372953, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Namespace: ProjectBlood
+  ScriptName: HitBox
+  ScriptsFolder: Assets/Scripts/Game
+  GeneratePrefab: 0
+  PrefabFolder: Assets/Art/Prefab
+  ArchitectureFullTypeName: 
+  ViewControllerFullTypeName: 
+  owner: {fileID: 0}

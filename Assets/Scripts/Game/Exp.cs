@@ -17,11 +17,6 @@ namespace ProjectBlood
                 Global.AddExp(1);
 				this.DestroyGameObjGracefully();
             }
-			// if (collider.gameObject.CompareTag("Player"))
-			// {
-			// 	Global.AddExp(1);
-			// 	this.DestroyGameObjGracefully();
-			// }
 		}
 	}
 }

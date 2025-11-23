@@ -9,7 +9,11 @@ namespace ProjectBlood
     public class Global
     {
         public static BindableProperty<int> Exp = new BindableProperty<int>(0);
+        public static BindableProperty<int> Coin = new BindableProperty<int>(0);
         public static BindableProperty<int> Level = new BindableProperty<int>(1);
+
+        // The player's level will be converted into Legacy points upon death, which can be used for Metaprogression System.
+        public static BindableProperty<int> LegacyPoint = new BindableProperty<int>(0);
         public static BindableProperty<float> BlazingCircleDamage = new BindableProperty<float>(35.0f);
         public static BindableProperty<float> RemainingTime  = new BindableProperty<float>(180);
         public static BindableProperty<int> currentNum = new BindableProperty<int>(0);    // current number of active enemies
@@ -34,6 +38,20 @@ namespace ProjectBlood
             }
         }
 
+        // add coins
+        public static void AddCoin(int amount)
+        {
+            Coin.Value += amount;
+        }
+
+        public static void SettleLegacyPoints()
+        {
+            int legacyPointsGained = Level.Value - 1; // Gain Legacy points equal to the number of upgrades upon death
+            LegacyPoint.Value += legacyPointsGained;
+            Debug.Log("You have gained " + legacyPointsGained + " Legacy Points!");
+            Debug.Log("Your current legacy points: " + LegacyPoint.Value);
+        }
+        
         // restart game
         public static void ResetLevel()
         {
@@ -47,6 +65,7 @@ namespace ProjectBlood
             BlazingCircleDamage.Value = 35.0f;
             BCAttackInterval.Value = 1.5f;
             MAX_EXP.Value = 5;
+            Coin.Value = 0;
         }
 
         public static void ResetWave()
@@ -62,6 +81,13 @@ namespace ProjectBlood
                 .Position(enemy.Position())
                 .Show();
         }
-    }
 
+        public static void GenerateCoin(GameObject enemy)
+        {
+
+            DropManager.Instance.Exp.Instantiate()
+                .Position(enemy.Position())
+                .Show();
+        }
+    }
 }
