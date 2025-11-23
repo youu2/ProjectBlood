@@ -75,6 +75,7 @@ namespace ProjectBlood
             cumulativeNum.Value = 0;
         }
 
+        // Generate drops when enemy dies
         public static void GenerateExp(GameObject enemy)
         {
             DropManager.Instance.Exp.Instantiate()
@@ -85,9 +86,22 @@ namespace ProjectBlood
         public static void GenerateCoin(GameObject enemy)
         {
 
-            DropManager.Instance.Exp.Instantiate()
+            DropManager.Instance.Coin.Instantiate()
                 .Position(enemy.Position())
                 .Show();
+        }
+        
+        public static void GenerateDrops(GameObject enemy)
+        {
+            var rand = Random.Range(0f, 100.0f);
+            if (rand < 80.0f)
+            {
+                GenerateExp(enemy);
+            }
+            else
+            {
+                GenerateCoin(enemy);
+            }
         }
     }
 }

@@ -24,6 +24,11 @@ namespace ProjectBlood
 				LevelText.text = "Level: " + Level;
 			}).UnRegisterWhenGameObjectDestroyed(gameObject);
 
+			Global.Coin.RegisterWithInitValue(Coin =>
+			{
+				CoinText.text = "Coin: " + Coin;
+			}).UnRegisterWhenGameObjectDestroyed(gameObject);
+
 			Global.Level.Register(Level =>
 			{
 				Time.timeScale = 0;

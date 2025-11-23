@@ -51,7 +51,7 @@ namespace ProjectBlood
 			if (currentHealth <= 0f)
 			{
 				// Drop experience item, destroy enemy
-				Global.GenerateExp(this.gameObject);
+				Global.GenerateDrops(this.gameObject);
                 StartCoroutine(DeathSequence()); // Resulting in death: Start the death coroutine
             }
             else
