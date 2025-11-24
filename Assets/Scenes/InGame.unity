@@ -839,7 +839,7 @@ MonoBehaviour:
   waves: {fileID: 1127192533}
   player: {fileID: 505099872}
   maxSpawnRadius: 20
-  minSpawnRadius: 10
+  minSpawnRadius: 15
   enemySpawnInterval: 3
   enemyNum: 0
 --- !u!1 &1027198393
@@ -1505,7 +1505,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1868232341004934165, guid: 166b3e10d277fe64683c28e2a42d860d, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 7.56
+      value: 8.84
       objectReference: {fileID: 0}
     - target: {fileID: 1868232341004934165, guid: 166b3e10d277fe64683c28e2a42d860d, type: 3}
       propertyPath: m_LocalPosition.y

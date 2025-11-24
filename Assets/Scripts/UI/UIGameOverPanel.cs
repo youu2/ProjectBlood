@@ -20,19 +20,21 @@ namespace ProjectBlood
 				if (Input.GetKeyDown(KeyCode.Space))
 				{
 					this.CloseSelf();
-					SceneManager.LoadScene("SampleScene");
+					SceneManager.LoadScene("InGame");
 					Global.ResetLevel();
 				}
 			}).UnRegisterWhenGameObjectDestroyed(gameObject);
 
+			BtnBackHome.onClick.AddListener(() =>
+			{
+				this.CloseSelf();
+				SceneManager.LoadScene("GameStart");
+			});
 		}
 
         private void Update()
         {
-			if (Input.GetKeyDown(KeyCode.Space))
-			{
-				SceneManager.LoadScene("SampleScene");
-			}
+
         }
         protected override void OnOpen(IUIData uiData = null)
 		{

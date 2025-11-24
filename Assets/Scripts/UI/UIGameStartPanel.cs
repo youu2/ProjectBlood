@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using QFramework;
+using UnityEngine.SceneManagement;
 
 namespace ProjectBlood
 {
@@ -12,7 +13,7 @@ namespace ProjectBlood
 		protected override void OnInit(IUIData uiData = null)
 		{
 			mData = uiData as UIGameStartPanelData ?? new UIGameStartPanelData();
-
+			Time.timeScale = 0.0f;
 			// Load Legacy Point from PlayerPrefs
 			Global.LegacyPoint.Value = PlayerPrefs.GetInt("LegacyPoint", 0);
 			// Register change callback
@@ -22,14 +23,23 @@ namespace ProjectBlood
 				LegacyHeldText.text = "Lagacy: " + legacy;
 			}).UnRegisterWhenGameObjectDestroyed(gameObject);
 
+			BtnStartGame.onClick.AddListener(() =>
+			{
+				this.CloseSelf();
+				Global.ResetLevel();
+				Time.timeScale = 1.0f;
+				SceneManager.LoadScene("InGame");
+			});
 
 			BtnLegacyUpgrade.onClick.AddListener(() =>
 			{
 				LegacyUpgradePanel.Show();
+				TittleText.Hide();
 			});
 			BtnCloseUpgradePage.onClick.AddListener(() =>
 			{
 				LegacyUpgradePanel.Hide();
+				TittleText.Show();
 			});
 			BtnCoinDropRateUpgrade.onClick.AddListener(() =>
 			{
@@ -42,7 +52,6 @@ namespace ProjectBlood
 				else
 				{
 					Debug.Log("Not enough Legacy Point! Your Current Drop Rate: " + Global.CoinDropRate.Value);
-					Debug.Log("Current Drop Rate: " + Global.CoinDropRate.Value);
 					return;
 				}
 			});

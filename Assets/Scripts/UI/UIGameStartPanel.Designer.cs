@@ -5,11 +5,13 @@ using QFramework;
 
 namespace ProjectBlood
 {
-	// Generate Id:a29aff92-553f-4bf2-817d-64397b6f7e27
+	// Generate Id:1f997979-8211-45d3-9979-8cbaac7870ab
 	public partial class UIGameStartPanel
 	{
 		public const string Name = "UIGameStartPanel";
 		
+		[SerializeField]
+		public UnityEngine.UI.Button BtnStartGame;
 		[SerializeField]
 		public UnityEngine.UI.Button BtnLegacyUpgrade;
 		[SerializeField]
@@ -20,16 +22,20 @@ namespace ProjectBlood
 		public UnityEngine.UI.Button BtnCloseUpgradePage;
 		[SerializeField]
 		public TMPro.TextMeshProUGUI LegacyHeldText;
+		[SerializeField]
+		public TMPro.TextMeshProUGUI TittleText;
 		
 		private UIGameStartPanelData mPrivateData = null;
 		
 		protected override void ClearUIComponents()
 		{
+			BtnStartGame = null;
 			BtnLegacyUpgrade = null;
 			LegacyUpgradePanel = null;
 			BtnCoinDropRateUpgrade = null;
 			BtnCloseUpgradePage = null;
 			LegacyHeldText = null;
+			TittleText = null;
 			
 			mData = null;
 		}
