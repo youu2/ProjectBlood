@@ -1133,14 +1133,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3572300264589901117, guid: bd3103483edad4840b33ec999dbb6609, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: -124.900024
-      objectReference: {fileID: 0}
-    - target: {fileID: 3572300264589901117, guid: bd3103483edad4840b33ec999dbb6609, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -26.650024
-      objectReference: {fileID: 0}
     - target: {fileID: 7564845179975367271, guid: bd3103483edad4840b33ec999dbb6609, type: 3}
       propertyPath: m_Name
       value: UIGamePanel
