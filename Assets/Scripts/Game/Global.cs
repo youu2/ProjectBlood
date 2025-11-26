@@ -28,6 +28,8 @@ namespace ProjectBlood
         [RuntimeInitializeOnLoadMethod]
         public static void Initialize()
         {
+            ResKit.Init();
+            UIKit.Root.SetResolution(1920, 1080,1.0f);
             // Load from PlayerPrefs
 			Global.LegacyPoint.Value = PlayerPrefs.GetInt("LegacyPoint", 0);
             CoinDropRate.Value = PlayerPrefs.GetFloat("CoinDropRate", 0.30f);
