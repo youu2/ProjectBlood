@@ -5,7 +5,7 @@ using QFramework;
 
 namespace ProjectBlood
 {
-	// Generate Id:ec6292d9-7cfa-4a94-9925-6729fc484ede
+	// Generate Id:14a12728-8233-4561-b24f-68aef1310f42
 	public partial class UIGamePassPanel
 	{
 		public const string Name = "UIGamePassPanel";

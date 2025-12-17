@@ -1141,6 +1141,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4161878591969721793, guid: 8c676b0b4da6d344bbae1971cb6ca9e8, type: 3}
+      propertyPath: BtnBackHome
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 7564845179975367271, guid: 8c676b0b4da6d344bbae1971cb6ca9e8, type: 3}
       propertyPath: m_Name
       value: UIGamePassPanel

@@ -1145,6 +1145,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: UIGameOverPanel
       objectReference: {fileID: 0}
+    - target: {fileID: 8094966520466488415, guid: 975661bd902a9c142b5b1a4073c3c14c, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 718.6833
+      objectReference: {fileID: 0}
+    - target: {fileID: 8094966520466488415, guid: 975661bd902a9c142b5b1a4073c3c14c, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8094966520466488415, guid: 975661bd902a9c142b5b1a4073c3c14c, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -330
+      objectReference: {fileID: 0}
+    - target: {fileID: 8725283888953232056, guid: 975661bd902a9c142b5b1a4073c3c14c, type: 3}
+      propertyPath: m_fontSize
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 8725283888953232056, guid: 975661bd902a9c142b5b1a4073c3c14c, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 40
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
