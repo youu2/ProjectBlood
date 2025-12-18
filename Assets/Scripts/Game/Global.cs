@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace ProjectBlood
 {
-    public class Global
+    public class Global : Architecture<Global>
     {
         public static BindableProperty<int> Exp = new BindableProperty<int>(0);
         public static BindableProperty<int> Coin = new BindableProperty<int>(0);
@@ -120,6 +120,11 @@ namespace ProjectBlood
                 GenerateCoin(enemy);
             }
             GenerateExp(enemy);
+        }
+
+        protected override void Init()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }
