@@ -5,3 +5,6 @@
 *.cginc text eol=lf
 *.txt text eol=lf
 *.md text eol=lf
+
+Assets/Plugins/FMOD/**/*.bundle text eol=lf
+Assets/Plugins/FMOD/**/Info.plist text eol=lf

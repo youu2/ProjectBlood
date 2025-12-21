@@ -97,3 +97,24 @@ InitTestScene*.unity*
 
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
+
+####################################
+# FMOD for Unity
+####################################
+
+# Ignore FMOD Cache (local, auto-generated)
+/[Aa]ssets/Plugins/FMOD/Cache/*
+/[Aa]ssets/Plugins/FMOD/Cache.meta
+
+# Ignore FMOD Studio bank files
+/[Aa]ssets/StreamingAssets/**/*.bank
+/[Aa]ssets/StreamingAssets/**/*.bank.meta
+
+# --- Explicitly keep required FMOD files ---
+
+# Never ignore DLLs/libs inside FMOD plugin folders
+!/[Aa]ssets/Plugins/FMOD/**/lib/*
+
+# Keep FMOD Editor images and gizmos
+!/[Aa]ssets/Gizmos/FMOD/*
+!/[Aa]ssets/Editor Default Resources/FMOD/*
