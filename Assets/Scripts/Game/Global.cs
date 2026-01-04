@@ -28,6 +28,7 @@ namespace ProjectBlood
         [RuntimeInitializeOnLoadMethod]
         public static void Initialize()
         {
+            AudioKit.PlaySoundMode = AudioKit.PlaySoundModes.IgnoreSameSoundInGlobalFrames;
             ResKit.Init();
             UIKit.Root.SetResolution(1920, 1080,1.0f);
             // Load from PlayerPrefs

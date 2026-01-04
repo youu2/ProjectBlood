@@ -14,6 +14,7 @@ namespace ProjectBlood
 			// Check if the collider belongs to the player
             if (collider.GetComponent<CollectBox>() != null)
             {
+				AudioKit.PlaySound("ExpPickup");
                 Global.AddExp(1);
 				this.DestroyGameObjGracefully();
             }

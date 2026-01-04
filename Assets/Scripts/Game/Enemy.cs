@@ -47,6 +47,7 @@ namespace ProjectBlood
 		public void TakeDamage(float Damage)
 		{
 			if (isDying) return;
+			AudioKit.PlaySound("Torch Impact 2", volume: 0.7f);
 			this.currentHealth -= Damage;
 			if (currentHealth <= 0f)
 			{
