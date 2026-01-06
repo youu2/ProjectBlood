@@ -8,6 +8,8 @@ namespace ProjectBlood
 {
     public class Global : Architecture<Global>
     {
+        public static BindableProperty<float> MAX_HP = new BindableProperty<float>(3);
+        public static BindableProperty<float> currentHP = new BindableProperty<float>(3);
         public static BindableProperty<int> Exp = new BindableProperty<int>(0);
         public static BindableProperty<int> Coin = new BindableProperty<int>(0);
         public static BindableProperty<int> Level = new BindableProperty<int>(1);
@@ -20,7 +22,7 @@ namespace ProjectBlood
         public static BindableProperty<int> cumulativeNum = new BindableProperty<int>(0);   // cumulative number of generated enemies so far
         public static BindableProperty<int> CurrentWaves = new BindableProperty<int>(1);
         //[SerializeField] private int maxWavesNum = 3;   // The total number of enemy waves generated
-        public static BindableProperty<int> maxWavesNum = new BindableProperty<int>(10);  // The total number of enemy waves generated
+        public static BindableProperty<int> maxWavesNum = new BindableProperty<int>(1);  // The total number of enemy waves generated
         public static BindableProperty<float> BCAttackInterval = new BindableProperty<float>(1.5f); // attack interval of Blazing Circle
         public static BindableProperty<int> MAX_EXP = new BindableProperty<int>(5);
         public static BindableProperty<float> CoinDropRate = new BindableProperty<float>(0.30f); // 30% chance to drop coins
@@ -28,6 +30,8 @@ namespace ProjectBlood
         [RuntimeInitializeOnLoadMethod]
         public static void Initialize()
         {
+            // Initialize AudioKit, ResKit, UIKit
+            // Set AudioKit to ignore same sound played in the same frame
             AudioKit.PlaySoundMode = AudioKit.PlaySoundModes.IgnoreSameSoundInGlobalFrames;
             ResKit.Init();
             UIKit.Root.SetResolution(1920, 1080,1.0f);
@@ -54,6 +58,7 @@ namespace ProjectBlood
 
             if (Exp.Value >= MAX_EXP.Value)
             {
+                AudioKit.PlaySound("LevelUp");
                 Level.Value++;
                 Exp.Value -= MAX_EXP.Value;
                 MAX_EXP.Value = Mathf.CeilToInt(MAX_EXP.Value * 1.1f);
@@ -78,6 +83,7 @@ namespace ProjectBlood
         // restart game
         public static void ResetLevel()
         {
+            currentHP.Value = MAX_HP.Value;
             Level.Value = 1;
             Exp.Value = 0;
             Time.timeScale = 1;

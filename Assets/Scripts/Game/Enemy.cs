@@ -9,6 +9,7 @@ namespace ProjectBlood
 		private SpriteRenderer spriteRenderer;
 		public float moveSpeed = 2.0f;
 		public float currentHealth = 100.0f;
+		public float Damage = 1.0f;
 		private Color originalColor;  // Restore the original color after flash
 		private bool isDying = false; // Avoid repeating death process.
 		private Collider2D[] allColliders;
@@ -47,7 +48,7 @@ namespace ProjectBlood
 		public void TakeDamage(float Damage)
 		{
 			if (isDying) return;
-			AudioKit.PlaySound("Torch Impact 2", volume: 0.7f);
+			AudioKit.PlaySound("Torch Impact 2");
 			this.currentHealth -= Damage;
 			if (currentHealth <= 0f)
 			{
