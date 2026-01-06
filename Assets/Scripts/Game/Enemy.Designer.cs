@@ -1,4 +1,4 @@
-// Generate Id:d431519f-7da1-42e5-b119-89fd986a2e4f
+// Generate Id:747db991-79b5-4dd7-83da-b3e35b31ada3
 using UnityEngine;
 
 namespace ProjectBlood
@@ -7,7 +7,7 @@ namespace ProjectBlood
 	{
 		public SpriteRenderer Triangle;
 		
-		public CircleCollider2D HitBox;
+		public UnityEngine.Rigidbody2D SelfRigidbody2D;
 		
 	}
 }

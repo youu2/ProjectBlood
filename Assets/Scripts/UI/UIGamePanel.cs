@@ -14,6 +14,11 @@ namespace ProjectBlood
 			mData = uiData as UIGamePanelData ?? new UIGamePanelData();
 			// please add init code here
 
+			Global.currentHP.RegisterWithInitValue(currentHP =>
+			{
+				HPText.text = "HP: " + currentHP + "/" + Global.MAX_HP;
+			}).UnRegisterWhenGameObjectDestroyed(gameObject);
+
 			Global.Exp.RegisterWithInitValue(Exp =>
 			{
 				ExpText.text = "Exp: " + Exp + "/" + Global.MAX_EXP;

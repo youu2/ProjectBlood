@@ -33,16 +33,20 @@ namespace ProjectBlood
 		{
 			// Code Here
 		}
-		void Update()
-		{
-			if (isDying) return;  // stop moving during death process
 
-			if (Player.player1)
+        void FixedUpdate()
+        {
+            if (Player.player1)
 			{
 				var direction = (Player.player1.transform.position - transform.position).normalized;
-				transform.Translate(direction * Time.deltaTime * moveSpeed);
+				//transform.Translate(direction * Time.deltaTime * moveSpeed);
+				SelfRigidbody2D.velocity = direction * moveSpeed;
 			}
+        }
 
+        void Update()
+		{
+			if (isDying) return;  // stop moving during death process
 		}
 
 		public void TakeDamage(float Damage)

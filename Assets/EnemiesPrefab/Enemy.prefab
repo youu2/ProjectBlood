@@ -127,6 +127,8 @@ GameObject:
   - component: {fileID: 1868232341004934165}
   - component: {fileID: 6141436913179080686}
   - component: {fileID: 560438733336014486}
+  - component: {fileID: 5424010282455938637}
+  - component: {fileID: 4020195134339724675}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Enemy
@@ -172,8 +174,9 @@ MonoBehaviour:
   ViewControllerFullTypeName: 
   moveSpeed: 1.5
   currentHealth: 100
+  Damage: 1
   Triangle: {fileID: 550326710537839587}
-  HitBox: {fileID: 601041111778738526}
+  SelfRigidbody2D: {fileID: 5424010282455938637}
 --- !u!114 &560438733336014486
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -190,6 +193,48 @@ MonoBehaviour:
   CustomComponentName: Enemy
   CustomComment: 
   mComponentName: ProjectBlood.Enemy
+--- !u!50 &5424010282455938637
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2522205301686272252}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 4
+--- !u!114 &4020195134339724675
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2522205301686272252}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 411e729afed24c62a04e2b99d9122e78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Binds:
+  - MemberName: SelfRigidbody2D
+    Object: {fileID: 5424010282455938637}
 --- !u!1 &2931501622836772028
 GameObject:
   m_ObjectHideFlags: 0
