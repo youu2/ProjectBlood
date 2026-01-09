@@ -37,8 +37,8 @@ namespace ProjectBlood
             UIKit.Root.SetResolution(1920, 1080,1.0f);
             // Load from PlayerPrefs
 			Global.LegacyPoint.Value = PlayerPrefs.GetInt("LegacyPoint", 0);
-            CoinDropRate.Value = PlayerPrefs.GetFloat("CoinDropRate", 0.30f);
-
+            Global.CoinDropRate.Value = PlayerPrefs.GetFloat("CoinDropRate", 0.30f);
+            Global.MAX_HP.Value = PlayerPrefs.GetFloat("MAX_HP", 3.0f);
             // Register change callbacks
 			LegacyPoint.Register(legacy =>
 			{
@@ -48,6 +48,11 @@ namespace ProjectBlood
 			CoinDropRate.Register(coinDropRate =>
 			{
 				PlayerPrefs.SetFloat("CoinDropRate", coinDropRate);
+			});
+
+            MAX_HP.Register(maxHP =>
+			{
+				PlayerPrefs.SetFloat("MAX_HP", maxHP);
 			});
         }
 
@@ -119,19 +124,42 @@ namespace ProjectBlood
                 .Show();
         }
         
+        public static void GenerateHealthPotion(GameObject enemy)
+        {
+            DropManager.Instance.HealthPotion.Instantiate()
+                .Position(enemy.Position() + new Vector3(-0.5f, -0.5f, 0))  // slight offset for better visibility
+                .Show();
+        }
+
         public static void GenerateDrops(GameObject enemy)
         {
+            GenerateExp(enemy);
             var rand = Random.Range(0f, 100.0f);
             if (rand < CoinDropRate.Value * 100)
             {
                 GenerateCoin(enemy);
+                return;
             }
-            GenerateExp(enemy);
+            rand = Random.Range(0f, 100.0f);
+            if (rand < 0.1 * 100)
+            {
+                GenerateHealthPotion(enemy);
+                return;
+            }
         }
 
         protected override void Init()
         {
             throw new System.NotImplementedException();
+        }
+
+        public static void AddHP(float amount)
+        {
+            currentHP.Value += amount;
+            if (currentHP.Value > MAX_HP.Value)
+            {
+                currentHP.Value = MAX_HP.Value;
+            }
         }
     }
 }

@@ -19,11 +19,17 @@ MonoBehaviour:
     From: 0
     NameToFullName: []
     BindInfos:
-    - TypeName: SpriteRenderer
-      PathToRoot: Triangle
-      MemberName: Triangle
+    - TypeName: ProjectBlood.Coin
+      PathToRoot: Coin
+      MemberName: Coin
+    - TypeName: CircleCollider2D
+      PathToRoot: HealthPotion
+      MemberName: HealthPotion
+    - TypeName: ProjectBlood.Exp
+      PathToRoot: Exp
+      MemberName: Exp
     ScriptsFolder: Assets/Scripts/Game
-    ClassName: Enemy
+    ClassName: DropManager
     Namespace: ProjectBlood
     MainCode: 
     DesignerCode: 
