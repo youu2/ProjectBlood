@@ -161,5 +161,13 @@ namespace ProjectBlood
                 currentHP.Value = MAX_HP.Value;
             }
         }
+
+        public static void AddAnnihilationCore(int amount)
+        {
+            // Implementation for adding Annihilation Cores
+            // This is a placeholder; actual implementation may vary
+            Debug.Log("Annihilation Cores increased by " + amount);
+        }
+        
     }
 }

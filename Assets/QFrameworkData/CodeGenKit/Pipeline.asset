@@ -22,7 +22,10 @@ MonoBehaviour:
     - TypeName: ProjectBlood.Coin
       PathToRoot: Coin
       MemberName: Coin
-    - TypeName: CircleCollider2D
+    - TypeName: ProjectBlood.AnnihilationCore
+      PathToRoot: AnnihilationCore
+      MemberName: AnnihilationCore
+    - TypeName: ProjectBlood.HealthPotion
       PathToRoot: HealthPotion
       MemberName: HealthPotion
     - TypeName: ProjectBlood.Exp
