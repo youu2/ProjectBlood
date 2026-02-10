@@ -10,17 +10,18 @@ namespace ProjectBlood
 		public float moveSpeed = 3.5f;
 		public static Player player1;
 		public PlayerBullet playerBulletPrefab;
+		
 		private void Awake()
 		{
 			player1 = this;
 		}
+		
 		void Start()
 		{
 			HitBox.OnTriggerEnter2DEvent((Collider2D col)=>
 			{
 				var hitBox = col.GetComponent<HitBox>();
-				// If the object colliding with the player 
-				// does not have the ability to cause damage, skip the death process.
+				// 如果撞到的东西没有伤害能力，就跳过死亡流程
 				if (hitBox == null) return; 
 				Global.currentHP.Value -= col.GetComponent<HitBox>().owner.GetComponent<Enemy>().Damage;
 				if (Global.currentHP.Value > 0)
@@ -28,26 +29,38 @@ namespace ProjectBlood
 					AudioKit.PlaySound("Hurt");
 					return;
 				} 
-				// Gain Legacy points equal to current level upon death
+				// 死亡时根据当前等级获得传承点数
 				Global.SettleLegacyPoints();
 				AudioKit.PlaySound("WilhelmScream");
 				this.DestroyGameObjGracefully();
 				UIKit.OpenPanel<UIGameOverPanel>();
 			}).UnRegisterWhenGameObjectDestroyed(gameObject);
 		}
+		
 		void Update()
 		{
 			float horizontal = Input.GetAxis("Horizontal"); // A/D
 			float vertical = Input.GetAxis("Vertical");     // W/S
 
-			// keep same speed in any direction
+			// 保持任意方向速度一致
 			var direction = new Vector2(horizontal, vertical).normalized;
-
 			SelfRigidbody2D.velocity = direction * moveSpeed;
-			if (Input.GetMouseButtonDown(0)) // Left mouse button
+
+			// 鼠标左键射击（朝鼠标方向）
+			if (Input.GetMouseButtonDown(0))
 			{
+				// 获取鼠标在屏幕上的位置
+				Vector3 mouseScreenPos = Input.mousePosition;
+				// 转成世界坐标，Z 要设成 0（2D 游戏）
+				mouseScreenPos.z = 0;
+				Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
+				
+				// 计算从玩家指向鼠标的方向
+				Vector2 shootDir = (mouseWorldPos - transform.position).normalized;
+				
+				// 生成子弹
 				var bullet = Instantiate(playerBulletPrefab, transform.position, Quaternion.identity);
-				bullet.direction = direction * 5f;
+				bullet.direction = shootDir;
 				bullet.gameObject.SetActive(true);
 			}
 		}
@@ -56,6 +69,5 @@ namespace ProjectBlood
         {
 			player1 = null;
         }
-
-    }
+	}
 }
