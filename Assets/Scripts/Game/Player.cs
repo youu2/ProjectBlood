@@ -9,6 +9,7 @@ namespace ProjectBlood
 	{
 		public float moveSpeed = 3.5f;
 		public static Player player1;
+		public PlayerBullet playerBulletPrefab;
 		private void Awake()
 		{
 			player1 = this;
@@ -43,6 +44,12 @@ namespace ProjectBlood
 			var direction = new Vector2(horizontal, vertical).normalized;
 
 			SelfRigidbody2D.velocity = direction * moveSpeed;
+			if (Input.GetMouseButtonDown(0)) // Left mouse button
+			{
+				var bullet = Instantiate(playerBulletPrefab, transform.position, Quaternion.identity);
+				bullet.direction = direction * 5f;
+				bullet.gameObject.SetActive(true);
+			}
 		}
 
         private void OnDestroy()

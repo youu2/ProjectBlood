@@ -82,7 +82,7 @@ public class Enemy2 : MonoBehaviour
 
                 currentWanderTime += Time.deltaTime;
 
-                // 1秒后切换到Shoot
+                // 移动1秒后切换到Shoot
                 if (currentWanderTime >= wanderDuration)
                 {
                     currentState = State.Shoot;
