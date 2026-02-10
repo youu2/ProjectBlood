@@ -8,10 +8,11 @@ using UnityEngine;
 public class Enemy2 : MonoBehaviour
 {
     public Player player;
+    public EnemyBullet enemyBullet;
     float speed = 2.0f;
     public enum State
     {
-        Idle,
+        Idle,       // 待机(暂未使用)
         Chase,      // 追踪玩家
         Wander,     // 沿垂直玩家连线的随机方向直线移动1秒
         Shoot       // 原地停下射击1-2秒
@@ -24,6 +25,8 @@ public class Enemy2 : MonoBehaviour
 
     // 玩家方向（只在需要时更新）
     Vector3 m_DirectionToPlayer;
+
+    
 
     // Start is called before the first frame update
     void Start()
@@ -44,10 +47,25 @@ public class Enemy2 : MonoBehaviour
     Vector3 wanderDirection;
 
     // Shoot状态相关
-    float shootMinDuration = 1.0f;
-    float shootMaxDuration = 2.0f;
+    float shootMinDuration = 3.0f;
+    float shootMaxDuration = 5.0f;
     float currentShootTime = 0.0f;
     float currentShootDuration = 0.0f;
+
+    // 射击模式参数 - 修改为固定两次连射
+    public float shootInterval = 2.0f;      // 两次连射之间的间隔
+    public float burstInterval = 0.2f;      // 连射中每发子弹间隔
+    public int bulletsPerBurst = 3;         // 一次连射n发
+    public int totalBurstCount = 2;         // 新增：总共进行几次连射
+    
+    // 射击状态变量
+    private int currentBurstCount = 0;      // 当前已完成的连射次数
+    private float shootIntervalTimer = 0f;  // 连射间隔计时器
+    private float burstIntervalTimer = 0f;  // 连射内子弹间隔计时器
+    private int shotsFired = 0;             // 当前连射已发射子弹数
+    private bool isInBurst = false;         // 是否正在连射阶段
+
+    
 
     // Update is called once per frame
     void Update()
@@ -99,6 +117,8 @@ public class Enemy2 : MonoBehaviour
             case State.Shoot:
                 // Shoot状态：不移动，不更新方向，只射击
                 currentShootTime += Time.deltaTime;
+                
+                // 先执行攻击逻辑
                 AttackPlayer();
 
                 // 射击时间到了，检查是否还在攻击范围
@@ -107,13 +127,13 @@ public class Enemy2 : MonoBehaviour
                     if (Vector3.Distance(transform.position, player.transform.position) <= attackRange)
                     {
                         currentState = State.Wander;
-                        StartWander(); // 这里会用到一次玩家方向来生成垂直方向
+                        StartWander();
                     }
                     else
                     {
                         currentState = State.Chase;
                     }
-                }
+                }   
                 break;
         }
     }
@@ -136,16 +156,101 @@ public class Enemy2 : MonoBehaviour
         }
     }
 
-    // 开始Shoot状态：随机1-2秒射击时长
+    // 开始Shoot状态：随机射击时长
     void StartShoot()
     {
         currentShootTime = 0.0f;
         currentShootDuration = Random.Range(shootMinDuration, shootMaxDuration);
+
+        // 重置射击状态变量 - 修改为固定两次连射
+        currentBurstCount = 0;
+        shootIntervalTimer = 0f;
+        burstIntervalTimer = 0f;
+        shotsFired = 0;
+        isInBurst = false;
     }
 
     void AttackPlayer()
     {
-        // 射击逻辑，后面实现
-        // 比如生成子弹啥的
+        // 如果已经超出射击时间，直接返回
+        if (currentShootTime >= currentShootDuration)
+        {
+            return;
+        }
+
+        // 如果还没开始第一次连射，立即开始
+        if (currentBurstCount == 0 && !isInBurst)
+        {
+            isInBurst = true;
+            FireBullet();
+            shotsFired++;
+            return;
+        }
+
+        if (isInBurst)
+        {
+            // 正在连射阶段
+            burstIntervalTimer += Time.deltaTime;
+            if (burstIntervalTimer >= burstInterval)
+            {
+                // 检查是否还在射击时间内
+                if (currentShootTime >= currentShootDuration)
+                {
+                    return;
+                }
+                
+                if (shotsFired < bulletsPerBurst)
+                {
+                    // 继续发射当前连射的子弹
+                    FireBullet();
+                    shotsFired++;
+                    burstIntervalTimer = 0f;
+                }
+                else
+                {
+                    // 当前连射完成
+                    isInBurst = false;
+                    currentBurstCount++;
+                    shotsFired = 0;
+                    burstIntervalTimer = 0f;
+                    
+                    // 如果还没完成所有连射，开始间隔计时
+                    if (currentBurstCount < totalBurstCount)
+                    {
+                        shootIntervalTimer = 0f;
+                    }
+                }
+            }
+        }
+        else
+        {
+            // 不在连射阶段，等待连射间隔
+            if (currentBurstCount < totalBurstCount)
+            {
+                shootIntervalTimer += Time.deltaTime;
+                if (shootIntervalTimer >= shootInterval)
+                {
+                    // 开始新一轮连射
+                    isInBurst = true;
+                    FireBullet();
+                    shotsFired++;
+                    shootIntervalTimer = 0f;
+                }
+            }
+        }
     }
+
+    void FireBullet()
+    {
+        if (enemyBullet == null || player == null) return;
+
+        // 计算朝玩家的方向
+        Vector3 dirToPlayer = (player.transform.position - transform.position).normalized;
+        
+        // 生成子弹
+        EnemyBullet bullet = Instantiate(enemyBullet, transform.position, Quaternion.identity);
+        bullet.direction = dirToPlayer;  // 假设EnemyBullet里用这个方向
+        bullet.gameObject.SetActive(true);
+    }
+    
 }

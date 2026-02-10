@@ -9,7 +9,7 @@ namespace ProjectBlood
 	{
 		public float moveSpeed = 3.5f;
 		public static Player player1;
-		public PlayerBullet playerBulletPrefab;
+		public PlayerBullet playerBullet;
 		
 		private void Awake()
 		{
@@ -47,7 +47,7 @@ namespace ProjectBlood
 			SelfRigidbody2D.velocity = direction * moveSpeed;
 
 			// 鼠标左键射击（朝鼠标方向）
-			if (Input.GetMouseButtonDown(0))
+			if (Input.GetMouseButtonDown(0) && playerBullet != null)
 			{
 				// 获取鼠标在屏幕上的位置
 				Vector3 mouseScreenPos = Input.mousePosition;
@@ -59,7 +59,7 @@ namespace ProjectBlood
 				Vector2 shootDir = (mouseWorldPos - transform.position).normalized;
 				
 				// 生成子弹
-				var bullet = Instantiate(playerBulletPrefab, transform.position, Quaternion.identity);
+				var bullet = Instantiate(playerBullet, transform.position, Quaternion.identity);
 				bullet.direction = shootDir;
 				bullet.gameObject.SetActive(true);
 			}
