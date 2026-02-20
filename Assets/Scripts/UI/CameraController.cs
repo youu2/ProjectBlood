@@ -6,19 +6,17 @@ using UnityEngine;
 public class CameraControler : MonoBehaviour
 {
     // Start is called before the first frame update
-    public Player player;
     void Start()
     {
-        
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(player == null)
+        if(Player.player1 == null)
         {
             return;
         }
-        transform.position = new Vector3(player.transform.position.x, player.transform.position.y + 0.5f, transform.position.z);
+        transform.position = new Vector3(Player.player1.transform.position.x, Player.player1.transform.position.y + 0.5f, transform.position.z);
     }
 }
