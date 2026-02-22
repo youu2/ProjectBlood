@@ -130,7 +130,7 @@ GameObject:
   - component: {fileID: 5424010282455938637}
   - component: {fileID: 4020195134339724675}
   - component: {fileID: 1692975182776860161}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Enemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -282,7 +282,7 @@ GameObject:
   - component: {fileID: 3834297130427543305}
   - component: {fileID: 601041111778738526}
   - component: {fileID: 9108039631810944670}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: HitBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
