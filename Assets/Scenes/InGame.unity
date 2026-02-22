@@ -531,6 +531,7 @@ MonoBehaviour:
   ViewControllerFullTypeName: 
   moveSpeed: 3.5
   playerBullet: {fileID: 1003618893}
+  spriteRenderer: {fileID: 1128872229}
   HitBox: {fileID: 1108075093}
   SelfRigidbody2D: {fileID: 505099875}
 --- !u!114 &505099874
@@ -1711,7 +1712,7 @@ GameObject:
   - component: {fileID: 1128872230}
   - component: {fileID: 1128872231}
   m_Layer: 3
-  m_Name: Square
+  m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

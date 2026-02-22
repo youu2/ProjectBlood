@@ -10,6 +10,7 @@ namespace ProjectBlood
 		public float moveSpeed = 3.5f;
 		public static Player player1;
 		public PlayerBullet playerBullet;
+		public SpriteRenderer spriteRenderer;
 		
 		private void Awake()
 		{
@@ -41,6 +42,11 @@ namespace ProjectBlood
 		{
 			float horizontal = Input.GetAxis("Horizontal"); // A/D
 			float vertical = Input.GetAxis("Vertical");     // W/S
+
+			if (horizontal != 0 || vertical != 0)
+			{
+				spriteRenderer.flipX = horizontal < 0; // 根据输入方向调整角色朝向
+			}
 
 			// 保持任意方向速度一致
 			var direction = new Vector2(horizontal, vertical).normalized;
