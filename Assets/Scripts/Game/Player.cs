@@ -22,9 +22,10 @@ namespace ProjectBlood
 			HitBox.OnTriggerEnter2DEvent((Collider2D col)=>
 			{
 				var hitBox = col.GetComponent<HitBox>();
-				// 如果撞到的东西没有伤害能力，就跳过死亡流程
+				// 如果撞到的东西没有伤害能力，就跳过受伤流程
 				if (hitBox == null) return; 
-				Global.currentHP.Value -= col.GetComponent<HitBox>().owner.GetComponent<Enemy>().Damage;
+				Global.currentHP.Value -= col.GetComponent<HitBox>().owner.GetComponent<IDamageable>().HitDamage;
+				if (Global.currentHP.Value < 0) Global.currentHP.Value = 0; // 避免HP变成负数
 				if (Global.currentHP.Value > 0)
 				{
 					AudioKit.PlaySound("Hurt");

@@ -8,8 +8,8 @@ namespace ProjectBlood
 {
     public class Global : Architecture<Global>
     {
-        public static BindableProperty<float> MAX_HP = new BindableProperty<float>(3);
-        public static BindableProperty<float> currentHP = new BindableProperty<float>(3);
+        public static BindableProperty<float> MAX_HP = new BindableProperty<float>(30.0f);
+        public static BindableProperty<float> currentHP = new BindableProperty<float>(30.0f);
         public static BindableProperty<int> Exp = new BindableProperty<int>(0);
         public static BindableProperty<int> Coin = new BindableProperty<int>(0);
         public static BindableProperty<int> Level = new BindableProperty<int>(1);
@@ -38,7 +38,7 @@ namespace ProjectBlood
             // Load from PlayerPrefs
 			Global.LegacyPoint.Value = PlayerPrefs.GetInt("LegacyPoint", 0);
             Global.CoinDropRate.Value = PlayerPrefs.GetFloat("CoinDropRate", 0.30f);
-            Global.MAX_HP.Value = PlayerPrefs.GetFloat("MAX_HP", 3.0f);
+            //Global.MAX_HP.Value = PlayerPrefs.GetFloat("MAX_HP", 30.0f);
             // Register change callbacks
 			LegacyPoint.Register(legacy =>
 			{

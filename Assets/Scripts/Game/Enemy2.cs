@@ -5,11 +5,13 @@ using ProjectBlood;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
-public class Enemy2 : MonoBehaviour
+public class Enemy2 : MonoBehaviour, IDamageable
 {
     public Player player;
     public EnemyBullet enemyBullet;
-    float speed = 2.0f;
+    public float speed = 2.0f;
+    public float currentHealth = 100.0f;
+    public float Damage = 2.0f;
     public enum State
     {
         Idle,       // 待机(暂未使用)
@@ -252,5 +254,7 @@ public class Enemy2 : MonoBehaviour
         bullet.direction = dirToPlayer;  // 假设EnemyBullet里用这个方向
         bullet.gameObject.SetActive(true);
     }
+
+    public float HitDamage { get => Damage; }
     
 }

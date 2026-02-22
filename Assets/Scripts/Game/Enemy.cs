@@ -4,12 +4,12 @@ using System.Collections;
 
 namespace ProjectBlood
 {
-	public partial class Enemy : ViewController
+	public partial class Enemy : ViewController, IDamageable
 	{
 		private SpriteRenderer spriteRenderer;
 		public float moveSpeed = 2.0f;
 		public float currentHealth = 100.0f;
-		public float Damage = 1.0f;
+		public float Damage = 5.0f;
 		private Color originalColor;  // Restore the original color after flash
 		private bool isDying = false; // Avoid repeating death process.
 		private Collider2D[] allColliders;
@@ -113,5 +113,7 @@ namespace ProjectBlood
 		{
 			return spriteRenderer;
 		}
+
+		public float HitDamage { get => Damage; }
     }
 }

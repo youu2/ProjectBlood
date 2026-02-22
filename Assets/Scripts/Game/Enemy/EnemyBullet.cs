@@ -7,6 +7,7 @@ public class EnemyBullet : MonoBehaviour
     // Start is called before the first frame update
     public Vector2 direction;
     public float speed = 10.0f;
+    public float damage = 1.0f;
     void Start()
     {
         
@@ -17,5 +18,7 @@ public class EnemyBullet : MonoBehaviour
     {
         // 移动
         transform.Translate(direction.normalized * speed * Time.deltaTime, Space.World);
+
+        
     }
 }

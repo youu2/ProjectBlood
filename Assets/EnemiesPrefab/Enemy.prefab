@@ -175,7 +175,7 @@ MonoBehaviour:
   ViewControllerFullTypeName: 
   moveSpeed: 1.5
   currentHealth: 100
-  Damage: 1
+  Damage: 5
   Triangle: {fileID: 550326710537839587}
   SelfRigidbody2D: {fileID: 5424010282455938637}
 --- !u!114 &560438733336014486
@@ -358,4 +358,4 @@ MonoBehaviour:
   PrefabFolder: Assets/Art/Prefab
   ArchitectureFullTypeName: 
   ViewControllerFullTypeName: 
-  owner: {fileID: 0}
+  owner: {fileID: 2522205301686272252}
