@@ -8,7 +8,13 @@ using System.Linq;
 public class MapController : MonoBehaviour
 {
     // Start is called before the first frame update
+    public TileBase wall_0;
+    public TileBase wall_1;
+    public TileBase wall_2;
+    public TileBase wall_3;
     public TileBase groundTile;
+    // 随机选择一个墙壁tile
+    public TileBase randWall => new TileBase[] { wall_0, wall_1, wall_2, wall_3 }[Random.Range(0, 4)];
     public Tilemap groundTilemap;
     public GameObject Enemy;
     public Player player;
@@ -106,7 +112,7 @@ public class MapController : MonoBehaviour
             {
                 if (room[i][j] == '1')
                 {
-                    groundTilemap.SetTile(new Vector3Int(j + startPosX, -i, 0), groundTile);
+                    groundTilemap.SetTile(new Vector3Int(j + startPosX, -i, 0), randWall);
                 }
                 else if (room[i][j] == 'P')
                 {
