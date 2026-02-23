@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 //using System.Numerics;
 using ProjectBlood;
+using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
@@ -12,6 +13,7 @@ public class Enemy2 : MonoBehaviour, IDamageable
     public float speed = 2.0f;
     public float currentHealth = 100.0f;
     public float Damage = 2.0f;
+    public SpriteRenderer spriteRenderer;
     public enum State
     {
         Idle,       // 待机(暂未使用)
@@ -78,13 +80,12 @@ public class Enemy2 : MonoBehaviour, IDamageable
             currentState = State.Idle;
             return;
         }
-
+        m_DirectionToPlayer = (player.transform.position - transform.position).normalized;
         switch (currentState)
         {
             case State.Chase:
-                // Chase状态：每帧更新玩家方向，因为要追
-                m_DirectionToPlayer = (player.transform.position - transform.position).normalized;
 
+                UpdateRotate(m_DirectionToPlayer); // 更新朝向
                 // 朝玩家方向移动
                 transform.position += m_DirectionToPlayer * speed * Time.deltaTime;
 
@@ -248,6 +249,7 @@ public class Enemy2 : MonoBehaviour, IDamageable
 
         // 计算朝玩家的方向
         Vector3 dirToPlayer = (player.transform.position - transform.position).normalized;
+        UpdateRotate(dirToPlayer); // 更新朝向
         
         // 生成子弹
         EnemyBullet bullet = Instantiate(enemyBullet, transform.position, Quaternion.identity);
@@ -256,5 +258,17 @@ public class Enemy2 : MonoBehaviour, IDamageable
     }
 
     public float HitDamage { get => Damage; }
+
+    public void UpdateRotate(Vector3 dirToPlayer)
+    {
+        if(dirToPlayer.x < 0)
+        {
+            spriteRenderer.flipX = true;
+        }
+        else
+        {
+            spriteRenderer.flipX = false;
+        }
+    }
     
 }
