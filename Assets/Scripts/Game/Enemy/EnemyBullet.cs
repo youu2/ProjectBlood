@@ -18,7 +18,14 @@ public class EnemyBullet : MonoBehaviour
     {
         // 移动
         transform.Translate(direction.normalized * speed * Time.deltaTime, Space.World);
-
-        
+    }
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        // 敌人子弹碰撞后消失
+        if (!collision.gameObject.CompareTag("Player"))
+        {
+            // this.gameObject.SetActive(false); // Disable bullet on any collision
+            Destroy(this.gameObject); // Destroy bullet on any collision
+        }
     }
 }

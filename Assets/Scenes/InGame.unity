@@ -304,11 +304,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1594681469728896939, guid: 3ce1e5654bfd5db4bb1c4d370f80586a, type: 3}
   m_PrefabInstance: {fileID: 6797085005307333589}
   m_PrefabAsset: {fileID: 0}
---- !u!212 &261450324 stripped
-SpriteRenderer:
-  m_CorrespondingSourceObject: {fileID: 5176823526529796778, guid: 3ce1e5654bfd5db4bb1c4d370f80586a, type: 3}
-  m_PrefabInstance: {fileID: 6797085005307333589}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &278302360
 GameObject:
   m_ObjectHideFlags: 0
@@ -1321,7 +1316,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   direction: {x: 0, y: 0}
-  speed: 15
+  speed: 20
   damage: 20
 --- !u!58 &1003618895
 CircleCollider2D:
@@ -1447,6 +1442,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1014644424}
   - component: {fileID: 1014644425}
+  - component: {fileID: 1014644427}
   m_Layer: 0
   m_Name: Grid
   m_TagString: Untagged
@@ -1482,6 +1478,58 @@ Grid:
   m_CellGap: {x: 0, y: 0, z: 0}
   m_CellLayout: 0
   m_CellSwizzle: 0
+--- !u!212 &1014644427
+SpriteRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1014644423}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_Sprite: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 1, y: 1}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 0
+  m_MaskInteraction: 0
+  m_SpriteSortPoint: 0
 --- !u!1 &1017877668
 GameObject:
   m_ObjectHideFlags: 0
@@ -1836,9 +1884,9 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.04, y: -0.09}
+  m_Offset: {x: -0.017486036, y: -0.19386932}
   serializedVersion: 2
-  m_Radius: 0.39
+  m_Radius: 0.25180098
 --- !u!1 &1271753032
 GameObject:
   m_ObjectHideFlags: 0
@@ -7427,18 +7475,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy2
       objectReference: {fileID: 0}
-    - target: {fileID: 2579500361224918516, guid: 3ce1e5654bfd5db4bb1c4d370f80586a, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6782310260574307512, guid: 3ce1e5654bfd5db4bb1c4d370f80586a, type: 3}
       propertyPath: player
       value: 
       objectReference: {fileID: 505099873}
-    - target: {fileID: 6782310260574307512, guid: 3ce1e5654bfd5db4bb1c4d370f80586a, type: 3}
-      propertyPath: spriteRenderer
-      value: 
-      objectReference: {fileID: 261450324}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
