@@ -46,6 +46,11 @@ public class PlayerBullet : MonoBehaviour
             // this.gameObject.SetActive(false); // Disable bullet after hitting an enemy
             Destroy(this.gameObject); // Destroy bullet after hitting an enemy
         }
+        else
+        {
+            // this.gameObject.SetActive(false); // Disable bullet on any collision
+            Destroy(this.gameObject); // Destroy bullet on any collision
+        }
         //UIKit.OpenPanel<UIGamePassPanel>();
     }
 }
