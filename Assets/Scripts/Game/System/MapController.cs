@@ -13,8 +13,13 @@ public class MapController : MonoBehaviour
     public TileBase wall_2;
     public TileBase wall_3;
     public TileBase groundTile;
+    public TileBase wallH0;
+    public TileBase wallH1;
+    public TileBase wallH2;
+    public TileBase wallH3;
     // 随机选择一个墙壁tile
     public TileBase randWall => new TileBase[] { wall_0, wall_1, wall_2, wall_3 }[Random.Range(0, 4)];
+    public TileBase randWallH => new TileBase[] { wallH0, wallH1, wallH2, wallH3 }[Random.Range(0, 4)];
     public Tilemap groundTilemap;
     public GameObject Enemy;
     public Player player;
@@ -70,24 +75,24 @@ public class MapController : MonoBehaviour
 
     public List<string> BossRoom{get ; set ;} = new List<string>()
     {
-        "111111111111111111",
-        "1                1",
-        "1                1",
-        "1                1",
-        "1                1",
-        "1       #        1",
-        "1                1",
-        "                 1",
-        "                 1",
-        "                 1",
-        "1                1",
-        "1                1",
-        "1                1",
-        "1                1",
-        "1                1",
-        "1                1",
-        "1                1",
-        "111111111111111111"
+        "211111111111111112",
+        "2                2",
+        "2                2",
+        "2                2",
+        "2                2",
+        "2       #        2",
+        "2                2",
+        "                 2",
+        "                 2",
+        "                 2",
+        "2                2",
+        "2                2",
+        "2                2",
+        "2                2",
+        "2                2",
+        "2                2",
+        "2                2",
+        "211111111111111112"
     };
     void Awake()
     {
@@ -110,9 +115,13 @@ public class MapController : MonoBehaviour
         {
             for (int j = 0; j < room[i].Length; j++)
             {
-                if (room[i][j] == '1')
+                if (room[i][j] == '2')
                 {
                     groundTilemap.SetTile(new Vector3Int(j + startPosX, -i, 0), randWall);
+                }
+                else if (room[i][j] == '1')
+                {
+                    groundTilemap.SetTile(new Vector3Int(j + startPosX, -i, 0), randWallH);
                 }
                 else if (room[i][j] == 'P')
                 {

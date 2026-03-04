@@ -1414,6 +1414,10 @@ MonoBehaviour:
   wall_2: {fileID: 11400000, guid: f19a34bf415ec9d408185057931966bc, type: 2}
   wall_3: {fileID: 11400000, guid: e435c15b341c1a34dad130d849952b8b, type: 2}
   groundTile: {fileID: 11400000, guid: d1f49474f406621458329af485e91007, type: 2}
+  wallH0: {fileID: 11400000, guid: 473924407b58a2e4cbefc06d23e18ef6, type: 2}
+  wallH1: {fileID: 11400000, guid: 20ffe3db859c2764d8cdc196afa88ff4, type: 2}
+  wallH2: {fileID: 11400000, guid: ce8da35cfa581b54ea3e91cf3b584c2d, type: 2}
+  wallH3: {fileID: 11400000, guid: 9dd2c3f0974a3404eb76aebf0e0f9f80, type: 2}
   groundTilemap: {fileID: 2094962730}
   Enemy: {fileID: 2522205301686272252, guid: 166b3e10d277fe64683c28e2a42d860d, type: 3}
   player: {fileID: 505099873}
