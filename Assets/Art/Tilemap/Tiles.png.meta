@@ -97,7 +97,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Tile_0
+      name: Floor_0
       rect:
         serializedVersion: 2
         x: 0
@@ -118,7 +118,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Tile_1
+      name: Floor_1
       rect:
         serializedVersion: 2
         x: 16
@@ -223,7 +223,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Tile_2
+      name: Floor_2
       rect:
         serializedVersion: 2
         x: 0
@@ -244,7 +244,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Tile_3
+      name: Floor_3
       rect:
         serializedVersion: 2
         x: 16
@@ -611,10 +611,10 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Tile_0: 1555673386
-      Tile_1: 166950938
-      Tile_2: -1147181228
-      Tile_3: -1158202128
+      Floor_0: 1555673386
+      Floor_1: 166950938
+      Floor_2: -1147181228
+      Floor_3: -1158202128
       Tiles_14: -891323519
       Tiles_15: 609139229
       Tiles_16: -1674647626

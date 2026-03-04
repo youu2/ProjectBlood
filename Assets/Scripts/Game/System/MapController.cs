@@ -17,10 +17,17 @@ public class MapController : MonoBehaviour
     public TileBase wallH1;
     public TileBase wallH2;
     public TileBase wallH3;
+    // Floor 
+    public TileBase floor_0;
+    public TileBase floor_1;
+    public TileBase floor_2;
+    public TileBase floor_3;
     // 随机选择一个墙壁tile
     public TileBase randWall => new TileBase[] { wall_0, wall_1, wall_2, wall_3 }[Random.Range(0, 4)];
     public TileBase randWallH => new TileBase[] { wallH0, wallH1, wallH2, wallH3 }[Random.Range(0, 4)];
-    public Tilemap groundTilemap;
+    public TileBase randFloor => new TileBase[] { floor_0, floor_1, floor_2, floor_3 }[Random.Range(0, 4)];
+    public Tilemap wallTilemap;
+    public Tilemap floorTilemap;
     public GameObject Enemy;
     public Player player;
     public int currentRoomPosX = 0;
@@ -115,13 +122,14 @@ public class MapController : MonoBehaviour
         {
             for (int j = 0; j < room[i].Length; j++)
             {
+                floorTilemap.SetTile(new Vector3Int(j + startPosX, -i, 0), randFloor); // 每个地方都要铺设地面
                 if (room[i][j] == '2')
                 {
-                    groundTilemap.SetTile(new Vector3Int(j + startPosX, -i, 0), randWall);
+                    wallTilemap.SetTile(new Vector3Int(j + startPosX, -i, 0), randWall);
                 }
                 else if (room[i][j] == '1')
                 {
-                    groundTilemap.SetTile(new Vector3Int(j + startPosX, -i, 0), randWallH);
+                    wallTilemap.SetTile(new Vector3Int(j + startPosX, -i, 0), randWallH);
                 }
                 else if (room[i][j] == 'P')
                 {
