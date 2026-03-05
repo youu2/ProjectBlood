@@ -11,6 +11,7 @@ namespace ProjectBlood
 		public static Player player1;
 		public PlayerBullet playerBullet;
 		public SpriteRenderer spriteRenderer;
+		public Transform weaponTransform;
 		
 		private void Awake()
 		{
@@ -53,18 +54,31 @@ namespace ProjectBlood
 			var direction = new Vector2(horizontal, vertical).normalized;
 			SelfRigidbody2D.velocity = direction * moveSpeed;
 
+			// 获取鼠标在屏幕上的位置
+			Vector3 mouseScreenPos = Input.mousePosition;
+			// 转成世界坐标，Z 要设成 0（2D 游戏）
+			mouseScreenPos.z = 0;
+			Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
+			
+			// 计算从玩家指向鼠标的方向
+			Vector2 shootDir = (mouseWorldPos - transform.position).normalized;
+
+			// 让武器朝向鼠标方向
+			float angle = Mathf.Atan2(shootDir.y, shootDir.x) * Mathf.Rad2Deg;
+        	weaponTransform.eulerAngles = new Vector3(0, 0, angle);
+			// 当瞄准左边时翻转武器（假设武器默认朝右）
+			if(shootDir.x < 0)
+			{
+				weaponTransform.localScale = new Vector3(1, -1, 1);
+			}
+			else
+			{
+				weaponTransform.localScale = new Vector3(1, 1, 1);
+			}
+
 			// 鼠标左键射击（朝鼠标方向）
 			if (Input.GetMouseButtonDown(0) && playerBullet != null)
-			{
-				// 获取鼠标在屏幕上的位置
-				Vector3 mouseScreenPos = Input.mousePosition;
-				// 转成世界坐标，Z 要设成 0（2D 游戏）
-				mouseScreenPos.z = 0;
-				Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
-				
-				// 计算从玩家指向鼠标的方向
-				Vector2 shootDir = (mouseWorldPos - transform.position).normalized;
-				
+			{				
 				// 生成子弹
 				var bullet = Instantiate(playerBullet, transform.position, Quaternion.identity);
 				bullet.direction = shootDir;
