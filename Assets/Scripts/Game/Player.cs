@@ -82,9 +82,14 @@ namespace ProjectBlood
 			}
 
 			// 鼠标左键射击（朝鼠标方向）
-			if (Input.GetMouseButtonDown(0) && playerBullet != null)
-			{				
-				CurrentWeapon.Attack(shootDir);
+			// if (Input.GetMouseButtonDown(0) && playerBullet != null)
+			// {				
+			// 	CurrentWeapon.Attack(shootDir);
+			// }
+			//限制为固定射速
+			if(Input.GetMouseButton(0) && playerBullet != null)
+			{
+				CurrentWeapon.keepAttacking(shootDir);
 			}
 		}
 

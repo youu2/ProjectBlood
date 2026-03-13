@@ -6,5 +6,6 @@ namespace ProjectBlood
     {
         float HitDamage { get; }
         public void Attack(Vector2 shootDir);
+        public void keepAttacking(Vector2 shootDir);
     }
 }
