@@ -12,6 +12,11 @@ namespace ProjectBlood
 		public PlayerBullet playerBullet;
 		public SpriteRenderer spriteRenderer;
 		public Transform weaponTransform;
+		// 实现多武器切换的思路是：在编辑器里把不同武器的 MonoBehaviour（实现了 IWeapon 接口）拖到这个字段里，运行时通过 CurrentWeapon 属性获取当前武器并调用 Attack 方法
+		[SerializeField] private MonoBehaviour weaponMonoBehaviour;
+		private IWeapon CurrentWeapon => weaponMonoBehaviour as IWeapon;
+		
+
 		
 		private void Awake()
 		{
@@ -79,10 +84,7 @@ namespace ProjectBlood
 			// 鼠标左键射击（朝鼠标方向）
 			if (Input.GetMouseButtonDown(0) && playerBullet != null)
 			{				
-				// 生成子弹
-				var bullet = Instantiate(playerBullet, transform.position, Quaternion.identity);
-				bullet.direction = shootDir;
-				bullet.gameObject.SetActive(true);
+				CurrentWeapon.Attack(shootDir);
 			}
 		}
 
