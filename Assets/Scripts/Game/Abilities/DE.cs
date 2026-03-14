@@ -1,5 +1,6 @@
 using UnityEngine;
 using ProjectBlood;
+using System.Collections.Generic;
 
 public class DE : MonoBehaviour, IWeapon
 {
@@ -9,6 +10,9 @@ public class DE : MonoBehaviour, IWeapon
 
     public float attackInterval = 0.5f; // 攻击间隔
     private float lastAttackTime = 0f; // 上次攻击时间
+
+    public List<AudioClip> ShootSounds = new List<AudioClip>();
+    public AudioSource shootAudioSource;
 
     public void Attack(Vector2 shootDir)
     {
@@ -23,6 +27,9 @@ public class DE : MonoBehaviour, IWeapon
         //Attack(shootDir);
         if (Time.time - lastAttackTime >= attackInterval)
         {
+            int randomIndex = Random.Range(0, ShootSounds.Count);
+            shootAudioSource.clip = ShootSounds[randomIndex];
+            shootAudioSource.Play();
             Attack(shootDir);
             lastAttackTime = Time.time;
         }
