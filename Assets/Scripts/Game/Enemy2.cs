@@ -30,7 +30,8 @@ public class Enemy2 : MonoBehaviour, IDamageable
     // 玩家方向（只在需要时更新）
     Vector3 m_DirectionToPlayer;
 
-    
+    public List<AudioClip> EnemyShootSounds = new List<AudioClip>();
+    public AudioSource EnemyShotAudioSource;
 
     // Start is called before the first frame update
     void Start()
@@ -255,6 +256,10 @@ public class Enemy2 : MonoBehaviour, IDamageable
         EnemyBullet bullet = Instantiate(enemyBullet, transform.position, Quaternion.identity);
         bullet.direction = dirToPlayer;  // 假设EnemyBullet里用这个方向
         bullet.gameObject.SetActive(true);
+
+        int randomIndex = Random.Range(0, EnemyShootSounds.Count);
+        EnemyShotAudioSource.clip = EnemyShootSounds[randomIndex];
+        EnemyShotAudioSource.Play();
     }
 
     public float HitDamage { get => Damage; }

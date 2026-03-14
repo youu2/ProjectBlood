@@ -30,6 +30,7 @@ public class DE : MonoBehaviour, IWeapon
             int randomIndex = Random.Range(0, ShootSounds.Count);
             shootAudioSource.clip = ShootSounds[randomIndex];
             shootAudioSource.Play();
+            
             Attack(shootDir);
             lastAttackTime = Time.time;
         }
