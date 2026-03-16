@@ -630,13 +630,14 @@ GameObject:
   - component: {fileID: 219810379}
   - component: {fileID: 219810381}
   - component: {fileID: 219810380}
+  - component: {fileID: 219810382}
   m_Layer: 0
   m_Name: MP5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &219810379
 Transform:
   m_ObjectHideFlags: 0
@@ -646,7 +647,7 @@ Transform:
   m_GameObject: {fileID: 219810378}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.035, y: -0.075, z: 0}
+  m_LocalPosition: {x: 0.009, y: -0.075, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -773,7 +774,23 @@ MonoBehaviour:
   attackInterval: 0.1
   ShootSounds:
   - {fileID: 8300000, guid: 832c987a22cb3d045834907cc03ba008, type: 3}
-  shootAudioSource: {fileID: 219810380}
+  Sprite: {fileID: 452932114}
+  SelfAudioSource: {fileID: 219810380}
+--- !u!114 &219810382
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 219810378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 411e729afed24c62a04e2b99d9122e78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Binds:
+  - MemberName: SelfAudioSource
+    Object: {fileID: 219810380}
 --- !u!1 &230367212
 GameObject:
   m_ObjectHideFlags: 0
@@ -787,6 +804,7 @@ GameObject:
   - component: {fileID: 230367216}
   - component: {fileID: 230367215}
   - component: {fileID: 230367214}
+  - component: {fileID: 230367218}
   m_Layer: 6
   m_Name: DEBullet
   m_TagString: Untagged
@@ -803,7 +821,7 @@ Transform:
   m_GameObject: {fileID: 230367212}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.39, y: 0.17, z: 0}
+  m_LocalPosition: {x: 1.261, y: 0.031, z: 0}
   m_LocalScale: {x: 1.4, y: 1.2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -885,7 +903,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   direction: {x: 0, y: 0}
   speed: 35
-  damage: 50
+  damage: 25
 --- !u!212 &230367217
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -938,6 +956,22 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &230367218
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 230367212}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d51f3a7c41ab0346b49ae50d456bece, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MarkType: 0
+  CustomComponentName: DEBullet
+  CustomComment: 
+  mComponentName: PlayerBullet
 --- !u!4 &261450320 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1594681469728896939, guid: 3ce1e5654bfd5db4bb1c4d370f80586a, type: 3}
@@ -1286,6 +1320,7 @@ GameObject:
   - component: {fileID: 452932112}
   - component: {fileID: 452932114}
   - component: {fileID: 452932113}
+  - component: {fileID: 452932115}
   m_Layer: 0
   m_Name: Sprite
   m_TagString: Untagged
@@ -1374,6 +1409,22 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &452932115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 452932111}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d51f3a7c41ab0346b49ae50d456bece, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MarkType: 0
+  CustomComponentName: Sprite
+  CustomComment: 
+  mComponentName: SpriteRenderer
 --- !u!1 &505099871
 GameObject:
   m_ObjectHideFlags: 0
@@ -1435,8 +1486,8 @@ MonoBehaviour:
   moveSpeed: 3.5
   playerBullet: {fileID: 1003618893}
   spriteRenderer: {fileID: 1128872229}
-  weaponTransform: {fileID: 219810379}
-  currentWeapon: {fileID: 219810381}
+  weaponTransform: {fileID: 1386963011}
+  currentWeapon: {fileID: 1386963013}
   HitBox: {fileID: 1108075093}
   SelfRigidbody2D: {fileID: 505099875}
 --- !u!114 &505099874
@@ -2315,7 +2366,7 @@ Transform:
   m_GameObject: {fileID: 1003618890}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.39, y: 0.17, z: 0}
+  m_LocalPosition: {x: 1.24, y: 0.109, z: 0}
   m_LocalScale: {x: 1.4, y: 1.2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -8001,7 +8052,7 @@ Transform:
   m_GameObject: {fileID: 1296695876}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.249, y: -0.052, z: 0}
+  m_LocalPosition: {x: 0.009, y: -0.075, z: 0}
   m_LocalScale: {x: 1.5, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -8159,7 +8210,7 @@ Transform:
   m_GameObject: {fileID: 1332613233}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.39, y: 0.17, z: 0}
+  m_LocalPosition: {x: 1.39, y: 0.157, z: 0}
   m_LocalScale: {x: 1.4, y: 1.2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -8402,15 +8453,16 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1386963011}
-  - component: {fileID: 1386963013}
   - component: {fileID: 1386963012}
+  - component: {fileID: 1386963013}
+  - component: {fileID: 1386963014}
   m_Layer: 0
   m_Name: ShotGun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1386963011
 Transform:
   m_ObjectHideFlags: 0
@@ -8420,7 +8472,7 @@ Transform:
   m_GameObject: {fileID: 1386963010}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.271, y: -0.075, z: 0}
+  m_LocalPosition: {x: 0.009, y: -0.075, z: 0}
   m_LocalScale: {x: 1, y: 1.2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -8440,7 +8492,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 0.687
+  m_Volume: 0.321
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -8533,22 +8585,38 @@ MonoBehaviour:
   m_GameObject: {fileID: 1386963010}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a5871a972558e184c96ba1433bd7e5c3, type: 3}
+  m_Script: {fileID: 11500000, guid: cca79f1bac8a89d4c9e24f902f95f2c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Namespace: ProjectBlood
   ScriptName: ShotGun
-  ScriptsFolder: Assets\Scripts\Game\Abilities
+  ScriptsFolder: Assets/Scripts/Game/Abilities
   GeneratePrefab: 0
   PrefabFolder: Assets/Art/Prefab
   ArchitectureFullTypeName: 
   ViewControllerFullTypeName: 
   attackInterval: 1
   ShootSounds:
-  - {fileID: 8300000, guid: 53890c44fa5dd37449aa6675b313de5b, type: 3}
-  Sprite: {fileID: 0}
-  DEBullet: {fileID: 0}
-  SelfAudioSource: {fileID: 0}
+  - {fileID: 8300000, guid: 82a0d1fe932105c41a4b5efa37fc87a0, type: 3}
+  spreadAngle: 28
+  bulletCount: 5
+  DEBullet: {fileID: 230367216}
+  SelfAudioSource: {fileID: 1386963012}
+--- !u!114 &1386963014
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1386963010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 411e729afed24c62a04e2b99d9122e78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Binds:
+  - MemberName: SelfAudioSource
+    Object: {fileID: 1386963012}
 --- !u!1 &1447994469
 GameObject:
   m_ObjectHideFlags: 0
@@ -9831,7 +9899,7 @@ Transform:
   m_GameObject: {fileID: 1971081683}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.329, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -9850,7 +9918,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sortingBase: 0
-  offset: -1
+  offset: 15
 --- !u!212 &1971081686
 SpriteRenderer:
   m_ObjectHideFlags: 0

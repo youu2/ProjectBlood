@@ -40,8 +40,7 @@ namespace ProjectBlood
 
         public override void StopAttacking(Vector2 shootDir)
         {
-            // 停止攻击时的一些逻辑，比如停止播放射击声音等
-            SelfAudioSource.Stop();
+            // DE射速较慢，停止攻击时不需要额外逻辑
         }
     }
 }

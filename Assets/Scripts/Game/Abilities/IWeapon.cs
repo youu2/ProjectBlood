@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace ProjectBlood
 {
+    [ ViewControllerChild ]
     public abstract class IWeapon : ViewController
     {
         public abstract float HitDamage { get; }
