@@ -12,9 +12,7 @@ namespace ProjectBlood
 		public PlayerBullet playerBullet;
 		public SpriteRenderer spriteRenderer;
 		public Transform weaponTransform;
-		// 实现多武器切换的思路是：在编辑器里把不同武器的 MonoBehaviour（实现了 IWeapon 接口）拖到这个字段里，运行时通过 CurrentWeapon 属性获取当前武器并调用 Attack 方法
-		[SerializeField] private MonoBehaviour weaponMonoBehaviour;
-		private IWeapon CurrentWeapon => weaponMonoBehaviour as IWeapon;
+		public IWeapon currentWeapon;
 		
 
 		
@@ -81,15 +79,19 @@ namespace ProjectBlood
 				weaponTransform.localScale = new Vector3(1, 1, 1);
 			}
 
-			// 鼠标左键射击（朝鼠标方向）
-			// if (Input.GetMouseButtonDown(0) && playerBullet != null)
-			// {				
-			// 	CurrentWeapon.Attack(shootDir);
-			// }
+			//鼠标左键射击（朝鼠标方向）
+			if (Input.GetMouseButtonDown(0) && playerBullet != null)
+			{				
+				currentWeapon.StartAttacking(shootDir);
+			}
 			//限制为固定射速
 			if(Input.GetMouseButton(0) && playerBullet != null)
 			{
-				CurrentWeapon.keepAttacking(shootDir);
+				currentWeapon.keepAttacking(shootDir);
+			}
+			if(Input.GetMouseButtonUp(0) && playerBullet != null)
+			{
+				currentWeapon.StopAttacking(shootDir);
 			}
 		}
 
