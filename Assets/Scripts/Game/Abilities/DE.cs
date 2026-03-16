@@ -14,7 +14,7 @@ namespace ProjectBlood
         private float lastAttackTime = 0f; // 上次攻击时间
 
         public List<AudioClip> ShootSounds = new List<AudioClip>();
-        public AudioSource shootAudioSource;
+        // public AudioSource shootAudioSource; 被QF架构other bind功能生成的SelfAudioSource替代，可在designer中直接绑定
 
         public void Attack(Vector2 shootDir)
         {
@@ -30,8 +30,8 @@ namespace ProjectBlood
             if (Time.time - lastAttackTime >= attackInterval)
             {
                 int randomIndex = Random.Range(0, ShootSounds.Count);
-                shootAudioSource.clip = ShootSounds[randomIndex];
-                shootAudioSource.Play();
+                SelfAudioSource.clip = ShootSounds[randomIndex];
+                SelfAudioSource.Play();
                 
                 Attack(shootDir);
                 lastAttackTime = Time.time;

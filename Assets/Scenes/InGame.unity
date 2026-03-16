@@ -265,11 +265,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5871a972558e184c96ba1433bd7e5c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Bullet: {fileID: 90749825}
+  Namespace: 
+  ScriptName: 
+  ScriptsFolder: 
+  GeneratePrefab: 0
+  PrefabFolder: 
+  ArchitectureFullTypeName: 
+  ViewControllerFullTypeName: 
   attackInterval: 1
   ShootSounds:
   - {fileID: 8300000, guid: 53890c44fa5dd37449aa6675b313de5b, type: 3}
   shootAudioSource: {fileID: 77108534}
+  DEBullet: {fileID: 0}
 --- !u!1 &90749821
 GameObject:
   m_ObjectHideFlags: 0
@@ -620,6 +627,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 219810379}
+  - component: {fileID: 219810381}
   - component: {fileID: 219810380}
   m_Layer: 0
   m_Name: MP5
@@ -645,7 +653,103 @@ Transform:
   - {fileID: 1332613234}
   m_Father: {fileID: 1511504801}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &219810380
+--- !u!82 &219810380
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 219810378}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 0.687
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &219810381
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -654,16 +758,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 219810378}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 81936539ae2d84665a86a2b3f531955f, type: 3}
+  m_Script: {fileID: 11500000, guid: 3bb5bb51acdae794296afe443b119ffc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Namespace: ProjectBlood
   ScriptName: MP5
-  ScriptsFolder: 
+  ScriptsFolder: Assets/Scripts/Game/Abilities
   GeneratePrefab: 0
   PrefabFolder: Assets/Art/Prefab
   ArchitectureFullTypeName: 
   ViewControllerFullTypeName: 
+  Bullet: {fileID: 0}
+  attackInterval: 0.5
+  ShootSounds:
+  - {fileID: 8300000, guid: 832c987a22cb3d045834907cc03ba008, type: 3}
+  shootAudioSource: {fileID: 219810380}
 --- !u!1 &230367212
 GameObject:
   m_ObjectHideFlags: 0
@@ -2188,6 +2297,7 @@ GameObject:
   - component: {fileID: 1003618893}
   - component: {fileID: 1003618896}
   - component: {fileID: 1003618897}
+  - component: {fileID: 1003618898}
   m_Layer: 6
   m_Name: DEBullet
   m_TagString: Untagged
@@ -2339,6 +2449,22 @@ CapsuleCollider2D:
   m_Offset: {x: -0.0046564746, y: -0.0000017449701}
   m_Size: {x: 0.93481916, y: 0.4927628}
   m_Direction: 1
+--- !u!114 &1003618898
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1003618890}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d51f3a7c41ab0346b49ae50d456bece, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MarkType: 0
+  CustomComponentName: DEBullet
+  CustomComment: 
+  mComponentName: PlayerBullet
 --- !u!1 &1010387089
 GameObject:
   m_ObjectHideFlags: 0
@@ -7990,11 +8116,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5871a972558e184c96ba1433bd7e5c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Bullet: {fileID: 1035514108}
+  Namespace: 
+  ScriptName: 
+  ScriptsFolder: 
+  GeneratePrefab: 0
+  PrefabFolder: 
+  ArchitectureFullTypeName: 
+  ViewControllerFullTypeName: 
   attackInterval: 1
   ShootSounds:
   - {fileID: 8300000, guid: 53890c44fa5dd37449aa6675b313de5b, type: 3}
   shootAudioSource: {fileID: 1296695878}
+  DEBullet: {fileID: 0}
 --- !u!1 &1332613233
 GameObject:
   m_ObjectHideFlags: 0
@@ -8401,11 +8534,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5871a972558e184c96ba1433bd7e5c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Bullet: {fileID: 230367216}
+  Namespace: 
+  ScriptName: 
+  ScriptsFolder: 
+  GeneratePrefab: 0
+  PrefabFolder: 
+  ArchitectureFullTypeName: 
+  ViewControllerFullTypeName: 
   attackInterval: 1
   ShootSounds:
   - {fileID: 8300000, guid: 53890c44fa5dd37449aa6675b313de5b, type: 3}
   shootAudioSource: {fileID: 1386963012}
+  DEBullet: {fileID: 0}
 --- !u!1 &1447994469
 GameObject:
   m_ObjectHideFlags: 0
@@ -9137,11 +9277,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5871a972558e184c96ba1433bd7e5c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Bullet: {fileID: 384743938}
+  Namespace: 
+  ScriptName: 
+  ScriptsFolder: 
+  GeneratePrefab: 0
+  PrefabFolder: 
+  ArchitectureFullTypeName: 
+  ViewControllerFullTypeName: 
   attackInterval: 1
   ShootSounds:
   - {fileID: 8300000, guid: 53890c44fa5dd37449aa6675b313de5b, type: 3}
   shootAudioSource: {fileID: 1748640869}
+  DEBullet: {fileID: 0}
 --- !u!1 &1791874271
 GameObject:
   m_ObjectHideFlags: 0
@@ -9189,11 +9336,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5871a972558e184c96ba1433bd7e5c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Bullet: {fileID: 1003618893}
+  Namespace: ProjectBlood
+  ScriptName: DE
+  ScriptsFolder: Assets\Scripts\Game\Abilities
+  GeneratePrefab: 0
+  PrefabFolder: Assets/Art/Prefab
+  ArchitectureFullTypeName: 
+  ViewControllerFullTypeName: 
   attackInterval: 1
   ShootSounds:
   - {fileID: 8300000, guid: 53890c44fa5dd37449aa6675b313de5b, type: 3}
   shootAudioSource: {fileID: 1791874276}
+  DEBullet: {fileID: 1003618893}
 --- !u!82 &1791874276
 AudioSource:
   m_ObjectHideFlags: 0
@@ -9854,11 +10008,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5871a972558e184c96ba1433bd7e5c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Bullet: {fileID: 740254807}
+  Namespace: 
+  ScriptName: 
+  ScriptsFolder: 
+  GeneratePrefab: 0
+  PrefabFolder: 
+  ArchitectureFullTypeName: 
+  ViewControllerFullTypeName: 
   attackInterval: 1
   ShootSounds:
   - {fileID: 8300000, guid: 53890c44fa5dd37449aa6675b313de5b, type: 3}
   shootAudioSource: {fileID: 2043846054}
+  DEBullet: {fileID: 0}
 --- !u!1 &2094962727
 GameObject:
   m_ObjectHideFlags: 0

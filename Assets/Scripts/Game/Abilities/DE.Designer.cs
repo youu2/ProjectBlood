@@ -1,11 +1,15 @@
-// Generate Id:e09f5d2b-66a2-49e3-874a-af7fe376f9a1
+// Generate Id:77028f63-cad0-471d-bd16-4914902e14c4
 using UnityEngine;
 
 namespace ProjectBlood
 {
 	public partial class DE
 	{
+		public SpriteRenderer Sprite;
+		
 		public PlayerBullet DEBullet;
+		
+		public UnityEngine.AudioSource SelfAudioSource;
 		
 	}
 }
