@@ -22,11 +22,8 @@ MonoBehaviour:
     - TypeName: SpriteRenderer
       PathToRoot: Sprite
       MemberName: Sprite
-    - TypeName: PlayerBullet
-      PathToRoot: DEBullet
-      MemberName: DEBullet
-    ScriptsFolder: Assets\Scripts\Game\Abilities
-    ClassName: DE
+    ScriptsFolder: Assets/Scripts/Game/Abilities
+    ClassName: MP5
     Namespace: ProjectBlood
     MainCode: 
     DesignerCode: 

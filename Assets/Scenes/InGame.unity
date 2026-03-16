@@ -770,7 +770,7 @@ MonoBehaviour:
   ArchitectureFullTypeName: 
   ViewControllerFullTypeName: 
   Bullet: {fileID: 1332613237}
-  attackInterval: 0.5
+  attackInterval: 0.1
   ShootSounds:
   - {fileID: 8300000, guid: 832c987a22cb3d045834907cc03ba008, type: 3}
   shootAudioSource: {fileID: 219810380}

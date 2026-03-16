@@ -12,7 +12,7 @@ namespace ProjectBlood
 		private float lastAttackTime = 0f; // 上次攻击时间
 
 		public List<AudioClip> ShootSounds = new List<AudioClip>();
-		public AudioSource shootAudioSource;
+		// public AudioSource shootAudioSource;
 
 		public override void Attack(Vector2 shootDir)
 		{
@@ -25,9 +25,9 @@ namespace ProjectBlood
 		public override void StartAttacking(Vector2 shootDir)
 		{
 			Attack(shootDir);
-			shootAudioSource.clip = ShootSounds[0];
-			shootAudioSource.loop = true;
-			shootAudioSource.Play();
+			SelfAudioSource .clip = ShootSounds[0];
+			SelfAudioSource.loop = true;
+			SelfAudioSource.Play();
 		}
 		public override void keepAttacking(Vector2 shootDir)
 		{
@@ -44,7 +44,7 @@ namespace ProjectBlood
 		public override void StopAttacking(Vector2 shootDir)
 		{
 			// 停止攻击时的一些逻辑，比如停止播放射击声音等
-			shootAudioSource.Stop();
+			SelfAudioSource .Stop();
 		}
 	}
 }
