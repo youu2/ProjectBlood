@@ -23,7 +23,7 @@ public class CameraControler : MonoBehaviour
         Vector3 currentCameraPosition = transform.position;
 
         // 摄像机缓动目标位置(调整e的系数越大越慢跟随)
-        Vector3 targetPosition = Vector3.Lerp(currentCameraPosition, new Vector3(moveDirection.x, moveDirection.y, -10), 1.0f - Mathf.Exp(-4.0f * Time.deltaTime));
+        Vector3 targetPosition = Vector3.Lerp(currentCameraPosition, new Vector3(moveDirection.x, moveDirection.y, -10), 1.0f - Mathf.Exp(-3.0f * Time.deltaTime));
         targetPosition.z = -10; // 保持摄像机在正确的深度位置
         // 摄像机跟随玩家移动
         transform.position = targetPosition;

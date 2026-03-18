@@ -20,10 +20,10 @@ MonoBehaviour:
     NameToFullName: []
     BindInfos:
     - TypeName: PlayerBullet
-      PathToRoot: DEBullet
-      MemberName: DEBullet
+      PathToRoot: AKBullet
+      MemberName: AKBullet
     ScriptsFolder: Assets/Scripts/Game/Abilities
-    ClassName: ShotGun
+    ClassName: AK
     Namespace: ProjectBlood
     MainCode: 
     DesignerCode: 
