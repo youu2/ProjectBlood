@@ -46,6 +46,7 @@ namespace ProjectBlood
 		{
 			// 停止攻击时的一些逻辑
 			SelfAudioSource .Stop();
+			SelfShortAudioSource.PlayOneShot(AKShootEnd);
 		}
 	}
 }
