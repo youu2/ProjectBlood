@@ -19,11 +19,11 @@ MonoBehaviour:
     From: 0
     NameToFullName: []
     BindInfos:
-    - TypeName: PlayerBullet
-      PathToRoot: AKBullet
-      MemberName: AKBullet
-    ScriptsFolder: Assets/Scripts/Game/Abilities
-    ClassName: AK
+    - TypeName: SpriteRenderer
+      PathToRoot: Sprite
+      MemberName: Sprite
+    ScriptsFolder: Assets\Scripts\Game\Abilities
+    ClassName: MP5
     Namespace: ProjectBlood
     MainCode: 
     DesignerCode: 

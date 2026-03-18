@@ -12,6 +12,7 @@ namespace ProjectBlood
 		private float lastAttackTime = 0f; // 上次攻击时间
 
 		public List<AudioClip> ShootSounds = new List<AudioClip>();
+		public AudioClip MP5OneShotSound;
 		// public AudioSource shootAudioSource;
 
 		public override void Attack(Vector2 shootDir)
@@ -25,6 +26,7 @@ namespace ProjectBlood
 		public override void StartAttacking(Vector2 shootDir)
 		{
 			Attack(shootDir);
+			SelfShortAudioSource.PlayOneShot(MP5OneShotSound);
 			SelfAudioSource .clip = ShootSounds[0];
 			SelfAudioSource.loop = true;
 			SelfAudioSource.Play();
