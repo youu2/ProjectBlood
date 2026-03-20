@@ -1,12 +1,11 @@
 using UnityEngine;
-using ProjectBlood;
-using System.Collections.Generic;
 using QFramework;
+using System.Collections.Generic;
 
 namespace ProjectBlood
 {
-    public partial class DE : IWeapon
-    {
+	public partial class AWP : ProjectBlood.IWeapon
+	{
         // public PlayerBullet Bullet; QF架构bind功能生成的DEBullet替代，可在designer中直接绑定
         // public override float HitDamage => 0.5f;
 
@@ -30,8 +29,8 @@ namespace ProjectBlood
             if (Time.time - lastAttackTime >= attackInterval)
             {
                 int randomIndex = Random.Range(0, ShootSounds.Count);
-                SelfAudioSource.clip = ShootSounds[randomIndex];
-                SelfAudioSource.Play();
+                SelfShortAudioSource.clip = ShootSounds[randomIndex];
+                SelfShortAudioSource.Play();
                 
                 Attack(shootDir);
                 lastAttackTime = Time.time;
@@ -42,5 +41,5 @@ namespace ProjectBlood
         {
             // DE射速较慢，停止攻击时不需要额外逻辑
         }
-    }
+	}
 }

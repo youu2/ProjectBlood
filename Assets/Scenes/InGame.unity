@@ -141,7 +141,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &77108533
 Transform:
   m_ObjectHideFlags: 0
@@ -1728,8 +1728,8 @@ MonoBehaviour:
   moveSpeed: 3.5
   playerBullet: {fileID: 1003618893}
   spriteRenderer: {fileID: 1128872229}
-  weaponTransform: {fileID: 77108533}
-  currentWeapon: {fileID: 77108536}
+  weaponTransform: {fileID: 1296695877}
+  currentWeapon: {fileID: 1296695878}
   HitBox: {fileID: 1108075093}
   SelfRigidbody2D: {fileID: 505099875}
 --- !u!114 &505099874
@@ -3010,9 +3010,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1035514105}
   - component: {fileID: 1035514109}
-  - component: {fileID: 1035514108}
   - component: {fileID: 1035514107}
   - component: {fileID: 1035514106}
+  - component: {fileID: 1035514110}
+  - component: {fileID: 1035514111}
   m_Layer: 6
   m_Name: DEBullet
   m_TagString: Untagged
@@ -3097,21 +3098,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &1035514108
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1035514104}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0c5e70e53d914234e91c4dde0dcc89e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  direction: {x: 0, y: 0}
-  speed: 35
-  damage: 50
 --- !u!212 &1035514109
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3164,6 +3150,38 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1035514110
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1035514104}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d51f3a7c41ab0346b49ae50d456bece, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MarkType: 0
+  CustomComponentName: DEBullet
+  CustomComment: 
+  mComponentName: PenetratingBullet
+--- !u!114 &1035514111
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1035514104}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9230b5945542ee4f844448ca1cff4fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  direction: {x: 0, y: 0}
+  speed: 30
+  damage: 120
+  maxPenetrationCount: 3
 --- !u!1 &1090808460
 GameObject:
   m_ObjectHideFlags: 0
@@ -8276,15 +8294,16 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1296695877}
-  - component: {fileID: 1296695879}
   - component: {fileID: 1296695878}
+  - component: {fileID: 1296695879}
+  - component: {fileID: 1296695880}
   m_Layer: 0
   m_Name: AWP
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1296695877
 Transform:
   m_ObjectHideFlags: 0
@@ -8302,7 +8321,31 @@ Transform:
   - {fileID: 1035514105}
   m_Father: {fileID: 1511504801}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!82 &1296695878
+--- !u!114 &1296695878
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1296695876}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00799fbc2b6e1a54a90d19b83065e000, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Namespace: ProjectBlood
+  ScriptName: AWP
+  ScriptsFolder: Assets/Scripts/Game
+  GeneratePrefab: 0
+  PrefabFolder: Assets/Art/Prefab
+  ArchitectureFullTypeName: 
+  ViewControllerFullTypeName: 
+  attackInterval: 1.6
+  ShootSounds:
+  - {fileID: 8300000, guid: 94559e385bf7f3d4fbe119a9dfe3cf53, type: 3}
+  DEBullet: {fileID: 1035514111}
+  SelfShortAudioSource: {fileID: 1296695879}
+--- !u!82 &1296695879
 AudioSource:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8313,8 +8356,8 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 0
-  m_Volume: 0.687
+  m_PlayOnAwake: 1
+  m_Volume: 0.613
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -8398,7 +8441,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &1296695879
+--- !u!114 &1296695880
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8407,22 +8450,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1296695876}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a5871a972558e184c96ba1433bd7e5c3, type: 3}
+  m_Script: {fileID: 11500000, guid: 411e729afed24c62a04e2b99d9122e78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Namespace: ProjectBlood
-  ScriptName: AWP
-  ScriptsFolder: Assets\Scripts\Game\Abilities
-  GeneratePrefab: 0
-  PrefabFolder: Assets/Art/Prefab
-  ArchitectureFullTypeName: 
-  ViewControllerFullTypeName: 
-  attackInterval: 1
-  ShootSounds:
-  - {fileID: 8300000, guid: 53890c44fa5dd37449aa6675b313de5b, type: 3}
-  Sprite: {fileID: 0}
-  DEBullet: {fileID: 0}
-  SelfAudioSource: {fileID: 0}
+  Binds:
+  - MemberName: SelfShortAudioSource
+    Object: {fileID: 1296695879}
 --- !u!1 &1332613233
 GameObject:
   m_ObjectHideFlags: 0

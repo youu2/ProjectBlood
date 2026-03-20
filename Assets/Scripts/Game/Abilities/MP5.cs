@@ -6,7 +6,7 @@ namespace ProjectBlood
 	public partial class MP5 : IWeapon
 	{
 		public PlayerBullet Bullet;
-		public override float HitDamage => 0.5f;
+		// public override float HitDamage => 0.5f;
 
 		public float attackInterval = 0.2f; // 攻击间隔
 		private float lastAttackTime = 0f; // 上次攻击时间

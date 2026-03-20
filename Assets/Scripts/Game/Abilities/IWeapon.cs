@@ -6,7 +6,7 @@ namespace ProjectBlood
     [ ViewControllerChild ]
     public abstract class IWeapon : ViewController
     {
-        public abstract float HitDamage { get; }
+        // public abstract float HitDamage { get; }
         public abstract void Attack(Vector2 shootDir);
         public virtual  void StartAttacking(Vector2 shootDir)
         {

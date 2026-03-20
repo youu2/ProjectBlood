@@ -6,7 +6,7 @@ namespace ProjectBlood
 {
 	public partial class ShotGun : IWeapon
 	{
-		public override float HitDamage => 0.5f;
+		// public override float HitDamage => 0.5f;
 
         public float attackInterval = 0.5f; // 攻击间隔
         private float lastAttackTime = 0f; // 上次攻击时间

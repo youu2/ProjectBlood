@@ -19,11 +19,11 @@ MonoBehaviour:
     From: 0
     NameToFullName: []
     BindInfos:
-    - TypeName: PlayerBullet
-      PathToRoot: AKBullet
-      MemberName: AKBullet
-    ScriptsFolder: Assets/Scripts/Game/Abilities
-    ClassName: AK
+    - TypeName: PenetratingBullet
+      PathToRoot: DEBullet
+      MemberName: DEBullet
+    ScriptsFolder: Assets/Scripts/Game
+    ClassName: AWP
     Namespace: ProjectBlood
     MainCode: 
     DesignerCode: 

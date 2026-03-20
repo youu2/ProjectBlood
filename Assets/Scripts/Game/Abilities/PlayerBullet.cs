@@ -37,7 +37,7 @@ public class PlayerBullet : MonoBehaviour
     //     //UIKit.OpenPanel<UIGamePassPanel>();
     // }
 
-    void OnTriggerEnter2D(Collider2D collision)
+    public virtual void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Enemy"))
         {
