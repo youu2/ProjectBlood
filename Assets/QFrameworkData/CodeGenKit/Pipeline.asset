@@ -19,11 +19,11 @@ MonoBehaviour:
     From: 0
     NameToFullName: []
     BindInfos:
-    - TypeName: PenetratingBullet
-      PathToRoot: DEBullet
-      MemberName: DEBullet
-    ScriptsFolder: Assets/Scripts/Game
-    ClassName: AWP
+    - TypeName: PlayerBullet
+      PathToRoot: Bullet
+      MemberName: Bullet
+    ScriptsFolder: Assets/Scripts/Game/Abilities
+    ClassName: Laser
     Namespace: ProjectBlood
     MainCode: 
     DesignerCode: 
