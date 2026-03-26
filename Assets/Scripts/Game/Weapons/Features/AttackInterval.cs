@@ -1,0 +1,26 @@
+using UnityEngine;
+
+namespace ProjectBlood
+{
+    public class AttackInterval
+    {
+        private float attackInterval;
+
+        public float lastAttackTime = 0f;
+
+        public AttackInterval(float attackInterval = 0.5f)
+        {
+            this.attackInterval = attackInterval;
+        }
+
+        public bool CanAttack()
+        {
+            return Time.time - lastAttackTime >= attackInterval;
+        }
+
+        public void RecordAttackTime()
+        {
+            lastAttackTime = Time.time;
+        }
+    }
+}

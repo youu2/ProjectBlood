@@ -9,9 +9,11 @@ namespace ProjectBlood
     {
         // public PlayerBullet Bullet; QF架构bind功能生成的DEBullet替代，可在designer中直接绑定
         // public override float HitDamage => 0.5f;
+        public AttackInterval AttackInterval = new AttackInterval(0.5f); // 攻击间隔，使用AttackInterval类来管理攻击间隔逻辑
 
-        public float attackInterval = 0.5f; // 攻击间隔
-        private float lastAttackTime = 0f; // 上次攻击时间
+        // 重构了攻击间隔功能，使用AttackInterval类来管理攻击间隔逻辑，避免在DE类中直接处理时间相关的逻辑，使代码更清晰和可维护
+        // public float attackInterval = 0.5f; // 攻击间隔
+        // private float lastAttackTime = 0f; // 上次攻击时间
 
         public List<AudioClip> ShootSounds = new List<AudioClip>();
         // public AudioSource shootAudioSource; 
@@ -31,10 +33,10 @@ namespace ProjectBlood
         }
         public override void keepAttacking(Vector2 shootDir)
         {
-            if (Time.time - lastAttackTime >= attackInterval)
+            if (AttackInterval.CanAttack())
             {        
                 Attack(shootDir);
-                lastAttackTime = Time.time;
+                AttackInterval.RecordAttackTime();
             }
         }
 
