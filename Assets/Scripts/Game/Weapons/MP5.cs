@@ -38,9 +38,7 @@ namespace ProjectBlood
 			{
 				Attack(shootDir);
 				lastAttackTime = Time.time;
-			}
-
-			
+			}			
 		}
 
 		public override void StopAttacking(Vector2 shootDir)

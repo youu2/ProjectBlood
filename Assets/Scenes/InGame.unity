@@ -1372,7 +1372,7 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: -0.0046564746, y: -0.0000017449701}
-  m_Size: {x: 0.93481916, y: 0.4927628}
+  m_Size: {x: 1.23, y: 1}
   m_Direction: 1
 --- !u!50 &384743937
 Rigidbody2D:
@@ -1414,8 +1414,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   direction: {x: 0, y: 0}
-  speed: 35
-  damage: 50
+  speed: 300
+  damage: 1
 --- !u!212 &384743939
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -9650,7 +9650,7 @@ MonoBehaviour:
   PrefabFolder: Assets/Art/Prefab
   ArchitectureFullTypeName: 
   ViewControllerFullTypeName: 
-  attackInterval: 0.2
+  attackInterval: 0.02
   ShootSounds:
   - {fileID: 8300000, guid: 6e15092122a81c845bd2a5f5f8d5027c, type: 3}
   Bullet: {fileID: 384743938}

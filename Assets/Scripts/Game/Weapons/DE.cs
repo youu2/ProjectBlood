@@ -24,15 +24,15 @@ namespace ProjectBlood
             var bullet = Instantiate(DEBullet, DEBullet.transform.position, bulletRotation);
             bullet.direction = shootDir;
             bullet.gameObject.SetActive(true);
+
+            int randomIndex = Random.Range(0, ShootSounds.Count);
+            SelfAudioSource.clip = ShootSounds[randomIndex];
+            SelfAudioSource.Play();
         }
         public override void keepAttacking(Vector2 shootDir)
         {
             if (Time.time - lastAttackTime >= attackInterval)
-            {
-                int randomIndex = Random.Range(0, ShootSounds.Count);
-                SelfAudioSource.clip = ShootSounds[randomIndex];
-                SelfAudioSource.Play();
-                
+            {        
                 Attack(shootDir);
                 lastAttackTime = Time.time;
             }
