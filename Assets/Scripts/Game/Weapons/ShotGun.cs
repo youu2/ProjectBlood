@@ -11,6 +11,8 @@ namespace ProjectBlood
         public float attackInterval = 0.5f; // 攻击间隔
         private float lastAttackTime = 0f; // 上次攻击时间
 
+		public AttackInterval AttackInterval = new AttackInterval(1.0f);
+
         public List<AudioClip> ShootSounds = new List<AudioClip>();
         // public AudioSource shootAudioSource; 
         // 被QF架构other bind功能生成的SelfAudioSource替代，可在designer中直接绑定
@@ -43,18 +45,19 @@ namespace ProjectBlood
 				var bullet = Instantiate(DEBullet, DEBullet.transform.position, bulletRotation);
 				bullet.direction = finalDirection;
 				bullet.gameObject.SetActive(true);
+
+				// 播放射击声音，随机选择一个音效
+				int randomIndex = Random.Range(0, ShootSounds.Count);
+                SelfAudioSource.clip = ShootSounds[randomIndex];
+                SelfAudioSource.Play();
 			}
 		}
         public override void keepAttacking(Vector2 shootDir)
         {
-            if (Time.time - lastAttackTime >= attackInterval)
-            {
-                int randomIndex = Random.Range(0, ShootSounds.Count);
-                SelfAudioSource.clip = ShootSounds[randomIndex];
-                SelfAudioSource.Play();
-                
+            if (AttackInterval.CanAttack())
+            {   
                 Attack(shootDir);
-                lastAttackTime = Time.time;
+                AttackInterval.RecordAttackTime();
             }
         }
 

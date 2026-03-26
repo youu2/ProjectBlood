@@ -8,8 +8,10 @@ namespace ProjectBlood
 		public PlayerBullet Bullet;
 		// public override float HitDamage => 0.5f;
 
-		public float attackInterval = 0.2f; // 攻击间隔
-		private float lastAttackTime = 0f; // 上次攻击时间
+		public AttackInterval AttackInterval = new AttackInterval(0.08f);
+
+		// public float attackInterval = 0.2f; // 攻击间隔
+		// private float lastAttackTime = 0f; // 上次攻击时间
 
 		public List<AudioClip> ShootSounds = new List<AudioClip>();
 		// public AudioClip MP5OneShotSound; other bind取代
@@ -34,10 +36,10 @@ namespace ProjectBlood
 		public override void keepAttacking(Vector2 shootDir)
 		{
 			//Attack(shootDir);
-			if (Time.time - lastAttackTime >= attackInterval)
+			if (AttackInterval.CanAttack())
 			{
 				Attack(shootDir);
-				lastAttackTime = Time.time;
+				AttackInterval.RecordAttackTime();
 			}			
 		}
 
