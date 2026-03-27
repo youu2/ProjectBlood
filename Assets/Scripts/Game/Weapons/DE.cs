@@ -19,6 +19,20 @@ namespace ProjectBlood
         // public AudioSource shootAudioSource; 
         // 被QF架构other bind功能生成的SelfAudioSource替代，可在designer中直接绑定
 
+        public GunClip gunClip = new GunClip(8); // DE的弹夹，最大弹药量为8
+
+        //换弹功能：
+        // public int MaxAmmo = 8; // DE的最大弹药量
+        // private int currentAmmo; // 当前弹药量
+
+        private void OnGUI()
+        {
+            // 在屏幕上显示当前弹药量
+            //IMGUIHelper.SetDesignResolution(640,320); // 设置IMGUI的设计分辨率，确保在不同分辨率下UI元素位置和大小的一致性
+            GUI.skin.label.fontSize = 40; // 设置字体大小
+            GUI.Label(new Rect(1650, 900, 400, 100), $"Ammo: {gunClip.currentAmmo}/{gunClip.maxAmmo}");
+        }
+
         public override void Attack(Vector2 shootDir)
         {
             // 计算旋转：根据 shootDir 向量创建对应的 Quaternion 朝向
@@ -33,7 +47,7 @@ namespace ProjectBlood
         }
         public override void keepAttacking(Vector2 shootDir)
         {
-            if (AttackInterval.CanAttack())
+            if (AttackInterval.CanAttack() && gunClip.CanShoot()) // 只有在满足攻击间隔且有弹药时才允许攻击
             {        
                 Attack(shootDir);
                 AttackInterval.RecordAttackTime();

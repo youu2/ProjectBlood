@@ -8,9 +8,9 @@ namespace ProjectBlood
 	{
         // public PlayerBullet Bullet; QF架构bind功能生成的DEBullet替代，可在designer中直接绑定
         // public override float HitDamage => 0.5f;
-
-        public float attackInterval = 0.5f; // 攻击间隔
-        private float lastAttackTime = 0f; // 上次攻击时间
+        public AttackInterval AttackInterval = new AttackInterval(1.6f);
+        // public float attackInterval = 0.5f; // 攻击间隔
+        // private float lastAttackTime = 0f; // 上次攻击时间
 
         public List<AudioClip> ShootSounds = new List<AudioClip>();
         // public AudioSource shootAudioSource; 
@@ -23,17 +23,17 @@ namespace ProjectBlood
             var bullet = Instantiate(DEBullet, DEBullet.transform.position, bulletRotation);
             bullet.direction = shootDir;
             bullet.gameObject.SetActive(true);
+
+            int randomIndex = Random.Range(0, ShootSounds.Count);
+            SelfShortAudioSource.clip = ShootSounds[randomIndex];
+            SelfShortAudioSource.Play();
         }
         public override void keepAttacking(Vector2 shootDir)
         {
-            if (Time.time - lastAttackTime >= attackInterval)
+            if (AttackInterval.CanAttack())
             {
-                int randomIndex = Random.Range(0, ShootSounds.Count);
-                SelfShortAudioSource.clip = ShootSounds[randomIndex];
-                SelfShortAudioSource.Play();
-                
                 Attack(shootDir);
-                lastAttackTime = Time.time;
+                AttackInterval.RecordAttackTime();
             }
         }
 
