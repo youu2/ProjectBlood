@@ -18,7 +18,7 @@ namespace ProjectBlood
             if (CanShoot())
             {
                 currentAmmo--; // 射击时减少弹药量
-                GameUI.UpdateClipText(this); // 射击后更新UI显示的弹药信息
+                updateClipUI(); // 射击后更新UI显示的弹药信息
             }
         }
         public void reload()
@@ -30,12 +30,16 @@ namespace ProjectBlood
                 // 换弹完成后重置弹药量
                 currentAmmo = maxAmmo;
                 isReloading = false;
-                GameUI.UpdateClipText(this); // 换弹完成后更新UI显示的弹药信息
+                updateClipUI(); // 换弹完成后更新UI显示的弹药信息
             }
         }
         public bool CanShoot()
         {
             return !isReloading && currentAmmo > 0; // 只有在不换弹且有弹药时才允许射击
+        }
+        public void updateClipUI()
+        {
+            GameUI.UpdateClipText(this); // 更新UI显示的弹药信息
         }
     }
 }

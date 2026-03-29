@@ -2,6 +2,7 @@ using UnityEngine;
 using QFramework;
 using UnityEditor.Rendering;
 using Unity.VisualScripting;
+using JetBrains.Annotations;
 
 namespace ProjectBlood
 {
@@ -93,6 +94,12 @@ namespace ProjectBlood
 			{
 				currentWeapon.StopAttacking(shootDir);
 			}
+
+			// 按R键换弹
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                currentWeapon.Reload();
+            }
 		}
 
         private void OnDestroy()

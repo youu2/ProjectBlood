@@ -27,10 +27,10 @@ namespace ProjectBlood
         private void Start()
         {
             // currentAmmo = MaxAmmo; // 初始时弹药量为最大值
-            GameUI.UpdateClipText(gunClip); // 初始化UI显示的弹药信息
+            gunClip.updateClipUI(); // 初始化UI显示的弹药信息
         }
 
-        public void Update()
+        public override void Reload()
         {
             // 按R键换弹
             if (Input.GetKeyDown(KeyCode.R))
@@ -58,7 +58,6 @@ namespace ProjectBlood
                 Attack(shootDir);
                 AttackInterval.RecordAttackTime();
                 gunClip.Shoot(); // 射击时减少弹药量
-                GameUI.UpdateClipText(gunClip); // 更新UI显示的弹药信息
             }
         }
 
