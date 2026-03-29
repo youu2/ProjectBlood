@@ -403,8 +403,60 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 224360354940689636, guid: c70aac0028afd42eabc9e0c55824c824, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1767543563}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1000011747922128, guid: c70aac0028afd42eabc9e0c55824c824, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 498418696}
   m_SourcePrefab: {fileID: 100100000, guid: c70aac0028afd42eabc9e0c55824c824, type: 3}
+--- !u!1 &498418695 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1000011747922128, guid: c70aac0028afd42eabc9e0c55824c824, type: 3}
+  m_PrefabInstance: {fileID: 498418694}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &498418696
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 498418695}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras: []
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
+  m_RenderPostProcessing: 0
+  m_Antialiasing: 0
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 0
+  m_ClearDepth: 1
+  m_AllowXRRendering: 1
+  m_AllowHDROutput: 1
+  m_UseScreenCoordOverride: 0
+  m_ScreenSizeOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_Version: 2
+  m_TaaSettings:
+    m_Quality: 3
+    m_FrameInfluence: 0.1
+    m_JitterScale: 1
+    m_MipBias: 0
+    m_VarianceClampScale: 0.9
+    m_ContrastAdaptiveSharpening: 0
 --- !u!1 &504677738
 GameObject:
   m_ObjectHideFlags: 0
@@ -1061,6 +1113,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 508401074}
     m_Modifications:
+    - target: {fileID: -5901276387115250283, guid: bd3103483edad4840b33ec999dbb6609, type: 3}
+      propertyPath: WeaponText
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 2184599067197971712, guid: bd3103483edad4840b33ec999dbb6609, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5

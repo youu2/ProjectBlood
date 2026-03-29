@@ -1125,6 +1125,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HPText: {fileID: 3617698443661793031}
+  WeaponText: {fileID: 0}
   ExpText: {fileID: 5010468024492420665}
   LegacyText: {fileID: 7952608931822607507}
   CoinText: {fileID: 2272591281431287733}

@@ -19,11 +19,11 @@ MonoBehaviour:
     From: 0
     NameToFullName: []
     BindInfos:
-    - TypeName: PlayerBullet
-      PathToRoot: Bullet
-      MemberName: Bullet
-    ScriptsFolder: Assets/Scripts/Game/Abilities
-    ClassName: Laser
+    - TypeName: UnityEngine.UI.Text
+      PathToRoot: ClipText
+      MemberName: ClipText
+    ScriptsFolder: Assets\Scripts\Game\System
+    ClassName: GameUI
     Namespace: ProjectBlood
     MainCode: 
     DesignerCode: 

@@ -13,6 +13,14 @@ namespace ProjectBlood
             this.currentAmmo = maxAmmo; // 初始时弹药量为最大值
             this.isReloading = false; // 初始时不在换弹状态
         }
+        public void Shoot()
+        {
+            if (CanShoot())
+            {
+                currentAmmo--; // 射击时减少弹药量
+                GameUI.UpdateClipText(this); // 射击后更新UI显示的弹药信息
+            }
+        }
         public void reload()
         {
             if (!isReloading)
@@ -22,6 +30,7 @@ namespace ProjectBlood
                 // 换弹完成后重置弹药量
                 currentAmmo = maxAmmo;
                 isReloading = false;
+                GameUI.UpdateClipText(this); // 换弹完成后更新UI显示的弹药信息
             }
         }
         public bool CanShoot()

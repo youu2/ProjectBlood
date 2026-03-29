@@ -24,13 +24,19 @@ namespace ProjectBlood
         //换弹功能：
         // public int MaxAmmo = 8; // DE的最大弹药量
         // private int currentAmmo; // 当前弹药量
-
-        private void OnGUI()
+        private void Start()
         {
-            // 在屏幕上显示当前弹药量
-            //IMGUIHelper.SetDesignResolution(640,320); // 设置IMGUI的设计分辨率，确保在不同分辨率下UI元素位置和大小的一致性
-            GUI.skin.label.fontSize = 40; // 设置字体大小
-            GUI.Label(new Rect(1650, 900, 400, 100), $"Ammo: {gunClip.currentAmmo}/{gunClip.maxAmmo}");
+            // currentAmmo = MaxAmmo; // 初始时弹药量为最大值
+            GameUI.UpdateClipText(gunClip); // 初始化UI显示的弹药信息
+        }
+
+        public void Update()
+        {
+            // 按R键换弹
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                gunClip.reload(); // 调用GunClip的reload方法进行换弹
+            }
         }
 
         public override void Attack(Vector2 shootDir)
@@ -51,6 +57,8 @@ namespace ProjectBlood
             {        
                 Attack(shootDir);
                 AttackInterval.RecordAttackTime();
+                gunClip.Shoot(); // 射击时减少弹药量
+                GameUI.UpdateClipText(gunClip); // 更新UI显示的弹药信息
             }
         }
 

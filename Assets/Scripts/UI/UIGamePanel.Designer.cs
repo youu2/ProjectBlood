@@ -5,13 +5,15 @@ using QFramework;
 
 namespace ProjectBlood
 {
-	// Generate Id:ba18c3a1-425d-49b6-8866-e3db16706ab3
+	// Generate Id:db2837e7-ffd5-4266-a2fa-606c0664ab9c
 	public partial class UIGamePanel
 	{
 		public const string Name = "UIGamePanel";
 		
 		[SerializeField]
 		public TMPro.TextMeshProUGUI HPText;
+		[SerializeField]
+		public TMPro.TextMeshProUGUI WeaponText;
 		[SerializeField]
 		public TMPro.TextMeshProUGUI ExpText;
 		[SerializeField]
@@ -34,6 +36,7 @@ namespace ProjectBlood
 		protected override void ClearUIComponents()
 		{
 			HPText = null;
+			WeaponText = null;
 			ExpText = null;
 			LegacyText = null;
 			CoinText = null;
