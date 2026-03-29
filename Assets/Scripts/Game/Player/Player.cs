@@ -92,13 +92,13 @@ namespace ProjectBlood
 			}
 			if(Input.GetMouseButtonUp(0) && playerBullet != null)
 			{
-				currentWeapon.StopAttacking(shootDir);
+				currentWeapon.StopAttacking();
 			}
 
 			// 按R键换弹
             if (Input.GetKeyDown(KeyCode.R))
             {
-                currentWeapon.Reload();
+                currentWeapon.Reload(); // 调用GunClip的reload方法进行换弹
             }
 		}
 

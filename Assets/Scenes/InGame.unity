@@ -773,7 +773,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &219810379
 Transform:
   m_ObjectHideFlags: 0
@@ -1480,8 +1480,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   direction: {x: 0, y: 0}
-  speed: 300
-  damage: 1.2
+  speed: 120
+  damage: 2
 --- !u!212 &384743939
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1811,8 +1811,8 @@ MonoBehaviour:
   moveSpeed: 3.5
   playerBullet: {fileID: 1003618893}
   spriteRenderer: {fileID: 1128872229}
-  weaponTransform: {fileID: 1791874274}
-  currentWeapon: {fileID: 1791874275}
+  weaponTransform: {fileID: 219810379}
+  currentWeapon: {fileID: 219810381}
   HitBox: {fileID: 1108075093}
   SelfRigidbody2D: {fileID: 505099875}
 --- !u!114 &505099874
@@ -8744,8 +8744,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   direction: {x: 0, y: 0}
-  speed: 35
-  damage: 8
+  speed: 30
+  damage: 12
 --- !u!212 &1332613238
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -9934,7 +9934,6 @@ MonoBehaviour:
   PrefabFolder: Assets/Art/Prefab
   ArchitectureFullTypeName: 
   ViewControllerFullTypeName: 
-  attackInterval: 0.02
   ShootSounds:
   - {fileID: 8300000, guid: 6e15092122a81c845bd2a5f5f8d5027c, type: 3}
   Bullet: {fileID: 384743938}
@@ -10184,7 +10183,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1791874274
 Transform:
   m_ObjectHideFlags: 0

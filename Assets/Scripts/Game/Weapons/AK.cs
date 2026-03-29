@@ -16,9 +16,15 @@ namespace ProjectBlood
 		public List<AudioClip> ShootSounds = new List<AudioClip>();
 
 		public AudioClip AKOneShotSound;
-		// public AudioSource shootAudioSource;
+        // public AudioSource shootAudioSource;
 
-		public override void Attack(Vector2 shootDir)
+		public GunClip gunClip = new GunClip(30); // AK的弹夹，最大弹药量为30
+        public void Start()
+        {
+			gunClip.UpdateClipUI();
+        }
+
+        public override void Attack(Vector2 shootDir)
 		{
 			// 计算旋转：根据 shootDir 向量创建对应的 Quaternion 朝向
 			Quaternion bulletRotation = Quaternion.FromToRotation(Vector2.right, shootDir);
@@ -28,27 +34,46 @@ namespace ProjectBlood
 		}
 		public override void StartAttacking(Vector2 shootDir)
 		{
-			// 第一次按下鼠标时播放一次单发音效，继续按住也能播放循环持续开火音效
-			Attack(shootDir);
-			SelfShortAudioSource.PlayOneShot(AKOneShotSound);
-			SelfAudioSource .clip = ShootSounds[0];
-			SelfAudioSource.loop = true;
-			SelfAudioSource.Play();
+			if (gunClip.CanShoot())
+			{
+				// 第一次按下鼠标时播放一次单发音效，继续按住也能播放循环持续开火音效
+				Attack(shootDir);
+				SelfShortAudioSource.PlayOneShot(AKOneShotSound);
+				SelfAudioSource .clip = ShootSounds[0];
+				SelfAudioSource.loop = true;
+				SelfAudioSource.Play();
+				gunClip.Shoot();
+			}
+			
 		}
 		public override void keepAttacking(Vector2 shootDir)
 		{
-			if (AttackInterval.CanAttack())
+			if (AttackInterval.CanAttack() && gunClip.CanShoot()) // 只有在满足攻击间隔且有弹药时才允许攻击
 			{
 				Attack(shootDir);
 				AttackInterval.RecordAttackTime();
+				gunClip.Shoot(); // 射击时减少弹药量
 			}
 		}
 
-		public override void StopAttacking(Vector2 shootDir)
+		public override void StopAttacking()
 		{
-			// 停止攻击时的一些逻辑
-			SelfAudioSource .Stop();
-			SelfShortAudioSource.PlayOneShot(AKShootEnd);
+			// 为了避免在没有弹药时松开左键触发StopAttacking导致多余的音效播放，增加了判断条件
+			if(SelfAudioSource.isPlaying)
+			{
+				// 停止攻击时的一些逻辑
+				SelfAudioSource.Stop();
+				SelfShortAudioSource.PlayOneShot(AKShootEnd);
+			}
 		}
+
+		public override void Reload()
+        {
+            // 按R键换弹
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                gunClip.Reload(); // 调用GunClip的reload方法进行换弹
+            }
+        }
 	}
 }

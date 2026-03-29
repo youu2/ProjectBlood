@@ -27,7 +27,7 @@ namespace ProjectBlood
         private void Start()
         {
             // currentAmmo = MaxAmmo; // 初始时弹药量为最大值
-            gunClip.updateClipUI(); // 初始化UI显示的弹药信息
+            gunClip.UpdateClipUI(); // 初始化UI显示的弹药信息
         }
 
         public override void Reload()
@@ -35,7 +35,7 @@ namespace ProjectBlood
             // 按R键换弹
             if (Input.GetKeyDown(KeyCode.R))
             {
-                gunClip.reload(); // 调用GunClip的reload方法进行换弹
+                gunClip.Reload(); // 调用GunClip的reload方法进行换弹
             }
         }
 
@@ -61,7 +61,7 @@ namespace ProjectBlood
             }
         }
 
-        public override void StopAttacking(Vector2 shootDir)
+        public override void StopAttacking()
         {
             // DE射速较慢，停止攻击时不需要额外逻辑
         }

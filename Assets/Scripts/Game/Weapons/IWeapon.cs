@@ -13,7 +13,7 @@ namespace ProjectBlood
             // Default implementation - can be overridden by subclasses
         }
         public abstract void keepAttacking(Vector2 shootDir);
-        public abstract void StopAttacking(Vector2 shootDir);
+        public abstract void StopAttacking();
         public virtual void Reload(){}
     }
 }

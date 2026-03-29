@@ -17,6 +17,12 @@ namespace ProjectBlood
 		// public AudioClip MP5OneShotSound; other bind取代
 		// public AudioSource shootAudioSource;
 
+		public GunClip gunClip = new GunClip(30); // MP5的弹夹，最大弹药量为30
+		public void Start()
+		{
+			gunClip.UpdateClipUI();
+		}
+
 		public override void Attack(Vector2 shootDir)
 		{
 			// 计算旋转：根据 shootDir 向量创建对应的 Quaternion 朝向
@@ -27,27 +33,47 @@ namespace ProjectBlood
 		}
 		public override void StartAttacking(Vector2 shootDir)
 		{
+			if(!gunClip.CanShoot()) return;
 			Attack(shootDir);
 			SelfShortAudioSource.PlayOneShot(MP5OneShot);
 			SelfAudioSource .clip = ShootSounds[0];
 			SelfAudioSource.loop = true;
 			SelfAudioSource.Play();
+			gunClip.Shoot();
 		}
 		public override void keepAttacking(Vector2 shootDir)
 		{
 			//Attack(shootDir);
-			if (AttackInterval.CanAttack())
+			if (AttackInterval.CanAttack() && gunClip.CanShoot())
 			{
 				Attack(shootDir);
 				AttackInterval.RecordAttackTime();
+				gunClip.Shoot();
+			}else if (!gunClip.CanShoot())
+			{
+				// 没有弹药时停止射击声音
+				StopAttacking();
 			}			
 		}
 
-		public override void StopAttacking(Vector2 shootDir)
+		public override void StopAttacking()
 		{
-			// 停止攻击时的一些逻辑，比如停止播放射击声音等
-			SelfAudioSource .Stop();
-			SelfShortAudioSource.PlayOneShot(MP5ShootEnd);
+			// 为了避免在没有弹药时松开左键触发StopAttacking导致多余的音效播放，增加了判断条件
+			if(SelfAudioSource.isPlaying)
+			{
+				// 停止攻击时的一些逻辑，比如停止播放射击声音等
+				SelfAudioSource.Stop();
+				SelfShortAudioSource.PlayOneShot(MP5ShootEnd);
+			}
+		}
+
+		public override void Reload()
+		{
+			// 按R键换弹
+			if (Input.GetKeyDown(KeyCode.R))
+			{
+				gunClip.Reload(); // 调用GunClip的reload方法进行换弹
+			}
 		}
 	}
 }

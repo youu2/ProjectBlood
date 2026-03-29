@@ -15,6 +15,11 @@ namespace ProjectBlood
         public List<AudioClip> ShootSounds = new List<AudioClip>();
         // public AudioSource shootAudioSource; 
         // 被QF架构other bind功能生成的SelfAudioSource替代，可在designer中直接绑定
+        public GunClip gunClip = new GunClip(10); // AWP的弹夹，最大弹药量为10
+        public void Start()
+        {
+			gunClip.UpdateClipUI();
+        }
 
         public override void Attack(Vector2 shootDir)
         {
@@ -30,16 +35,26 @@ namespace ProjectBlood
         }
         public override void keepAttacking(Vector2 shootDir)
         {
-            if (AttackInterval.CanAttack())
-            {
+            if (AttackInterval.CanAttack() && gunClip.CanShoot()) // 只有在满足攻击间隔且有弹药时才允许攻击
+            {        
                 Attack(shootDir);
                 AttackInterval.RecordAttackTime();
+                gunClip.Shoot(); // 射击时减少弹药量
             }
         }
 
-        public override void StopAttacking(Vector2 shootDir)
+        public override void StopAttacking()
         {
             // DE射速较慢，停止攻击时不需要额外逻辑
+        }
+
+        public override void Reload()
+        {
+            // 按R键换弹
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                gunClip.Reload(); // 调用GunClip的reload方法进行换弹
+            }
         }
 	}
 }

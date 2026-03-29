@@ -9,10 +9,16 @@ namespace ProjectBlood
 		// public PlayerBullet Bullet;
 		// public override float HitDamage => 0.5f;
 
-		public float attackInterval = 0.2f; // 攻击间隔
-		private float lastAttackTime = 0f; // 上次攻击时间
+		// public float attackInterval = 0.2f; // 攻击间隔
+		// private float lastAttackTime = 0f; // 上次攻击时间
+		public AttackInterval AttackInterval = new AttackInterval(0.02f);
 
 		public List<AudioClip> ShootSounds = new List<AudioClip>();
+		public GunClip gunClip = new GunClip(500); // 激光的弹夹，最大弹药量为500
+		public void Start()
+		{
+			gunClip.UpdateClipUI();
+		}
 
 		public override void Attack(Vector2 shootDir)
 		{
@@ -24,19 +30,25 @@ namespace ProjectBlood
 		}
 		public override void StartAttacking(Vector2 shootDir)
 		{
-			Attack(shootDir);
-			SelfShortAudioSource.PlayOneShot(LaserStart);
-			SelfAudioSource .clip = ShootSounds[0];
-			SelfAudioSource.loop = true;
-			SelfAudioSource.Play();
+			if (gunClip.CanShoot())
+			{
+				Attack(shootDir);
+				SelfShortAudioSource.PlayOneShot(LaserStart);
+				SelfAudioSource .clip = ShootSounds[0];
+				SelfAudioSource.loop = true;
+				SelfAudioSource.Play();
+				gunClip.Shoot();
+			}
 		}
+		
 		public override void keepAttacking(Vector2 shootDir)
 		{
 			//Attack(shootDir);
-			if (Time.time - lastAttackTime >= attackInterval)
+			if (AttackInterval.CanAttack() && gunClip.CanShoot())
 			{
 				Attack(shootDir);
-				lastAttackTime = Time.time;
+				AttackInterval.RecordAttackTime();
+				gunClip.Shoot();
 			}
 			var targetLayer = LayerMask.GetMask("Enemy", "Wall"); // 所有可以阻挡激光的物体层级
 			var hit = Physics2D.Raycast(Bullet.Position2D(), shootDir, Mathf.Infinity, targetLayer); // 获得碰到的第一个物体的位置
@@ -45,13 +57,25 @@ namespace ProjectBlood
 			
 		}
 
-		public override void StopAttacking(Vector2 shootDir)
+		public override void StopAttacking()
 		{
-			// 停止攻击时的一些逻辑，比如停止播放射击声音等
-			SelfAudioSource .Stop();
-			SelfShortAudioSource.PlayOneShot(LaserEnd);
-			SelfLineRenderer.SetPosition(0, Vector3.zero);
-			SelfLineRenderer.SetPosition(1, Vector3.zero);
+			if(SelfAudioSource.isPlaying)
+			{
+				// 停止攻击时的一些逻辑，比如停止播放射击声音等
+				SelfAudioSource .Stop();
+				SelfShortAudioSource.PlayOneShot(LaserEnd);
+				SelfLineRenderer.SetPosition(0, Vector3.zero);
+				SelfLineRenderer.SetPosition(1, Vector3.zero);
+			}
 		}
+
+		public override void Reload()
+        {
+            // 按R键换弹
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                gunClip.Reload(); // 调用GunClip的reload方法进行换弹
+            }
+        }
 	}
 }

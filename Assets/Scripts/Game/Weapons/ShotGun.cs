@@ -20,6 +20,21 @@ namespace ProjectBlood
 		[SerializeField] private float spreadAngle = 30f; // 圆锥散射角度，例如30度，可调节
 		[SerializeField] private int bulletCount = 5; // 每次攻击生成的子弹数量
 
+		public GunClip gunClip = new GunClip(6); // 喷子弹夹，最大弹药量为8
+		public void Start()
+		{
+			gunClip.UpdateClipUI();
+		}
+
+		public override void Reload()
+		{
+			// 按R键换弹
+			if (Input.GetKeyDown(KeyCode.R))
+			{
+				gunClip.Reload(); // 调用GunClip的reload方法进行换弹
+			}
+		}
+
         public override void Attack(Vector2 shootDir)
 		{
 			// 基准方向（准心瞄准方向）
@@ -54,14 +69,15 @@ namespace ProjectBlood
 		}
         public override void keepAttacking(Vector2 shootDir)
         {
-            if (AttackInterval.CanAttack())
+            if (AttackInterval.CanAttack() && gunClip.CanShoot()) // 只有在满足攻击间隔且有弹药时才允许攻击
             {   
                 Attack(shootDir);
                 AttackInterval.RecordAttackTime();
+				gunClip.Shoot(); // 射击时减少弹药量
             }
         }
 
-        public override void StopAttacking(Vector2 shootDir)
+        public override void StopAttacking()
         {
 			// 喷子射速较慢(音频是单段射击，时长很短，可以播放完全)，停止攻击时不需要额外逻辑
         }
