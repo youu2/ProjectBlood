@@ -18,6 +18,7 @@ namespace ProjectBlood
 		// public AudioSource shootAudioSource;
 
 		public GunClip gunClip = new GunClip(30); // MP5的弹夹，最大弹药量为30
+		private bool newClip = true;
 		public void Start()
 		{
 			gunClip.UpdateClipUI();
@@ -40,10 +41,17 @@ namespace ProjectBlood
 			SelfAudioSource.loop = true;
 			SelfAudioSource.Play();
 			gunClip.Shoot();
+			newClip = true;
 		}
 		public override void keepAttacking(Vector2 shootDir)
 		{
-			//Attack(shootDir);
+			// 为了让打空弹夹后继续按住左键同时换弹后 ->
+			// 能够正确触发循环开火音效
+			if (!newClip)
+			{
+				StartAttacking(shootDir);
+				newClip = true;
+			}
 			if (AttackInterval.CanAttack() && gunClip.CanShoot())
 			{
 				Attack(shootDir);
@@ -53,12 +61,14 @@ namespace ProjectBlood
 			{
 				// 没有弹药时停止射击声音
 				StopAttacking();
+				newClip = false;
+				return;
 			}			
 		}
 
 		public override void StopAttacking()
 		{
-			// 为了避免在没有弹药时松开左键触发StopAttacking导致多余的音效播放，增加了判断条件
+			// 为了避免在没有弹药时再次射击松开左键触发StopAttacking导致多余的音效播放，增加了判断条件
 			if(SelfAudioSource.isPlaying)
 			{
 				// 停止攻击时的一些逻辑，比如停止播放射击声音等

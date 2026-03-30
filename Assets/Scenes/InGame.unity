@@ -141,7 +141,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &77108533
 Transform:
   m_ObjectHideFlags: 0
@@ -773,7 +773,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &219810379
 Transform:
   m_ObjectHideFlags: 0
@@ -1811,8 +1811,8 @@ MonoBehaviour:
   moveSpeed: 3.5
   playerBullet: {fileID: 1003618893}
   spriteRenderer: {fileID: 1128872229}
-  weaponTransform: {fileID: 219810379}
-  currentWeapon: {fileID: 219810381}
+  weaponTransform: {fileID: 77108533}
+  currentWeapon: {fileID: 77108536}
   HitBox: {fileID: 1108075093}
   SelfRigidbody2D: {fileID: 505099875}
 --- !u!114 &505099874
@@ -3162,7 +3162,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1027198394
 Transform:
   m_ObjectHideFlags: 0

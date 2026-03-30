@@ -19,6 +19,7 @@ namespace ProjectBlood
         // public AudioSource shootAudioSource;
 
 		public GunClip gunClip = new GunClip(30); // AK的弹夹，最大弹药量为30
+		private bool newClip = true;
         public void Start()
         {
 			gunClip.UpdateClipUI();
@@ -43,17 +44,31 @@ namespace ProjectBlood
 				SelfAudioSource.loop = true;
 				SelfAudioSource.Play();
 				gunClip.Shoot();
+				newClip = true;
 			}
 			
 		}
 		public override void keepAttacking(Vector2 shootDir)
 		{
+			// 为了让打空弹夹后继续按住左键同时换弹后 ->
+			// 能够正确触发循环开火音效
+			if (!newClip)
+			{
+				StartAttacking(shootDir);
+				newClip = true;
+			}
 			if (AttackInterval.CanAttack() && gunClip.CanShoot()) // 只有在满足攻击间隔且有弹药时才允许攻击
 			{
 				Attack(shootDir);
 				AttackInterval.RecordAttackTime();
 				gunClip.Shoot(); // 射击时减少弹药量
-			}
+			}else if (!gunClip.CanShoot())
+			{
+				// 没有弹药时停止射击声音
+				StopAttacking();
+				newClip = false;
+				return;
+			}	
 		}
 
 		public override void StopAttacking()
