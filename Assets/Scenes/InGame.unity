@@ -135,13 +135,14 @@ GameObject:
   - component: {fileID: 77108536}
   - component: {fileID: 77108535}
   - component: {fileID: 77108537}
+  - component: {fileID: 77108538}
   m_Layer: 0
   m_Name: AK
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &77108533
 Transform:
   m_ObjectHideFlags: 0
@@ -396,6 +397,22 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &77108538
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 77108532}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d51f3a7c41ab0346b49ae50d456bece, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MarkType: 0
+  CustomComponentName: AK
+  CustomComment: 
+  mComponentName: ProjectBlood.AK
 --- !u!1 &90749821
 GameObject:
   m_ObjectHideFlags: 0
@@ -767,6 +784,7 @@ GameObject:
   - component: {fileID: 219810380}
   - component: {fileID: 219810382}
   - component: {fileID: 219810383}
+  - component: {fileID: 219810384}
   m_Layer: 0
   m_Name: MP5
   m_TagString: Untagged
@@ -1031,6 +1049,22 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &219810384
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 219810378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d51f3a7c41ab0346b49ae50d456bece, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MarkType: 0
+  CustomComponentName: MP5
+  CustomComment: 
+  mComponentName: ProjectBlood.MP5
 --- !u!1 &230367212
 GameObject:
   m_ObjectHideFlags: 0
@@ -1813,7 +1847,14 @@ MonoBehaviour:
   spriteRenderer: {fileID: 1128872229}
   weaponTransform: {fileID: 77108533}
   currentWeapon: {fileID: 77108536}
-  HitBox: {fileID: 1108075093}
+  HurtBox: {fileID: 1108075093}
+  DE: {fileID: 1791874275}
+  MP5: {fileID: 219810381}
+  ShotGun: {fileID: 1386963013}
+  AWP: {fileID: 1296695878}
+  AK: {fileID: 77108536}
+  Laser: {fileID: 1748640870}
+  Bow: {fileID: 2043846055}
   SelfRigidbody2D: {fileID: 505099875}
 --- !u!114 &505099874
 MonoBehaviour:
@@ -1829,7 +1870,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Binds:
   - MemberName: SelfRigidbody2D
-    Object: {fileID: 0}
+    Object: {fileID: 505099875}
 --- !u!50 &505099875
 Rigidbody2D:
   serializedVersion: 4
@@ -8476,6 +8517,7 @@ GameObject:
   - component: {fileID: 1296695878}
   - component: {fileID: 1296695879}
   - component: {fileID: 1296695880}
+  - component: {fileID: 1296695881}
   m_Layer: 0
   m_Name: AWP
   m_TagString: Untagged
@@ -8634,6 +8676,22 @@ MonoBehaviour:
   Binds:
   - MemberName: SelfShortAudioSource
     Object: {fileID: 1296695879}
+--- !u!114 &1296695881
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1296695876}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d51f3a7c41ab0346b49ae50d456bece, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MarkType: 0
+  CustomComponentName: AWP
+  CustomComment: 
+  mComponentName: ProjectBlood.AWP
 --- !u!1 &1332613233
 GameObject:
   m_ObjectHideFlags: 0
@@ -8909,6 +8967,7 @@ GameObject:
   - component: {fileID: 1386963012}
   - component: {fileID: 1386963013}
   - component: {fileID: 1386963014}
+  - component: {fileID: 1386963015}
   m_Layer: 0
   m_Name: ShotGun
   m_TagString: Untagged
@@ -9070,6 +9129,22 @@ MonoBehaviour:
   Binds:
   - MemberName: SelfAudioSource
     Object: {fileID: 1386963012}
+--- !u!114 &1386963015
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1386963010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d51f3a7c41ab0346b49ae50d456bece, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MarkType: 0
+  CustomComponentName: ShotGun
+  CustomComment: 
+  mComponentName: ProjectBlood.ShotGun
 --- !u!1 &1399397743
 GameObject:
   m_ObjectHideFlags: 0
@@ -9795,6 +9870,7 @@ GameObject:
   - component: {fileID: 1748640872}
   - component: {fileID: 1748640873}
   - component: {fileID: 1748640871}
+  - component: {fileID: 1748640874}
   m_Layer: 0
   m_Name: Laser
   m_TagString: Untagged
@@ -10165,6 +10241,22 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
+--- !u!114 &1748640874
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1748640867}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d51f3a7c41ab0346b49ae50d456bece, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MarkType: 0
+  CustomComponentName: Laser
+  CustomComment: 
+  mComponentName: ProjectBlood.Laser
 --- !u!1 &1791874271
 GameObject:
   m_ObjectHideFlags: 0
@@ -10177,6 +10269,7 @@ GameObject:
   - component: {fileID: 1791874275}
   - component: {fileID: 1791874276}
   - component: {fileID: 1791874277}
+  - component: {fileID: 1791874278}
   m_Layer: 0
   m_Name: DE
   m_TagString: Untagged
@@ -10336,6 +10429,22 @@ MonoBehaviour:
   Binds:
   - MemberName: SelfAudioSource
     Object: {fileID: 1791874276}
+--- !u!114 &1791874278
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1791874271}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d51f3a7c41ab0346b49ae50d456bece, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MarkType: 0
+  CustomComponentName: DE
+  CustomComment: 
+  mComponentName: ProjectBlood.DE
 --- !u!1 &1806430799
 GameObject:
   m_ObjectHideFlags: 0
@@ -10785,6 +10894,7 @@ GameObject:
   - component: {fileID: 2043846053}
   - component: {fileID: 2043846055}
   - component: {fileID: 2043846054}
+  - component: {fileID: 2043846056}
   m_Layer: 0
   m_Name: Bow
   m_TagString: Untagged
@@ -10919,7 +11029,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Namespace: ProjectBlood
   ScriptName: Bow
-  ScriptsFolder: Assets\Scripts\Game\Abilities
+  ScriptsFolder: Assets\Scripts\Game\Weapons
   GeneratePrefab: 0
   PrefabFolder: Assets/Art/Prefab
   ArchitectureFullTypeName: 
@@ -10929,6 +11039,22 @@ MonoBehaviour:
   Sprite: {fileID: 0}
   DEBullet: {fileID: 0}
   SelfAudioSource: {fileID: 0}
+--- !u!114 &2043846056
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2043846052}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d51f3a7c41ab0346b49ae50d456bece, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MarkType: 0
+  CustomComponentName: Bow
+  CustomComment: 
+  mComponentName: ProjectBlood.DE
 --- !u!1 &2094962727
 GameObject:
   m_ObjectHideFlags: 0

@@ -19,11 +19,32 @@ MonoBehaviour:
     From: 0
     NameToFullName: []
     BindInfos:
-    - TypeName: UnityEngine.UI.Text
-      PathToRoot: ClipText
-      MemberName: ClipText
-    ScriptsFolder: Assets\Scripts\Game\System
-    ClassName: GameUI
+    - TypeName: CircleCollider2D
+      PathToRoot: HurtBox
+      MemberName: HurtBox
+    - TypeName: ProjectBlood.DE
+      PathToRoot: Weapon/DE
+      MemberName: DE
+    - TypeName: ProjectBlood.MP5
+      PathToRoot: Weapon/MP5
+      MemberName: MP5
+    - TypeName: ProjectBlood.ShotGun
+      PathToRoot: Weapon/ShotGun
+      MemberName: ShotGun
+    - TypeName: ProjectBlood.AWP
+      PathToRoot: Weapon/AWP
+      MemberName: AWP
+    - TypeName: ProjectBlood.AK
+      PathToRoot: Weapon/AK
+      MemberName: AK
+    - TypeName: ProjectBlood.Laser
+      PathToRoot: Weapon/Laser
+      MemberName: Laser
+    - TypeName: ProjectBlood.DE
+      PathToRoot: Weapon/Bow
+      MemberName: Bow
+    ScriptsFolder: Assets\Scripts\Game\Player
+    ClassName: Player
     Namespace: ProjectBlood
     MainCode: 
     DesignerCode: 

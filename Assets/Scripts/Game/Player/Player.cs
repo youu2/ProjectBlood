@@ -3,6 +3,7 @@ using QFramework;
 using UnityEditor.Rendering;
 using Unity.VisualScripting;
 using JetBrains.Annotations;
+using System.Collections.Generic;
 
 namespace ProjectBlood
 {
@@ -14,17 +15,31 @@ namespace ProjectBlood
 		public SpriteRenderer spriteRenderer;
 		public Transform weaponTransform;
 		public IWeapon currentWeapon;
-		
-
+		private List<IWeapon> weapons = new List<IWeapon>();
 		
 		private void Awake()
 		{
 			player1 = this;
+			weapons.Add(DE);
+			weapons.Add(MP5);
+			weapons.Add(ShotGun);
+			weapons.Add(AWP);
+			weapons.Add(AK);
+			weapons.Add(Laser);
+			weapons.Add(Bow);
+			useWeapon(0); // 默认装备MP5
 		}
 		
+		void useWeapon(int index)
+		{
+			currentWeapon.Hide();
+			currentWeapon = weapons[index];
+			currentWeapon.Show();
+		}
+
 		void Start()
 		{
-			HitBox.OnTriggerEnter2DEvent((Collider2D col)=>
+			HurtBox.OnTriggerEnter2DEvent((Collider2D col)=>
 			{
 				var hitBox = col.GetComponent<HitBox>();
 				// 如果撞到的东西没有伤害能力，就跳过受伤流程
@@ -48,7 +63,7 @@ namespace ProjectBlood
 		{
 			float horizontal = Input.GetAxis("Horizontal"); // A/D
 			float vertical = Input.GetAxis("Vertical");     // W/S
-
+			weaponTransform = currentWeapon.transform;
 			if (horizontal != 0 || vertical != 0)
 			{
 				spriteRenderer.flipX = horizontal < 0; // 根据输入方向调整角色朝向
@@ -100,6 +115,25 @@ namespace ProjectBlood
             {
                 currentWeapon.Reload(); // 调用GunClip的reload方法进行换弹
             }
+			if(Input.GetKeyDown(KeyCode.Alpha1))
+			{
+				useWeapon(0);
+			}
+			if(Input.GetKeyDown(KeyCode.Alpha2))
+			{
+				useWeapon(1);
+			}
+			if(Input.mouseScrollDelta.y > 0) // 鼠标滚轮向上滚动切换到上一个武器
+			{
+				currentWeapon.StopAttacking(); // 切换武器时先停止当前武器的攻击状态，避免切换过程中音效等异常
+				// 使用模运算实现循环切换武器
+				useWeapon((weapons.IndexOf(currentWeapon) - 1 + weapons.Count) % weapons.Count);
+			}
+			else if(Input.mouseScrollDelta.y < 0) // 鼠标滚轮向下滚动切换到下一个武器
+			{
+				currentWeapon.StopAttacking(); // 切换武器时先停止当前武器的攻击状态，避免切换过程中音效等异常
+				useWeapon((weapons.IndexOf(currentWeapon) + 1) % weapons.Count);
+			}
 		}
 
         private void OnDestroy()
