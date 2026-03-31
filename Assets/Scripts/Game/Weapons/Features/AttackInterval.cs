@@ -22,5 +22,10 @@ namespace ProjectBlood
         {
             lastAttackTime = Time.time;
         }
+
+        public void Reset()
+        {
+            lastAttackTime = 0f;
+        }
     }
 }

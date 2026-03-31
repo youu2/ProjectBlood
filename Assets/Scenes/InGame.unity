@@ -3235,7 +3235,7 @@ GameObject:
   - component: {fileID: 1035514110}
   - component: {fileID: 1035514111}
   m_Layer: 6
-  m_Name: DEBullet
+  m_Name: Bullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8561,10 +8561,10 @@ MonoBehaviour:
   PrefabFolder: Assets/Art/Prefab
   ArchitectureFullTypeName: 
   ViewControllerFullTypeName: 
-  DEBullet: {fileID: 1035514111}
-  SelfShortAudioSource: {fileID: 1296695879}
   ShootSounds:
   - {fileID: 8300000, guid: 94559e385bf7f3d4fbe119a9dfe3cf53, type: 3}
+  Bullet: {fileID: 1035514111}
+  SelfAudioSource: {fileID: 1296695879}
 --- !u!82 &1296695879
 AudioSource:
   m_ObjectHideFlags: 0
@@ -8576,7 +8576,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 0.613
   m_Pitch: 1
   Loop: 0
@@ -8674,7 +8674,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Binds:
-  - MemberName: SelfShortAudioSource
+  - MemberName: SelfAudioSource
     Object: {fileID: 1296695879}
 --- !u!114 &1296695881
 MonoBehaviour:

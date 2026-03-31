@@ -77,9 +77,10 @@ namespace ProjectBlood
 			if(SelfAudioSource.isPlaying)
 			{
 				// 停止攻击时的一些逻辑
-				SelfAudioSource.Stop();
 				SelfShortAudioSource.PlayOneShot(AKShootEnd);
 			}
+			SelfAudioSource.Stop();
+			SelfAudioSource.clip = null;
 		}
 
 		public override void Reload()

@@ -25,13 +25,13 @@ namespace ProjectBlood
         {
             // 计算旋转：根据 shootDir 向量创建对应的 Quaternion 朝向
             Quaternion bulletRotation = Quaternion.FromToRotation(Vector2.right, shootDir);
-            var bullet = Instantiate(DEBullet, DEBullet.transform.position, bulletRotation);
+            var bullet = Instantiate(Bullet, Bullet.transform.position, bulletRotation);
             bullet.direction = shootDir;
             bullet.gameObject.SetActive(true);
 
             int randomIndex = Random.Range(0, ShootSounds.Count);
-            SelfShortAudioSource.clip = ShootSounds[randomIndex];
-            SelfShortAudioSource.Play();
+            SelfAudioSource.clip = ShootSounds[randomIndex];
+            SelfAudioSource.Play();
         }
         public override void keepAttacking(Vector2 shootDir)
         {

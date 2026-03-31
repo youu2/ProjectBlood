@@ -62,11 +62,12 @@ namespace ProjectBlood
 			if(SelfAudioSource.isPlaying)
 			{
 				// 停止攻击时的一些逻辑，比如停止播放射击声音等
-				SelfAudioSource .Stop();
 				SelfShortAudioSource.PlayOneShot(LaserEnd);
 				SelfLineRenderer.SetPosition(0, Vector3.zero);
 				SelfLineRenderer.SetPosition(1, Vector3.zero);
 			}
+			SelfAudioSource.Stop();
+			SelfAudioSource.clip = null;
 		}
 
 		public override void Reload()

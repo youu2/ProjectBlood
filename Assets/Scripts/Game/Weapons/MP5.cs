@@ -1,6 +1,7 @@
 using UnityEngine;
 using QFramework;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 namespace ProjectBlood
 {
 	public partial class MP5 : IWeapon
@@ -37,7 +38,7 @@ namespace ProjectBlood
 			if(!gunClip.CanShoot()) return;
 			Attack(shootDir);
 			SelfShortAudioSource.PlayOneShot(MP5OneShot);
-			SelfAudioSource .clip = ShootSounds[0];
+			SelfAudioSource.clip = ShootSounds[0];
 			SelfAudioSource.loop = true;
 			SelfAudioSource.Play();
 			gunClip.Shoot();
@@ -68,13 +69,16 @@ namespace ProjectBlood
 
 		public override void StopAttacking()
 		{
+			
 			// 为了避免在没有弹药时再次射击松开左键触发StopAttacking导致多余的音效播放，增加了判断条件
 			if(SelfAudioSource.isPlaying)
 			{
 				// 停止攻击时的一些逻辑，比如停止播放射击声音等
-				SelfAudioSource.Stop();
+				
 				SelfShortAudioSource.PlayOneShot(MP5ShootEnd);
 			}
+			SelfAudioSource.Stop();
+			SelfAudioSource.clip = null;
 		}
 
 		public override void Reload()
@@ -85,5 +89,14 @@ namespace ProjectBlood
 				gunClip.Reload(); // 调用GunClip的reload方法进行换弹
 			}
 		}
-	}
+
+        public override void Reset()
+        {
+			// Debug.Log("MP5 Reset");
+			AttackInterval.Reset();
+			newClip = true;
+			StopAttacking();
+			gunClip.UpdateClipUI();
+        }
+    }
 }

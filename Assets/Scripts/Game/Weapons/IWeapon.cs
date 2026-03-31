@@ -15,5 +15,6 @@ namespace ProjectBlood
         public abstract void keepAttacking(Vector2 shootDir);
         public abstract void StopAttacking();
         public virtual void Reload(){}
+        public virtual void Reset(){}
     }
 }
