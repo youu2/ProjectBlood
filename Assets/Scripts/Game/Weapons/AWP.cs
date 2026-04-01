@@ -58,5 +58,9 @@ namespace ProjectBlood
                 gunClip.Reload(); // 调用GunClip的reload方法进行换弹
             }
         }
+        public override void SwitchToSet()
+		{
+			gunClip.UpdateClipUI();
+		}
 	}
 }

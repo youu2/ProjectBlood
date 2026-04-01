@@ -92,7 +92,7 @@ namespace ProjectBlood
 			}
 		}
 
-        public override void Reset()
+        public override void SwitchFromSet()
         {
 			// Debug.Log("MP5 Reset");
 			AttackInterval.Reset();
@@ -100,7 +100,7 @@ namespace ProjectBlood
 			StopAttacking();
 			gunClip.UpdateClipUI();
         }
-		public override void SwitchBackSet()
+		public override void SwitchToSet()
 		{
 			gunClip.UpdateClipUI();
 			if (Input.GetMouseButton(0))

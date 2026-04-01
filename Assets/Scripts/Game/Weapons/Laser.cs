@@ -15,6 +15,7 @@ namespace ProjectBlood
 
 		public List<AudioClip> ShootSounds = new List<AudioClip>();
 		public GunClip gunClip = new GunClip(500); // 激光的弹夹，最大弹药量为500
+		private bool newClip = true;
 		public void Start()
 		{
 			gunClip.UpdateClipUI();
@@ -38,18 +39,33 @@ namespace ProjectBlood
 				SelfAudioSource.loop = true;
 				SelfAudioSource.Play();
 				gunClip.Shoot();
+				newClip = true;
 			}
 		}
 		
 		public override void keepAttacking(Vector2 shootDir)
 		{
-			//Attack(shootDir);
+			// 为了让打空弹夹后继续按住左键同时换弹后 ->
+			// 能够正确触发循环开火音效
+			if (!newClip)
+			{
+				StartAttacking(shootDir);
+				newClip = true;
+			}
 			if (AttackInterval.CanAttack() && gunClip.CanShoot())
 			{
 				Attack(shootDir);
 				AttackInterval.RecordAttackTime();
 				gunClip.Shoot();
+			}else if (!gunClip.CanShoot())
+			{
+				// 没有弹药时停止射击声音
+				StopAttacking();
+				newClip = false;
+				return;
 			}
+
+			// 激光特殊逻辑：发射时持续检测激光碰到的第一个物体，并将激光绘制到碰撞点位置
 			var targetLayer = LayerMask.GetMask("Enemy", "Wall"); // 所有可以阻挡激光的物体层级
 			var hit = Physics2D.Raycast(Bullet.Position2D(), shootDir, Mathf.Infinity, targetLayer); // 获得碰到的第一个物体的位置
 			SelfLineRenderer.SetPosition(0, Bullet.Position2D()); // 设置激光的起始点和结束点，没碰到就默认绘制100单位长度的激光
@@ -78,5 +94,23 @@ namespace ProjectBlood
                 gunClip.Reload(); // 调用GunClip的reload方法进行换弹
             }
         }
+
+		public override void SwitchFromSet()
+        {
+			// Debug.Log("MP5 Reset");
+			AttackInterval.Reset();
+			newClip = true;
+			StopAttacking();
+			gunClip.UpdateClipUI();
+        }
+
+		public override void SwitchToSet()
+		{
+			gunClip.UpdateClipUI();
+			if (Input.GetMouseButton(0))
+			{
+				SelfAudioSource.clip = ShootSounds[0];
+			}
+		}
 	}
 }

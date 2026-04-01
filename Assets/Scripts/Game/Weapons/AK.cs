@@ -93,5 +93,23 @@ namespace ProjectBlood
                 gunClip.Reload(); // 调用GunClip的reload方法进行换弹
             }
         }
+
+		public override void SwitchFromSet()
+        {
+			// Debug.Log("MP5 Reset");
+			AttackInterval.Reset();
+			newClip = true;
+			StopAttacking();
+			gunClip.UpdateClipUI();
+        }
+
+		public override void SwitchToSet()
+		{
+			gunClip.UpdateClipUI();
+			if (Input.GetMouseButton(0))
+			{
+				SelfAudioSource.clip = ShootSounds[0];
+			}
+		}
 	}
 }

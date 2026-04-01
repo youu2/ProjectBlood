@@ -84,5 +84,10 @@ namespace ProjectBlood
         {
 			// 喷子射速较慢(音频是单段射击，时长很短，可以播放完全)，停止攻击时不需要额外逻辑
         }
+
+		public override void SwitchToSet()
+		{
+			gunClip.UpdateClipUI();
+		}
 	}
 }

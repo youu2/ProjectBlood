@@ -15,7 +15,7 @@ namespace ProjectBlood
         public abstract void keepAttacking(Vector2 shootDir);
         public abstract void StopAttacking();
         public virtual void Reload(){}
-        public virtual void Reset(){}
-        public virtual void SwitchBackSet(){} // 切回武器时的特殊处理逻辑
+        public virtual void SwitchFromSet(){}
+        public virtual void SwitchToSet(){} // 切回武器时的特殊处理逻辑
     }
 }
