@@ -20,6 +20,7 @@ namespace ProjectBlood
 
 		public GunClip gunClip = new GunClip(30); // AK的弹夹，最大弹药量为30
 		private bool newClip = true;
+		private FireFlash fireFlash = new FireFlash(); // DE的枪口火焰特效组件
         public void Start()
         {
 			gunClip.UpdateClipUI();
@@ -32,6 +33,7 @@ namespace ProjectBlood
 			var bullet = Instantiate(AKBullet, AKBullet.transform.position, bulletRotation);
 			bullet.direction = shootDir;
 			bullet.gameObject.SetActive(true);
+			fireFlash.Flash(bullet.transform.position, shootDir); // 显示枪口火焰特效
 		}
 		public override void StartAttacking(Vector2 shootDir)
 		{

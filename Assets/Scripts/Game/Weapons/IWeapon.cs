@@ -16,5 +16,6 @@ namespace ProjectBlood
         public abstract void StopAttacking();
         public virtual void Reload(){}
         public virtual void Reset(){}
+        public virtual void SwitchBackSet(){} // 切回武器时的特殊处理逻辑
     }
 }

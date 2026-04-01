@@ -1,4 +1,4 @@
-// Generate Id:a0ce39e1-080a-4caf-a667-408e7735f66c
+// Generate Id:786183ee-1419-473e-8a27-ea849317337b
 using UnityEngine;
 
 namespace ProjectBlood
@@ -20,6 +20,8 @@ namespace ProjectBlood
 		public ProjectBlood.Laser Laser;
 		
 		public ProjectBlood.DE Bow;
+		
+		public UnityEngine.SpriteRenderer FireFlash;
 		
 		public UnityEngine.Rigidbody2D SelfRigidbody2D;
 		

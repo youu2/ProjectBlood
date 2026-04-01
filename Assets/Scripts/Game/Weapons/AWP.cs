@@ -16,6 +16,7 @@ namespace ProjectBlood
         // public AudioSource shootAudioSource; 
         // 被QF架构other bind功能生成的SelfAudioSource替代，可在designer中直接绑定
         public GunClip gunClip = new GunClip(10); // AWP的弹夹，最大弹药量为10
+        private FireFlash fireFlash = new FireFlash(); // 枪口火焰特效组件
         public void Start()
         {
 			gunClip.UpdateClipUI();
@@ -32,6 +33,7 @@ namespace ProjectBlood
             int randomIndex = Random.Range(0, ShootSounds.Count);
             SelfAudioSource.clip = ShootSounds[randomIndex];
             SelfAudioSource.Play();
+    		fireFlash.Flash(bullet.transform.position, shootDir); // 显示枪口火焰特效
         }
         public override void keepAttacking(Vector2 shootDir)
         {

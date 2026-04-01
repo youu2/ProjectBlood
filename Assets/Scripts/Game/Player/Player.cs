@@ -35,6 +35,7 @@ namespace ProjectBlood
 			currentWeapon.Reset();
 			currentWeapon.Hide();
 			currentWeapon = weapons[index];
+			currentWeapon.SwitchBackSet(); // 被切出武器的接替开火所需的特殊处理逻辑
 			currentWeapon.Show();
 		}
 
