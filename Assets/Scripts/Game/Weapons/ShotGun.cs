@@ -20,10 +20,11 @@ namespace ProjectBlood
 		[SerializeField] private float spreadAngle = 30f; // 圆锥散射角度，例如30度，可调节
 		[SerializeField] private int bulletCount = 5; // 每次攻击生成的子弹数量
 
-		public GunClip gunClip = new GunClip(6); // 喷子弹夹，最大弹药量为8
+		public GunClip gunClip = new GunClip(6, null); // 喷子弹夹，最大弹药量为8
 		private FireFlash fireFlash = new FireFlash(); // 枪口火焰特效组件
 		public void Start()
 		{
+			gunClip = new GunClip(6, SelfAudioSource); // 喷子弹夹，最大弹药量为8
 			gunClip.UpdateClipUI();
 		}
 
@@ -32,7 +33,7 @@ namespace ProjectBlood
 			// 按R键换弹
 			if (Input.GetKeyDown(KeyCode.R))
 			{
-				gunClip.Reload(); // 调用GunClip的reload方法进行换弹
+				gunClip.Reload(reloadSound, this); // 调用GunClip的reload方法进行换弹
 			}
 		}
 

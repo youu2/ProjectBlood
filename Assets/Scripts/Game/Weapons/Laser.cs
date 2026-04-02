@@ -14,10 +14,11 @@ namespace ProjectBlood
 		public AttackInterval AttackInterval = new AttackInterval(0.02f);
 
 		public List<AudioClip> ShootSounds = new List<AudioClip>();
-		public GunClip gunClip = new GunClip(500); // 激光的弹夹，最大弹药量为500
+		public GunClip gunClip = new GunClip(500, null); // 激光的弹夹，最大弹药量为500
 		private bool newClip = true;
 		public void Start()
 		{
+			gunClip = new GunClip(500, SelfShortAudioSource); // 激光的弹夹，最大弹药量为500
 			gunClip.UpdateClipUI();
 		}
 
@@ -91,7 +92,7 @@ namespace ProjectBlood
             // 按R键换弹
             if (Input.GetKeyDown(KeyCode.R))
             {
-                gunClip.Reload(); // 调用GunClip的reload方法进行换弹
+                gunClip.Reload(reloadSound, this); // 调用GunClip的reload方法进行换弹
             }
         }
 

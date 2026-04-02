@@ -15,10 +15,11 @@ namespace ProjectBlood
         public List<AudioClip> ShootSounds = new List<AudioClip>();
         // public AudioSource shootAudioSource; 
         // 被QF架构other bind功能生成的SelfAudioSource替代，可在designer中直接绑定
-        public GunClip gunClip = new GunClip(10); // AWP的弹夹，最大弹药量为10
+        public GunClip gunClip = new GunClip(10, null); // AWP的弹夹，最大弹药量为10
         private FireFlash fireFlash = new FireFlash(); // 枪口火焰特效组件
         public void Start()
         {
+            gunClip = new GunClip(10, SelfAudioSource); // AWP的弹夹，最大弹药量为10
 			gunClip.UpdateClipUI();
         }
 
@@ -55,7 +56,7 @@ namespace ProjectBlood
             // 按R键换弹
             if (Input.GetKeyDown(KeyCode.R))
             {
-                gunClip.Reload(); // 调用GunClip的reload方法进行换弹
+                gunClip.Reload(reloadSound, this); // 调用GunClip的reload方法进行换弹
             }
         }
         public override void SwitchToSet()

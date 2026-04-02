@@ -294,6 +294,7 @@ MonoBehaviour:
   PrefabFolder: Assets/Art/Prefab
   ArchitectureFullTypeName: 
   ViewControllerFullTypeName: 
+  reloadSound: {fileID: 8300000, guid: d24022c0527796243a021464a289f580, type: 3}
   ShootSounds:
   - {fileID: 8300000, guid: f0db78d998d0fd74ba058b4ae3a13306, type: 3}
   AKOneShotSound: {fileID: 8300000, guid: e651b5dcb10f12241aae693b0ab4f16f, type: 3}
@@ -872,6 +873,7 @@ MonoBehaviour:
   PrefabFolder: Assets/Art/Prefab
   ArchitectureFullTypeName: 
   ViewControllerFullTypeName: 
+  reloadSound: {fileID: 8300000, guid: 0c5b3a3b3eb27774bbbfe67257ec43c6, type: 3}
   Bullet: {fileID: 1332613237}
   ShootSounds:
   - {fileID: 8300000, guid: 593ec271f0b2aba408edc2faed165701, type: 3}
@@ -8601,7 +8603,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1296695877
 Transform:
   m_ObjectHideFlags: 0
@@ -8612,7 +8614,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.009, y: -0.075, z: 0}
-  m_LocalScale: {x: 1.5, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2110478178}
@@ -8638,6 +8640,7 @@ MonoBehaviour:
   PrefabFolder: Assets/Art/Prefab
   ArchitectureFullTypeName: 
   ViewControllerFullTypeName: 
+  reloadSound: {fileID: 8300000, guid: 13915b2da51e1f04c8de684903a5dd6e, type: 3}
   ShootSounds:
   - {fileID: 8300000, guid: 94559e385bf7f3d4fbe119a9dfe3cf53, type: 3}
   Bullet: {fileID: 1035514111}
@@ -9132,6 +9135,7 @@ MonoBehaviour:
   PrefabFolder: Assets/Art/Prefab
   ArchitectureFullTypeName: 
   ViewControllerFullTypeName: 
+  reloadSound: {fileID: 8300000, guid: f1dde7fc0970b2d47ae34505565bf724, type: 3}
   attackInterval: 1
   ShootSounds:
   - {fileID: 8300000, guid: 82a0d1fe932105c41a4b5efa37fc87a0, type: 3}
@@ -10120,6 +10124,7 @@ MonoBehaviour:
   PrefabFolder: Assets/Art/Prefab
   ArchitectureFullTypeName: 
   ViewControllerFullTypeName: 
+  reloadSound: {fileID: 8300000, guid: 5fe03f7af8add814bbcddc42f64f15b8, type: 3}
   ShootSounds:
   - {fileID: 8300000, guid: 6e15092122a81c845bd2a5f5f8d5027c, type: 3}
   Bullet: {fileID: 384743938}
@@ -10507,6 +10512,7 @@ MonoBehaviour:
   PrefabFolder: Assets/Art/Prefab
   ArchitectureFullTypeName: 
   ViewControllerFullTypeName: 
+  reloadSound: {fileID: 8300000, guid: dbf267cc0f5721d49b4f991213340bb0, type: 3}
   ShootSounds:
   - {fileID: 8300000, guid: 53890c44fa5dd37449aa6675b313de5b, type: 3}
   Sprite: {fileID: 1806430801}
@@ -11312,6 +11318,7 @@ MonoBehaviour:
   PrefabFolder: Assets/Art/Prefab
   ArchitectureFullTypeName: 
   ViewControllerFullTypeName: 
+  reloadSound: {fileID: 0}
   ShootSounds:
   - {fileID: 8300000, guid: 53890c44fa5dd37449aa6675b313de5b, type: 3}
   Sprite: {fileID: 0}
@@ -11591,8 +11598,8 @@ Transform:
   m_GameObject: {fileID: 2110478177}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.148, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0.445, y: -0.086, z: 0}
+  m_LocalScale: {x: 1.3, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1296695877}

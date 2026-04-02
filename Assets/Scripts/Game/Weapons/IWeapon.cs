@@ -7,6 +7,7 @@ namespace ProjectBlood
     public abstract class IWeapon : ViewController
     {
         // public abstract float HitDamage { get; }
+        public AudioClip reloadSound;
         public abstract void Attack(Vector2 shootDir);
         public virtual  void StartAttacking(Vector2 shootDir)
         {

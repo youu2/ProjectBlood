@@ -18,11 +18,12 @@ namespace ProjectBlood
 		// public AudioClip MP5OneShotSound; other bind取代
 		// public AudioSource shootAudioSource;
 
-		public GunClip gunClip = new GunClip(30); // MP5的弹夹，最大弹药量为30
+		public GunClip gunClip = new GunClip(30, null); // MP5的弹夹，最大弹药量为30; // MP5的弹夹，最大弹药量为30
 		private bool newClip = true;
 		private FireFlash fireFlash = new FireFlash(); // DE的枪口火焰特效组件
 		public void Start()
 		{
+			gunClip = new GunClip(30, SelfShortAudioSource); // MP5的弹夹，最大弹药量为30
 			gunClip.UpdateClipUI();
 		}
 
@@ -88,7 +89,7 @@ namespace ProjectBlood
 			// 按R键换弹
 			if (Input.GetKeyDown(KeyCode.R))
 			{
-				gunClip.Reload(); // 调用GunClip的reload方法进行换弹
+				gunClip.Reload(reloadSound, this); // 调用GunClip的reload方法进行换弹
 			}
 		}
 

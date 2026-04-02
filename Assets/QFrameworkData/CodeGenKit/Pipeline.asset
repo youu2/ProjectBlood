@@ -19,35 +19,11 @@ MonoBehaviour:
     From: 0
     NameToFullName: []
     BindInfos:
-    - TypeName: CircleCollider2D
-      PathToRoot: HurtBox
-      MemberName: HurtBox
-    - TypeName: ProjectBlood.DE
-      PathToRoot: Weapon/DE
-      MemberName: DE
-    - TypeName: ProjectBlood.MP5
-      PathToRoot: Weapon/MP5
-      MemberName: MP5
-    - TypeName: ProjectBlood.ShotGun
-      PathToRoot: Weapon/ShotGun
-      MemberName: ShotGun
-    - TypeName: ProjectBlood.AWP
-      PathToRoot: Weapon/AWP
-      MemberName: AWP
-    - TypeName: ProjectBlood.AK
-      PathToRoot: Weapon/AK
-      MemberName: AK
-    - TypeName: ProjectBlood.Laser
-      PathToRoot: Weapon/Laser
-      MemberName: Laser
-    - TypeName: ProjectBlood.DE
-      PathToRoot: Weapon/Bow
-      MemberName: Bow
-    - TypeName: UnityEngine.SpriteRenderer
-      PathToRoot: Weapon/FireFlash
-      MemberName: FireFlash
-    ScriptsFolder: Assets\Scripts\Game\Player
-    ClassName: Player
+    - TypeName: SpriteRenderer
+      PathToRoot: Sprite
+      MemberName: Sprite
+    ScriptsFolder: Assets\Scripts\Game\Weapons
+    ClassName: MP5
     Namespace: ProjectBlood
     MainCode: 
     DesignerCode: 

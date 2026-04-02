@@ -18,12 +18,14 @@ namespace ProjectBlood
 		public AudioClip AKOneShotSound;
         // public AudioSource shootAudioSource;
 
-		public GunClip gunClip = new GunClip(30); // AK的弹夹，最大弹药量为30
+		public GunClip gunClip = new GunClip(30, null); // AK的弹夹，最大弹药量为30
 		private bool newClip = true;
 		private FireFlash fireFlash = new FireFlash(); // DE的枪口火焰特效组件
         public void Start()
         {
+			gunClip = new GunClip(30, SelfShortAudioSource); // AK的弹夹，最大弹药量为30
 			gunClip.UpdateClipUI();
+			
         }
 
         public override void Attack(Vector2 shootDir)
@@ -90,7 +92,7 @@ namespace ProjectBlood
             // 按R键换弹
             if (Input.GetKeyDown(KeyCode.R))
             {
-                gunClip.Reload(); // 调用GunClip的reload方法进行换弹
+                gunClip.Reload(reloadSound, this); // 调用GunClip的reload方法进行换弹
             }
         }
 

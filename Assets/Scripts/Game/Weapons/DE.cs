@@ -18,8 +18,7 @@ namespace ProjectBlood
         public List<AudioClip> ShootSounds = new List<AudioClip>();
         // public AudioSource shootAudioSource; 
         // 被QF架构other bind功能生成的SelfAudioSource替代，可在designer中直接绑定
-
-        public GunClip gunClip = new GunClip(8); // DE的弹夹，最大弹药量为8
+        private GunClip gunClip = new GunClip(8, null); // DE的弹夹，最大弹药量为8
         private FireFlash fireFlash = new FireFlash(); // DE的枪口火焰特效组件
 
         //换弹功能：
@@ -28,6 +27,7 @@ namespace ProjectBlood
         private void Start()
         {
             // currentAmmo = MaxAmmo; // 初始时弹药量为最大值
+            gunClip = new GunClip(8, SelfAudioSource); // DE的弹夹，最大弹药量为8
             gunClip.UpdateClipUI(); // 初始化UI显示的弹药信息
         }
 
@@ -36,7 +36,7 @@ namespace ProjectBlood
             // 按R键换弹
             if (Input.GetKeyDown(KeyCode.R))
             {
-                gunClip.Reload(); // 调用GunClip的reload方法进行换弹
+                gunClip.Reload(reloadSound, this); // 调用GunClip的reload方法进行换弹
             }
         }
 
