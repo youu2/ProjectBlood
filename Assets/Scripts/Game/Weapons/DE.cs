@@ -67,6 +67,12 @@ namespace ProjectBlood
         {
             // DE射速较慢，停止攻击时不需要额外逻辑
         }
+
+        public override void SwitchFromSet()
+        {
+            gunClip.isReloading = false; // 切出武器时重置换弹状态，确保在换弹时切枪后下次切回时可以正常换弹
+        }
+
         public override void SwitchToSet()
 		{
 			gunClip.UpdateClipUI();

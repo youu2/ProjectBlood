@@ -99,7 +99,7 @@ namespace ProjectBlood
 			AttackInterval.Reset();
 			newClip = true;
 			StopAttacking();
-			gunClip.UpdateClipUI();
+			gunClip.isReloading = false; // 切出武器时重置换弹状态，确保下次切回时可以正常换弹
         }
 		public override void SwitchToSet()
 		{

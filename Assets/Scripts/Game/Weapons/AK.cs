@@ -27,7 +27,17 @@ namespace ProjectBlood
 			gunClip.UpdateClipUI();
 			
         }
-
+        // public void Update()
+        // {
+        //     if(!gunClip.CanShoot())
+		// 	{
+		// 		// 用于防止player在没有子弹的时候进入keep Attacking
+		// 		canShoot = false;
+		// 	}else
+		// 	{
+		// 		canShoot = true;
+		// 	}
+        // } 
         public override void Attack(Vector2 shootDir)
 		{
 			// 计算旋转：根据 shootDir 向量创建对应的 Quaternion 朝向
@@ -42,21 +52,20 @@ namespace ProjectBlood
 			if (gunClip.CanShoot())
 			{
 				// 第一次按下鼠标时播放一次单发音效，继续按住也能播放循环持续开火音效
-				Attack(shootDir);
+				// Attack(shootDir);
 				SelfShortAudioSource.PlayOneShot(AKOneShotSound);
 				SelfAudioSource .clip = ShootSounds[0];
 				SelfAudioSource.loop = true;
 				SelfAudioSource.Play();
-				gunClip.Shoot();
+				// gunClip.Shoot();会导致第一枪消耗两发弹药
 				newClip = true;
 			}
 			
 		}
 		public override void keepAttacking(Vector2 shootDir)
 		{
-			// 为了让打空弹夹后继续按住左键同时换弹后 ->
-			// 能够正确触发循环开火音效
-			if (!newClip)
+			// 为了让打空弹夹后继续按住左键同时换弹后, 能够正确触发循环开火音效
+			if (!newClip && gunClip.CanShoot())
 			{
 				StartAttacking(shootDir);
 				newClip = true;
@@ -102,7 +111,7 @@ namespace ProjectBlood
 			AttackInterval.Reset();
 			newClip = true;
 			StopAttacking();
-			gunClip.UpdateClipUI();
+			gunClip.isReloading = false; // 切出武器时重置换弹状态，确保下次切回时可以正常换弹
         }
 
 		public override void SwitchToSet()

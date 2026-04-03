@@ -1,10 +1,12 @@
-// Generate Id:449adbc0-cc38-4a6a-8590-cceced159c45
+// Generate Id:a682e2d4-072f-4fcb-81fe-2555f58ad670
 using UnityEngine;
 
 namespace ProjectBlood
 {
 	public partial class AK
 	{
+		public SpriteRenderer Sprite;
+		
 		public PlayerBullet AKBullet;
 		
 		public UnityEngine.AudioSource SelfShortAudioSource;

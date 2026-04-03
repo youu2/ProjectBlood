@@ -59,6 +59,11 @@ namespace ProjectBlood
                 gunClip.Reload(reloadSound, this); // 调用GunClip的reload方法进行换弹
             }
         }
+        public override void SwitchFromSet()
+        {
+            gunClip.isReloading = false; // 切出武器时重置换弹状态，确保下次切回时可以正常换弹
+        }
+
         public override void SwitchToSet()
 		{
 			gunClip.UpdateClipUI();

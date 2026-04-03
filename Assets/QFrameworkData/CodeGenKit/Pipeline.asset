@@ -19,11 +19,11 @@ MonoBehaviour:
     From: 0
     NameToFullName: []
     BindInfos:
-    - TypeName: SpriteRenderer
-      PathToRoot: Sprite
-      MemberName: Sprite
+    - TypeName: PlayerBullet
+      PathToRoot: DEBullet
+      MemberName: DEBullet
     ScriptsFolder: Assets\Scripts\Game\Weapons
-    ClassName: MP5
+    ClassName: ShotGun
     Namespace: ProjectBlood
     MainCode: 
     DesignerCode: 
