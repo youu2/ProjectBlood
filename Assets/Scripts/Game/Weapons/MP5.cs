@@ -19,7 +19,7 @@ namespace ProjectBlood
 		// public AudioSource shootAudioSource;
 
 		public GunClip gunClip = new GunClip(30, null); // MP5的弹夹，最大弹药量为30; // MP5的弹夹，最大弹药量为30
-		private bool newClip = true;
+		private bool newClip = true; // false表示新的弹夹还没开火过，true表示已经开火过
 		private bool hasFired = false; // 标记是否真正开火过
 		private FireFlash fireFlash = new FireFlash(); // DE的枪口火焰特效组件
 		public void Start()
@@ -46,17 +46,17 @@ namespace ProjectBlood
 			SelfAudioSource.loop = true;
 			SelfAudioSource.Play();
 			// gunClip.Shoot();
-			newClip = true;
+			newClip = false;
 			hasFired = true; // 标记已经开火过
 		}
 		public override void keepAttacking(Vector2 shootDir)
 		{
 			// 为了让打空弹夹后继续按住左键同时换弹后 ->
 			// 能够正确触发循环开火音效
-			if (!newClip)
+			if (newClip)
 			{
 				StartAttacking(shootDir);
-				newClip = true;
+				newClip = false;
 			}
 			if (AttackInterval.CanAttack() && gunClip.CanShoot())
 			{
@@ -67,7 +67,7 @@ namespace ProjectBlood
 			{
 				// 没有弹药时停止射击声音
 				StopAttacking();
-				newClip = false;
+				newClip = true;
 				return;
 			}			
 		}

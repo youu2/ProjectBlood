@@ -127,12 +127,12 @@ namespace ProjectBlood
 			// {
 			// 	useWeapon(1);
 			// }
-			if(Input.mouseScrollDelta.y > 0) // 鼠标滚轮向上滚动切换到上一个武器
+			if(Input.mouseScrollDelta.y > 0 || Input.GetKeyDown(KeyCode.Q)) // 鼠标滚轮向上滚动切换到上一个武器
 			{
 				// 使用模运算实现循环切换武器
 				UseWeapon((weapons.IndexOf(currentWeapon) - 1 + weapons.Count) % weapons.Count);
 			}
-			else if(Input.mouseScrollDelta.y < 0) // 鼠标滚轮向下滚动切换到下一个武器
+			else if(Input.mouseScrollDelta.y < 0 || Input.GetKeyDown(KeyCode.E)) // 鼠标滚轮向下滚动切换到下一个武器
 			{				
 				UseWeapon((weapons.IndexOf(currentWeapon) + 1) % weapons.Count);
 			}

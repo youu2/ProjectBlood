@@ -15,7 +15,7 @@ namespace ProjectBlood
 
 		public List<AudioClip> ShootSounds = new List<AudioClip>();
 		public GunClip gunClip = new GunClip(500, null); // 激光的弹夹，最大弹药量为500
-		private bool newClip = true;
+		private bool newClip = true; // false表示新的弹夹还没开火过，true表示已经开火过
 		private bool hasFired = false; // 标记是否真正开火过
 		public void Start()
 		{
@@ -50,10 +50,10 @@ namespace ProjectBlood
 		{
 			// 为了让打空弹夹后继续按住左键同时换弹后 ->
 			// 能够正确触发循环开火音效
-			if (!newClip)
+			if (newClip)
 			{
 				StartAttacking(shootDir);
-				newClip = true;
+				newClip = false;
 			}
 			if (AttackInterval.CanAttack() && gunClip.CanShoot())
 			{
@@ -64,7 +64,7 @@ namespace ProjectBlood
 			{
 				// 没有弹药时停止射击声音
 				StopAttacking();
-				newClip = false;
+				newClip = true;
 				return;
 			}
 
@@ -104,7 +104,7 @@ namespace ProjectBlood
         {
 			// Debug.Log("MP5 Reset");
 			AttackInterval.Reset();
-			newClip = false;
+			newClip = true;
 			StopAttacking();
 			gunClip.isReloading = false; // 切出武器时重置换弹状态，确保下次切回时可以正常换弹
         }
