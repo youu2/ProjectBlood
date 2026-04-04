@@ -40,12 +40,12 @@ namespace ProjectBlood
 		public override void StartAttacking(Vector2 shootDir)
 		{
 			if(!gunClip.CanShoot()) return;
-			Attack(shootDir);
+			// Attack(shootDir);
 			SelfShortAudioSource.PlayOneShot(MP5OneShot);
 			SelfAudioSource.clip = ShootSounds[0];
 			SelfAudioSource.loop = true;
 			SelfAudioSource.Play();
-			gunClip.Shoot();
+			// gunClip.Shoot();
 			newClip = true;
 			hasFired = true; // 标记已经开火过
 		}

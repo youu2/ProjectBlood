@@ -35,12 +35,12 @@ namespace ProjectBlood
 		{
 			if (gunClip.CanShoot())
 			{
-				Attack(shootDir);
+				// Attack(shootDir);
 				SelfShortAudioSource.PlayOneShot(LaserStart);
 				SelfAudioSource .clip = ShootSounds[0];
 				SelfAudioSource.loop = true;
 				SelfAudioSource.Play();
-				gunClip.Shoot();
+				// gunClip.Shoot();
 				newClip = true;
 				hasFired = true; // 标记已经开火过
 			}
