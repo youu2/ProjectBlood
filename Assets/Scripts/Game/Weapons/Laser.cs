@@ -16,6 +16,7 @@ namespace ProjectBlood
 		public List<AudioClip> ShootSounds = new List<AudioClip>();
 		public GunClip gunClip = new GunClip(500, null); // 激光的弹夹，最大弹药量为500
 		private bool newClip = true;
+		private bool hasFired = false; // 标记是否真正开火过
 		public void Start()
 		{
 			gunClip = new GunClip(500, SelfShortAudioSource); // 激光的弹夹，最大弹药量为500
@@ -41,6 +42,7 @@ namespace ProjectBlood
 				SelfAudioSource.Play();
 				gunClip.Shoot();
 				newClip = true;
+				hasFired = true; // 标记已经开火过
 			}
 		}
 		
@@ -76,15 +78,17 @@ namespace ProjectBlood
 
 		public override void StopAttacking()
 		{
-			if(SelfAudioSource.isPlaying)
+			// 只有在真正开火过的情况下才播放结束音效
+			// hasFired 为 true 表示已经开火过
+			if(SelfAudioSource.isPlaying && hasFired)
 			{
-				// 停止攻击时的一些逻辑，比如停止播放射击声音等
 				SelfShortAudioSource.PlayOneShot(LaserEnd);
 				SelfLineRenderer.SetPosition(0, Vector3.zero);
 				SelfLineRenderer.SetPosition(1, Vector3.zero);
 			}
 			SelfAudioSource.Stop();
 			SelfAudioSource.clip = null;
+			hasFired = false; // 重置开火标记
 		}
 
 		public override void Reload()
