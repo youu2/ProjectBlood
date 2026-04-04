@@ -19,11 +19,14 @@ MonoBehaviour:
     From: 0
     NameToFullName: []
     BindInfos:
-    - TypeName: PlayerBullet
-      PathToRoot: DEBullet
-      MemberName: DEBullet
+    - TypeName: SpriteRenderer
+      PathToRoot: Sprite
+      MemberName: Sprite
+    - TypeName: PenetratingBullet
+      PathToRoot: Bullet
+      MemberName: Bullet
     ScriptsFolder: Assets\Scripts\Game\Weapons
-    ClassName: ShotGun
+    ClassName: AWP
     Namespace: ProjectBlood
     MainCode: 
     DesignerCode: 

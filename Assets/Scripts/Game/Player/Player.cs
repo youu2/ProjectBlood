@@ -17,6 +17,7 @@ namespace ProjectBlood
 		public IWeapon currentWeapon;
 		private List<IWeapon> weapons = new List<IWeapon>();
 		private AudioSource temporaryAudioSource; // 用于播放切换武器时的shootEnd音效
+		private IWeapon weaponToHide = null; // 待隐藏的武器引用（用于半自动武器延迟隐藏）
 		
 		private void Awake()
 		{
@@ -38,18 +39,79 @@ namespace ProjectBlood
 		{
 			var previousWeapon = currentWeapon;
 			AudioClip shootEndSound = previousWeapon.GetShootEndSound();
+			AudioClip currentlyPlayingSound = previousWeapon.GetCurrentlyPlayingSound(); // 获取当前正在播放的音效
+			bool shouldDelayHide = previousWeapon.ShouldDelayHide(); // 在 SwitchFromSet 之前检查
+			bool hasFired = previousWeapon.HasFired(); // 在 SwitchFromSet 之前检查是否开火过
+			bool isPlayingShootEnd = previousWeapon.IsPlayingShootEnd(); // 检查是否正在播放 shootEnd 音效
 			
-			// 在切换武器前播放前一把武器的 shootEnd 音效（只有在按住开火键时才播放）
-			if (shootEndSound != null && previousWeapon.gameObject.activeSelf && Input.GetMouseButton(0))
+			// 取消之前的延迟隐藏调用
+			CancelInvoke(nameof(HidePreviousWeapon));
+			
+			// 先调用 SwitchFromSet 来重置武器状态
+			previousWeapon.SwitchFromSet();
+			
+			// 在切换武器前播放音效
+			// 1. 全自动武器：按住开火键时播放 shootEnd 音效（只有真正开火过才播放）
+			// 2. 半自动武器：如果最近开火过，延迟隐藏武器让枪声完整播放
+			// 3. 全自动武器：松开开火键后，如果正在播放音效（包括 shootEnd），延迟隐藏武器
+			if (Input.GetMouseButton(0))
 			{
-				temporaryAudioSource.PlayOneShot(shootEndSound);
+				if (shootEndSound != null && previousWeapon.gameObject.activeSelf && hasFired)
+				{
+					temporaryAudioSource.PlayOneShot(shootEndSound);
+				}
+				
+				// 即使按住开火键，如果是半自动武器最近开火过，也需要延迟隐藏
+				if (shouldDelayHide && previousWeapon.gameObject.activeSelf)
+				{
+					// 半自动武器最近开火过，先隐藏sprite避免同时显示两把武器
+					previousWeapon.HideSprite();
+					// 延迟隐藏武器让枪声完整播放
+					weaponToHide = previousWeapon;
+					Invoke(nameof(HidePreviousWeapon), previousWeapon.GetHideDelayTime());
+				}
+				else
+				{
+					previousWeapon.Hide();
+				}
+			}
+			else if (shouldDelayHide && previousWeapon.gameObject.activeSelf)
+			{
+				// 半自动武器最近开火过，先隐藏sprite避免同时显示两把武器
+				previousWeapon.HideSprite();
+				// 延迟隐藏武器让枪声完整播放
+				weaponToHide = previousWeapon;
+				Invoke(nameof(HidePreviousWeapon), previousWeapon.GetHideDelayTime());
+			}
+			else if ((currentlyPlayingSound != null || isPlayingShootEnd) && previousWeapon.gameObject.activeSelf)
+			{
+				// 全自动武器正在播放音效（包括 shootEnd），先隐藏sprite避免同时显示两把武器
+				previousWeapon.HideSprite();
+				// 延迟隐藏武器让枪声完整播放
+				weaponToHide = previousWeapon;
+				// 使用较长的延迟时间确保 shootEnd 音效完整播放
+				float delayTime = currentlyPlayingSound != null ? currentlyPlayingSound.length : 1.0f;
+				Invoke(nameof(HidePreviousWeapon), delayTime);
+			}
+			else
+			{
+				// 其他情况：先隐藏sprite再立即隐藏武器
+				previousWeapon.HideSprite();
+				previousWeapon.Hide();
 			}
 			
-			currentWeapon.SwitchFromSet();
-			currentWeapon.Hide();
 			currentWeapon = weapons[index];
 			currentWeapon.SwitchToSet();
 			currentWeapon.Show();
+		}
+		
+		void HidePreviousWeapon()
+		{
+			if (weaponToHide != null)
+			{
+				weaponToHide.Hide();
+				weaponToHide = null;
+			}
 		}
 
 		void Start()

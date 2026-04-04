@@ -120,6 +120,7 @@ namespace ProjectBlood
 		public override void SwitchToSet()
 		{
 			gunClip.UpdateClipUI();
+			Sprite.enabled = true; // 重新启用sprite
 			if (Input.GetMouseButton(0))
 			{
 				SelfAudioSource.clip = ShootSounds[0];
@@ -129,6 +130,21 @@ namespace ProjectBlood
 		public override AudioClip GetShootEndSound()
 		{
 			return AKShootEnd;
+		}
+		
+		public override bool HasFired()
+		{
+			return hasFired;
+		}
+		
+		public override bool IsPlayingShootEnd()
+		{
+			return SelfShortAudioSource.isPlaying;
+		}
+		
+		public override void HideSprite()
+		{
+			Sprite.enabled = false;
 		}
 	}
 }

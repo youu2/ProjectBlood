@@ -1,10 +1,12 @@
-// Generate Id:b00b484e-2be0-407b-8c8d-a666cbdb0e73
+// Generate Id:8faf486c-a00b-483e-bb18-c94e80477517
 using UnityEngine;
 
 namespace ProjectBlood
 {
 	public partial class ShotGun
 	{
+		public SpriteRenderer Sprite;
+		
 		public PlayerBullet DEBullet;
 		
 		public UnityEngine.AudioSource SelfAudioSource;

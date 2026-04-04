@@ -70,6 +70,10 @@ namespace ProjectBlood
 				
 			}
 			fireFlash.Flash(DEBullet.transform.position, shootDir); // 显示枪口火焰特效
+			
+			// 标记最近开火过
+			recentlyFired = true;
+			lastFireTime = Time.time;
 		}
         public override void keepAttacking(Vector2 shootDir)
         {
@@ -89,11 +93,26 @@ namespace ProjectBlood
 		public override void SwitchFromSet()
 		{
 			gunClip.isReloading = false; // 切出武器时重置换弹状态，确保下次切回时可以正常换弹
+			recentlyFired = false; // 切出武器时重置开火标志
 		}
 
 		public override void SwitchToSet()
 		{
 			gunClip.UpdateClipUI();
+			Sprite.enabled = true; // 重新启用sprite
+		}
+		
+		public override AudioClip GetCurrentlyPlayingSound()
+		{
+			return SelfAudioSource.isPlaying ? SelfAudioSource.clip : null;
+		}
+		
+		public override void HideSprite()
+		{
+			if (Sprite != null)
+			{
+				Sprite.enabled = false;
+			}
 		}
 	}
 }
