@@ -16,6 +16,7 @@ namespace ProjectBlood
 		public Transform weaponTransform;
 		public IWeapon currentWeapon;
 		private List<IWeapon> weapons = new List<IWeapon>();
+		private AudioSource temporaryAudioSource; // 用于播放切换武器时的shootEnd音效
 		
 		private void Awake()
 		{
@@ -28,14 +29,26 @@ namespace ProjectBlood
 			weapons.Add(Laser);
 			// weapons.Add(Bow);
 			UseWeapon(0); // 默认装备第一把武器
+			
+			// 创建临时的 AudioSource 用于播放切换武器时的 shootEnd 音效
+			temporaryAudioSource = gameObject.AddComponent<AudioSource>();
 		}
 		
 		void UseWeapon(int index)
 		{
+			var previousWeapon = currentWeapon;
+			AudioClip shootEndSound = previousWeapon.GetShootEndSound();
+			
+			// 在切换武器前播放前一把武器的 shootEnd 音效（只有在按住开火键时才播放）
+			if (shootEndSound != null && previousWeapon.gameObject.activeSelf && Input.GetMouseButton(0))
+			{
+				temporaryAudioSource.PlayOneShot(shootEndSound);
+			}
+			
 			currentWeapon.SwitchFromSet();
 			currentWeapon.Hide();
 			currentWeapon = weapons[index];
-			currentWeapon.SwitchToSet(); // 被切出武器的接替开火所需的特殊处理逻辑
+			currentWeapon.SwitchToSet();
 			currentWeapon.Show();
 		}
 

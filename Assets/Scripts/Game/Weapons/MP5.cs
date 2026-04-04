@@ -113,5 +113,10 @@ namespace ProjectBlood
 				SelfAudioSource.clip = ShootSounds[0];
 			}
 		}
+		
+		public override AudioClip GetShootEndSound()
+		{
+			return MP5ShootEnd;
+		}
     }
 }

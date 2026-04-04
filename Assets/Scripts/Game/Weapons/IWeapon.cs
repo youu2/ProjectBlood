@@ -18,5 +18,6 @@ namespace ProjectBlood
         public virtual void Reload(){}
         public virtual void SwitchFromSet(){}
         public virtual void SwitchToSet(){} // 切回武器时的特殊处理逻辑
+        public virtual AudioClip GetShootEndSound() { return null; } // 获取shootEnd音效，用于切换武器时播放
     }
 }
