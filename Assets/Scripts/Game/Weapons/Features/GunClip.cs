@@ -11,12 +11,14 @@ namespace ProjectBlood
         public bool isReloading; // 是否正在换弹
         public bool isEmpty => currentAmmo <= 0; // 是否弹药已空
         private readonly AudioSource reloadAudioSource;
+        private Coroutine reloadCoroutine; // 保存换弹协程的引用
         public GunClip(int maxAmmo, AudioSource reloadAudioSource)
         {
             this.maxAmmo = maxAmmo;
             this.currentAmmo = maxAmmo; // 初始时弹药量为最大值
             this.isReloading = false; // 初始时不在换弹状态
             this.reloadAudioSource = reloadAudioSource; // 用于播放换弹音效的AudioSource组件
+            this.reloadCoroutine = null;
         }
         public void Shoot()
         {
@@ -42,9 +44,9 @@ namespace ProjectBlood
         // 修改 Reload 方法，支持协程
         public void Reload(AudioClip reloadSound, MonoBehaviour owner = null)
         {
-            if (!isReloading && owner != null)
+            if (!isReloading && owner != null && currentAmmo < maxAmmo)
             {
-                owner.StartCoroutine(ReloadCoroutine(reloadSound));
+                reloadCoroutine = owner.StartCoroutine(ReloadCoroutine(reloadSound));
             }
         }
         
@@ -75,9 +77,30 @@ namespace ProjectBlood
             // 步骤2：音效播放结束后刷新弹夹
             currentAmmo = maxAmmo;
             isReloading = false;
+            reloadCoroutine = null; // 协程结束，重置引用
             UpdateClipUI();
             
             // Debug.Log("currentAmmo: " + currentAmmo);
+        }
+        
+        // 停止换弹流程
+        public void StopReload(MonoBehaviour owner = null)
+        {
+            if (isReloading)
+            {
+                isReloading = false;
+                // 停止换弹协程
+                if (reloadCoroutine != null && owner != null)
+                {
+                    owner.StopCoroutine(reloadCoroutine);
+                    reloadCoroutine = null;
+                }
+                // 停止换弹音效
+                if (reloadAudioSource != null && reloadAudioSource.isPlaying)
+                {
+                    reloadAudioSource.Stop();
+                }
+            }
         }
         
         public bool CanShoot()

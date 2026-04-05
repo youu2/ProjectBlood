@@ -65,6 +65,7 @@ namespace ProjectBlood
         }
         public override void SwitchFromSet()
         {
+            gunClip.StopReload(this); // 切出武器时停止换弹流程
             gunClip.isReloading = false; // 切出武器时重置换弹状态，确保下次切回时可以正常换弹
             recentlyFired = false; // 切出武器时重置开火标志
         }
