@@ -41,17 +41,17 @@ namespace ProjectBlood
         //     }
         // }
 
-        // 修改 Reload 方法，支持协程
-        public void Reload(AudioClip reloadSound, MonoBehaviour owner = null)
+        // 修改 Reload 方法，支持协程和回调
+        public void Reload(AudioClip reloadSound, MonoBehaviour owner = null, System.Action onReloadComplete = null)
         {
             if (!isReloading && owner != null && currentAmmo < maxAmmo)
             {
-                reloadCoroutine = owner.StartCoroutine(ReloadCoroutine(reloadSound));
+                reloadCoroutine = owner.StartCoroutine(ReloadCoroutine(reloadSound, onReloadComplete));
             }
         }
         
         // 协程实现异步换弹
-        private IEnumerator ReloadCoroutine(AudioClip reloadSound)
+        private IEnumerator ReloadCoroutine(AudioClip reloadSound, System.Action onReloadComplete = null)
         {
             isReloading = true;
             
@@ -79,6 +79,9 @@ namespace ProjectBlood
             isReloading = false;
             reloadCoroutine = null; // 协程结束，重置引用
             UpdateClipUI();
+            
+            // 调用回调函数，通知换弹完成
+            onReloadComplete?.Invoke();
             
             // Debug.Log("currentAmmo: " + currentAmmo);
         }

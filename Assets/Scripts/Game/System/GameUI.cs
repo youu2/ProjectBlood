@@ -17,5 +17,12 @@ namespace ProjectBlood
                 GUIInstance.ClipText.text = $"Ammo: {gunClip.currentAmmo} / {gunClip.maxAmmo}\n([R] to reload)";
             }
         }
+        public static void UpdateBloodText(BloodBank bloodBank)
+        {
+            if (GUIInstance != null && GUIInstance.BloodText != null)
+            {
+                GUIInstance.BloodText.text = $"Blood: {bloodBank.CurrentBloodAmount} / {bloodBank.MaxBloodAmount}";
+            }
+        }
     }
 }

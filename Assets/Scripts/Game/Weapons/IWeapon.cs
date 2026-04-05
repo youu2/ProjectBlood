@@ -11,15 +11,15 @@ namespace ProjectBlood
         protected bool recentlyFired = false; // 标记是否最近开火过（用于半自动武器延迟隐藏）
         protected float lastFireTime = 0f; // 上次开火时间
         protected const float FIRE_SOUND_DURATION_THRESHOLD = 0.8f; // 开火后多久内算作"正在播放枪声"
-        
+        public virtual int BloodRequired { get; } = 1; // 每次换弹需要的血量
         public abstract void Attack(Vector2 shootDir);
-        public virtual  void StartAttacking(Vector2 shootDir)
+        public virtual void StartAttacking(Vector2 shootDir)
         {
             // Default implementation - can be overridden by subclasses
         }
         public abstract void keepAttacking(Vector2 shootDir);
         public abstract void StopAttacking();
-        public virtual void Reload(){}
+        public virtual void Reload(System.Action onReloadComplete = null) {}
         public virtual void SwitchFromSet(){}
         public virtual void SwitchToSet(){} // 切回武器时的特殊处理逻辑
         public virtual AudioClip GetShootEndSound() { return null; } // 获取shootEnd音效，用于切换武器时播放(全自动武器)

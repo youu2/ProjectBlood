@@ -91,12 +91,12 @@ namespace ProjectBlood
 			hasFired = false; // 重置开火标记
 		}
 
-		public override void Reload()
+		public override void Reload(System.Action onReloadComplete = null)
         {
             // 按R键换弹
             if (Input.GetKeyDown(KeyCode.R))
             {
-                gunClip.Reload(reloadSound, this); // 调用GunClip的reload方法进行换弹
+                gunClip.Reload(reloadSound, this, onReloadComplete); // 调用GunClip的reload方法进行换弹
             }
         }
 

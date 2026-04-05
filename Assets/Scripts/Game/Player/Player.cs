@@ -1,8 +1,5 @@
 using UnityEngine;
 using QFramework;
-using UnityEditor.Rendering;
-using Unity.VisualScripting;
-using JetBrains.Annotations;
 using System.Collections.Generic;
 
 namespace ProjectBlood
@@ -19,6 +16,7 @@ namespace ProjectBlood
 		private List<AudioClip> weaponSwitchSounds = new List<AudioClip>();
 		private AudioSource temporaryAudioSource; // 用于播放切换武器时的shootEnd音效
 		private IWeapon weaponToHide = null; // 待隐藏的武器引用（用于半自动武器延迟隐藏）
+		public BloodBank bloodBank = new BloodBank(); // 血液银行组件，特殊资源，用于弹药管理和血量管理
 		
 		private void Awake()
 		{
@@ -195,10 +193,16 @@ namespace ProjectBlood
 			}
 
 			// 按R键换弹
-            if (Input.GetKeyDown(KeyCode.R))
+            if (Input.GetKeyDown(KeyCode.R) && bloodBank.CurrentBloodAmount > 0)
             {
-                currentWeapon.Reload(); // 调用GunClip的reload方法进行换弹
+                currentWeapon.Reload(() => 
+                {
+                    // 换弹完成后消耗血液
+                    bloodBank.RemoveBlood(currentWeapon.BloodRequired);
+                }); // 调用GunClip的reload方法进行换弹
+                // GameUI.UpdateBloodText(bloodBank);
             }
+			GameUI.UpdateBloodText(bloodBank);
 
 			// 切枪
 			// if(Input.GetKeyDown(KeyCode.Alpha1))
