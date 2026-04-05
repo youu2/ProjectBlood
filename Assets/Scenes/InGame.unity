@@ -1416,7 +1416,7 @@ Transform:
   m_GameObject: {fileID: 384743934}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.364, y: 0.099, z: 0}
+  m_LocalPosition: {x: 0.939, y: 0.078, z: 0}
   m_LocalScale: {x: 1.4, y: 1.2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1779,6 +1779,7 @@ GameObject:
   - component: {fileID: 505099873}
   - component: {fileID: 505099874}
   - component: {fileID: 505099875}
+  - component: {fileID: 505099876}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -1840,6 +1841,8 @@ MonoBehaviour:
   Bow: {fileID: 2043846055}
   FireFlash: {fileID: 724306956}
   SelfRigidbody2D: {fileID: 505099875}
+  WeaponSwitchSound: {fileID: 8300000, guid: a3da3b18c37ba4440a79e6f10740f1d8, type: 3}
+  SelfAudioSource: {fileID: 505099876}
 --- !u!114 &505099874
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1855,6 +1858,10 @@ MonoBehaviour:
   Binds:
   - MemberName: SelfRigidbody2D
     Object: {fileID: 505099875}
+  - MemberName: WeaponSwitchSound
+    Object: {fileID: 8300000, guid: a3da3b18c37ba4440a79e6f10740f1d8, type: 3}
+  - MemberName: SelfAudioSource
+    Object: {fileID: 505099876}
 --- !u!50 &505099875
 Rigidbody2D:
   serializedVersion: 4
@@ -1882,6 +1889,102 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
+--- !u!82 &505099876
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 505099871}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 0.381
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -3426,8 +3529,8 @@ Transform:
   m_GameObject: {fileID: 1090808460}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.76, y: 0.06, z: 0}
-  m_LocalScale: {x: 1.3, y: 1.2, z: 1}
+  m_LocalPosition: {x: 0.489, y: 0.06, z: 0}
+  m_LocalScale: {x: 1, y: 0.8, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1748640868}
@@ -9051,7 +9154,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 0.321
+  m_Volume: 0.722
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -9154,10 +9257,10 @@ MonoBehaviour:
   PrefabFolder: Assets/Art/Prefab
   ArchitectureFullTypeName: 
   ViewControllerFullTypeName: 
-  reloadSound: {fileID: 8300000, guid: f1dde7fc0970b2d47ae34505565bf724, type: 3}
+  reloadSound: {fileID: 8300000, guid: ec74185de013e794a90aa29ce11251b7, type: 3}
   attackInterval: 1
   ShootSounds:
-  - {fileID: 8300000, guid: 82a0d1fe932105c41a4b5efa37fc87a0, type: 3}
+  - {fileID: 8300000, guid: 58837674c0b5a1f4cbc8f0f2a2b9be3e, type: 3}
   spreadAngle: 28
   bulletCount: 5
   Sprite: {fileID: 1971081686}
@@ -10039,7 +10142,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.008, y: -0.075, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1090808461}
@@ -10058,7 +10161,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 0.577
+  m_Volume: 0.679
   m_Pitch: 1
   Loop: 0
   Mute: 0

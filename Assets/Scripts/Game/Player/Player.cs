@@ -171,10 +171,12 @@ namespace ProjectBlood
 			if(shootDir.x < 0)
 			{
 				weaponTransform.localScale = new Vector3(1, -1, 1);
+				spriteRenderer.flipX = true;
 			}
 			else
 			{
 				weaponTransform.localScale = new Vector3(1, 1, 1);
+				spriteRenderer.flipX = false;
 			}
 
 			//鼠标左键射击（朝鼠标方向）
