@@ -8661,6 +8661,7 @@ MonoBehaviour:
   reloadSound: {fileID: 8300000, guid: 13915b2da51e1f04c8de684903a5dd6e, type: 3}
   ShootSounds:
   - {fileID: 8300000, guid: 94559e385bf7f3d4fbe119a9dfe3cf53, type: 3}
+  Sprite: {fileID: 2110478180}
   Bullet: {fileID: 1035514111}
   SelfAudioSource: {fileID: 1296695879}
 --- !u!82 &1296695879
@@ -9159,6 +9160,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 82a0d1fe932105c41a4b5efa37fc87a0, type: 3}
   spreadAngle: 28
   bulletCount: 5
+  Sprite: {fileID: 1971081686}
   DEBullet: {fileID: 230367216}
   SelfAudioSource: {fileID: 1386963012}
 --- !u!114 &1386963014
@@ -11115,6 +11117,7 @@ GameObject:
   - component: {fileID: 1971081684}
   - component: {fileID: 1971081686}
   - component: {fileID: 1971081685}
+  - component: {fileID: 1971081687}
   m_Layer: 0
   m_Name: Sprite
   m_TagString: Untagged
@@ -11203,6 +11206,22 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1971081687
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1971081683}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d51f3a7c41ab0346b49ae50d456bece, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MarkType: 0
+  CustomComponentName: Sprite
+  CustomComment: 
+  mComponentName: SpriteRenderer
 --- !u!1 &2043846052
 GameObject:
   m_ObjectHideFlags: 0
@@ -11618,6 +11637,7 @@ GameObject:
   - component: {fileID: 2110478178}
   - component: {fileID: 2110478180}
   - component: {fileID: 2110478179}
+  - component: {fileID: 2110478181}
   m_Layer: 0
   m_Name: Sprite
   m_TagString: Untagged
@@ -11706,6 +11726,22 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &2110478181
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2110478177}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d51f3a7c41ab0346b49ae50d456bece, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MarkType: 0
+  CustomComponentName: Sprite
+  CustomComment: 
+  mComponentName: SpriteRenderer
 --- !u!1001 &2118918276
 PrefabInstance:
   m_ObjectHideFlags: 0

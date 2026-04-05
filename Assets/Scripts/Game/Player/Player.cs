@@ -16,6 +16,7 @@ namespace ProjectBlood
 		public Transform weaponTransform;
 		public IWeapon currentWeapon;
 		private List<IWeapon> weapons = new List<IWeapon>();
+		private List<AudioClip> weaponSwitchSounds = new List<AudioClip>();
 		private AudioSource temporaryAudioSource; // 用于播放切换武器时的shootEnd音效
 		private IWeapon weaponToHide = null; // 待隐藏的武器引用（用于半自动武器延迟隐藏）
 		
@@ -29,6 +30,7 @@ namespace ProjectBlood
 			weapons.Add(AK);
 			weapons.Add(Laser);
 			// weapons.Add(Bow);
+			weaponSwitchSounds.Add(WeaponSwitchSound);
 			UseWeapon(0); // 默认装备第一把武器
 			
 			// 创建临时的 AudioSource 用于播放切换武器时的 shootEnd 音效
@@ -42,7 +44,7 @@ namespace ProjectBlood
 			AudioClip currentlyPlayingSound = previousWeapon.GetCurrentlyPlayingSound(); // 获取当前正在播放的音效
 			bool shouldDelayHide = previousWeapon.ShouldDelayHide(); // 在 SwitchFromSet 之前检查
 			bool hasFired = previousWeapon.HasFired(); // 在 SwitchFromSet 之前检查是否开火过
-			bool isPlayingShootEnd = previousWeapon.IsPlayingShootEnd(); // 检查是否正在播放 shootEnd 音效
+			bool isPlayingShootEnd = previousWeapon.IsPlayingShootEnd(); // 在 SwitchFromSet 之前检查是否正在播放 shootEnd 音效
 			
 			// 取消之前的延迟隐藏调用
 			CancelInvoke(nameof(HidePreviousWeapon));
@@ -103,6 +105,9 @@ namespace ProjectBlood
 			currentWeapon = weapons[index];
 			currentWeapon.SwitchToSet();
 			currentWeapon.Show();
+
+			// 播放切换武器音效(以后可以换成[index]，每把武器都有自己的音效)
+			SelfAudioSource.PlayOneShot(weaponSwitchSounds[0]);
 		}
 		
 		void HidePreviousWeapon()
