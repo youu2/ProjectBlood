@@ -11,15 +11,15 @@ namespace ProjectBlood
 
 		// public float attackInterval = 0.2f; // 攻击间隔
 		// private float lastAttackTime = 0f; // 上次攻击时间
-		public AttackInterval AttackInterval = new AttackInterval(0.02f);
+		public AttackInterval AttackInterval = new AttackInterval(0.2f);
 
 		public List<AudioClip> ShootSounds = new List<AudioClip>();
-		public GunClip gunClip = new GunClip(500, null); // 激光的弹夹，最大弹药量为500
+		public GunClip gunClip = new GunClip(300, null); // 激光的弹夹，最大弹药量为300
 		private bool newClip = true; // false表示新的弹夹还没开火过，true表示已经开火过
 		private bool hasFired = false; // 标记是否真正开火过
 		public void Start()
 		{
-			gunClip = new GunClip(500, SelfShortAudioSource); // 激光的弹夹，最大弹药量为500
+			gunClip = new GunClip(300, SelfShortAudioSource); // 激光的弹夹，最大弹药量为300
 			gunClip.UpdateClipUI();
 		}
 

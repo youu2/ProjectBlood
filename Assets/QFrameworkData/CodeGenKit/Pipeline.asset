@@ -19,14 +19,14 @@ MonoBehaviour:
     From: 0
     NameToFullName: []
     BindInfos:
-    - TypeName: UnityEngine.UI.Text
-      PathToRoot: ClipText
-      MemberName: ClipText
-    - TypeName: UnityEngine.UI.Text
-      PathToRoot: BloodText
-      MemberName: BloodText
+    - TypeName: ProjectBlood.Room
+      PathToRoot: Room
+      MemberName: Room
+    - TypeName: ProjectBlood.Door
+      PathToRoot: Door
+      MemberName: Door
     ScriptsFolder: Assets\Scripts\Game\System
-    ClassName: GameUI
+    ClassName: MapController
     Namespace: ProjectBlood
     MainCode: 
     DesignerCode: 

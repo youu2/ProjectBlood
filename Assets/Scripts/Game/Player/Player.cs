@@ -193,7 +193,7 @@ namespace ProjectBlood
 			}
 
 			// 按R键换弹
-            if (Input.GetKeyDown(KeyCode.R) && bloodBank.CurrentBloodAmount > 0)
+            if (Input.GetKeyDown(KeyCode.R) && bloodBank.CurrentBloodAmount > currentWeapon.BloodRequired)
             {
                 currentWeapon.Reload(() => 
                 {

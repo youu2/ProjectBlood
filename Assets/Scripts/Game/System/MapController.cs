@@ -4,159 +4,188 @@ using UnityEngine;
 using ProjectBlood;
 using UnityEngine.Tilemaps;
 using System.Linq;
+using QFramework;
 
-public class MapController : MonoBehaviour
+namespace ProjectBlood
 {
-    // Start is called before the first frame update
-    public TileBase wall_0;
-    public TileBase wall_1;
-    public TileBase wall_2;
-    public TileBase wall_3;
-    public TileBase groundTile;
-    public TileBase wallH0;
-    public TileBase wallH1;
-    public TileBase wallH2;
-    public TileBase wallH3;
-    // Floor 
-    public TileBase floor_0;
-    public TileBase floor_1;
-    public TileBase floor_2;
-    public TileBase floor_3;
-    // 随机选择一个墙壁tile
-    public TileBase randWall => new TileBase[] { wall_0, wall_1, wall_2, wall_3 }[Random.Range(0, 4)];
-    public TileBase randWallH => new TileBase[] { wallH0, wallH1, wallH2, wallH3 }[Random.Range(0, 4)];
-    public TileBase randFloor => new TileBase[] { floor_0, floor_1, floor_2, floor_3 }[Random.Range(0, 4)];
-    public Tilemap wallTilemap;
-    public Tilemap floorTilemap;
-    public GameObject Enemy;
-    public Player player;
-    public int currentRoomPosX = 0;
-    public GameObject Portal;
+    public partial class MapController : ViewController
+    {
+        // Start is called before the first frame update
+        public TileBase wall_0;
+        public TileBase wall_1;
+        public TileBase wall_2;
+        public TileBase wall_3;
+        public TileBase groundTile;
+        public TileBase wallH0;
+        public TileBase wallH1;
+        public TileBase wallH2;
+        public TileBase wallH3;
+        // Floor 
+        public TileBase floor_0;
+        public TileBase floor_1;
+        public TileBase floor_2;
+        public TileBase floor_3;
+        // 随机选择一个墙壁tile
+        public TileBase randWall => new TileBase[] { wall_0, wall_1, wall_2, wall_3 }[Random.Range(0, 4)];
+        public TileBase randWallH => new TileBase[] { wallH0, wallH1, wallH2, wallH3 }[Random.Range(0, 4)];
+        public TileBase randFloor => new TileBase[] { floor_0, floor_1, floor_2, floor_3 }[Random.Range(0, 4)];
+        public Tilemap wallTilemap;
+        public Tilemap floorTilemap;
+        public GameObject Enemy;
+        public Player player;
+        public int currentRoomPosX = 0;
+        public GameObject Portal;
 
-    /*
-        初始地图设计：10x10格，边界为（'1'），内部地面（' '） 玩家（'P'） 敌人（'e'）
-    */
-    public List<string> InitRoom{get ; set ;} = new List<string>()
-    {
-        "211111111111111112",
-        "2                2",
-        "2                2",
-        "2                2",
-        "2                2",
-        "2                2",
-        "2                2",
-        "2                 ",
-        "2                 ",
-        "2                 ",
-        "2                2",
-        "2                2",
-        "2        P       2",
-        "2                2",
-        "2                2",
-        "2                2",
-        "2                2",
-        "211111111111111112"
-    };
-
-    public List<string> NormalRoom{get ; set ;} = new List<string>()
-    {
-        "211111111111111112",
-        "2                2",
-        "2                2",
-        "2     e    e     2",
-        "2                2",
-        "2       e        2",
-        "2                2",
-        "        2         ",
-        "   e   222   e    ",
-        "        2         ",
-        "2                2",
-        "2                2",
-        "2      222       2",
-        "2                2",
-        "2       e        2",
-        "2                2",
-        "2                2",
-        "211111111111111112"
-    };
-
-    public List<string> BossRoom{get ; set ;} = new List<string>()
-    {
-        "211111111111111112",
-        "2                2",
-        "2                2",
-        "2                2",
-        "2                2",
-        "2       #        2",
-        "2                2",
-        "                 2",
-        "                 2",
-        "                 2",
-        "2                2",
-        "2                2",
-        "2                2",
-        "2                2",
-        "2                2",
-        "2                2",
-        "2                2",
-        "211111111111111112"
-    };
-    void Awake()
-    {
-        // player.gameObject.SetActive(false); // Disable player at the start, will be enabled in Start() after instantiation
-        // Enemy.gameObject.SetActive(false); // Disable enemy prefab at the start, will be enabled in Start() after instantiation
-    }
-    void Start()
-    {
-        GenerateRoom(currentRoomPosX,InitRoom);
-        currentRoomPosX += InitRoom.First().Length + 5; // 更新当前房间的X坐标，为下一个房间做准备
-        GenerateRoom(currentRoomPosX,NormalRoom);
-        currentRoomPosX += InitRoom.First().Length + 5;
-        GenerateRoom(currentRoomPosX,BossRoom);
-    }
-
-    // 生成房间的函数
-    void GenerateRoom(int startPosX, List<string> room)
-    {
-        for (int i = 0; i < room.Count; i++)
+        /*
+            初始地图设计：10x10格，边界为（'1'），内部地面（' '） 玩家（'P'） 敌人（'e'）
+        */
+        public List<string> InitRoom{get ; set ;} = new List<string>()
         {
-            for (int j = 0; j < room[i].Length; j++)
+            "211111111111111112",
+            "2                2",
+            "2                2",
+            "2                2",
+            "2                2",
+            "2                2",
+            "2                2",
+            "2                d",
+            "2                d",
+            "2                d",
+            "2                2",
+            "2                2",
+            "2        P       2",
+            "2                2",
+            "2                2",
+            "2                2",
+            "2                2",
+            "211111111111111112"
+        };
+
+        public List<string> NormalRoom{get ; set ;} = new List<string>()
+        {
+            "211111111111111112",
+            "2                2",
+            "2                2",
+            "2     e    e     2",
+            "2                2",
+            "2       e        2",
+            "2                2",
+            "d       2        d",
+            "d  e   222   e   d",
+            "d       2        d",
+            "2                2",
+            "2                2",
+            "2      222       2",
+            "2                2",
+            "2       e        2",
+            "2                2",
+            "2                2",
+            "211111111111111112"
+        };
+
+        public List<string> BossRoom{get ; set ;} = new List<string>()
+        {
+            "211111111111111112",
+            "2                2",
+            "2                2",
+            "2                2",
+            "2                2",
+            "2       #        2",
+            "2                2",
+            "d                2",
+            "d                2",
+            "d                2",
+            "2                2",
+            "2                2",
+            "2                2",
+            "2                2",
+            "2                2",
+            "2                2",
+            "2                2",
+            "211111111111111112"
+        };
+
+        public static MapController instance;
+        void Awake()
+        {
+            instance = this;
+            // player.gameObject.SetActive(false); // Disable player at the start, will be enabled in Start() after instantiation
+            // Enemy.gameObject.SetActive(false); // Disable enemy prefab at the start, will be enabled in Start() after instantiation
+        }
+        void Start()
+        {
+            GenerateRoom(currentRoomPosX,InitRoom);
+            currentRoomPosX += InitRoom.First().Length + 5; // 更新当前房间的X坐标，为下一个房间做准备
+            GenerateRoom(currentRoomPosX,NormalRoom);
+            currentRoomPosX += InitRoom.First().Length + 5;
+            GenerateRoom(currentRoomPosX,BossRoom);
+        }
+
+        // 生成房间的函数
+        void GenerateRoom(int startPosX, List<string> roomMap)
+        {
+            var roomWidth = roomMap.First().Length;
+            var roomHeight = roomMap.Count;
+            var roomCenter = new Vector2(0.15f + startPosX + roomWidth / 2, 1.3f - roomHeight / 2);
+            var roomCenterG = new Vector2(startPosX + roomWidth / 2, - roomHeight / 2);
+            var room = Room.InstantiateWithParent(this).Position(roomCenterG).Show();
+
+            room.SelfBoxCollider2D.size = new Vector2(roomWidth-3.5f, roomHeight-3.5f);
+            
+            for (int i = 0; i < roomMap.Count; i++)
             {
-                floorTilemap.SetTile(new Vector3Int(j + startPosX, -i, 0), randFloor); // 每个地方都要铺设地面
-                if (room[i][j] == '2')
+                for (int j = 0; j < roomMap[i].Length; j++)
                 {
-                    wallTilemap.SetTile(new Vector3Int(j + startPosX, -i, 0), randWall);
-                }
-                else if (room[i][j] == '1')
-                {
-                    wallTilemap.SetTile(new Vector3Int(j + startPosX, -i, 0), randWallH);
-                }
-                else if (room[i][j] == 'P')
-                {
-                    Player.player1.transform.position = new Vector3(j + 0.5f + startPosX, -i + 0.5f, 0);
-                }
-                else if (room[i][j] == 'e')
-                {
-                    var enemy = Instantiate(Enemy);
-                    enemy.transform.position = new Vector3(j + 0.5f + startPosX, -i + 0.5f, 0);
-                }
-                else if (room[i][j] == 'X')
-                {
-                    var boss = Instantiate(Enemy); // 这里暂时使用Enemy,以后可以替换成Boss的prefab
-                    boss.transform.position = new Vector3(j + 0.5f + startPosX, -i + 0.5f, 0);
-                }
-                else if (room[i][j] == '#')
-                {
-                    var portal = Instantiate(Portal);
-                    portal.transform.position = new Vector3(j + 0.5f + startPosX, -i + 0.5f, 0);
+                    floorTilemap.SetTile(new Vector3Int(j + startPosX, -i, 0), randFloor); // 每个地方都要铺设地面
+                    if (roomMap[i][j] == '2')
+                    {
+                        wallTilemap.SetTile(new Vector3Int(j + startPosX, -i, 0), randWall);
+                    }
+                    else if (roomMap[i][j] == '1')
+                    {
+                        wallTilemap.SetTile(new Vector3Int(j + startPosX, -i, 0), randWallH);
+                    }
+                    else if (roomMap[i][j] == 'P')
+                    {
+                        Player.player1.transform.position = new Vector3(j + 0.5f + startPosX, -i + 0.5f, 0);
+                    }
+                    else if (roomMap[i][j] == 'e')
+                    {
+                        var EnemyPos = new Vector3(j + 0.5f + startPosX, -i + 0.5f, 0);
+                        room.AddEnemy(EnemyPos);
+                        // var enemy = Instantiate(Enemy);
+                        // enemy.transform.position = new Vector3(j + 0.5f + startPosX, -i + 0.5f, 0);
+                    }
+                    else if (roomMap[i][j] == 'X')
+                    {
+                        var boss = Instantiate(Enemy); // 这里暂时使用Enemy,以后可以替换成Boss的prefab
+                        boss.transform.position = new Vector3(j + 0.5f + startPosX, -i + 0.5f, 0);
+                    }
+                    else if (roomMap[i][j] == '#')
+                    {
+                        var portal = Instantiate(Portal);
+                        portal.transform.position = new Vector3(j + 0.5f + startPosX, -i + 0.5f, 0);
+                    }
+                    else if (roomMap[i][j] == 'd')
+                    {
+                        // 创建门并设置属性
+                        var door = Door.InstantiateWithParent(room)
+                        .Position2D(new Vector3(j + 0.656f + startPosX, -i + 0.683f, 0))
+                        .Hide();
+                        room.AddDoor(door);
+                    }
                 }
             }
         }
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        // Update is called once per frame
+        void Update()
+        {
+            
+        }
+        void OnDestroy()
+        {
+            instance = null;
+        }
     }
 }

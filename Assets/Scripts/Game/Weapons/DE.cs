@@ -20,6 +20,7 @@ namespace ProjectBlood
         // 被QF架构other bind功能生成的SelfAudioSource替代，可在designer中直接绑定
         private GunClip gunClip = new GunClip(8, null); // DE的弹夹，最大弹药量为8
         private FireFlash fireFlash = new FireFlash(); // DE的枪口火焰特效组件
+        public override int BloodRequired { get; } = 70; // 每次换弹需要的血量
 
         //换弹功能：
         // public int MaxAmmo = 8; // DE的最大弹药量
