@@ -46,8 +46,12 @@ namespace ProjectBlood
         {
             GenerateRoom(currentRoomPosX,RoomConfig.InitRoom);
             currentRoomPosX += RoomConfig.InitRoom.roomMap.First().Length + 5; // 更新当前房间的X坐标，为下一个房间做准备
-            GenerateRoom(currentRoomPosX,RoomConfig.NormalRoom);
-            currentRoomPosX += RoomConfig.NormalRoom.roomMap.First().Length + 5;
+            GenerateRoom(currentRoomPosX,RoomConfig.normalRoomConfigList.GetRandomItem());
+            currentRoomPosX += RoomConfig.InitRoom.roomMap.First().Length + 5;
+            GenerateRoom(currentRoomPosX,RoomConfig.normalRoomConfigList.GetRandomItem());
+            currentRoomPosX += RoomConfig.InitRoom.roomMap.First().Length + 5;
+            GenerateRoom(currentRoomPosX,RoomConfig.normalRoomConfigList.GetRandomItem());
+            currentRoomPosX += RoomConfig.InitRoom.roomMap.First().Length + 5;
             GenerateRoom(currentRoomPosX,RoomConfig.BossRoom);
         }
 

@@ -12,6 +12,14 @@ namespace ProjectBlood
 		public RoomConfig roomConfig {get ; private set ;}
 		private HashSet<Enemy> enemySet = new HashSet<Enemy>();
 		public RoomState roomState = RoomState.Init;
+		private List<EnemyWaveConfig> enemyWaveConfigList = new List<EnemyWaveConfig>()
+		{
+			new EnemyWaveConfig(),
+			new EnemyWaveConfig(),
+			new EnemyWaveConfig(),
+		};
+		private EnemyWaveConfig currentEnemyWaveConfig = null;
+		
 		public enum RoomState
 		{
 			Init,
@@ -29,22 +37,39 @@ namespace ProjectBlood
 			// Code Here
 		}
 
+		void GenerateEnemy()
+		{
+			// if(currentEnemyWaveConfig == null)
+			// {
+			// 	return;
+			// }
+			
+			enemyWaveConfigList.RemoveAt(0);
+			foreach (var enemyPos in enemyPosList)
+			{
+				var enemyObj = Instantiate(MapController.instance.Enemy);
+				enemyObj.transform.position = enemyPos;
+				var enemy = enemyObj.GetComponent<Enemy>();
+				if (enemy != null)
+				{
+					enemySet.Add(enemy);
+				}
+			}
+		}
+
 		private void Update()
 		{
 			if(Time.frameCount % 30 == 0)
 			{
 				enemySet.RemoveWhere(enemy => !enemy);
 			
-				if (enemySet.Count == 0)
+				if (enemySet.Count == 0 && roomState == RoomState.Battle)
 				{
-					if(roomState == RoomState.Battle)
+					if(enemyWaveConfigList.Count > 0)
 					{
+						GenerateEnemy();
+					}else{
 						roomState = RoomState.Finished;
-					}
-					
-					if(roomState == RoomState.Finished)
-					{
-						// 所有敌人死亡，开门
 						foreach (var door in doorList)
 						{
 							door.Hide();
@@ -63,7 +88,7 @@ namespace ProjectBlood
 		private void OnTriggerEnter2D(Collider2D other)
 		{
 			// 玩家进入房间，生成敌人,关门
-			if (other.CompareTag("Player") && roomConfig == RoomConfig.NormalRoom)
+			if (other.CompareTag("Player") && roomConfig.roomType == RoomType.NormalRoom)
 			{
 				if(roomState != RoomState.Init)
 				{
@@ -74,16 +99,7 @@ namespace ProjectBlood
 					roomState = RoomState.Battle;
 				}
 
-				foreach (var enemyPos in enemyPosList)
-				{
-					var enemyObj = Instantiate(MapController.instance.Enemy);
-					enemyObj.transform.position = enemyPos;
-					var enemy = enemyObj.GetComponent<Enemy>();
-					if (enemy != null)
-					{
-						enemySet.Add(enemy);
-					}
-				}
+				GenerateEnemy();
 				foreach (var door in doorList)
 				{
 					door.Show();

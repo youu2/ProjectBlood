@@ -2,19 +2,23 @@ using System.Collections.Generic;
 
 namespace ProjectBlood
 {
-    public class RoomConfig
+    public class EnemyWaveConfig
     {
-        public enum RoomType
+        
+    }
+    public enum RoomType
         {
             InitRoom,
             NormalRoom,
             BossRoom,
         }
-
+    public class RoomConfig
+    {
         public RoomType roomType;
         public List<string> roomMap;
+        
         /*
-            初始地图设计：10x10格，边界为（'1'），内部地面（' '） 玩家（'P'） 敌人（'e'） 传送门（'#'）
+            地图：18x18格，边界为（'1'和‘2’）房门为（'d'）内部地面（' '） 玩家（'P'） 敌人（'e'） 传送门（'#'）
         */
         public static RoomConfig InitRoom = new RoomConfig()
         {
@@ -42,31 +46,111 @@ namespace ProjectBlood
             }
         };
 
-        public static RoomConfig NormalRoom = new RoomConfig()
+        public static List<RoomConfig> normalRoomConfigList = new List<RoomConfig>()
         {
-            roomType = RoomType.NormalRoom,
-            roomMap = new List<string>()
+            new RoomConfig()
             {
-                "211111111111111112",
-                "2                2",
-                "2                2",
-                "2     e    e     2",
-                "2                2",
-                "2       e        2",
-                "2                2",
-                "d       2        d",
-                "d  e   222   e   d",
-                "d       2        d",
-                "2                2",
-                "2                2",
-                "2      222       2",
-                "2                2",
-                "2       e        2",
-                "2                2",
-                "2                2",
-                "211111111111111112"
+                roomType = RoomType.NormalRoom,
+                roomMap = new List<string>()
+                {
+                    "211111111111111112",
+                    "2                2",
+                    "2                2",
+                    "2     e    e     2",
+                    "2                2",
+                    "2       e        2",
+                    "2                2",
+                    "d       2        d",
+                    "d    e 222 e     d",
+                    "d       2        d",
+                    "2                2",
+                    "2                2",
+                    "2      222       2",
+                    "2                2",
+                    "2       e        2",
+                    "2                2",
+                    "2                2",
+                    "211111111111111112"
+                }
+            },
+            new RoomConfig()
+            {
+                roomType = RoomType.NormalRoom,
+                roomMap = new List<string>()
+                {
+                    "211111111111111112",
+                    "2                2",
+                    "2                2",
+                    "2                2",
+                    "2                2",
+                    "2   222   222    2",
+                    "2    2  e  2     2",
+                    "d    2  e  2     d",
+                    "d    2  e  2     d",
+                    "d                d",
+                    "2                2",
+                    "2      222       2",
+                    "2     2   2      2",
+                    "2                2",
+                    "2    e  e  e     2",
+                    "2       e        2",
+                    "2                2",
+                    "211111111111111112"
+                }
+            },
+            new RoomConfig()
+            {
+                roomType = RoomType.NormalRoom,
+                roomMap = new List<string>()
+                {
+                    "211111111111111112",
+                    "2                2",
+                    "2                2",
+                    "2   22      22   2",
+                    "2   2        2   2",
+                    "2                2",
+                    "2                2",
+                    "d        e       d",
+                    "d      e22       d",
+                    "d       22e      d",
+                    "2       e        2",
+                    "2                2",
+                    "2  e         e   2",
+                    "2  2e       e2   2",
+                    "2  22e     e22   2",
+                    "2                2",
+                    "2                2",
+                    "211111111111111112"
+                }
             }
         };
+
+        // 整合进normalRoomConfigList
+        // public static RoomConfig NormalRoom = new RoomConfig()
+        // {
+        //     roomType = RoomType.NormalRoom,
+        //     roomMap = new List<string>()
+        //     {
+        //         "211111111111111112",
+        //         "2                2",
+        //         "2                2",
+        //         "2     e    e     2",
+        //         "2                2",
+        //         "2       e        2",
+        //         "2                2",
+        //         "d       2        d",
+        //         "d  e   222   e   d",
+        //         "d       2        d",
+        //         "2                2",
+        //         "2                2",
+        //         "2      222       2",
+        //         "2                2",
+        //         "2       e        2",
+        //         "2                2",
+        //         "2                2",
+        //         "211111111111111112"
+        //     }
+        // };
 
         public static RoomConfig BossRoom = new RoomConfig()
         {
