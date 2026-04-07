@@ -31,6 +31,12 @@ namespace ProjectBlood
 			weaponSwitchSounds.Add(WeaponSwitchSound);
 			UseWeapon(0); // 默认装备第一把武器
 			
+			// 为所有武器设置血液银行引用
+			foreach (var weapon in weapons)
+			{
+				weapon.BloodBank = bloodBank;
+			}
+			
 			// 创建临时的 AudioSource 用于播放切换武器时的 shootEnd 音效
 			temporaryAudioSource = gameObject.AddComponent<AudioSource>();
 		}
@@ -101,6 +107,7 @@ namespace ProjectBlood
 			}
 			
 			currentWeapon = weapons[index];
+			currentWeapon.BloodBank = bloodBank; // 设置血液银行引用
 			currentWeapon.SwitchToSet();
 			currentWeapon.Show();
 
@@ -193,13 +200,9 @@ namespace ProjectBlood
 			}
 
 			// 按R键换弹
-            if (Input.GetKeyDown(KeyCode.R) && bloodBank.CurrentBloodAmount > currentWeapon.BloodRequired)
+            if (Input.GetKeyDown(KeyCode.R) && bloodBank.CurrentBloodAmount >= currentWeapon.BloodRequired)
             {
-                currentWeapon.Reload(() => 
-                {
-                    // 换弹完成后消耗血液
-                    bloodBank.RemoveBlood(currentWeapon.BloodRequired);
-                }); // 调用GunClip的reload方法进行换弹
+                currentWeapon.Reload(); // 调用GunClip的reload方法进行换弹
                 // GameUI.UpdateBloodText(bloodBank);
             }
 			GameUI.UpdateBloodText(bloodBank);

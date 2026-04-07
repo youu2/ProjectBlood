@@ -14,12 +14,12 @@ namespace ProjectBlood
 		public AttackInterval AttackInterval = new AttackInterval(0.2f);
 
 		public List<AudioClip> ShootSounds = new List<AudioClip>();
-		public GunClip gunClip = new GunClip(300, null); // 激光的弹夹，最大弹药量为300
+		public GunClip gunClip = new GunClip(120, null); // 激光的弹夹，最大弹药量为120
 		private bool newClip = true; // false表示新的弹夹还没开火过，true表示已经开火过
 		private bool hasFired = false; // 标记是否真正开火过
 		public void Start()
 		{
-			gunClip = new GunClip(300, SelfShortAudioSource); // 激光的弹夹，最大弹药量为300
+			gunClip = new GunClip(120, SelfShortAudioSource); // 激光的弹夹，最大弹药量为120
 			gunClip.UpdateClipUI();
 		}
 
@@ -43,6 +43,8 @@ namespace ProjectBlood
 				// gunClip.Shoot();
 				newClip = true;
 				hasFired = true; // 标记已经开火过
+			}else{
+				Reload();
 			}
 		}
 		
@@ -65,7 +67,7 @@ namespace ProjectBlood
 				// 没有弹药时停止射击声音
 				StopAttacking();
 				newClip = true;
-				return;
+				Reload();
 			}
 
 			// 激光特殊逻辑：发射时持续检测激光碰到的第一个物体，并将激光绘制到碰撞点位置
@@ -93,11 +95,16 @@ namespace ProjectBlood
 
 		public override void Reload(System.Action onReloadComplete = null)
         {
-            // 按R键换弹
-            if (Input.GetKeyDown(KeyCode.R))
-            {
-                gunClip.Reload(reloadSound, this, onReloadComplete); // 调用GunClip的reload方法进行换弹
-            }
+			gunClip.Reload(reloadSound, this, () => 
+			{
+				// 换弹完成后消耗血液
+				if (BloodBank != null && BloodBank.CurrentBloodAmount >= BloodRequired)
+				{
+					BloodBank.RemoveBlood(BloodRequired);
+				}
+				// 调用外部传入的回调
+				onReloadComplete?.Invoke();
+			}); // 调用GunClip的reload方法进行换弹
         }
 
 		public override void SwitchFromSet()

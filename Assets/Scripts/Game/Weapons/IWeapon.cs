@@ -12,6 +12,7 @@ namespace ProjectBlood
         protected float lastFireTime = 0f; // 上次开火时间
         protected const float FIRE_SOUND_DURATION_THRESHOLD = 0.8f; // 开火后多久内算作"正在播放枪声"
         public virtual int BloodRequired { get; } = 5; // 每次换弹需要的血量
+        public BloodBank BloodBank { get; set; } // 血液银行引用
         public abstract void Attack(Vector2 shootDir);
         public virtual void StartAttacking(Vector2 shootDir)
         {

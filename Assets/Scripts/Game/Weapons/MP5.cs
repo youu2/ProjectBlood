@@ -39,15 +39,18 @@ namespace ProjectBlood
 		}
 		public override void StartAttacking(Vector2 shootDir)
 		{
-			if(!gunClip.CanShoot()) return;
-			// Attack(shootDir);
-			SelfShortAudioSource.PlayOneShot(MP5OneShot);
-			SelfAudioSource.clip = ShootSounds[0];
-			SelfAudioSource.loop = true;
-			SelfAudioSource.Play();
-			// gunClip.Shoot();
-			newClip = false;
-			hasFired = true; // 标记已经开火过
+			if(gunClip.CanShoot()){
+				// Attack(shootDir);
+				SelfShortAudioSource.PlayOneShot(MP5OneShot);
+				SelfAudioSource.clip = ShootSounds[0];
+				SelfAudioSource.loop = true;
+				SelfAudioSource.Play();
+				// gunClip.Shoot();
+				newClip = false;
+				hasFired = true; // 标记已经开火过
+			}else{
+				Reload();
+			}
 		}
 		public override void keepAttacking(Vector2 shootDir)
 		{
@@ -68,19 +71,16 @@ namespace ProjectBlood
 				// 没有弹药时停止射击声音
 				StopAttacking();
 				newClip = true;
-				return;
+				Reload();
 			}			
 		}
 
 		public override void StopAttacking()
 		{
-			
 			// 只有在真正开火过的情况下才播放结束音效
 			// hasFired 为 true 表示已经开火过
 			if(SelfAudioSource.isPlaying && hasFired)
-			{
-				// 停止攻击时的一些逻辑，比如停止播放射击声音等
-				
+			{				
 				SelfShortAudioSource.PlayOneShot(MP5ShootEnd);
 			}
 			SelfAudioSource.Stop();
@@ -90,11 +90,16 @@ namespace ProjectBlood
 
 		public override void Reload(System.Action onReloadComplete = null)
 		{
-			// 按R键换弹
-			if (Input.GetKeyDown(KeyCode.R))
+			gunClip.Reload(reloadSound, this, () => 
 			{
-				gunClip.Reload(reloadSound, this, onReloadComplete); // 调用GunClip的reload方法进行换弹
-			}
+				// 换弹完成后消耗血液
+				if (BloodBank != null && BloodBank.CurrentBloodAmount >= BloodRequired)
+				{
+					BloodBank.RemoveBlood(BloodRequired);
+				}
+				// 调用外部传入的回调
+				onReloadComplete?.Invoke();
+			}); // 调用GunClip的reload方法进行换弹	
 		}
 
         public override void SwitchFromSet()

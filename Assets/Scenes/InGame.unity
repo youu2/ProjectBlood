@@ -1469,8 +1469,8 @@ CapsuleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.31347078, y: 0.00952569}
-  m_Size: {x: 0.74737275, y: 0.6375578}
+  m_Offset: {x: 0.011024875, y: 0.009525732}
+  m_Size: {x: 1.3522849, y: 0.6375702}
   m_Direction: 1
 --- !u!50 &384743937
 Rigidbody2D:
@@ -1512,8 +1512,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   direction: {x: 0, y: 0}
-  speed: 120
-  damage: 10
+  speed: 100
+  damage: 12
 --- !u!212 &384743939
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -4138,7 +4138,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1127192533
 MonoBehaviour:
   m_ObjectHideFlags: 0

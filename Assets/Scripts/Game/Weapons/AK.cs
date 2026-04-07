@@ -61,6 +61,8 @@ namespace ProjectBlood
 				// gunClip.Shoot();会导致第一枪消耗两发弹药
 				newClip = false;
 				hasFired = true; // 标记已经开火过
+			} else{
+				Reload();
 			}
 			
 		}
@@ -82,7 +84,7 @@ namespace ProjectBlood
 				// 没有弹药时停止射击声音
 				StopAttacking();
 				newClip = true;
-				return;
+				Reload();
 			}	
 		}
 
@@ -101,11 +103,7 @@ namespace ProjectBlood
 
 		public override void Reload(System.Action onReloadComplete = null)
         {
-            // 按R键换弹
-            if (Input.GetKeyDown(KeyCode.R))
-            {
-                gunClip.Reload(reloadSound, this, onReloadComplete); // 调用GunClip的reload方法进行换弹
-            }
+            gunClip.Reload(reloadSound, this, onReloadComplete); // 调用GunClip的reload方法进行换弹
         }
 
 		public override void SwitchFromSet()

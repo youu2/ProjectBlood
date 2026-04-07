@@ -34,11 +34,16 @@ namespace ProjectBlood
 
         public override void Reload(System.Action onReloadComplete = null)
         {
-            // 按R键换弹
-            if (Input.GetKeyDown(KeyCode.R))
+            gunClip.Reload(reloadSound, this, () => 
             {
-                gunClip.Reload(reloadSound, this, onReloadComplete); // 调用GunClip的reload方法进行换弹
-            }
+                // 换弹完成后消耗血液
+                if (BloodBank != null && BloodBank.CurrentBloodAmount >= BloodRequired)
+                {
+                    BloodBank.RemoveBlood(BloodRequired);
+                }
+                // 调用外部传入的回调
+                onReloadComplete?.Invoke();
+            }); // 调用GunClip的reload方法进行换弹
         }
 
         public override void Attack(Vector2 shootDir)
@@ -65,7 +70,9 @@ namespace ProjectBlood
                 Attack(shootDir);
                 AttackInterval.RecordAttackTime();
                 gunClip.Shoot(); // 射击时减少弹药量
-            }
+            }else if(!gunClip.CanShoot()){
+				Reload();
+			}
         }
 
         public override void StopAttacking()
