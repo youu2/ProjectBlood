@@ -22,7 +22,7 @@ namespace ProjectBlood
         public static BindableProperty<int> cumulativeNum = new BindableProperty<int>(0);   // cumulative number of generated enemies so far
         public static BindableProperty<int> CurrentWaves = new BindableProperty<int>(1);
         //[SerializeField] private int maxWavesNum = 3;   // The total number of enemy waves generated
-        public static BindableProperty<int> maxWavesNum = new BindableProperty<int>(1);  // The total number of enemy waves generated
+        public static BindableProperty<int> maxWavesNum = new BindableProperty<int>(5);  // The total number of enemy waves generated
         public static BindableProperty<float> BCAttackInterval = new BindableProperty<float>(1.5f); // attack interval of Blazing Circle
         public static BindableProperty<int> MAX_EXP = new BindableProperty<int>(5);
         public static BindableProperty<float> CoinDropRate = new BindableProperty<float>(0.30f); // 30% chance to drop coins
