@@ -1,4 +1,4 @@
-// Generate Id:bc1e43b3-a753-4119-8585-86edeab48a5c
+// Generate Id:cadfd525-d572-4e20-bf30-cb76e30373bc
 using UnityEngine;
 
 namespace ProjectBlood
@@ -10,6 +10,8 @@ namespace ProjectBlood
 		public PenetratingBullet Bullet;
 		
 		public UnityEngine.AudioSource SelfAudioSource;
+		
+		public UnityEngine.AudioClip DryFireClick;
 		
 	}
 }

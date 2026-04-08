@@ -13,7 +13,7 @@ namespace ProjectBlood
             Player.player1.FireFlash.transform.right = direction; // 让枪口光效朝向射击方向
             Player.player1.FireFlash.Show(); // 播放枪口光效动画
             // 启动一个协程，在几帧后隐藏枪口光效
-            Player.player1.StartCoroutine(HideFlashAfterFrames(8)); // 8帧
+            Player.player1.StartCoroutine(HideFlashAfterFrames(2)); // 2帧
             
         }
         private IEnumerator HideFlashAfterFrames(int frameCount)

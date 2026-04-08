@@ -26,9 +26,6 @@ namespace ProjectBlood
             {
                 currentAmmo--; // 射击时减少弹药量
                 UpdateClipUI(); // 射击后更新UI显示的弹药信息
-            }else
-            {
-                Player.DisplayText("弹药已空");
             }
         }
         // public void Reload(AudioClip reloadSound)

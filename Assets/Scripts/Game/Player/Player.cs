@@ -20,7 +20,7 @@ namespace ProjectBlood
 		public BloodBank bloodBank = new BloodBank(); // 血液银行组件，特殊资源，用于弹药管理和血量管理
 		// 显示跟随玩家的提示文本
 		public static void DisplayText(string text){
-			player1.StartCoroutine(player1.ShowText(text, 1.5f));
+			player1.StartCoroutine(player1.ShowText(text, 2.0f));
 		}
 
 		public static void HideText(){
@@ -36,6 +36,7 @@ namespace ProjectBlood
 		}
 		private void Awake()
 		{
+			Application.targetFrameRate = 60;
 			player1 = this;
 			weapons.Add(DE);
 			weapons.Add(MP5);

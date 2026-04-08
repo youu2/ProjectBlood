@@ -94,9 +94,18 @@ namespace ProjectBlood
 				if(!gunClip.isReloading)
 				{
 					Player.DisplayText("[R] to Reload!");
+                    SelfAudioSource.PlayOneShot(DryFireClick);
 					reloadTextShown = true; // 标记已经显示过 reload 文本
 				}
 			}
+			TryPlayDryFireClick();
+		}
+		public void TryPlayDryFireClick()
+		{
+			if(Time.frameCount % 50 == 0 && AttackInterval.CanAttack() && !gunClip.isReloading)
+			{
+				SelfAudioSource.PlayOneShot(DryFireClick);
+			}	
         }
 
         public override void StopAttacking()

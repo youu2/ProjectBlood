@@ -1,4 +1,4 @@
-// Generate Id:a682e2d4-072f-4fcb-81fe-2555f58ad670
+// Generate Id:96cb24db-a201-4705-857e-e858a100ae8b
 using UnityEngine;
 
 namespace ProjectBlood
@@ -14,6 +14,8 @@ namespace ProjectBlood
 		public UnityEngine.AudioSource SelfAudioSource;
 		
 		public UnityEngine.AudioClip AKShootEnd;
+		
+		public UnityEngine.AudioClip DryFireClick;
 		
 	}
 }
