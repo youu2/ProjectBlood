@@ -1,6 +1,7 @@
 using UnityEngine;
 using QFramework;
 using System.Collections.Generic;
+using System.Collections;
 
 namespace ProjectBlood
 {
@@ -17,7 +18,22 @@ namespace ProjectBlood
 		private AudioSource temporaryAudioSource; // 用于播放切换武器时的shootEnd音效
 		private IWeapon weaponToHide = null; // 待隐藏的武器引用（用于半自动武器延迟隐藏）
 		public BloodBank bloodBank = new BloodBank(); // 血液银行组件，特殊资源，用于弹药管理和血量管理
+		// 显示跟随玩家的提示文本
+		public static void DisplayText(string text){
+			player1.StartCoroutine(player1.ShowText(text, 1.5f));
+		}
+
+		public static void HideText(){
+			player1.NoticeText.Hide();
+		}
 		
+		IEnumerator ShowText(string text, float duration)
+		{
+			player1.NoticeText.text = text;
+			player1.NoticeText.Show();
+			yield return new WaitForSeconds(duration);
+			player1.NoticeText.Hide();
+		}
 		private void Awake()
 		{
 			player1 = this;
@@ -30,7 +46,7 @@ namespace ProjectBlood
 			// weapons.Add(Bow);
 			weaponSwitchSounds.Add(WeaponSwitchSound);
 			UseWeapon(0); // 默认装备第一把武器
-			
+			NoticeText.Hide();
 			// 为所有武器设置血液银行引用
 			foreach (var weapon in weapons)
 			{

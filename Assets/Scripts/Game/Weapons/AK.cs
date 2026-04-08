@@ -21,6 +21,7 @@ namespace ProjectBlood
 		public GunClip gunClip = new GunClip(30, null); // AK的弹夹，最大弹药量为30
 		private bool newClip = true; // false表示新的弹夹还没开火过，true表示已经开火过
 		private bool hasFired = false; // 标记是否真正开火过
+		private bool reloadTextShown = false; // 标记是否已经显示过 reload 文本
 		private FireFlash fireFlash = new FireFlash(); // DE的枪口火焰特效组件
         public void Start()
         {
@@ -55,16 +56,15 @@ namespace ProjectBlood
 				// 第一次按下鼠标时播放一次单发音效，继续按住也能播放循环持续开火音效
 				// Attack(shootDir);
 				SelfShortAudioSource.PlayOneShot(AKOneShotSound);
-				SelfAudioSource .clip = ShootSounds[0];
+				SelfAudioSource.clip = ShootSounds[0];
 				SelfAudioSource.loop = true;
 				SelfAudioSource.Play();
 				// gunClip.Shoot();会导致第一枪消耗两发弹药
 				newClip = false;
 				hasFired = true; // 标记已经开火过
-			} else{
-				Reload();
+			}else{
+				// Reload();
 			}
-			
 		}
 		public override void keepAttacking(Vector2 shootDir)
 		{
@@ -79,12 +79,18 @@ namespace ProjectBlood
 				Attack(shootDir);
 				AttackInterval.RecordAttackTime();
 				gunClip.Shoot(); // 射击时减少弹药量
-			}else if (!gunClip.CanShoot())
+				reloadTextShown = false; // 有弹药时重置 reload 文本显示标记
+			}else if (!gunClip.CanShoot() && !reloadTextShown)
 			{
 				// 没有弹药时停止射击声音
 				StopAttacking();
 				newClip = true;
-				Reload();
+				// Reload();
+				if(!gunClip.isReloading)
+				{
+					Player.DisplayText("[R] to Reload!");
+					reloadTextShown = true; // 标记已经显示过 reload 文本
+				}
 			}	
 		}
 
@@ -102,18 +108,29 @@ namespace ProjectBlood
 		}
 
 		public override void Reload(System.Action onReloadComplete = null)
-        {
-            gunClip.Reload(reloadSound, this, onReloadComplete); // 调用GunClip的reload方法进行换弹
-        }
+		{
+			gunClip.Reload(reloadSound, this, () => 
+			{
+				// 换弹完成后消耗血液
+				if (BloodBank != null && BloodBank.CurrentBloodAmount >= BloodRequired)
+				{
+					BloodBank.RemoveBlood(BloodRequired);
+				}
+				// 调用外部传入的回调
+				onReloadComplete?.Invoke();
+			}); // 调用GunClip的reload方法进行换弹	
+		}
 
 		public override void SwitchFromSet()
 		{
 			// Debug.Log("MP5 Reset");
 			AttackInterval.Reset();
 			newClip = true;
+			reloadTextShown = false; // 切换武器时重置 reload 文本显示标记
 			StopAttacking();
 			gunClip.StopReload(this); // 切出武器时停止换弹流程
 			gunClip.isReloading = false; // 切出武器时重置换弹状态，确保下次切回时可以正常换弹
+			Player.HideText(); // 切换武器时隐藏 reload 文本
 		}
 
 		public override void SwitchToSet()

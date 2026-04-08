@@ -17,6 +17,8 @@ namespace ProjectBlood
         // 被QF架构other bind功能生成的SelfAudioSource替代，可在designer中直接绑定
         public GunClip gunClip = new GunClip(10, null); // AWP的弹夹，最大弹药量为10
         private FireFlash fireFlash = new FireFlash(); // 枪口火焰特效组件
+        private bool reloadTextShown = false; // 标记是否已经显示过 reload 文本，防止文本闪烁
+
         public void Start()
         {
             gunClip = new GunClip(10, SelfAudioSource); // AWP的弹夹，最大弹药量为10
@@ -47,8 +49,14 @@ namespace ProjectBlood
                 Attack(shootDir);
                 AttackInterval.RecordAttackTime();
                 gunClip.Shoot(); // 射击时减少弹药量
-            }else if(!gunClip.CanShoot()){
-				Reload();
+                reloadTextShown = false; // 有弹药时重置 reload 文本显示标记
+            }else if(!gunClip.CanShoot() && !reloadTextShown){
+				// Reload();
+				if(!gunClip.isReloading)
+				{
+					Player.DisplayText("[R] to Reload!");
+					reloadTextShown = true; // 标记已经显示过 reload 文本
+				}
 			}
         }
 
@@ -75,6 +83,8 @@ namespace ProjectBlood
             gunClip.StopReload(this); // 切出武器时停止换弹流程
             gunClip.isReloading = false; // 切出武器时重置换弹状态，确保下次切回时可以正常换弹
             recentlyFired = false; // 切出武器时重置开火标志
+            reloadTextShown = false; // 切出武器时重置 reload 文本显示标记
+           	Player.HideText(); // 切换武器时隐藏 reload 文本
         }
 
         public override void SwitchToSet()

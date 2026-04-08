@@ -17,6 +17,7 @@ namespace ProjectBlood
 		public GunClip gunClip = new GunClip(120, null); // 激光的弹夹，最大弹药量为120
 		private bool newClip = true; // false表示新的弹夹还没开火过，true表示已经开火过
 		private bool hasFired = false; // 标记是否真正开火过
+		private bool reloadTextShown = false; // 标记是否已经显示过 reload 文本
 		public void Start()
 		{
 			gunClip = new GunClip(120, SelfShortAudioSource); // 激光的弹夹，最大弹药量为120
@@ -37,14 +38,14 @@ namespace ProjectBlood
 			{
 				// Attack(shootDir);
 				SelfShortAudioSource.PlayOneShot(LaserStart);
-				SelfAudioSource .clip = ShootSounds[0];
+				SelfAudioSource.clip = ShootSounds[0];
 				SelfAudioSource.loop = true;
 				SelfAudioSource.Play();
 				// gunClip.Shoot();
-				newClip = true;
+				newClip = false;
 				hasFired = true; // 标记已经开火过
 			}else{
-				Reload();
+				// Reload();
 			}
 		}
 		
@@ -52,30 +53,38 @@ namespace ProjectBlood
 		{
 			// 为了让打空弹夹后继续按住左键同时换弹后 ->
 			// 能够正确触发循环开火音效
-			if (newClip)
+			if (newClip && gunClip.CanShoot())
 			{
 				StartAttacking(shootDir);
 				newClip = false;
 			}
+
+			if (gunClip.CanShoot()){
+				// 激光特殊逻辑：发射时持续检测激光碰到的第一个物体，并将激光绘制到碰撞点位置
+				var targetLayer = LayerMask.GetMask("Enemy", "Wall"); // 所有可以阻挡激光的物体层级
+				var hit = Physics2D.Raycast(Bullet.Position2D(), shootDir, Mathf.Infinity, targetLayer); // 获得碰到的第一个物体的位置
+				SelfLineRenderer.SetPosition(0, Bullet.Position2D()); // 设置激光的起始点和结束点，没碰到就默认绘制100单位长度的激光
+				SelfLineRenderer.SetPosition(1, hit.collider != null ? (Vector3)hit.point : (Bullet.Position2D() + shootDir * 100f));
+			}
+
 			if (AttackInterval.CanAttack() && gunClip.CanShoot())
 			{
 				Attack(shootDir);
 				AttackInterval.RecordAttackTime();
 				gunClip.Shoot();
-			}else if (!gunClip.CanShoot())
+				reloadTextShown = false; // 有弹药时重置 reload 文本显示标记
+			}else if (!gunClip.CanShoot() && !reloadTextShown)
 			{
 				// 没有弹药时停止射击声音
 				StopAttacking();
 				newClip = true;
-				Reload();
+				// Reload();
+				if(!gunClip.isReloading)
+				{
+					Player.DisplayText("[R] to Reload!");
+					reloadTextShown = true; // 标记已经显示过 reload 文本
+				}
 			}
-
-			// 激光特殊逻辑：发射时持续检测激光碰到的第一个物体，并将激光绘制到碰撞点位置
-			var targetLayer = LayerMask.GetMask("Enemy", "Wall"); // 所有可以阻挡激光的物体层级
-			var hit = Physics2D.Raycast(Bullet.Position2D(), shootDir, Mathf.Infinity, targetLayer); // 获得碰到的第一个物体的位置
-			SelfLineRenderer.SetPosition(0, Bullet.Position2D()); // 设置激光的起始点和结束点，没碰到就默认绘制100单位长度的激光
-			SelfLineRenderer.SetPosition(1, hit.collider != null ? (Vector3)hit.point : (Bullet.Position2D() + shootDir * 100f));
-			
 		}
 
 		public override void StopAttacking()
@@ -113,8 +122,10 @@ namespace ProjectBlood
 			AttackInterval.Reset();
 			newClip = true;
 			StopAttacking();
+			reloadTextShown = false; // 切出武器时重置 reload 文本显示标记
 			gunClip.StopReload(this); // 切出武器时停止换弹流程
 			gunClip.isReloading = false; // 切出武器时重置换弹状态，确保下次切回时可以正常换弹
+			Player.HideText(); // 切换武器时隐藏 reload 文本
 		}
 
 		public override void SwitchToSet()

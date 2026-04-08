@@ -21,6 +21,7 @@ namespace ProjectBlood
 		public GunClip gunClip = new GunClip(30, null); // MP5的弹夹，最大弹药量为30; // MP5的弹夹，最大弹药量为30
 		private bool newClip = true; // false表示新的弹夹还没开火过，true表示已经开火过
 		private bool hasFired = false; // 标记是否真正开火过
+		private bool reloadTextShown = false; // 标记是否已经显示过 reload 文本
 		private FireFlash fireFlash = new FireFlash(); // DE的枪口火焰特效组件
 		public void Start()
 		{
@@ -39,7 +40,8 @@ namespace ProjectBlood
 		}
 		public override void StartAttacking(Vector2 shootDir)
 		{
-			if(gunClip.CanShoot()){
+			if(gunClip.CanShoot())
+			{
 				// Attack(shootDir);
 				SelfShortAudioSource.PlayOneShot(MP5OneShot);
 				SelfAudioSource.clip = ShootSounds[0];
@@ -49,14 +51,14 @@ namespace ProjectBlood
 				newClip = false;
 				hasFired = true; // 标记已经开火过
 			}else{
-				Reload();
+				// Reload();
 			}
 		}
 		public override void keepAttacking(Vector2 shootDir)
 		{
 			// 为了让打空弹夹后继续按住左键同时换弹后 ->
 			// 能够正确触发循环开火音效
-			if (newClip)
+			if (newClip && gunClip.CanShoot())
 			{
 				StartAttacking(shootDir);
 				newClip = false;
@@ -66,13 +68,19 @@ namespace ProjectBlood
 				Attack(shootDir);
 				AttackInterval.RecordAttackTime();
 				gunClip.Shoot();
-			}else if (!gunClip.CanShoot())
+				reloadTextShown = false; // 有弹药时重置 reload 文本显示标记
+			}else if (!gunClip.CanShoot() && !reloadTextShown)
 			{
 				// 没有弹药时停止射击声音
 				StopAttacking();
 				newClip = true;
-				Reload();
-			}			
+				// Reload();
+				if(!gunClip.isReloading)
+				{
+					Player.DisplayText("[R] to Reload!");
+					reloadTextShown = true; // 标记已经显示过 reload 文本
+				}
+			}
 		}
 
 		public override void StopAttacking()
@@ -107,9 +115,11 @@ namespace ProjectBlood
 			// Debug.Log("MP5 Reset");
 			AttackInterval.Reset();
 			newClip = true;
+			reloadTextShown = false; // 切出武器时重置 reload 文本显示标记
 			StopAttacking();
 			gunClip.StopReload(this); // 切出武器时停止换弹流程
 			gunClip.isReloading = false; // 切出武器时重置换弹状态，确保下次切回时可以正常换弹
+			Player.HideText(); // 切换武器时隐藏 reload 文本
 		}
 		public override void SwitchToSet()
 		{
