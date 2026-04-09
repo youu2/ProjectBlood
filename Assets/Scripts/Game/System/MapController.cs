@@ -44,36 +44,62 @@ namespace ProjectBlood
         }
         void Start()
         {
-            // 绘制房间
-            GenerateRoom(currentRoomPosX,RoomConfig.InitRoom);
-            currentRoomPosX += RoomConfig.InitRoom.roomMap.First().Length + 5; // 更新当前房间的X坐标，为下一个房间做准备
-            GenerateRoom(currentRoomPosX,RoomConfig.normalRoomConfigList.GetRandomItem());
-            currentRoomPosX += RoomConfig.InitRoom.roomMap.First().Length + 5;
-            GenerateRoom(currentRoomPosX,RoomConfig.normalRoomConfigList.GetRandomItem());
-            currentRoomPosX += RoomConfig.InitRoom.roomMap.First().Length + 5;
-            GenerateRoom(currentRoomPosX,RoomConfig.normalRoomConfigList.GetRandomItem());
-            currentRoomPosX += RoomConfig.InitRoom.roomMap.First().Length + 5;
-            GenerateRoom(currentRoomPosX,RoomConfig.BossRoom);
-            // 绘制过道
-            var roomWidth = RoomConfig.InitRoom.roomMap.First().Length;
-            var roomHeight = RoomConfig.InitRoom.roomMap.Count;
+            Room.Hide();
 
-            for (int n = 0; n < 4; n++)
-            {
-                currentRoomPosX = n*(roomWidth + 5);
-                var doorStartPosX = currentRoomPosX + roomWidth - 1;
-                var doorStartPosY = -roomHeight/2 + 1;
-
-                for(int i = 0; i < 5; i++)
+            // 全图布局
+            // InitRoom -> NormalRoom -> NormalRoom -> NormalRoom -> BossRoom
+            var layout = new RoomNode(RoomType.InitRoom);
+            layout.NextRoom(RoomType.NormalRoom)
+                        .NextRoom(RoomType.NormalRoom)
+                        .NextRoom(RoomType.NormalRoom)
+                        .NextRoom(RoomType.BossRoom);
+            // 递归生成所有房间布局
+            void GenerateRoomByLayout(RoomNode layout){
+                if(layout.roomType == RoomType.InitRoom)
                 {
-                    floorTilemap.SetTile(new Vector3Int(doorStartPosX+i+1, doorStartPosY, 0), randFloor);
-                    floorTilemap.SetTile(new Vector3Int(doorStartPosX+i+1, doorStartPosY+1, 0), randFloor);
-                    floorTilemap.SetTile(new Vector3Int(doorStartPosX+i+1, doorStartPosY-1, 0), randFloor);
-
-                    wallTilemap.SetTile(new Vector3Int(doorStartPosX+i+1, doorStartPosY+2, 0), randWall);
-                    wallTilemap.SetTile(new Vector3Int(doorStartPosX+i+1, doorStartPosY-2, 0), randWall);
+                    GenerateRoom(currentRoomPosX,RoomConfig.InitRoom);
+                    currentRoomPosX += RoomConfig.InitRoom.roomMap.First().Length + 5; // 更新当前房间的X坐标，为下一个房间做准备
+                }else if(layout.roomType == RoomType.NormalRoom)
+                {
+                    GenerateRoom(currentRoomPosX,RoomConfig.normalRoomConfigList.GetRandomItem());
+                    currentRoomPosX += RoomConfig.InitRoom.roomMap.First().Length + 5;
+                }else if(layout.roomType == RoomType.BossRoom)
+                {
+                    GenerateRoom(currentRoomPosX,RoomConfig.BossRoom);
+                    currentRoomPosX += RoomConfig.BossRoom.roomMap.First().Length + 5;
+                }
+                foreach(var child in layout.Children)
+                {
+                    GenerateRoomByLayout(child);
                 }
             }
+
+            GenerateRoomByLayout(layout);
+            GeneratePassage(5);
+            // 绘制过道
+            void GeneratePassage(int roomCount){
+                var roomWidth = RoomConfig.InitRoom.roomMap.First().Length;
+                var roomHeight = RoomConfig.InitRoom.roomMap.Count;
+
+                for (int n = 0; n < roomCount - 1; n++)
+                {
+                    currentRoomPosX = n*(roomWidth + 5);
+                    var doorStartPosX = currentRoomPosX + roomWidth - 1;
+                    var doorStartPosY = -roomHeight/2 + 1;
+
+                    for(int i = 0; i < 5; i++)
+                    {
+                        floorTilemap.SetTile(new Vector3Int(doorStartPosX+i+1, doorStartPosY, 0), randFloor);
+                        floorTilemap.SetTile(new Vector3Int(doorStartPosX+i+1, doorStartPosY+1, 0), randFloor);
+                        floorTilemap.SetTile(new Vector3Int(doorStartPosX+i+1, doorStartPosY-1, 0), randFloor);
+
+                        wallTilemap.SetTile(new Vector3Int(doorStartPosX+i+1, doorStartPosY+2, 0), randWall);
+                        wallTilemap.SetTile(new Vector3Int(doorStartPosX+i+1, doorStartPosY-2, 0), randWall);
+                    }
+                }
+            }
+
+            
         }
 
         // 生成房间的函数

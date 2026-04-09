@@ -2514,8 +2514,8 @@ GameObject:
   m_Component:
   - component: {fileID: 622954702}
   - component: {fileID: 622954700}
-  - component: {fileID: 622954701}
   - component: {fileID: 622954703}
+  - component: {fileID: 622954705}
   - component: {fileID: 622954704}
   m_Layer: 0
   m_Name: Room
@@ -2545,22 +2545,6 @@ MonoBehaviour:
   ViewControllerFullTypeName: 
   roomState: 0
   SelfBoxCollider2D: {fileID: 622954703}
---- !u!114 &622954701
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 622954699}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0d51f3a7c41ab0346b49ae50d456bece, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  MarkType: 0
-  CustomComponentName: Room
-  CustomComment: 
-  mComponentName: ProjectBlood.Room
 --- !u!4 &622954702
 Transform:
   m_ObjectHideFlags: 0
@@ -2636,6 +2620,22 @@ MonoBehaviour:
   Binds:
   - MemberName: SelfBoxCollider2D
     Object: {fileID: 622954703}
+--- !u!114 &622954705
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 622954699}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d51f3a7c41ab0346b49ae50d456bece, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MarkType: 0
+  CustomComponentName: Room
+  CustomComment: 
+  mComponentName: ProjectBlood.Room
 --- !u!1 &687418534
 GameObject:
   m_ObjectHideFlags: 0

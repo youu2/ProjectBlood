@@ -7,11 +7,30 @@ namespace ProjectBlood
         
     }
     public enum RoomType
+    {
+        InitRoom,
+        NormalRoom,
+        BossRoom,
+    }
+
+    public class RoomNode
+    {
+        public RoomType roomType = RoomType.InitRoom;
+        public List<RoomNode> Children = new List<RoomNode>();
+
+        public RoomNode(RoomType roomType)
         {
-            InitRoom,
-            NormalRoom,
-            BossRoom,
+            this.roomType = roomType;
         }
+
+        public RoomNode NextRoom(RoomType roomType)
+        {
+            var roomNode = new RoomNode(roomType);
+            Children.Add(roomNode);
+            return roomNode;
+        }
+    }
+
     public class RoomConfig
     {
         public RoomType roomType;
