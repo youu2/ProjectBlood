@@ -275,6 +275,8 @@ MonoBehaviour:
     Object: {fileID: 77108537}
   - MemberName: AKShootEnd
     Object: {fileID: 8300000, guid: 6cef13473d097cd4eb3752461dcb73ca, type: 3}
+  - MemberName: DryFireClick
+    Object: {fileID: 8300000, guid: 2b36376a5dd20c440b7845d5d58587ba, type: 3}
 --- !u!114 &77108536
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -303,6 +305,7 @@ MonoBehaviour:
   SelfShortAudioSource: {fileID: 77108534}
   SelfAudioSource: {fileID: 77108537}
   AKShootEnd: {fileID: 8300000, guid: 6cef13473d097cd4eb3752461dcb73ca, type: 3}
+  DryFireClick: {fileID: 8300000, guid: 2b36376a5dd20c440b7845d5d58587ba, type: 3}
 --- !u!82 &77108537
 AudioSource:
   m_ObjectHideFlags: 0
@@ -898,6 +901,7 @@ MonoBehaviour:
   SelfAudioSource: {fileID: 219810383}
   MP5ShootEnd: {fileID: 8300000, guid: deb4139c552afa7489f1ee232c7d45ca, type: 3}
   MP5OneShot: {fileID: 8300000, guid: 887a145e04b956a418ddf79460429e82, type: 3}
+  DryFireClick: {fileID: 8300000, guid: 2b36376a5dd20c440b7845d5d58587ba, type: 3}
 --- !u!114 &219810382
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -919,6 +923,8 @@ MonoBehaviour:
     Object: {fileID: 8300000, guid: deb4139c552afa7489f1ee232c7d45ca, type: 3}
   - MemberName: MP5OneShot
     Object: {fileID: 8300000, guid: 887a145e04b956a418ddf79460429e82, type: 3}
+  - MemberName: DryFireClick
+    Object: {fileID: 8300000, guid: 2b36376a5dd20c440b7845d5d58587ba, type: 3}
 --- !u!82 &219810383
 AudioSource:
   m_ObjectHideFlags: 0
@@ -9250,6 +9256,7 @@ MonoBehaviour:
   Sprite: {fileID: 2110478180}
   Bullet: {fileID: 1035514111}
   SelfAudioSource: {fileID: 1296695879}
+  DryFireClick: {fileID: 8300000, guid: 2b36376a5dd20c440b7845d5d58587ba, type: 3}
 --- !u!82 &1296695879
 AudioSource:
   m_ObjectHideFlags: 0
@@ -9361,6 +9368,8 @@ MonoBehaviour:
   Binds:
   - MemberName: SelfAudioSource
     Object: {fileID: 1296695879}
+  - MemberName: DryFireClick
+    Object: {fileID: 8300000, guid: 2b36376a5dd20c440b7845d5d58587ba, type: 3}
 --- !u!114 &1296695881
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9749,6 +9758,7 @@ MonoBehaviour:
   Sprite: {fileID: 1971081686}
   DEBullet: {fileID: 230367216}
   SelfAudioSource: {fileID: 1386963012}
+  DryFireClick: {fileID: 8300000, guid: 2b36376a5dd20c440b7845d5d58587ba, type: 3}
 --- !u!114 &1386963014
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9764,6 +9774,8 @@ MonoBehaviour:
   Binds:
   - MemberName: SelfAudioSource
     Object: {fileID: 1386963012}
+  - MemberName: DryFireClick
+    Object: {fileID: 8300000, guid: 2b36376a5dd20c440b7845d5d58587ba, type: 3}
 --- !u!114 &1386963015
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10759,6 +10771,7 @@ MonoBehaviour:
   LaserStart: {fileID: 8300000, guid: 02585bc195ee29f4f8c9cefb8255e382, type: 3}
   LaserEnd: {fileID: 8300000, guid: 6e4ea108217a0f0418409fbc29e50671, type: 3}
   SelfLineRenderer: {fileID: 1748640873}
+  DryFireClick: {fileID: 8300000, guid: 2b36376a5dd20c440b7845d5d58587ba, type: 3}
 --- !u!114 &1748640871
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10782,6 +10795,8 @@ MonoBehaviour:
     Object: {fileID: 8300000, guid: 6e4ea108217a0f0418409fbc29e50671, type: 3}
   - MemberName: SelfLineRenderer
     Object: {fileID: 1748640873}
+  - MemberName: DryFireClick
+    Object: {fileID: 8300000, guid: 2b36376a5dd20c440b7845d5d58587ba, type: 3}
 --- !u!82 &1748640872
 AudioSource:
   m_ObjectHideFlags: 0
@@ -11144,6 +11159,7 @@ MonoBehaviour:
   Sprite: {fileID: 1806430801}
   DEBullet: {fileID: 1003618893}
   SelfAudioSource: {fileID: 1791874276}
+  DryFireClick: {fileID: 8300000, guid: 2b36376a5dd20c440b7845d5d58587ba, type: 3}
 --- !u!82 &1791874276
 AudioSource:
   m_ObjectHideFlags: 0
@@ -11255,6 +11271,8 @@ MonoBehaviour:
   Binds:
   - MemberName: SelfAudioSource
     Object: {fileID: 1791874276}
+  - MemberName: DryFireClick
+    Object: {fileID: 8300000, guid: 2b36376a5dd20c440b7845d5d58587ba, type: 3}
 --- !u!114 &1791874278
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12063,6 +12081,7 @@ MonoBehaviour:
   Sprite: {fileID: 0}
   DEBullet: {fileID: 0}
   SelfAudioSource: {fileID: 0}
+  DryFireClick: {fileID: 0}
 --- !u!114 &2043846056
 MonoBehaviour:
   m_ObjectHideFlags: 0

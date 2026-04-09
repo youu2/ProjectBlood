@@ -1,7 +1,7 @@
 using UnityEngine;
 using QFramework;
 using System.Collections.Generic;
-using System;
+using System.Linq;
 
 namespace ProjectBlood
 {
@@ -14,6 +14,7 @@ namespace ProjectBlood
 		public RoomState roomState = RoomState.Init;
 		private List<EnemyWaveConfig> enemyWaveConfigList = new List<EnemyWaveConfig>()
 		{
+			// 敌人波次配置列表
 			new EnemyWaveConfig(),
 			new EnemyWaveConfig(),
 			new EnemyWaveConfig(),
@@ -45,10 +46,18 @@ namespace ProjectBlood
 			// }
 			
 			enemyWaveConfigList.RemoveAt(0);
-			foreach (var enemyPos in enemyPosList)
+			// 每次生成3-6个敌人
+			var enemyCount = Random.Range(3,6);
+			// 按照离玩家的距离排序enemyPosList，距离玩家远的敌人优先生成
+			var pos2Gen = enemyPosList
+				.OrderByDescending(pos => (Player.player1.Position2D() - pos.ToVector2()).magnitude)
+				.Take(enemyCount).ToList();
+
+			// 生成并记录所有生成的敌人
+			for (int i = 0; i < enemyCount; i++)
 			{
 				var enemyObj = Instantiate(MapController.instance.Enemy);
-				enemyObj.transform.position = enemyPos;
+				enemyObj.transform.position = pos2Gen[i];
 				var enemy = enemyObj.GetComponent<Enemy>();
 				if (enemy != null)
 				{
@@ -65,6 +74,7 @@ namespace ProjectBlood
 			
 				if (enemySet.Count == 0 && roomState == RoomState.Battle)
 				{
+					// 所有敌人死亡后，生成下一批敌人
 					if(enemyWaveConfigList.Count > 0)
 					{
 						GenerateEnemy();
