@@ -17,7 +17,7 @@ namespace ProjectBlood
             {
 				if(Global.currentHP.Value < Global.MAX_HP.Value)
 				{
-					//AudioKit.PlaySound("HealthPickup");
+					AudioKit.PlaySound("HpPickup", volume: 0.6f);
 					Global.AddHP(1);
 					this.DestroyGameObjGracefully();
 				}

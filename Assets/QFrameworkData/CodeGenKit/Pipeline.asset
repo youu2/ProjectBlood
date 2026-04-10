@@ -18,15 +18,9 @@ MonoBehaviour:
     GameObject: {fileID: 0}
     From: 0
     NameToFullName: []
-    BindInfos:
-    - TypeName: SpriteRenderer
-      PathToRoot: Sprite
-      MemberName: Sprite
-    - TypeName: PenetratingBullet
-      PathToRoot: Bullet
-      MemberName: Bullet
-    ScriptsFolder: Assets\Scripts\Game\Weapons
-    ClassName: AWP
+    BindInfos: []
+    ScriptsFolder: Assets/Scripts/Game
+    ClassName: Enemy
     Namespace: ProjectBlood
     MainCode: 
     DesignerCode: 
