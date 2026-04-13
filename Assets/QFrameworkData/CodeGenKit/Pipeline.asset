@@ -19,8 +19,8 @@ MonoBehaviour:
     From: 0
     NameToFullName: []
     BindInfos: []
-    ScriptsFolder: Assets/Scripts/Game
-    ClassName: Enemy
+    ScriptsFolder: Assets/Scripts/Game/PowerUp
+    ClassName: Chest
     Namespace: ProjectBlood
     MainCode: 
     DesignerCode: 
