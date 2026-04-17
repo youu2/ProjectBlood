@@ -1,4 +1,4 @@
-// Generate Id:a6944dec-e373-4938-8417-2425710af37c
+// Generate Id:55c244a3-61e0-45ed-9e71-fdffc03f6401
 using UnityEngine;
 
 namespace ProjectBlood
@@ -8,6 +8,8 @@ namespace ProjectBlood
 		public ProjectBlood.Room Room;
 		
 		public ProjectBlood.Door Door;
+		
+		public ProjectBlood.Chest Chest;
 		
 	}
 }

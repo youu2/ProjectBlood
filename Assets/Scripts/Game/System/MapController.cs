@@ -44,14 +44,18 @@ namespace ProjectBlood
         }
         void Start()
         {
-            Room.Hide();
+            // 隐藏所有现有的房间实例
+            foreach (var room in FindObjectsOfType<Room>())
+            {
+                room.Hide();
+            }
 
             // 全图布局
             // InitRoom -> NormalRoom -> NormalRoom -> NormalRoom -> BossRoom
             var layout = new RoomNode(RoomType.InitRoom);
             layout.NextRoom(RoomType.NormalRoom)
                         .NextRoom(RoomType.NormalRoom)
-                        .NextRoom(RoomType.NormalRoom)
+                        .NextRoom(RoomType.ChestRoom)
                         .NextRoom(RoomType.BossRoom);
             // 递归生成所有房间布局
             void GenerateRoomByLayout(RoomNode layout){
@@ -63,11 +67,16 @@ namespace ProjectBlood
                 {
                     GenerateRoom(currentRoomPosX,RoomConfig.normalRoomConfigList.GetRandomItem());
                     currentRoomPosX += RoomConfig.InitRoom.roomMap.First().Length + 5;
+                }else if(layout.roomType == RoomType.ChestRoom)
+                {
+                    GenerateRoom(currentRoomPosX,RoomConfig.ChestRoom);
+                    currentRoomPosX += RoomConfig.ChestRoom.roomMap.First().Length + 5;
                 }else if(layout.roomType == RoomType.BossRoom)
                 {
                     GenerateRoom(currentRoomPosX,RoomConfig.BossRoom);
                     currentRoomPosX += RoomConfig.BossRoom.roomMap.First().Length + 5;
                 }
+
                 foreach(var child in layout.Children)
                 {
                     GenerateRoomByLayout(child);
@@ -152,9 +161,16 @@ namespace ProjectBlood
                     {
                         // 创建门并设置属性
                         var door = Door.InstantiateWithParent(roomObj)
-                        .Position2D(new Vector3(j + 0.656f + startPosX, -i + 0.683f, 0))
+                        .Position2D(new Vector3(j + 0.5f + startPosX, -i + 0.5f, 0))
                         .Hide();
                         roomObj.AddDoor(door);
+                    }
+                    else if (roomConfig.roomMap[i][j] == 'c')
+                    {
+                        // 创建宝箱并设置属性
+                        var chest = Chest.InstantiateWithParent(roomObj)
+                        .Position2D(new Vector3(j + 0.5f + startPosX, -i + 0.5f, 0))
+                        .Show();
                     }
                 }
             }

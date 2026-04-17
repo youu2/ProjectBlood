@@ -1,3 +1,11 @@
 {
-    "dotnet.preferCSharpExtension": true
+    "dotnet.preferCSharpExtension": true,
+    "omnisharp.enableRoslynAnalyzers": true,
+    "omnisharp.projectLoadTimeout": 300,
+    "omnisharp.useGlobalMono": "always",
+    "files.autoSave": "onFocusChange",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll": "explicit"
+    }
 }

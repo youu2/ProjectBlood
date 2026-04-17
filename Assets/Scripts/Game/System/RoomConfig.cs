@@ -10,6 +10,7 @@ namespace ProjectBlood
     {
         InitRoom,
         NormalRoom,
+        ChestRoom,
         BossRoom,
     }
 
@@ -37,7 +38,7 @@ namespace ProjectBlood
         public List<string> roomMap;
         
         /*
-            地图：18x18格，边界为（'1'和‘2’）房门为（'d'）内部地面（' '） 玩家（'P'） 敌人（'e'） 传送门（'#'）
+            地图：18x18格，边界为（'1'和‘2’）房门为（'d'）内部地面（' '） 玩家（'P'） 敌人（'e'） 传送门（'#'） 宝箱（'C'）
         */
         public static RoomConfig InitRoom = new RoomConfig()
         {
@@ -144,32 +145,31 @@ namespace ProjectBlood
             }
         };
 
-        // 整合进normalRoomConfigList
-        // public static RoomConfig NormalRoom = new RoomConfig()
-        // {
-        //     roomType = RoomType.NormalRoom,
-        //     roomMap = new List<string>()
-        //     {
-        //         "211111111111111112",
-        //         "2                2",
-        //         "2                2",
-        //         "2     e    e     2",
-        //         "2                2",
-        //         "2       e        2",
-        //         "2                2",
-        //         "d       2        d",
-        //         "d  e   222   e   d",
-        //         "d       2        d",
-        //         "2                2",
-        //         "2                2",
-        //         "2      222       2",
-        //         "2                2",
-        //         "2       e        2",
-        //         "2                2",
-        //         "2                2",
-        //         "211111111111111112"
-        //     }
-        // };
+        public static RoomConfig ChestRoom = new RoomConfig()
+        {
+            roomType = RoomType.ChestRoom,
+            roomMap = new List<string>()
+            {
+                "211111111111111112",
+                "2                2",
+                "2                2",
+                "2                2",
+                "2                2",
+                "2                2",
+                "2                2",
+                "d                2",
+                "d       c        2",
+                "d                2",
+                "2                2",
+                "2                2",
+                "2                2",
+                "2                2",
+                "2                2",
+                "2                2",
+                "2                2",
+                "211111111111111112"
+            }
+        };
 
         public static RoomConfig BossRoom = new RoomConfig()
         {

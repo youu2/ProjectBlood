@@ -2435,13 +2435,14 @@ GameObject:
   - component: {fileID: 586085906}
   - component: {fileID: 586085907}
   - component: {fileID: 586085908}
+  - component: {fileID: 586085909}
   m_Layer: 0
   m_Name: Chest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &586085904
 Transform:
   m_ObjectHideFlags: 0
@@ -2587,6 +2588,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sortingBase: 0
   offset: 0
+--- !u!114 &586085909
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 586085903}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d51f3a7c41ab0346b49ae50d456bece, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MarkType: 0
+  CustomComponentName: Chest
+  CustomComment: 
+  mComponentName: ProjectBlood.Chest
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0
@@ -3830,6 +3847,7 @@ MonoBehaviour:
   Portal: {fileID: 7066438792343617823, guid: e880434491b948f46a9a06390da3d907, type: 3}
   Room: {fileID: 622954700}
   Door: {fileID: 438128242}
+  Chest: {fileID: 586085906}
 --- !u!4 &1010387091
 Transform:
   m_ObjectHideFlags: 0
@@ -3876,8 +3894,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1014644423}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.15628079, y: 0.18262526, z: 0.00086899113}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
