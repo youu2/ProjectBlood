@@ -5,6 +5,7 @@ using ProjectBlood;
 using UnityEngine.Tilemaps;
 using System.Linq;
 using QFramework;
+using Unity.Collections;
 
 namespace ProjectBlood
 {
@@ -36,6 +37,24 @@ namespace ProjectBlood
         public int currentRoomPosX = 0;
         public GameObject Portal;
         public static MapController instance;
+
+        public class RoomGenerateConfig
+        {
+            public RoomNode roomNode;
+            public int roomPosX;
+            public int roomPosY;
+            // public int roomWidth;
+            // public int roomHeight;
+        }
+
+        public enum Direction
+        {
+            Up,
+            Down,
+            Left,
+            Right,
+        }
+
         void Awake()
         {
             instance = this;
@@ -50,42 +69,140 @@ namespace ProjectBlood
                 room.Hide();
             }
 
+            
+
             // 全图布局
-            // InitRoom -> NormalRoom -> NormalRoom -> NormalRoom -> BossRoom
+            // InitRoom -> NormalRoom -> NormalRoom -> ChestRoom -> BossRoom
             var layout = new RoomNode(RoomType.InitRoom);
             layout.NextRoom(RoomType.NormalRoom)
                         .NextRoom(RoomType.NormalRoom)
                         .NextRoom(RoomType.ChestRoom)
+                        .NextRoom(RoomType.NormalRoom)
+                        .NextRoom(RoomType.NormalRoom)
                         .NextRoom(RoomType.BossRoom);
-            // 递归生成所有房间布局
-            void GenerateRoomByLayout(RoomNode layout){
+                        
+            // 加入动态房门布局
+            // layout是根据RoomType来生成的，所以每个动态网格对应一个RoomType
+            var dynamicDoorLayout = new DynaGrid<RoomGenerateConfig>();
+
+            void GenerateRoomBFS(RoomNode roomNode, DynaGrid<RoomGenerateConfig> dynamicDoorLayout)
+            {
+                // 广度优先遍历生成房间
+                // 先做无分支的路径
+                var roomQueue = new Queue<RoomGenerateConfig>();
+                roomQueue.Enqueue(new RoomGenerateConfig()
+                {
+                    roomNode = roomNode,
+                    roomPosX = 0,
+                    roomPosY = 0,
+                });
+
+                while(roomQueue.Count > 0)
+                {
+                    var generateConfig = roomQueue.Dequeue();
+                    dynamicDoorLayout[generateConfig.roomPosX, generateConfig.roomPosY] = generateConfig;
+                    
+                    // 获取可以延申的方向
+                    List<Direction> validDirections = new List<Direction>();
+                    // 检查四个方向是否有空房间
+                    if(dynamicDoorLayout[generateConfig.roomPosX + 1, generateConfig.roomPosY] == null)// 右方  
+                    {
+                        validDirections.Add(Direction.Right);
+                    }
+                    if(dynamicDoorLayout[generateConfig.roomPosX - 1, generateConfig.roomPosY] == null)// 左方
+                    {
+                        validDirections.Add(Direction.Left);
+                    }
+                    if(dynamicDoorLayout[generateConfig.roomPosX, generateConfig.roomPosY + 1] == null)// 上方
+                    {
+                        validDirections.Add(Direction.Up);
+                    }
+                    if(dynamicDoorLayout[generateConfig.roomPosX, generateConfig.roomPosY - 1] == null)// 下方
+                    {
+                        validDirections.Add(Direction.Down);
+                    }
+
+                    foreach(var childRoom in generateConfig.roomNode.Children)
+                    {
+                        // 随机选择一个方向
+                        var nextDirection = validDirections.GetRandomItem();
+                        if(nextDirection == Direction.Right)
+                        {
+                            roomQueue.Enqueue(new RoomGenerateConfig()
+                            {
+                                roomPosX = generateConfig.roomPosX + 1,
+                                roomPosY = generateConfig.roomPosY,
+                                roomNode = childRoom,
+                            });
+                        }else if(nextDirection == Direction.Left)
+                        {
+                            roomQueue.Enqueue(new RoomGenerateConfig()
+                            {
+                                roomPosX = generateConfig.roomPosX - 1,
+                                roomPosY = generateConfig.roomPosY,
+                                roomNode = childRoom,
+                            });
+                        }else if(nextDirection == Direction.Up)
+                        {
+                            roomQueue.Enqueue(new RoomGenerateConfig()
+                            {
+                                roomPosX = generateConfig.roomPosX,
+                                roomPosY = generateConfig.roomPosY + 1,
+                                roomNode = childRoom,
+                            });
+                        }else if(nextDirection == Direction.Down)
+                        {
+                            roomQueue.Enqueue(new RoomGenerateConfig()
+                            {
+                                roomPosX = generateConfig.roomPosX,
+                                roomPosY = generateConfig.roomPosY - 1,
+                                roomNode = childRoom,
+                            });
+                        }
+                    }
+
+
+                    
+
+                }
+            }
+            
+            
+            GenerateRoomBFS(layout, dynamicDoorLayout);
+
+            dynamicDoorLayout.ForEach((x, y, roomNode) =>
+            {
+                GenerateRoomByLayout(x, y, roomNode.roomNode);
+            });
+
+            // 依次生成所有房间布局
+            void GenerateRoomByLayout(int x, int y, RoomNode layout)
+            {
+                var currentRoomPosX = x * (RoomConfig.InitRoom.roomMap.First().Length + 5);
+                var currentRoomPosY = y * (RoomConfig.InitRoom.roomMap.Count + 5);
+
                 if(layout.roomType == RoomType.InitRoom)
                 {
-                    GenerateRoom(currentRoomPosX,RoomConfig.InitRoom);
+                    GenerateRoom(currentRoomPosX,currentRoomPosY, RoomConfig.InitRoom);
                     currentRoomPosX += RoomConfig.InitRoom.roomMap.First().Length + 5; // 更新当前房间的X坐标，为下一个房间做准备
                 }else if(layout.roomType == RoomType.NormalRoom)
                 {
-                    GenerateRoom(currentRoomPosX,RoomConfig.normalRoomConfigList.GetRandomItem());
+                    GenerateRoom(currentRoomPosX,currentRoomPosY, RoomConfig.normalRoomConfigList.GetRandomItem());
                     currentRoomPosX += RoomConfig.InitRoom.roomMap.First().Length + 5;
                 }else if(layout.roomType == RoomType.ChestRoom)
                 {
-                    GenerateRoom(currentRoomPosX,RoomConfig.ChestRoom);
+                    GenerateRoom(currentRoomPosX,currentRoomPosY, RoomConfig.ChestRoom);
                     currentRoomPosX += RoomConfig.ChestRoom.roomMap.First().Length + 5;
                 }else if(layout.roomType == RoomType.BossRoom)
                 {
-                    GenerateRoom(currentRoomPosX,RoomConfig.BossRoom);
+                    GenerateRoom(currentRoomPosX,currentRoomPosY, RoomConfig.BossRoom);
                     currentRoomPosX += RoomConfig.BossRoom.roomMap.First().Length + 5;
-                }
-
-                foreach(var child in layout.Children)
-                {
-                    GenerateRoomByLayout(child);
                 }
             }
 
-            GenerateRoomByLayout(layout);
+            // GenerateRoomByLayout(0, 0, layout);
             GeneratePassage(5);
-            // 绘制过道
+            // 绘制过道（还未支持随机房间布局）
             void GeneratePassage(int roomCount){
                 var roomWidth = RoomConfig.InitRoom.roomMap.First().Length;
                 var roomHeight = RoomConfig.InitRoom.roomMap.Count;
@@ -94,7 +211,7 @@ namespace ProjectBlood
                 {
                     currentRoomPosX = n*(roomWidth + 5);
                     var doorStartPosX = currentRoomPosX + roomWidth - 1;
-                    var doorStartPosY = -roomHeight/2 + 1;
+                    var doorStartPosY = -roomHeight/2;
 
                     for(int i = 0; i < 5; i++)
                     {
@@ -112,11 +229,11 @@ namespace ProjectBlood
         }
 
         // 生成房间的函数
-        void GenerateRoom(int startPosX, RoomConfig roomConfig)
+        void GenerateRoom(int startPosX, int startPosY, RoomConfig roomConfig)
         {
             var roomWidth = roomConfig.roomMap.First().Length;
             var roomHeight = roomConfig.roomMap.Count;
-            var roomCenter = new Vector2(0.15f + startPosX + roomWidth / 2, 1.3f - roomHeight / 2);
+            var roomCenter = new Vector2(0.5f + startPosX + roomWidth / 2, 0.5f + startPosY - roomHeight / 2);
             var roomObj = Room.InstantiateWithParent(this).WithRoomConfig(roomConfig)
                               .Position(roomCenter).Show();
 
@@ -127,41 +244,43 @@ namespace ProjectBlood
             {
                 for (int j = 0; j < roomConfig.roomMap[i].Length; j++)
                 {
-                    floorTilemap.SetTile(new Vector3Int(j + startPosX, -i, 0), randFloor); // 每个地方都要铺设地面
+                    var x = j + startPosX;
+                    var y = startPosY-i;
+                    floorTilemap.SetTile(new Vector3Int(x, y, 0), randFloor); // 每个地方都要铺设地面
                     if (roomConfig.roomMap[i][j] == '2')
                     {
-                        wallTilemap.SetTile(new Vector3Int(j + startPosX, -i, 0), randWall);
+                        wallTilemap.SetTile(new Vector3Int(x, y, 0), randWall);
                     }
                     else if (roomConfig.roomMap[i][j] == '1')
                     {
-                        wallTilemap.SetTile(new Vector3Int(j + startPosX, -i, 0), randWallH);
+                        wallTilemap.SetTile(new Vector3Int(x, y, 0), randWallH);
                     }
                     else if (roomConfig.roomMap[i][j] == 'P')
                     {
-                        Player.player1.transform.position = new Vector3(j + 0.5f + startPosX, -i + 0.5f, 0);
+                        Player.player1.transform.position = new Vector3(x, y, 0);
                     }
                     else if (roomConfig.roomMap[i][j] == 'e')
                     {
-                        var EnemyPos = new Vector3(j + 0.5f + startPosX, -i + 0.5f, 0);
+                        var EnemyPos = new Vector3(x, y, 0);
                         roomObj.AddEnemy(EnemyPos);
                         // var enemy = Instantiate(Enemy);
-                        // enemy.transform.position = new Vector3(j + 0.5f + startPosX, -i + 0.5f, 0);
+                        // enemy.transform.position = new Vector3(x, y, 0);
                     }
                     else if (roomConfig.roomMap[i][j] == 'X')
                     {
                         var boss = Instantiate(Enemy); // 这里暂时使用Enemy,以后可以替换成Boss的prefab
-                        boss.transform.position = new Vector3(j + 0.5f + startPosX, -i + 0.5f, 0);
+                        boss.transform.position = new Vector3(x, y, 0);
                     }
                     else if (roomConfig.roomMap[i][j] == '#')
                     {
                         var portal = Instantiate(Portal);
-                        portal.transform.position = new Vector3(j + 0.5f + startPosX, -i + 0.5f, 0);
+                        portal.transform.position = new Vector3(x, y, 0);
                     }
                     else if (roomConfig.roomMap[i][j] == 'd')
                     {
                         // 创建门并设置属性
                         var door = Door.InstantiateWithParent(roomObj)
-                        .Position2D(new Vector3(j + 0.5f + startPosX, -i + 0.5f, 0))
+                        .Position2D(new Vector3(x + 0.5f, y + 0.5f, 0))
                         .Hide();
                         roomObj.AddDoor(door);
                     }
@@ -169,7 +288,7 @@ namespace ProjectBlood
                     {
                         // 创建宝箱并设置属性
                         var chest = Chest.InstantiateWithParent(roomObj)
-                        .Position2D(new Vector3(j + 0.5f + startPosX, -i + 0.5f, 0))
+                        .Position2D(new Vector3(x + 0.5f, y + 0.5f, 0))
                         .Show();
                     }
                 }
