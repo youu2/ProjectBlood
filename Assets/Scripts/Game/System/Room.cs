@@ -12,6 +12,7 @@ namespace ProjectBlood
 		public RoomConfig roomConfig {get ; private set ;}
 		private HashSet<Enemy> enemySet = new HashSet<Enemy>();
 		public RoomState roomState = RoomState.Init;
+		public MapController.RoomGenerateConfig roomGenerateConfig {get ; private set ;}
 		private List<EnemyWaveConfig> enemyWaveConfigList = new List<EnemyWaveConfig>()
 		{
 			// 敌人波次配置列表
@@ -30,6 +31,11 @@ namespace ProjectBlood
 		public Room WithRoomConfig(RoomConfig roomConfig)
 		{
 			this.roomConfig = roomConfig;
+			return this;
+		}
+		public Room WithRoomGenerateConfig(MapController.RoomGenerateConfig roomGenerateConfig)
+		{
+			this.roomGenerateConfig = roomGenerateConfig;
 			return this;
 		}
 	
