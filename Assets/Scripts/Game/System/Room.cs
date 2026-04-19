@@ -86,6 +86,7 @@ namespace ProjectBlood
 						GenerateEnemy();
 					}else{
 						roomState = RoomState.Finished;
+						AudioKit.PlaySound("DoorOpeningSfx");
 						foreach (var door in doorList)
 						{
 							door.Hide();
@@ -120,6 +121,7 @@ namespace ProjectBlood
 				{
 					door.Show();
 				}
+				AudioKit.PlaySound("DoorClosingSfx");
 			}
 		}
 

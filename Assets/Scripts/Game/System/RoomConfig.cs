@@ -126,7 +126,7 @@ namespace ProjectBlood
                 roomType = RoomType.NormalRoom,
                 roomMap = new List<string>()
                 {
-                    "21111111ddd1111112",
+                    "21111111ddd11111112",
                     "2                 2",
                     "2   e         e   2",
                     "2   22   e   22   2",

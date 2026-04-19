@@ -212,28 +212,41 @@ namespace ProjectBlood
             }
 
             // GenerateRoomByLayout(0, 0, layout);
-            GeneratePassage(5);
+            GenerateCorridor();
             // 绘制过道（还未支持随机房间布局）
-            void GeneratePassage(int roomCount){
-                var roomWidth = RoomConfig.InitRoom.roomMap.First().Length;
-                var roomHeight = RoomConfig.InitRoom.roomMap.Count;
-
-                for (int n = 0; n < roomCount - 1; n++)
+            void GenerateCorridor(){
+                dynamicDoorLayout.ForEach((x, y, roomGenerateConfig) =>
                 {
-                    currentRoomPosX = n*(roomWidth + 5);
-                    var doorStartPosX = currentRoomPosX + roomWidth - 1;
-                    var doorStartPosY = -roomHeight/2;
-
-                    for(int i = 0; i < 5; i++)
+                    var currentRoomPosX = x * (RoomConfig.InitRoom.roomMap.First().Length + 5);
+                    var currentRoomPosY = y * (RoomConfig.InitRoom.roomMap.Count + 5);
+                    var roomWidth = RoomConfig.InitRoom.roomMap.First().Length;
+                    var roomHeight = RoomConfig.InitRoom.roomMap.Count;
+                    if(roomGenerateConfig.doorDirections.Contains(Direction.Right))// 绘制水平过道
                     {
-                        floorTilemap.SetTile(new Vector3Int(doorStartPosX+i+1, doorStartPosY, 0), randFloor);
-                        floorTilemap.SetTile(new Vector3Int(doorStartPosX+i+1, doorStartPosY+1, 0), randFloor);
-                        floorTilemap.SetTile(new Vector3Int(doorStartPosX+i+1, doorStartPosY-1, 0), randFloor);
+                        for(int i = 0; i < 5; i++)
+                        {
+                            floorTilemap.SetTile(new Vector3Int(currentRoomPosX + roomWidth + i, currentRoomPosY - roomHeight/2, 0), randFloor);
+                            floorTilemap.SetTile(new Vector3Int(currentRoomPosX + roomWidth + i, currentRoomPosY - roomHeight/2 + 1, 0), randFloor);
+                            floorTilemap.SetTile(new Vector3Int(currentRoomPosX + roomWidth + i, currentRoomPosY - roomHeight/2 - 1, 0), randFloor);
 
-                        wallTilemap.SetTile(new Vector3Int(doorStartPosX+i+1, doorStartPosY+2, 0), randWall);
-                        wallTilemap.SetTile(new Vector3Int(doorStartPosX+i+1, doorStartPosY-2, 0), randWall);
+                            wallTilemap.SetTile(new Vector3Int(currentRoomPosX + roomWidth + i, currentRoomPosY - roomHeight/2 + 2, 0), randWall);
+                            wallTilemap.SetTile(new Vector3Int(currentRoomPosX + roomWidth + i, currentRoomPosY - roomHeight/2 - 2, 0), randWall);
+                        }
                     }
-                }
+
+                    if (roomGenerateConfig.doorDirections.Contains(Direction.Up))// 绘制垂直过道
+                    {
+                        for(int i = 0; i < 5; i++)
+                        {
+                            floorTilemap.SetTile(new Vector3Int(currentRoomPosX + roomWidth/2, currentRoomPosY + i + 1, 0), randFloor);
+                            floorTilemap.SetTile(new Vector3Int(currentRoomPosX + roomWidth/2 + 1, currentRoomPosY + i + 1, 0), randFloor);
+                            floorTilemap.SetTile(new Vector3Int(currentRoomPosX + roomWidth/2 - 1, currentRoomPosY + i + 1, 0), randFloor);
+
+                            wallTilemap.SetTile(new Vector3Int(currentRoomPosX + roomWidth/2 + 2, currentRoomPosY + i + 1, 0), randWall);
+                            wallTilemap.SetTile(new Vector3Int(currentRoomPosX + roomWidth/2 - 2, currentRoomPosY + i + 1, 0), randWall);
+                        }
+                    }
+                });
             }
 
             
@@ -305,18 +318,20 @@ namespace ProjectBlood
                             {
                                 var door = Door.InstantiateWithParent(roomObj)
                                 .Position2D(new Vector3(x + 0.5f, y + 0.5f, 0))
+                                .WithDirection(Direction.Right)
                                 .Hide();
                                 roomObj.AddDoor(door);
                             }else if(doorDistance.x < 0 && roomGenerateConfig.doorDirections.Contains(Direction.Left))  // 说明这个‘d’在左边
                             {
                                 var door = Door.InstantiateWithParent(roomObj)
                                 .Position2D(new Vector3(x + 0.5f, y + 0.5f, 0))
+                                .WithDirection(Direction.Left)
                                 .Hide();
                                 roomObj.AddDoor(door);
                             }
                             else    // 说明这个‘d’不在路线规划内，绘制墙
                             {
-                                wallTilemap.SetTile(new Vector3Int(x, y, 0), randWallH);
+                                wallTilemap.SetTile(new Vector3Int(x, y, 0), randWall);
                             }
                         }else    // 说明这个‘d’在上方或下方
                         {
@@ -324,18 +339,20 @@ namespace ProjectBlood
                             {
                                 var door = Door.InstantiateWithParent(roomObj)
                                 .Position2D(new Vector3(x + 0.5f, y + 0.5f, 0))
+                                .WithDirection(Direction.Up)
                                 .Hide();
                                 roomObj.AddDoor(door);
                             }else if(doorDistance.y < 0 && roomGenerateConfig.doorDirections.Contains(Direction.Down))  // 说明这个‘d’在下方
                             {
                                 var door = Door.InstantiateWithParent(roomObj)
                                 .Position2D(new Vector3(x + 0.5f, y + 0.5f, 0))
+                                .WithDirection(Direction.Down)
                                 .Hide();
                                 roomObj.AddDoor(door);
                             }
                             else    // 说明这个‘d’不在路线规划内，绘制墙
                             {
-                                wallTilemap.SetTile(new Vector3Int(x, y, 0), randWall);
+                                wallTilemap.SetTile(new Vector3Int(x, y, 0), randWallH);
                             }
                         }
             
