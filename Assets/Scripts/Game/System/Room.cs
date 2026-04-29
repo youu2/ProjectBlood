@@ -13,13 +13,7 @@ namespace ProjectBlood
 		private HashSet<Enemy> enemySet = new HashSet<Enemy>();
 		public RoomState roomState = RoomState.Init;
 		public MapController.RoomGenerateConfig roomGenerateConfig {get ; private set ;}
-		private List<EnemyWaveConfig> enemyWaveConfigList = new List<EnemyWaveConfig>()
-		{
-			// 敌人波次配置列表
-			new EnemyWaveConfig(),
-			new EnemyWaveConfig(),
-			new EnemyWaveConfig(),
-		};
+		private List<EnemyWaveConfig> enemyWaveConfigList = new List<EnemyWaveConfig>();
 		private EnemyWaveConfig currentEnemyWaveConfig = null;
 		
 		public enum RoomState
@@ -31,6 +25,17 @@ namespace ProjectBlood
 		public Room WithRoomConfig(RoomConfig roomConfig)
 		{
 			this.roomConfig = roomConfig;
+			
+			// 在设置 roomConfig 后立即初始化敌人波次配置
+			if(roomConfig.roomType == RoomType.NormalRoom)
+			{
+				var wavesCount = Random.Range(1,4);
+				for (int i = 0; i < wavesCount; i++)
+				{
+					enemyWaveConfigList.Add(new EnemyWaveConfig());
+				}
+			}
+			
 			return this;
 		}
 		public Room WithRoomGenerateConfig(MapController.RoomGenerateConfig roomGenerateConfig)
@@ -41,7 +46,7 @@ namespace ProjectBlood
 	
 		void Start()
 		{
-			// Code Here
+			
 		}
 
 		void GenerateEnemy()
