@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace ProjectBlood
@@ -24,10 +25,11 @@ namespace ProjectBlood
             this.roomType = roomType;
         }
 
-        public RoomNode NextRoom(RoomType roomType)
+        public RoomNode NextRoom(RoomType roomType, Action<RoomNode> branch = null)
         {
             var roomNode = new RoomNode(roomType);
             Children.Add(roomNode);
+            branch?.Invoke(roomNode);
             return roomNode;
         }
     }

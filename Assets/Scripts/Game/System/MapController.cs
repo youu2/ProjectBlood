@@ -76,22 +76,70 @@ namespace ProjectBlood
             // InitRoom -> NormalRoom -> NormalRoom -> ChestRoom -> BossRoom
             var layout = new RoomNode(RoomType.InitRoom);
             layout.NextRoom(RoomType.NormalRoom)
+                .NextRoom(RoomType.NormalRoom)
+                .NextRoom(RoomType.NormalRoom)
+                .NextRoom(RoomType.NormalRoom)
+                .NextRoom(RoomType.NormalRoom, branchRoom =>
+                {
+                    branchRoom.NextRoom(RoomType.NormalRoom)
+                        .NextRoom(RoomType.NormalRoom)
                         .NextRoom(RoomType.NormalRoom)
                         .NextRoom(RoomType.ChestRoom)
-                        .NextRoom(RoomType.NormalRoom)
-                        .NextRoom(RoomType.NormalRoom)
                         .NextRoom(RoomType.BossRoom);
+                })
+                .NextRoom(RoomType.NormalRoom)
+                .NextRoom(RoomType.NormalRoom)
+                .NextRoom(RoomType.NormalRoom)
+                .NextRoom(RoomType.NormalRoom, branchRoom =>
+                {
+                    branchRoom.NextRoom(RoomType.NormalRoom)
+                        .NextRoom(RoomType.NormalRoom)
+                        .NextRoom(RoomType.NormalRoom)
+                        .NextRoom(RoomType.ChestRoom)
+                        .NextRoom(RoomType.BossRoom);
+                })
+                .NextRoom(RoomType.NormalRoom)
+                .NextRoom(RoomType.NormalRoom)
+                .NextRoom(RoomType.NormalRoom, branchRoom =>
+                {
+                    branchRoom.NextRoom(RoomType.NormalRoom)
+                        .NextRoom(RoomType.ChestRoom)
+                        .NextRoom(RoomType.BossRoom);
+                })
+                .NextRoom(RoomType.NormalRoom)
+                .NextRoom(RoomType.NormalRoom, branchRoom =>
+                {
+                    branchRoom.NextRoom(RoomType.NormalRoom)
+                        .NextRoom(RoomType.ChestRoom)
+                        .NextRoom(RoomType.BossRoom);
+                })
+                .NextRoom(RoomType.NormalRoom)
+                .NextRoom(RoomType.NormalRoom)
+                .NextRoom(RoomType.NormalRoom, branchRoom =>
+                {
+                    branchRoom.NextRoom(RoomType.NormalRoom)
+                        .NextRoom(RoomType.ChestRoom)
+                        .NextRoom(RoomType.BossRoom);
+                })
+                .NextRoom(RoomType.ChestRoom)
+                .NextRoom(RoomType.NormalRoom, branchRoom =>
+                {
+                    branchRoom.NextRoom(RoomType.NormalRoom)
+                        .NextRoom(RoomType.ChestRoom)
+                        .NextRoom(RoomType.BossRoom);
+                })
+                .NextRoom(RoomType.BossRoom);
                         
             // 加入动态房门布局
             // layout是根据RoomType来生成的，所以每个动态网格对应一个RoomType
             var dynamicDoorLayout = new DynaGrid<RoomGenerateConfig>();
-
-            void GenerateRoomBFS(RoomNode roomNode, DynaGrid<RoomGenerateConfig> dynamicDoorLayout)
+            // predictWeight: 预测权重，用于选择方向时的优先级，越高越倾向最优解（不易死路）
+            bool GenerateRoomBFS(RoomNode roomNode, DynaGrid<RoomGenerateConfig> dynamicDoorLayout, int predictWeight)
             {
                 // 广度优先遍历生成房间
                 // 先做无分支的路径
-                var roomQueue = new Queue<RoomGenerateConfig>();
-                roomQueue.Enqueue(new RoomGenerateConfig()
+                var roomQueue = new Queue<RoomGenerateConfig>(); // 用于存储待生成的房间
+                roomQueue.Enqueue(new RoomGenerateConfig()  // InitRoom
                 {
                     roomNode = roomNode,
                     roomPosX = 0,
@@ -105,80 +153,111 @@ namespace ProjectBlood
                     dynamicDoorLayout[generateConfig.roomPosX, generateConfig.roomPosY] = generateConfig;
                     
                     // 获取可以延申的方向
-                    List<Direction> validDirections = new List<Direction>();
-                    // 检查四个方向是否有空房间
-                    if(dynamicDoorLayout[generateConfig.roomPosX + 1, generateConfig.roomPosY] == null)// 右方  
+                    List<Direction> validDirections = LevelGenHelper.GetValidDirections(generateConfig.roomPosX, generateConfig.roomPosY, dynamicDoorLayout);
+                    
+                    if (generateConfig.roomNode.Children.Count > validDirections.Count) 
                     {
-                        validDirections.Add(Direction.Right);
-                    }
-                    if(dynamicDoorLayout[generateConfig.roomPosX - 1, generateConfig.roomPosY] == null)// 左方
-                    {
-                        validDirections.Add(Direction.Left);
-                    }
-                    if(dynamicDoorLayout[generateConfig.roomPosX, generateConfig.roomPosY + 1] == null)// 上方
-                    {
-                        validDirections.Add(Direction.Up);
-                    }
-                    if(dynamicDoorLayout[generateConfig.roomPosX, generateConfig.roomPosY - 1] == null)// 下方
-                    {
-                        validDirections.Add(Direction.Down);
+                        Debug.LogWarning("没有足够的可以延申的方向");
+                        return false;
                     }
 
                     foreach(var childRoom in generateConfig.roomNode.Children)
                     {
-                        // 随机选择一个方向
-                        var nextDirection = validDirections.GetRandomItem();
+                        var directionsWithCount = LevelGenHelper.PredictDirectionWithCount(
+                            generateConfig.roomPosX, generateConfig.roomPosY, dynamicDoorLayout);
+
+                        directionsWithCount.Sort((a, b) => b.Count - a.Count);
+                        
+                        if (directionsWithCount.Count == 0) 
+                        {
+                            Debug.LogWarning("没有可以延申的方向");
+                            return false;
+                        }
+                        
+                        Direction nextDirection;
+                        if(Random.Range(0, 100) < predictWeight)
+                        {
+                            nextDirection = directionsWithCount.First().Direction;
+                        }
+                        else
+                        {
+                            nextDirection = directionsWithCount.GetAndRemoveRandomItem().Direction;
+                        }
+                        
+                        RoomGenerateConfig newRoomConfig = null;
+                        int newX = 0, newY = 0;
+                        
+
+                        // 生成新的房间
                         if(nextDirection == Direction.Right)
                         {
-                            generateConfig.doorDirections.Add(nextDirection);
-                            roomQueue.Enqueue(new RoomGenerateConfig()
+                            newX = generateConfig.roomPosX + 1;
+                            newY = generateConfig.roomPosY;
+                            newRoomConfig = new RoomGenerateConfig()
                             {
-                                roomPosX = generateConfig.roomPosX + 1,
-                                roomPosY = generateConfig.roomPosY,
+                                roomPosX = newX,
+                                roomPosY = newY,
                                 roomNode = childRoom,
                                 doorDirections = new HashSet<Direction>() {Direction.Left},
-                            });
+                            };
                         }else if(nextDirection == Direction.Left)
                         {
-                            generateConfig.doorDirections.Add(nextDirection);
-                            roomQueue.Enqueue(new RoomGenerateConfig()
+                            newX = generateConfig.roomPosX - 1;
+                            newY = generateConfig.roomPosY;
+                            newRoomConfig = new RoomGenerateConfig()
                             {
-                                roomPosX = generateConfig.roomPosX - 1,
-                                roomPosY = generateConfig.roomPosY,
+                                roomPosX = newX,
+                                roomPosY = newY,
                                 roomNode = childRoom,
                                 doorDirections = new HashSet<Direction>() {Direction.Right},
-                            });
+                            };
                         }else if(nextDirection == Direction.Up)
                         {
-                            generateConfig.doorDirections.Add(nextDirection);
-                            roomQueue.Enqueue(new RoomGenerateConfig()
+                            newX = generateConfig.roomPosX;
+                            newY = generateConfig.roomPosY + 1;
+                            newRoomConfig = new RoomGenerateConfig()
                             {
-                                roomPosX = generateConfig.roomPosX,
-                                roomPosY = generateConfig.roomPosY + 1,
+                                roomPosX = newX,
+                                roomPosY = newY,
                                 roomNode = childRoom,
                                 doorDirections = new HashSet<Direction>() {Direction.Down},
-                            });
+                            };
                         }else if(nextDirection == Direction.Down)
                         {
-                            generateConfig.doorDirections.Add(nextDirection);
-                            roomQueue.Enqueue(new RoomGenerateConfig()
+                            newX = generateConfig.roomPosX;
+                            newY = generateConfig.roomPosY - 1;
+                            newRoomConfig = new RoomGenerateConfig()
                             {
-                                roomPosX = generateConfig.roomPosX,
-                                roomPosY = generateConfig.roomPosY - 1,
+                                roomPosX = newX,
+                                roomPosY = newY,
                                 roomNode = childRoom,
                                 doorDirections = new HashSet<Direction>() {Direction.Up},
-                            });
+                            };
+                        }
+                        
+                        // 如果新的房间存在，添加到队列中
+                        if(newRoomConfig != null)
+                        {
+                            generateConfig.doorDirections.Add(nextDirection);
+                            dynamicDoorLayout[newX, newY] = newRoomConfig;
+                            roomQueue.Enqueue(newRoomConfig);
                         }
                     }
 
 
                     
-
                 }
+                return true;
             }
             
-            
-            GenerateRoomBFS(layout, dynamicDoorLayout);
+            var predictWeight = 0;
+            // GenerateRoomBFS(layout, dynamicDoorLayout, predictWeight);
+
+            while(!GenerateRoomBFS(layout, dynamicDoorLayout, predictWeight))
+            {
+                predictWeight++;
+                dynamicDoorLayout.Clear();
+            }
 
             dynamicDoorLayout.ForEach((x, y, roomGenerateConfig) =>
             {
