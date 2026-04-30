@@ -1,4 +1,4 @@
-// Generate Id:91c13af6-dcee-4bbe-a4f4-251d9d690f1d
+// Generate Id:4e0347c6-4c15-4269-90ec-8ddf49ac675a
 using UnityEngine;
 
 namespace ProjectBlood
@@ -24,6 +24,8 @@ namespace ProjectBlood
 		public UnityEngine.SpriteRenderer FireFlash;
 		
 		public UnityEngine.UI.Text NoticeText;
+		
+		public SpriteRenderer AimMark;
 		
 		public UnityEngine.Rigidbody2D SelfRigidbody2D;
 		
