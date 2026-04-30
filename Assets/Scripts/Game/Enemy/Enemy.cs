@@ -115,5 +115,6 @@ namespace ProjectBlood
 		}
 
 		public float HitDamage { get => Damage; }
+		public bool IsDying { get => isDying; }
     }
 }

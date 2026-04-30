@@ -112,6 +112,7 @@ namespace ProjectBlood
 			// 玩家进入房间，生成敌人,关门
 			if (other.CompareTag("Player") && roomConfig.roomType == RoomType.NormalRoom)
 			{
+				Global.currentRoom = this;
 				if(roomState != RoomState.Init)
 				{
 					return;
@@ -133,6 +134,11 @@ namespace ProjectBlood
 		public void AddDoor(Door door)
 		{
 			doorList.Add(door);
+		}
+
+		public HashSet<Enemy> GetEnemies()
+		{
+			return enemySet;
 		}
 	}
 }

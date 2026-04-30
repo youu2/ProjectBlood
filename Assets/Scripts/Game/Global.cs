@@ -26,6 +26,7 @@ namespace ProjectBlood
         public static BindableProperty<float> BCAttackInterval = new BindableProperty<float>(1.5f); // attack interval of Blazing Circle
         public static BindableProperty<int> MAX_EXP = new BindableProperty<int>(5);
         public static BindableProperty<float> CoinDropRate = new BindableProperty<float>(0.30f); // 30% chance to drop coins
+        public static Room currentRoom;
 
         [RuntimeInitializeOnLoadMethod]
         public static void Initialize()

@@ -2,6 +2,7 @@ using UnityEngine;
 using QFramework;
 using System.Collections.Generic;
 using System.Collections;
+using System.Linq;
 
 namespace ProjectBlood
 {
@@ -185,6 +186,54 @@ namespace ProjectBlood
 			
 			// 计算从玩家指向鼠标的方向
 			Vector2 shootDir = (mouseWorldPos - transform.position).normalized;
+
+			if (Global.currentRoom && Global.currentRoom.GetEnemies().Count > 0)
+			{
+				var enemies = Global.currentRoom.GetEnemies();
+				
+				// 将 HashSet 转换为 List 并过滤掉已销毁或正在死亡的敌人
+				var enemiesList = enemies.Where(enemy => enemy != null && !enemy.IsDying).ToList();
+				
+				// 如果过滤后没有敌人，不进行瞄准
+				if (enemiesList.Count == 0)
+				{
+					return;
+				}
+				
+				// 将敌人按离鼠标指针的距离从近到远排序
+				var sortedEnemies = enemiesList.OrderBy(enemy => 
+					Vector2.Distance(enemy.transform.position, mouseWorldPos)
+				).ToList();
+				
+				// 获取 Wall Layer 的掩码
+				int wallLayer = LayerMask.GetMask("Wall");
+				
+				// 遍历排序后的敌人，找到第一个没有障碍物的
+				foreach (var enemy in sortedEnemies)
+				{
+					// 再次检查敌人是否还存在且没有在死亡过程中
+					if (enemy == null || enemy.IsDying)
+					{
+						continue;
+					}
+					
+					// 检查玩家到敌人之间是否有墙壁障碍物
+					Vector2 playerPos = transform.position;
+					Vector2 enemyPos = enemy.transform.position;
+					
+					// 使用射线检测，只检测 Wall 层的物体
+					RaycastHit2D hit = Physics2D.Linecast(playerPos, enemyPos, wallLayer);
+					
+					// 如果没有碰到墙壁
+					if (hit.collider == null)
+					{
+						// 瞄准这个敌人
+						shootDir = (enemyPos - playerPos).normalized;
+						break;
+					}
+					// 如果有墙壁障碍物，继续检查下一个敌人
+				}
+			}
 
 			// 让武器朝向鼠标方向
 			float angle = Mathf.Atan2(shootDir.y, shootDir.x) * Mathf.Rad2Deg;
