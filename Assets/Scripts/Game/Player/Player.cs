@@ -19,6 +19,9 @@ namespace ProjectBlood
 		private AudioSource temporaryAudioSource; // 用于播放切换武器时的shootEnd音效
 		private IWeapon weaponToHide = null; // 待隐藏的武器引用（用于半自动武器延迟隐藏）
 		public BloodBank bloodBank = new BloodBank(); // 血液银行组件，特殊资源，用于弹药管理和血量管理
+		private Vector2 smoothAimDir; // 平滑过渡后的瞄准方向
+		private const float aimSmoothSpeed = 20f; // 瞄准平滑速度
+		private const float aimAngle = 35f; // 锁定角度
 		// 显示跟随玩家的提示文本
 		public static void DisplayText(string text){
 			player1.StartCoroutine(player1.ShowText(text, 2.0f));
@@ -220,6 +223,14 @@ namespace ProjectBlood
 						// 检查玩家到敌人之间是否有墙壁障碍物
 						Vector2 playerPos = transform.position;
 						Vector2 enemyPos = enemy.transform.position;
+						Vector2 dirToEnemy = (enemyPos - playerPos).normalized;
+						
+						// 检查敌人是否在鼠标方向的30度范围内
+						float angleToEnemy = Vector2.Angle(shootDir, dirToEnemy);
+						if (angleToEnemy > aimAngle)
+						{
+							continue;
+						}
 						
 						// 使用射线检测，只检测 Wall 层的物体
 						RaycastHit2D hit = Physics2D.Linecast(playerPos, enemyPos, wallLayer);
@@ -228,7 +239,7 @@ namespace ProjectBlood
 						if (hit.collider == null)
 						{
 							// 瞄准这个敌人
-							shootDir = (enemyPos - playerPos).normalized;
+							shootDir = dirToEnemy;
 							AimMark.Position2D(enemyPos);
 							AimMark.Show();	// 显示瞄准标记
 							foundTarget = true;
@@ -253,12 +264,16 @@ namespace ProjectBlood
 				// 如果没有敌人，隐藏瞄准标记
 				AimMark.Hide();
 			}
+			
+			// 平滑过渡瞄准方向
+			smoothAimDir = Vector2.Lerp(smoothAimDir, shootDir, Time.deltaTime * aimSmoothSpeed);
+			smoothAimDir.Normalize();
 
-			// 让武器朝向鼠标方向
-			float angle = Mathf.Atan2(shootDir.y, shootDir.x) * Mathf.Rad2Deg;
+			// 让武器朝向平滑后的瞄准方向
+			float angle = Mathf.Atan2(smoothAimDir.y, smoothAimDir.x) * Mathf.Rad2Deg;
         	weaponTransform.eulerAngles = new Vector3(0, 0, angle);
 			// 当瞄准左边时翻转武器（假设武器默认朝右）
-			if(shootDir.x < 0)
+			if(smoothAimDir.x < 0)
 			{
 				weaponTransform.localScale = new Vector3(1, -1, 1);
 				spriteRenderer.flipX = true;
@@ -269,15 +284,15 @@ namespace ProjectBlood
 				spriteRenderer.flipX = false;
 			}
 
-			//鼠标左键射击（朝鼠标方向）
+			//鼠标左键射击（朝平滑后的瞄准方向）
 			if (Input.GetMouseButtonDown(0) && playerBullet != null)
 			{				
-				currentWeapon.StartAttacking(shootDir);
+				currentWeapon.StartAttacking(smoothAimDir);
 			}
 			//限制为固定射速
 			if(Input.GetMouseButton(0) && playerBullet != null)
 			{
-				currentWeapon.keepAttacking(shootDir);
+				currentWeapon.keepAttacking(smoothAimDir);
 			}
 			if(Input.GetMouseButtonUp(0) && playerBullet != null)
 			{
