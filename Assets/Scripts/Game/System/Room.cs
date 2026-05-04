@@ -10,7 +10,7 @@ namespace ProjectBlood
 		private List<Vector3> enemyPosList = new List<Vector3>();
 		private List<Door> doorList = new List<Door>();
 		public RoomConfig roomConfig {get ; private set ;}
-		private HashSet<Enemy> enemySet = new HashSet<Enemy>();
+		private HashSet<IDamageable> enemySet = new HashSet<IDamageable>();
 		public RoomState roomState = RoomState.Init;
 		public MapController.RoomGenerateConfig roomGenerateConfig {get ; private set ;}
 		private List<EnemyWaveConfig> enemyWaveConfigList = new List<EnemyWaveConfig>();
@@ -67,9 +67,9 @@ namespace ProjectBlood
 			// 生成并记录所有生成的敌人
 			for (int i = 0; i < enemyCount; i++)
 			{
-				var enemyObj = Instantiate(MapController.instance.Enemy);
+				var enemyObj = Instantiate(MapController.instance.Enemy.GameObject);
 				enemyObj.transform.position = pos2Gen[i];
-				var enemy = enemyObj.GetComponent<Enemy>();
+				var enemy = enemyObj.GetComponent<IDamageable>();
 				if (enemy != null)
 				{
 					enemySet.Add(enemy);
@@ -81,7 +81,7 @@ namespace ProjectBlood
 		{
 			if(Time.frameCount % 30 == 0)
 			{
-				enemySet.RemoveWhere(enemy => !enemy);
+				enemySet.RemoveWhere(enemy => enemy.IsDying);
 			
 				if (enemySet.Count == 0 && roomState == RoomState.Battle)
 				{
@@ -136,7 +136,7 @@ namespace ProjectBlood
 			doorList.Add(door);
 		}
 
-		public HashSet<Enemy> GetEnemies()
+		public HashSet<IDamageable> GetEnemies()
 		{
 			return enemySet;
 		}

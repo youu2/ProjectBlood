@@ -202,7 +202,7 @@ namespace ProjectBlood
 				{
 					// 将敌人按离鼠标指针的距离从近到远排序
 					var sortedEnemies = enemiesList.OrderBy(enemy => 
-						Vector2.Distance(enemy.transform.position, mouseWorldPos)
+						Vector2.Distance(enemy.GameObject.transform.position, mouseWorldPos)
 					).ToList();
 					
 					// 获取 Wall Layer 的掩码
@@ -222,7 +222,7 @@ namespace ProjectBlood
 						
 						// 检查玩家到敌人之间是否有墙壁障碍物
 						Vector2 playerPos = transform.position;
-						Vector2 enemyPos = enemy.transform.position;
+						Vector2 enemyPos = enemy.GameObject.transform.position;
 						Vector2 dirToEnemy = (enemyPos - playerPos).normalized;
 						
 						// 检查敌人是否在鼠标方向的30度范围内

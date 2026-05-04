@@ -10,7 +10,7 @@ public class PenetratingBullet : PlayerBullet
     {
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            collision.gameObject.GetComponent<Enemy>().TakeDamage(damage);
+            collision.gameObject.GetComponent<IDamageable>().TakeDamage(damage);
             currentPenetrationCount++;
             if (currentPenetrationCount >= maxPenetrationCount)
             {

@@ -42,7 +42,7 @@ public class PlayerBullet : MonoBehaviour
         if (collision.gameObject.CompareTag("Enemy"))
         {
             //UIKit.OpenPanel<UIGamePassPanel>();
-            collision.gameObject.GetComponent<Enemy>().TakeDamage(damage);
+            collision.gameObject.GetComponent<IDamageable>().TakeDamage(damage);
             // this.gameObject.SetActive(false); // Disable bullet after hitting an enemy
             Destroy(this.gameObject); // Destroy bullet after hitting an enemy
         }
