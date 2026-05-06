@@ -6,13 +6,13 @@ namespace ProjectBlood
 {
 	public partial class Enemy : ViewController, IDamageable
 	{
-		private SpriteRenderer spriteRenderer;
+		protected SpriteRenderer spriteRenderer;
 		public float moveSpeed = 2.0f;
 		public float currentHealth = 100.0f;
 		public float Damage = 5.0f;
-		private Color originalColor;  // Restore the original color after flash
-		private bool isDying = false; // Avoid repeating death process.
-		private Collider2D[] allColliders;
+		protected Color originalColor;  // Restore the original color after flash
+		protected bool isDying = false; // Avoid repeating death process.
+		protected Collider2D[] allColliders;
         private Rigidbody2D rb;
 
 		void Awake()
@@ -34,7 +34,7 @@ namespace ProjectBlood
 			// Code Here
 		}
 
-        void FixedUpdate()
+        protected virtual void FixedUpdate()
         {
             if (Player.player1)
 			{
@@ -67,7 +67,7 @@ namespace ProjectBlood
 		}
 
 		// flash after the enemy is hit
-		private IEnumerator FlashWhite()
+		protected virtual IEnumerator FlashWhite()
 		{
 			if (spriteRenderer != null)
 			{
@@ -78,10 +78,14 @@ namespace ProjectBlood
 		}
 
 		// Death process (Flash first, then destroy, avoid enemy disappearing directly)
-        private IEnumerator DeathSequence()
+        protected virtual IEnumerator DeathSequence()
 		{
 			// Drop experience item, destroy enemy
 			// Global.GenerateExp(this.gameObject);
+            if (Room != null)
+            {
+                Room.GetEnemies().Remove(this);
+            }
             isDying = true;
             moveSpeed = 0f;
 			if (allColliders != null)
@@ -117,5 +121,13 @@ namespace ProjectBlood
 		public float HitDamage { get => Damage; }
 		public bool IsDying { get => isDying; }
 		public GameObject GameObject { get => gameObject; }
+		public Room Room { get; set; }
+        public void OnDestroy()
+        {
+            if (Room != null)
+            {
+                Room.GetEnemies().Remove(this);
+            }
+        }
     }
 }

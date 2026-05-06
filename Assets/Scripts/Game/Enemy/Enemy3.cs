@@ -8,19 +8,11 @@ using UnityEngine;
 
 namespace ProjectBlood
 {
-    public class Enemy3 : MonoBehaviour, IDamageable
+    public partial class Enemy3 : Enemy
     {
         public Player player;
         public EnemyBullet enemyBullet;
         public float speed = 2.0f;
-        public float currentHealth = 100.0f;
-        public float Damage = 2.0f;
-        public SpriteRenderer spriteRenderer;
-        
-        // 血量、受击、死亡机制相关
-        private bool isDying = false; // 避免重复死亡
-        private Color originalColor;  // 恢复受击后颜色
-        private Collider2D[] allColliders;
         
         public enum State
         {
@@ -43,7 +35,7 @@ namespace ProjectBlood
         // Start is called before the first frame update
         void Start()
         {
-            // 初始化血量、受击、死亡相关
+            // 调用基类的初始化
             if (spriteRenderer == null)
             {
                 spriteRenderer = GetComponentInChildren<SpriteRenderer>();
@@ -250,10 +242,7 @@ namespace ProjectBlood
             }
         }
 
-        public float HitDamage { get => Damage; }
-        public bool IsDying { get => isDying; }
-        
-        public void TakeDamage(float damage)
+        public new void TakeDamage(float damage)
         {
             if (isDying) return;
             
@@ -271,51 +260,15 @@ namespace ProjectBlood
             }
         }
         
-        // 受击闪白效果
-        private IEnumerator FlashWhite()
-        {
-            if (spriteRenderer != null)
-            {
-                spriteRenderer.color = Color.white;
-                yield return new WaitForSeconds(0.18f);
-                spriteRenderer.color = originalColor;
-            }
-        }
-        
         // 死亡序列（闪红后销毁）
-        private IEnumerator DeathSequence()
+        protected override IEnumerator DeathSequence()
         {
-            isDying = true;
-            speed = 0f;
-            
             // 停止射击协程
             if (shootCoroutine != null)
                 StopCoroutine(shootCoroutine);
             
-            // 禁用所有碰撞体
-            if (allColliders != null)
-            {
-                foreach (var c in allColliders)
-                {
-                    if (c != null) c.enabled = false;
-                }
-            }
-            
-            // 死亡前闪烁
-            if (spriteRenderer != null)
-            {
-                for (int i = 0; i < 3; i++)
-                {
-                    spriteRenderer.color = Color.white;
-                    yield return new WaitForSeconds(0.08f);
-                    spriteRenderer.color = Color.red;
-                    yield return new WaitForSeconds(0.08f);
-                }
-            }
-            
-            yield return new WaitForSeconds(0.15f);
-            Global.currentNum.Value -= 1;
-            this.DestroyGameObjGracefully();
+            // 调用基类的死亡序列
+            yield return StartCoroutine(base.DeathSequence());
         }
 
         public void UpdateRotate(Vector3 dirToPlayer)
@@ -330,6 +283,9 @@ namespace ProjectBlood
             }
         }
         
-        public GameObject GameObject { get => gameObject; }
+        protected override void FixedUpdate()
+        {
+            // 空实现，使用 Enemy3 自己的状态机控制移动，不使用基类的移动逻辑
+        }
     }
 }

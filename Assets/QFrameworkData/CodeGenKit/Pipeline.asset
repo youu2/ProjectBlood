@@ -18,42 +18,9 @@ MonoBehaviour:
     GameObject: {fileID: 0}
     From: 0
     NameToFullName: []
-    BindInfos:
-    - TypeName: CircleCollider2D
-      PathToRoot: HurtBox
-      MemberName: HurtBox
-    - TypeName: ProjectBlood.DE
-      PathToRoot: Weapon/DE
-      MemberName: DE
-    - TypeName: ProjectBlood.MP5
-      PathToRoot: Weapon/MP5
-      MemberName: MP5
-    - TypeName: ProjectBlood.ShotGun
-      PathToRoot: Weapon/ShotGun
-      MemberName: ShotGun
-    - TypeName: ProjectBlood.AWP
-      PathToRoot: Weapon/AWP
-      MemberName: AWP
-    - TypeName: ProjectBlood.AK
-      PathToRoot: Weapon/AK
-      MemberName: AK
-    - TypeName: ProjectBlood.Laser
-      PathToRoot: Weapon/Laser
-      MemberName: Laser
-    - TypeName: ProjectBlood.DE
-      PathToRoot: Weapon/Bow
-      MemberName: Bow
-    - TypeName: UnityEngine.SpriteRenderer
-      PathToRoot: Weapon/FireFlash
-      MemberName: FireFlash
-    - TypeName: UnityEngine.UI.Text
-      PathToRoot: Notice/NoticeText
-      MemberName: NoticeText
-    - TypeName: SpriteRenderer
-      PathToRoot: AimMark
-      MemberName: AimMark
-    ScriptsFolder: Assets\Scripts\Game\Player
-    ClassName: Player
+    BindInfos: []
+    ScriptsFolder: Assets\Scripts\Game\Enemy
+    ClassName: Enemy4
     Namespace: ProjectBlood
     MainCode: 
     DesignerCode: 

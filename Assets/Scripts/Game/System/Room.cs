@@ -70,6 +70,7 @@ namespace ProjectBlood
 				var enemyObj = Instantiate(MapController.instance.Enemy.GameObject);
 				enemyObj.transform.position = pos2Gen[i];
 				var enemy = enemyObj.GetComponent<IDamageable>();
+				enemy.Room = this;
 				if (enemy != null)
 				{
 					enemySet.Add(enemy);

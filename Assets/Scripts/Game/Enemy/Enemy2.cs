@@ -319,6 +319,7 @@ namespace ProjectBlood
         // 死亡序列（闪红后销毁）
         private IEnumerator DeathSequence()
         {
+            Room.GetEnemies().Remove(this);
             isDying = true;
             speed = 0f;
             
@@ -361,5 +362,10 @@ namespace ProjectBlood
         }
         
         public GameObject GameObject { get => gameObject; }
+		public Room Room { get; set; }
+        public void OnDestroy()
+        {
+            Room.GetEnemies().Remove(this);
+        }
     }
 }
