@@ -1,3 +1,4 @@
+// Enemy2的改进版，更可控，自定义程度更高，支持散射弹丸的射击行为
 using System.Collections;
 using System.Collections.Generic;
 //using System.Numerics;
@@ -7,7 +8,7 @@ using UnityEngine;
 
 namespace ProjectBlood
 {
-    public class Enemy2 : MonoBehaviour, IDamageable
+    public class Enemy3 : MonoBehaviour, IDamageable
     {
         public Player player;
         public EnemyBullet enemyBullet;
@@ -38,7 +39,6 @@ namespace ProjectBlood
         Vector3 m_DirectionToPlayer;
 
         public List<AudioClip> EnemyShootSounds = new List<AudioClip>();
-        public AudioSource EnemyShotAudioSource;
 
         // Start is called before the first frame update
         void Start()
@@ -75,18 +75,18 @@ namespace ProjectBlood
         float currentShootTime = 0.0f;
         float currentShootDuration = 0.0f;
 
-        // 射击模式参数 - 修改为固定两次连射
+        // 射击模式参数 - 两次连射
         public float shootInterval = 2.0f;      // 两次连射之间的间隔
         public float burstInterval = 0.2f;      // 连射中每发子弹间隔
         public int bulletsPerBurst = 3;         // 一次连射n发
-        public int totalBurstCount = 2;         // 新增：总共进行几次连射
+        public int totalBurstCount = 2;         // 总共进行几次连射
         
-        // 射击状态变量
-        private int currentBurstCount = 0;      // 当前已完成的连射次数
-        private float shootIntervalTimer = 0f;  // 连射间隔计时器
-        private float burstIntervalTimer = 0f;  // 连射内子弹间隔计时器
-        private int shotsFired = 0;             // 当前连射已发射子弹数
-        private bool isInBurst = false;         // 是否正在连射阶段
+        // 散射弹丸参数
+        public int scatterBulletCount = 3;      // 每次射击同时发射的散射弹丸数量
+        public float scatterAngle = 45f;        // 散布角度（总角度范围，单位：度）
+        public bool useRandomScatter = false;   // true=随机散布，false=均匀分布角度
+        
+        private Coroutine shootCoroutine;       // 射击协程引用
 
         
 
@@ -115,7 +115,7 @@ namespace ProjectBlood
                     if (Vector3.Distance(transform.position, player.transform.position) < chaseRange)
                     {
                         currentState = State.Wander;
-                        StartWander(); // 这里会用到一次玩家方向来生成垂直方向
+                        StartWander();
                     }
                     break;
 
@@ -140,25 +140,6 @@ namespace ProjectBlood
                     break;
 
                 case State.Shoot:
-                    // Shoot状态：不移动，不更新方向，只射击
-                    currentShootTime += Time.deltaTime;
-                    
-                    // 先执行攻击逻辑
-                    AttackPlayer();
-
-                    // 射击时间到了，检查是否还在攻击范围
-                    if (currentShootTime >= currentShootDuration)
-                    {
-                        if (Vector3.Distance(transform.position, player.transform.position) <= attackRange)
-                        {
-                            currentState = State.Wander;
-                            StartWander();
-                        }
-                        else
-                        {
-                            currentState = State.Chase;
-                        }
-                    }   
                     break;
             }
         }
@@ -186,81 +167,33 @@ namespace ProjectBlood
         {
             currentShootTime = 0.0f;
             currentShootDuration = Random.Range(shootMinDuration, shootMaxDuration);
-
-            // 重置射击状态变量 - 修改为固定两次连射
-            currentBurstCount = 0;
-            shootIntervalTimer = 0f;
-            burstIntervalTimer = 0f;
-            shotsFired = 0;
-            isInBurst = false;
+            
+            // 启动射击协程
+            if (shootCoroutine != null)
+                StopCoroutine(shootCoroutine);
+            shootCoroutine = StartCoroutine(ShootSequence());
         }
 
-        void AttackPlayer()
+        // 射击序列协程 - 简洁版本
+        IEnumerator ShootSequence()
         {
-            // 如果已经超出射击时间，直接返回
-            if (currentShootTime >= currentShootDuration)
+            for (int burstIndex = 0; burstIndex < totalBurstCount; burstIndex++)
             {
-                return;
-            }
-
-            // 如果还没开始第一次连射，立即开始
-            if (currentBurstCount == 0 && !isInBurst)
-            {
-                isInBurst = true;
-                FireBullet();
-                shotsFired++;
-                return;
-            }
-
-            if (isInBurst)
-            {
-                // 正在连射阶段
-                burstIntervalTimer += Time.deltaTime;
-                if (burstIntervalTimer >= burstInterval)
+                // 发射一轮连射
+                for (int i = 0; i < bulletsPerBurst; i++)
                 {
-                    // 检查是否还在射击时间内
-                    if (currentShootTime >= currentShootDuration)
-                    {
-                        return;
-                    }
-                    
-                    if (shotsFired < bulletsPerBurst)
-                    {
-                        // 继续发射当前连射的子弹
-                        FireBullet();
-                        shotsFired++;
-                        burstIntervalTimer = 0f;
-                    }
-                    else
-                    {
-                        // 当前连射完成
-                        isInBurst = false;
-                        currentBurstCount++;
-                        shotsFired = 0;
-                        burstIntervalTimer = 0f;
-                        
-                        // 如果还没完成所有连射，开始间隔计时
-                        if (currentBurstCount < totalBurstCount)
-                        {
-                            shootIntervalTimer = 0f;
-                        }
-                    }
+                    FireBullet();
+                    yield return new WaitForSeconds(burstInterval);
                 }
-            }
-            else
-            {
-                // 不在连射阶段，等待连射间隔
-                if (currentBurstCount < totalBurstCount)
+                
+                // 如果不是最后一轮，等待连射间隔
+                if (burstIndex < totalBurstCount - 1)
                 {
-                    shootIntervalTimer += Time.deltaTime;
-                    if (shootIntervalTimer >= shootInterval)
-                    {
-                        // 开始新一轮连射
-                        isInBurst = true;
-                        FireBullet();
-                        shotsFired++;
-                        shootIntervalTimer = 0f;
-                    }
+                    yield return new WaitForSeconds(shootInterval);
+                }else
+                {
+                    currentState = State.Wander;
+                    StartWander();
                 }
             }
         }
@@ -273,15 +206,48 @@ namespace ProjectBlood
             Vector3 dirToPlayer = (player.transform.position - transform.position).normalized;
             UpdateRotate(dirToPlayer); // 更新朝向
             
-            // 生成子弹
-            EnemyBullet bullet = Instantiate(enemyBullet, transform.position, Quaternion.identity);
-            bullet.direction = dirToPlayer;  // 假设EnemyBullet里用这个方向
-            bullet.gameObject.SetActive(true);
+            // 发射散射弹丸
+            for (int i = 0; i < scatterBulletCount; i++)
+            {
+                float angle = 0f;
+                
+                if (useRandomScatter)
+                {
+                    // 随机散布：在[-scatterAngle/2, scatterAngle/2]范围内随机
+                    angle = Random.Range(-scatterAngle / 2f, scatterAngle / 2f);
+                }
+                else
+                {
+                    // 均匀分布：平均分配角度
+                    if (scatterBulletCount == 1)
+                    {
+                        angle = 0f; // 只有一颗子弹时不偏移
+                    }
+                    else
+                    {
+                        // 从 -scatterAngle/2 到 +scatterAngle/2 均匀分布
+                        angle = (-scatterAngle / 2f) + (scatterAngle / (scatterBulletCount - 1f)) * i;
+                    }
+                }
+                
+                // 将角度转换为弧度并计算偏移后的方向
+                float radian = angle * Mathf.Deg2Rad;
+                Vector3 bulletDirection = new Vector3(
+                    dirToPlayer.x * Mathf.Cos(radian) - dirToPlayer.y * Mathf.Sin(radian),
+                    dirToPlayer.x * Mathf.Sin(radian) + dirToPlayer.y * Mathf.Cos(radian),
+                    0
+                ).normalized;
+                
+                // 生成子弹
+                EnemyBullet bullet = Instantiate(enemyBullet, transform.position, Quaternion.identity);
+                bullet.direction = bulletDirection;
+                bullet.gameObject.SetActive(true);
+            }
 
-            int randomIndex = Random.Range(0, EnemyShootSounds.Count);
-            // EnemyShotAudioSource.clip = EnemyShootSounds[randomIndex];
-            // EnemyShotAudioSource.Play();
-            AudioKit.PlaySound("EnemyShoot1", volume: 0.2f);
+            if (EnemyShootSounds.Count > 0)
+            {
+                AudioKit.PlaySound(EnemyShootSounds[Random.Range(0, EnemyShootSounds.Count)], volume: 0.2f);
+            }
         }
 
         public float HitDamage { get => Damage; }
@@ -321,6 +287,10 @@ namespace ProjectBlood
         {
             isDying = true;
             speed = 0f;
+            
+            // 停止射击协程
+            if (shootCoroutine != null)
+                StopCoroutine(shootCoroutine);
             
             // 禁用所有碰撞体
             if (allColliders != null)
