@@ -7,12 +7,15 @@ namespace ProjectBlood
 	public partial class Laser : ProjectBlood.IWeapon
 	{
 		// public PlayerBullet Bullet;
-		// public override float HitDamage => 0.5f;
+		public float HitDamage = 0.5f;
 
 		// public float attackInterval = 0.2f; // 攻击间隔
 		// private float lastAttackTime = 0f; // 上次攻击时间
 		public AttackInterval AttackInterval = new AttackInterval(0.2f);
 
+		[Header("=== 激光攻击设置 ===")]
+		[Tooltip("激光实际攻击宽度")]
+		public float laserWidth = 0.5f;
 		public List<AudioClip> ShootSounds = new List<AudioClip>();
 		public GunClip gunClip = new GunClip(120, null); // 激光的弹夹，最大弹药量为120
 		private bool newClip = true; // false表示新的弹夹还没开火过，true表示已经开火过
@@ -26,17 +29,40 @@ namespace ProjectBlood
 
 		public override void Attack(Vector2 shootDir)
 		{
-			// 计算旋转：根据 shootDir 向量创建对应的 Quaternion 朝向
-			Quaternion bulletRotation = Quaternion.FromToRotation(Vector2.right, shootDir);
-			var bullet = Instantiate(Bullet, Bullet.transform.position, bulletRotation);
-			bullet.direction = shootDir;
-			bullet.gameObject.SetActive(true);
+			// 真正的激光逻辑：使用 BoxCast 或多条 Raycast 检测第一个敌人，直接造成伤害
+			if (!gunClip.CanShoot()) return;
+
+			Vector2 startPos = Bullet.Position2D();
+			var targetLayer = LayerMask.GetMask("Enemy", "Wall"); // 所有可以阻挡激光的物体层级
+			
+			// ========== 伤害检测：使用 BoxCast（有宽度） ==========
+			var damageHit = Physics2D.BoxCast(startPos, new Vector2(laserWidth, laserWidth), 0f, shootDir, Mathf.Infinity, targetLayer);
+			
+			// ========== 激光绘制：使用 Raycast（严格沿瞄准方向） ==========
+			var renderHit = Physics2D.Raycast(startPos, shootDir, Mathf.Infinity, targetLayer);
+			
+			// 更新 LineRenderer 显示 - 严格沿瞄准方向
+			if (SelfLineRenderer != null)
+			{
+				SelfLineRenderer.SetPosition(0, startPos); // 设置激光的起始点
+				SelfLineRenderer.SetPosition(1, renderHit.collider != null ? (Vector3)renderHit.point : (startPos + shootDir * 100f)); // 结束点沿瞄准方向
+			}
+
+			// 如果击中了敌人，造成伤害
+			if (damageHit.collider != null)
+			{
+				var damageable = damageHit.collider.GetComponent<IDamageable>();
+				if (damageable != null && !damageable.IsDying)
+				{
+					damageable.TakeDamage(HitDamage); // 直接造成伤害，不需要子弹
+				}
+			}
 		}
 		public override void StartAttacking(Vector2 shootDir)
 		{
 			if (gunClip.CanShoot())
 			{
-				// Attack(shootDir);
+				// Attack(shootDir); // 激光不需要每帧都生成子弹
 				SelfShortAudioSource.PlayOneShot(LaserStart);
 				SelfAudioSource.clip = ShootSounds[0];
 				SelfAudioSource.loop = true;
@@ -61,15 +87,22 @@ namespace ProjectBlood
 
 			if (gunClip.CanShoot()){
 				// 激光特殊逻辑：发射时持续检测激光碰到的第一个物体，并将激光绘制到碰撞点位置
+				Vector2 startPos = Bullet.Position2D();
 				var targetLayer = LayerMask.GetMask("Enemy", "Wall"); // 所有可以阻挡激光的物体层级
-				var hit = Physics2D.Raycast(Bullet.Position2D(), shootDir, Mathf.Infinity, targetLayer); // 获得碰到的第一个物体的位置
-				SelfLineRenderer.SetPosition(0, Bullet.Position2D()); // 设置激光的起始点和结束点，没碰到就默认绘制100单位长度的激光
-				SelfLineRenderer.SetPosition(1, hit.collider != null ? (Vector3)hit.point : (Bullet.Position2D() + shootDir * 100f));
+				// ========== 激光绘制：使用 Raycast（严格沿瞄准方向） ==========
+				var renderHit = Physics2D.Raycast(startPos, shootDir, Mathf.Infinity, targetLayer);
+				
+				// 绘制激光 - 严格沿瞄准方向
+				if (SelfLineRenderer != null)
+				{
+					SelfLineRenderer.SetPosition(0, startPos); // 设置激光的起始点和结束点，没碰到就默认绘制100单位长度的激光
+					SelfLineRenderer.SetPosition(1, renderHit.collider != null ? (Vector3)renderHit.point : (startPos + shootDir * 100f));
+				}
 			}
 
 			if (AttackInterval.CanAttack() && gunClip.CanShoot())
 			{
-				Attack(shootDir);
+				Attack(shootDir); // 激光攻击：使用 BoxCast 直接造成伤害
 				AttackInterval.RecordAttackTime();
 				gunClip.Shoot();
 				reloadTextShown = false; // 有弹药时重置 reload 文本显示标记
