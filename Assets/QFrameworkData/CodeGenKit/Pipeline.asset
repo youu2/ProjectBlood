@@ -18,9 +18,18 @@ MonoBehaviour:
     GameObject: {fileID: 0}
     From: 0
     NameToFullName: []
-    BindInfos: []
-    ScriptsFolder: Assets\Scripts\Game\Enemy
-    ClassName: Enemy4
+    BindInfos:
+    - TypeName: ProjectBlood.Room
+      PathToRoot: Room
+      MemberName: Room
+    - TypeName: ProjectBlood.Door
+      PathToRoot: Door
+      MemberName: Door
+    - TypeName: ProjectBlood.Chest
+      PathToRoot: Chest
+      MemberName: Chest
+    ScriptsFolder: Assets\Scripts\Game\System
+    ClassName: MapController
     Namespace: ProjectBlood
     MainCode: 
     DesignerCode: 

@@ -14,6 +14,7 @@ namespace ProjectBlood
 		protected bool isDying = false; // Avoid repeating death process.
 		protected Collider2D[] allColliders;
         private Rigidbody2D rb;
+        protected Vector3 direction;
 
 		void Awake()
 		{
@@ -38,7 +39,7 @@ namespace ProjectBlood
         {
             if (Player.player1)
 			{
-				var direction = (Player.player1.transform.position - transform.position).normalized;
+				direction = (Player.player1.transform.position - transform.position).normalized;
 				//transform.Translate(direction * Time.deltaTime * moveSpeed);
 				SelfRigidbody2D.velocity = direction * moveSpeed;
 			}
@@ -46,8 +47,18 @@ namespace ProjectBlood
 
         void Update()
 		{
+			UpdateRotate(direction);
 			if (isDying) return;  // stop moving during death process
 		}
+
+		// 更新朝向面向玩家
+        public virtual void UpdateRotate(Vector3 dirToPlayer)
+        {
+            if (spriteRenderer != null)
+            {
+                spriteRenderer.flipX = dirToPlayer.x < 0;
+            }
+        }
 
 		public void TakeDamage(float Damage)
 		{

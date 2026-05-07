@@ -1,5 +1,5 @@
 // 射击型敌人基类 - 支持散射弹丸、连射模式, 可在Unity编辑器中自定义所有参数
-// 使用方法：直接挂载到敌人对象上, 配置Inspector参数即可
+// 使用方法:直接挂载到敌人对象上, 配置Inspector参数即可
 using System.Collections;
 using System.Collections.Generic;
 using ProjectBlood;
@@ -18,20 +18,20 @@ namespace ProjectBlood
         public float speed = 2.0f;
 
         [Header("=== 状态机设置 ===")]
-        [Tooltip("追击范围：进入这个距离切换到Wander状态")]
+        [Tooltip("追击范围:进入这个距离切换到Wander状态")]
         public float chaseRange = 8f;
         
-        [Tooltip("攻击范围：超出这个距离回到Chase状态")]
+        [Tooltip("攻击范围:超出这个距离回到Chase状态")]
         public float attackRange = 10f;
         
-        [Tooltip("Wander状态持续时间（秒）")]
+        [Tooltip("Wander状态持续时间(秒)")]
         public float wanderDuration = 1.0f;
 
         [Header("=== 射击模式 ===")]
-        [Tooltip("两次连射之间的间隔（秒）")]
+        [Tooltip("两次连射之间的间隔(秒)")]
         public float shootInterval = 2.0f;
         
-        [Tooltip("连射中每发子弹间隔（秒）")]
+        [Tooltip("连射中每发子弹间隔(秒)")]
         public float burstInterval = 0.2f;
         
         [Tooltip("一次连射的子弹数量")]
@@ -44,15 +44,15 @@ namespace ProjectBlood
         [Tooltip("每次射击同时发射的散射弹丸数量")]
         public int scatterBulletCount = 3;
         
-        [Tooltip("散布角度（总角度范围, 单位：度）")]
+        [Tooltip("散布角度(总角度范围, 单位:度)")]
         [Range(0f, 180f)]
         public float scatterAngle = 45f;
         
-        [Tooltip("是否使用随机散布（false=均匀分布）")]
+        [Tooltip("是否使用随机散布(false=均匀分布)")]
         public bool useRandomScatter = false;
 
         [Header("=== 音效设置 ===")]
-        [Tooltip("射击音效列表（随机播放）")]
+        [Tooltip("射击音效列表(随机播放)")]
         public List<AudioClip> shootSounds = new List<AudioClip>();
 
         // 状态枚举
@@ -211,7 +211,7 @@ namespace ProjectBlood
             }
         }
 
-        // 射击状态更新（可被子类重写）
+        // 射击状态更新(可被子类重写)
         protected virtual void UpdateShootState()
         {
             // 射击逻辑由协程处理
@@ -291,8 +291,7 @@ namespace ProjectBlood
             }
             else
             {
-                if (scatterBulletCount == 1)
-                    return 0f;
+                if (scatterBulletCount == 1) return 0f;
                 return (-scatterAngle / 2f) + (scatterAngle / (scatterBulletCount - 1f)) * index;
             }
         }
@@ -317,14 +316,6 @@ namespace ProjectBlood
             }
         }
 
-        // 更新朝向
-        public virtual void UpdateRotate(Vector3 dirToPlayer)
-        {
-            if (spriteRenderer != null)
-            {
-                spriteRenderer.flipX = dirToPlayer.x < 0;
-            }
-        }
 
         // 受击处理
         public new void TakeDamage(float damage)

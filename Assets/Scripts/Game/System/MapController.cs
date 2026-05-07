@@ -32,8 +32,8 @@ namespace ProjectBlood
         public TileBase randFloor => new TileBase[] { floor_0, floor_1, floor_2, floor_3 }[Random.Range(0, 4)];
         public Tilemap wallTilemap;
         public Tilemap floorTilemap;
-        public GameObject Enemy2;
-        public IDamageable Enemy => Enemy2.GetComponent<IDamageable>();
+        // public GameObject Enemy2;
+        // public IDamageable Enemy => Enemy2.GetComponent<IDamageable>();
         public Player player;
         public int currentRoomPosX = 0;
         public GameObject Portal;
@@ -374,7 +374,7 @@ namespace ProjectBlood
                     }
                     else if (roomConfig.roomMap[i][j] == 'X')
                     {
-                        var boss = Instantiate(Enemy.GameObject); // 这里暂时使用Enemy,以后可以替换成Boss的prefab
+                        var boss = Instantiate(Enemy1); // 这里暂时使用Enemy,以后可以替换成Boss的prefab
                         boss.transform.position = new Vector3(x, y, 0);
                     }
                     else if (roomConfig.roomMap[i][j] == '#')
