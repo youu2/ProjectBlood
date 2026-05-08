@@ -7,14 +7,16 @@ namespace ProjectBlood
 	public partial class Enemy : ViewController, IDamageable
 	{
 		protected SpriteRenderer spriteRenderer;
-		public float moveSpeed = 2.0f;
-		public float currentHealth = 100.0f;
-		public float Damage = 5.0f;
-		protected Color originalColor;  // Restore the original color after flash
-		protected bool isDying = false; // Avoid repeating death process.
-		protected Collider2D[] allColliders;
+        public float moveSpeed = 2.0f;
+        public float currentHealth = 100.0f;
+        public float Damage = 5.0f;
+        protected Color originalColor;  // Restore the original color after flash
+        protected bool isDying = false; // Avoid repeating death process.
+        protected Collider2D[] allColliders;
         private Rigidbody2D rb;
         protected Vector3 direction;
+        [Tooltip("是否使用翻转来朝向玩家（关闭则直接旋转）")]
+        public bool useFlipSprite = true;
 
 		void Awake()
 		{
@@ -56,7 +58,17 @@ namespace ProjectBlood
         {
             if (spriteRenderer != null)
             {
-                spriteRenderer.flipX = dirToPlayer.x < 0;
+                if (useFlipSprite)
+                {
+                    spriteRenderer.flipX = dirToPlayer.x < 0;
+                }
+                else
+                {
+                    float targetAngle = Mathf.Atan2(dirToPlayer.y, dirToPlayer.x) * Mathf.Rad2Deg;
+                    float currentAngle = transform.eulerAngles.z;
+                    float newAngle = Mathf.LerpAngle(currentAngle, targetAngle, 180f * Time.deltaTime / 180f);
+                    transform.eulerAngles = new Vector3(0, 0, newAngle);
+                }
             }
         }
 

@@ -2113,7 +2113,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &445878923
 Transform:
   m_ObjectHideFlags: 0
@@ -2392,6 +2392,8 @@ MonoBehaviour:
   ArchitectureFullTypeName: 
   ViewControllerFullTypeName: 
   reloadSound: {fileID: 8300000, guid: 5fe03f7af8add814bbcddc42f64f15b8, type: 3}
+  HitDamage: 0.5
+  laserWidth: 0.5
   ShootSounds:
   - {fileID: 8300000, guid: 6e15092122a81c845bd2a5f5f8d5027c, type: 3}
   Sprite: {fileID: 1157943268}
@@ -12214,7 +12216,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1649614522
 Transform:
   m_ObjectHideFlags: 0
@@ -12626,6 +12628,8 @@ MonoBehaviour:
   ArchitectureFullTypeName: 
   ViewControllerFullTypeName: 
   reloadSound: {fileID: 8300000, guid: 5fe03f7af8add814bbcddc42f64f15b8, type: 3}
+  HitDamage: 12
+  laserWidth: 0.5
   ShootSounds:
   - {fileID: 8300000, guid: 6e15092122a81c845bd2a5f5f8d5027c, type: 3}
   Sprite: {fileID: 1090808463}
