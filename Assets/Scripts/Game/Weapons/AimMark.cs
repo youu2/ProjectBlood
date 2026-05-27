@@ -25,7 +25,6 @@ namespace ProjectBlood
 		}
 		void Update()
 		{
-			// 累加时间
 			aimMarkTimer += Time.deltaTime;
 			
 			// 每 aimMarkFrameTime 时间切换一次 sprite

@@ -4,7 +4,7 @@ using UnityEngine;
 namespace ProjectBlood
 {
     [ ViewControllerChild ]
-    public abstract class IWeapon : ViewController
+    public abstract class WeaponBase : ViewController, IWeapon
     {
         // public abstract float HitDamage { get; }
         public AudioClip reloadSound;
@@ -18,9 +18,9 @@ namespace ProjectBlood
         {
             // Default implementation - can be overridden by subclasses
         }
-        public abstract void keepAttacking(Vector2 shootDir);
+        public abstract void KeepAttacking(Vector2 shootDir);
         public abstract void StopAttacking();
-        public virtual void Reload(System.Action onReloadComplete = null) {}
+        public virtual void Reload(System.Action onReloadComplete) {}
         public virtual void SwitchFromSet(){}
         public virtual void SwitchToSet(){} // 切回武器时的特殊处理逻辑
         public virtual AudioClip GetShootEndSound() { return null; } // 获取shootEnd音效，用于切换武器时播放(全自动武器)

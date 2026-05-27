@@ -3,7 +3,7 @@ using QFramework;
 using System.Collections.Generic;
 namespace ProjectBlood
 {
-	public partial class AK : ProjectBlood.IWeapon
+	public partial class AK : WeaponBase
 	{
 		// public PlayerBullet Bullet;
 		// public override float HitDamage => 0.5f;
@@ -93,6 +93,7 @@ namespace ProjectBlood
 			TryPlayDryFireClick();
 		}
 
+		// 空挂音效,提示玩家换弹
 		public void TryPlayDryFireClick()
 		{
 			if(Time.frameCount % 50 == 0 && AttackInterval.CanAttack() && !gunClip.isReloading)
@@ -130,7 +131,6 @@ namespace ProjectBlood
 
 		public override void SwitchFromSet()
 		{
-			// Debug.Log("MP5 Reset");
 			AttackInterval.Reset();
 			newClip = true;
 			reloadTextShown = false; // 切换武器时重置 reload 文本显示标记

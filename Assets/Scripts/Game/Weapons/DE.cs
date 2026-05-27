@@ -5,7 +5,7 @@ using QFramework;
 
 namespace ProjectBlood
 {
-    public partial class DE : IWeapon
+    public partial class DE : WeaponBase
     {
         // public PlayerBullet Bullet; QF架构bind功能生成的DEBullet替代，可在designer中直接绑定
         // public override float HitDamage => 0.5f;

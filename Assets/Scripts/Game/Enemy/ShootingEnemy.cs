@@ -35,7 +35,7 @@ namespace ProjectBlood
         public float burstInterval = 0.2f;
         
         [Tooltip("一次连射的子弹数量")]
-        public int bulletsPerBurst = 3;
+        public int shotsPerBurst = 3;
         
         [Tooltip("总共进行几次连射")]
         public int totalBurstCount = 2;
@@ -123,10 +123,10 @@ namespace ProjectBlood
                 burstInterval = 0.2f;
             }
             
-            if (bulletsPerBurst < 1)
+            if (shotsPerBurst < 1)
             {
-                Debug.LogWarning($"[{gameObject.name}] bulletsPerBurst 至少为1, 已重置为1");
-                bulletsPerBurst = 1;
+                Debug.LogWarning($"[{gameObject.name}] shotsPerBurst 至少为1, 已重置为1");
+                shotsPerBurst = 1;
             }
             
             if (totalBurstCount < 1)
@@ -239,8 +239,8 @@ namespace ProjectBlood
         {
             for (int burstIndex = 0; burstIndex < totalBurstCount; burstIndex++)
             {
-                // 发射一轮连射
-                for (int i = 0; i < bulletsPerBurst; i++)
+                // 发射一轮连射(Burst)
+                for (int i = 0; i < shotsPerBurst; i++)
                 {
                     FireBullet();
                     yield return new WaitForSeconds(burstInterval);
@@ -285,11 +285,11 @@ namespace ProjectBlood
         // 计算子弹角度
         protected virtual float CalculateBulletAngle(int index)
         {
-            if (useRandomScatter)
+            if (useRandomScatter)   // 随机散布
             {
                 return Random.Range(-scatterAngle / 2f, scatterAngle / 2f);
             }
-            else
+            else   // 均匀分布
             {
                 if (scatterBulletCount == 1) return 0f;
                 return (-scatterAngle / 2f) + (scatterAngle / (scatterBulletCount - 1f)) * index;
