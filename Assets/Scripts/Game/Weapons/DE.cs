@@ -2,6 +2,7 @@ using UnityEngine;
 using ProjectBlood;
 using System.Collections.Generic;
 using QFramework;
+using Unity.VisualScripting;
 
 namespace ProjectBlood
 {
@@ -18,7 +19,7 @@ namespace ProjectBlood
         public List<AudioClip> ShootSounds = new List<AudioClip>();
         // public AudioSource shootAudioSource; 
         // 被QF架构other bind功能生成的SelfAudioSource替代，可在designer中直接绑定
-        private GunClip gunClip = new GunClip(8, null); // DE的弹夹，最大弹药量为8
+        private GunClip gunClip = new GunClip(8); // DE的弹夹，最大弹药量为8
         private FireFlash fireFlash = new FireFlash(); // DE的枪口火焰特效组件
         public override int BloodRequired { get; } = 1; // 每次换弹需要的血量
         private bool reloadTextShown = false; // 标记是否已经显示过 reload 文本，防止文本闪烁
@@ -26,25 +27,16 @@ namespace ProjectBlood
         //换弹功能：
         // public int MaxAmmo = 8; // DE的最大弹药量
         // private int currentAmmo; // 当前弹药量
-        private void Start()
+        public override void Awake()
         {
-            // currentAmmo = MaxAmmo; // 初始时弹药量为最大值
-            gunClip = new GunClip(8, SelfAudioSource); // DE的弹夹，最大弹药量为8
+            base.Awake();
+            gunClip = new GunClip(8); // DE的弹夹，最大弹药量为8
             gunClip.UpdateClipUI(); // 初始化UI显示的弹药信息
         }
 
-        public override void Reload(System.Action onReloadComplete = null)
+        public override void Reload()
         {
-            gunClip.Reload(reloadSound, this, () => 
-            {
-                // 换弹完成后消耗血液
-                if (BloodBank != null && BloodBank.CurrentBloodAmount >= BloodRequired)
-                {
-                    BloodBank.RemoveBlood(BloodRequired);
-                }
-                // 调用外部传入的回调
-                onReloadComplete?.Invoke();
-            }); // 调用GunClip的reload方法进行换弹
+            base.Reload();
         }
 
         public override void Attack(Vector2 shootDir)
@@ -64,7 +56,7 @@ namespace ProjectBlood
             recentlyFired = true;
             lastFireTime = Time.time;
         }
-        public override void keepAttacking(Vector2 shootDir)
+        public override void KeepAttacking(Vector2 shootDir)
         {
             if (AttackInterval.CanAttack() && gunClip.CanShoot()) // 只有在满足攻击间隔且有弹药时才允许攻击
             {        
@@ -98,7 +90,7 @@ namespace ProjectBlood
 
         public override void SwitchFromSet()
         {
-            gunClip.StopReload(this); // 切出武器时停止换弹流程
+            gunClip.StopReload(); // 切出武器时停止换弹流程
             gunClip.isReloading = false; // 切出武器时重置换弹状态，确保下次切回时可以正常换弹
             recentlyFired = false; // 切出武器时重置开火标志
             reloadTextShown = false; // 切出武器时重置 reload 文本显示标记
@@ -107,6 +99,10 @@ namespace ProjectBlood
 
         public override void SwitchToSet()
 		{
+            if (gunClip == null)  // 检查是否需要初始化
+			{
+				gunClip = new GunClip(8);
+			}
 			gunClip.UpdateClipUI();
 			Sprite.enabled = true; // 重新启用sprite
 		}

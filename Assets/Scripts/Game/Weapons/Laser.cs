@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace ProjectBlood
 {
-	public partial class Laser : ProjectBlood.IWeapon
+	public partial class Laser : WeaponBase
 	{
 		// public PlayerBullet Bullet;
 		public float HitDamage = 0.5f;
@@ -17,13 +17,14 @@ namespace ProjectBlood
 		[Tooltip("激光实际攻击宽度")]
 		public float laserWidth = 0.5f;
 		public List<AudioClip> ShootSounds = new List<AudioClip>();
-		public GunClip gunClip = new GunClip(120, null); // 激光的弹夹，最大弹药量为120
+		public GunClip gunClip = new GunClip(120); // 激光的弹夹，最大弹药量为120
 		private bool newClip = true; // false表示新的弹夹还没开火过，true表示已经开火过
 		private bool hasFired = false; // 标记是否真正开火过
 		private bool reloadTextShown = false; // 标记是否已经显示过 reload 文本
-		public void Start()
+		public override void Awake()
 		{
-			gunClip = new GunClip(120, SelfShortAudioSource); // 激光的弹夹，最大弹药量为120
+			base.Awake();
+			gunClip = new GunClip(120); // 激光的弹夹，最大弹药量为120
 			gunClip.UpdateClipUI();
 		}
 
@@ -75,7 +76,7 @@ namespace ProjectBlood
 			}
 		}
 		
-		public override void keepAttacking(Vector2 shootDir)
+		public override void KeepAttacking(Vector2 shootDir)
 		{
 			// 为了让打空弹夹后继续按住左键同时换弹后 ->
 			// 能够正确触发循环开火音效
@@ -145,19 +146,24 @@ namespace ProjectBlood
 			hasFired = false; // 重置开火标记
 		}
 
-		public override void Reload(System.Action onReloadComplete = null)
+		public override void Reload()
         {
-			gunClip.Reload(reloadSound, this, () => 
-			{
-				// 换弹完成后消耗血液
-				if (BloodBank != null && BloodBank.CurrentBloodAmount >= BloodRequired)
-				{
-					BloodBank.RemoveBlood(BloodRequired);
-				}
-				// 调用外部传入的回调
-				onReloadComplete?.Invoke();
-			}); // 调用GunClip的reload方法进行换弹
+            base.Reload();
         }
+		
+		// public override void Reload(System.Action onReloadComplete = null)
+        // {
+		// 	gunClip.Reload(reloadSound, this, () => 
+		// 	{
+		// 		// 换弹完成后消耗血液
+		// 		if (BloodBank != null && BloodBank.CurrentBloodAmount >= BloodRequired)
+		// 		{
+		// 			BloodBank.RemoveBlood(BloodRequired);
+		// 		}
+		// 		// 调用外部传入的回调
+		// 		onReloadComplete?.Invoke();
+		// 	}); // 调用GunClip的reload方法进行换弹
+        // }
 
 		public override void SwitchFromSet()
 		{
@@ -166,13 +172,17 @@ namespace ProjectBlood
 			newClip = true;
 			StopAttacking();
 			reloadTextShown = false; // 切出武器时重置 reload 文本显示标记
-			gunClip.StopReload(this); // 切出武器时停止换弹流程
+			gunClip.StopReload(); // 切出武器时停止换弹流程
 			gunClip.isReloading = false; // 切出武器时重置换弹状态，确保下次切回时可以正常换弹
 			Player.HideText(); // 切换武器时隐藏 reload 文本
 		}
 
 		public override void SwitchToSet()
 		{
+			if (gunClip == null)  // 检查是否需要初始化
+			{
+				
+			}
 			gunClip.UpdateClipUI();
 			Sprite.enabled = true; // 重新启用sprite
 			if (Input.GetMouseButton(0))

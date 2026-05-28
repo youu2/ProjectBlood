@@ -13,11 +13,11 @@ namespace ProjectBlood
 		public PlayerBullet playerBullet;
 		public SpriteRenderer spriteRenderer;
 		public Transform weaponTransform;
-		public IWeapon currentWeapon;
-		private List<IWeapon> weapons = new List<IWeapon>();
+		public WeaponBase currentWeapon;
+		private List<WeaponBase> weapons = new List<WeaponBase>();
 		private List<AudioClip> weaponSwitchSounds = new List<AudioClip>();
 		private AudioSource temporaryAudioSource; // 用于播放切换武器时的shootEnd音效
-		private IWeapon weaponToHide = null; // 待隐藏的武器引用（用于半自动武器延迟隐藏）
+		private WeaponBase weaponToHide = null; // 待隐藏的武器引用（用于半自动武器延迟隐藏）
 		public BloodBank bloodBank = new BloodBank(); // 血液银行组件，特殊资源，用于弹药管理和血量管理
 		private Vector2 smoothAimDir; // 平滑过渡后的瞄准方向
 		private const float aimSmoothSpeed = 20f; // 瞄准平滑速度
@@ -292,7 +292,7 @@ namespace ProjectBlood
 			//限制为固定射速
 			if(Input.GetMouseButton(0) && playerBullet != null)
 			{
-				currentWeapon.keepAttacking(smoothAimDir);
+				currentWeapon.KeepAttacking(smoothAimDir);
 			}
 			if(Input.GetMouseButtonUp(0) && playerBullet != null)
 			{
