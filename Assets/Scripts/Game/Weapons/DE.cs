@@ -19,7 +19,7 @@ namespace ProjectBlood
         public List<AudioClip> ShootSounds = new List<AudioClip>();
         // public AudioSource shootAudioSource; 
         // 被QF架构other bind功能生成的SelfAudioSource替代，可在designer中直接绑定
-        private GunClip gunClip = new GunClip(8); // DE的弹夹，最大弹药量为8
+        // private GunClip gunClip = new GunClip(8); // DE的弹夹，最大弹药量为8
         private FireFlash fireFlash = new FireFlash(); // DE的枪口火焰特效组件
         public override int BloodRequired { get; } = 1; // 每次换弹需要的血量
         private bool reloadTextShown = false; // 标记是否已经显示过 reload 文本，防止文本闪烁
@@ -90,8 +90,7 @@ namespace ProjectBlood
 
         public override void SwitchFromSet()
         {
-            gunClip.StopReload(); // 切出武器时停止换弹流程
-            gunClip.isReloading = false; // 切出武器时重置换弹状态，确保下次切回时可以正常换弹
+            StopReload();  // 调用 WeaponBase 的方法，内部会处理 gunClip.CancelReload()
             recentlyFired = false; // 切出武器时重置开火标志
             reloadTextShown = false; // 切出武器时重置 reload 文本显示标记
            	Player.HideText(); // 切换武器时隐藏 reload 文本

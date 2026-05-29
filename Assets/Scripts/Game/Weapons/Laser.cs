@@ -17,7 +17,7 @@ namespace ProjectBlood
 		[Tooltip("激光实际攻击宽度")]
 		public float laserWidth = 0.5f;
 		public List<AudioClip> ShootSounds = new List<AudioClip>();
-		public GunClip gunClip = new GunClip(120); // 激光的弹夹，最大弹药量为120
+		// public GunClip gunClip = new GunClip(120); // 激光的弹夹，最大弹药量为120
 		private bool newClip = true; // false表示新的弹夹还没开火过，true表示已经开火过
 		private bool hasFired = false; // 标记是否真正开火过
 		private bool reloadTextShown = false; // 标记是否已经显示过 reload 文本
@@ -172,8 +172,7 @@ namespace ProjectBlood
 			newClip = true;
 			StopAttacking();
 			reloadTextShown = false; // 切出武器时重置 reload 文本显示标记
-			gunClip.StopReload(); // 切出武器时停止换弹流程
-			gunClip.isReloading = false; // 切出武器时重置换弹状态，确保下次切回时可以正常换弹
+			StopReload();  // 调用 WeaponBase 的方法，内部会处理 gunClip.CancelReload()
 			Player.HideText(); // 切换武器时隐藏 reload 文本
 		}
 
@@ -181,7 +180,7 @@ namespace ProjectBlood
 		{
 			if (gunClip == null)  // 检查是否需要初始化
 			{
-				
+				gunClip = new GunClip(120);
 			}
 			gunClip.UpdateClipUI();
 			Sprite.enabled = true; // 重新启用sprite

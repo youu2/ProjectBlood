@@ -9,6 +9,7 @@ namespace ProjectBlood
         void PlayOneShot(AudioClip clip, float volume = 1f);
         void PlayLoop(string clip, float volume = 1f);
         void PlayLoop(AudioClip clip, float volume = 1f);
+        void StopOneShot();
         void StopLoop();
     }
 }

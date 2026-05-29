@@ -76,6 +76,7 @@ namespace ProjectBlood
                 _reloadCoroutine = null;
             }
             gunClip.CancelReload();
+            AudioManager?.StopOneShot();
         }
 
         public virtual void SwitchFromSet(){}

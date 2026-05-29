@@ -5,11 +5,12 @@ namespace ProjectBlood{
     public class AudioKitManager : IAudioManager
     {
         private AudioPlayer _currentLoopPlayer;
+        private AudioPlayer _currentOneShotPlayer;
         public void PlayOneShot(AudioClip clip, float volume = 1f)
         {
             if(clip != null)
             {
-                AudioKit.PlaySound(clip, volume: volume);
+                _currentOneShotPlayer = AudioKit.PlaySound(clip, volume: volume);
             }
         }
         public void PlayOneShot(string clipName, float volume = 1f){
@@ -34,6 +35,16 @@ namespace ProjectBlood{
                 _currentLoopPlayer = AudioKit.PlaySound(clip, loop: true, volume: volume);
             }
         }
+
+        public void StopOneShot()
+        {
+            if (_currentOneShotPlayer != null)
+                {
+                    _currentOneShotPlayer.Stop();
+                    _currentOneShotPlayer = null;
+                }
+        }
+        
         public void StopLoop()
         {
             if (_currentLoopPlayer != null)

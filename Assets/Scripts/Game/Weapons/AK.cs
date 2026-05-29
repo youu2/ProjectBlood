@@ -131,8 +131,7 @@ namespace ProjectBlood
 			newClip = true;
 			reloadTextShown = false; // 切换武器时重置 reload 文本显示标记
 			StopAttacking();
-			gunClip.StopReload(); // 切出武器时停止换弹流程
-			gunClip.isReloading = false; // 切出武器时重置换弹状态，确保下次切回时可以正常换弹
+			StopReload();  // 调用 WeaponBase 的方法，内部会处理 gunClip.CancelReload()
 			Player.HideText(); // 切换武器时隐藏 reload 文本
 		}
 

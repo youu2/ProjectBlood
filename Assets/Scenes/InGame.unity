@@ -4558,7 +4558,7 @@ MonoBehaviour:
   wanderDuration: 2
   shootInterval: 2
   burstInterval: 0.25
-  bulletsPerBurst: 3
+  shotsPerBurst: 3
   totalBurstCount: 2
   scatterBulletCount: 15
   scatterAngle: 360
@@ -12217,7 +12217,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1649614522
 Transform:
   m_ObjectHideFlags: 0
@@ -14044,7 +14044,7 @@ MonoBehaviour:
   wanderDuration: 2
   shootInterval: 2
   burstInterval: 0.3
-  bulletsPerBurst: 3
+  shotsPerBurst: 3
   totalBurstCount: 2
   scatterBulletCount: 15
   scatterAngle: 360
@@ -14076,7 +14076,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1957454604
 Transform:
   m_ObjectHideFlags: 0
@@ -14284,7 +14284,7 @@ MonoBehaviour:
   wanderDuration: 2.5
   shootInterval: 2
   burstInterval: 0.2
-  bulletsPerBurst: 2
+  shotsPerBurst: 3
   totalBurstCount: 2
   scatterBulletCount: 5
   scatterAngle: 45
@@ -16117,7 +16117,7 @@ MonoBehaviour:
   wanderDuration: 2
   shootInterval: 1.8
   burstInterval: 0.2
-  bulletsPerBurst: 3
+  shotsPerBurst: 3
   totalBurstCount: 2
   scatterBulletCount: 1
   scatterAngle: 0
@@ -16147,7 +16147,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &7859849221194834157
 GameObject:
   m_ObjectHideFlags: 0
