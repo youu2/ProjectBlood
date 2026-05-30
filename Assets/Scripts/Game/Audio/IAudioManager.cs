@@ -5,11 +5,10 @@ namespace ProjectBlood
 {
     public interface IAudioManager
     {
-        void PlayOneShot(string clip, float volume = 1f);
-        void PlayOneShot(AudioClip clip, float volume = 1f);
-        void PlayLoop(string clip, float volume = 1f);
-        void PlayLoop(AudioClip clip, float volume = 1f);
-        void StopOneShot();
-        void StopLoop();
+        AudioPlayer PlayOneShot(AudioClip clip, float volume = 1f);
+        AudioPlayer PlayOneShot(string clipName, float volume = 1f);
+        AudioPlayer PlayLoop(AudioClip clip, float volume = 1f);
+        AudioPlayer PlayLoop(string clipName, float volume = 1f);
+        void Stop(AudioPlayer player);
     }
 }

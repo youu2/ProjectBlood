@@ -133,7 +133,7 @@ namespace ProjectBlood
         
         public bool CanShoot()
         {
-            return !isReloading && currentAmmo > 0; // 只有在不换弹且有弹药时才允许射击
+            return !isReloading && !isEmpty; // 只有在不换弹且有弹药时才允许射击
         }
         public void UpdateClipUI()
         {

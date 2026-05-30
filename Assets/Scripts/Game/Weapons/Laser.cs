@@ -190,11 +190,6 @@ namespace ProjectBlood
 			}
 		}
 		
-		public override AudioClip GetShootEndSound()
-		{
-			return LaserEnd;
-		}
-		
 		public override bool HasFired()
 		{
 			return hasFired;

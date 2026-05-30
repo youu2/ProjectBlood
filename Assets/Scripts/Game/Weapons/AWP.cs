@@ -6,16 +6,8 @@ namespace ProjectBlood
 {
 	public partial class AWP : WeaponBase
 	{
-        // public PlayerBullet Bullet; QF架构bind功能生成的DEBullet替代，可在designer中直接绑定
-        // public override float HitDamage => 0.5f;
         public AttackInterval AttackInterval = new AttackInterval(1.6f);
-        // public float attackInterval = 0.5f; // 攻击间隔
-        // private float lastAttackTime = 0f; // 上次攻击时间
-
         public List<AudioClip> ShootSounds = new List<AudioClip>();
-        // public AudioSource shootAudioSource; 
-        // 被QF架构other bind功能生成的SelfAudioSource替代，可在designer中直接绑定
-        // public GunClip gunClip = new GunClip(10); // AWP的弹夹，最大弹药量为10
         private FireFlash fireFlash = new FireFlash(); // 枪口火焰特效组件
         private bool reloadTextShown = false; // 标记是否已经显示过 reload 文本，防止文本闪烁
 
@@ -74,20 +66,6 @@ namespace ProjectBlood
         {
             // AWP射速较慢，停止攻击时不需要额外逻辑
         }
-
-        // public override void Reload(System.Action onReloadComplete = null)
-        // {
-        //     gunClip.Reload(reloadSound, this, () => 
-        //     {
-        //         // 换弹完成后消耗血液
-        //         if (BloodBank != null && BloodBank.CurrentBloodAmount >= BloodRequired)
-        //         {
-        //             BloodBank.RemoveBlood(BloodRequired);
-        //         }
-        //         // 调用外部传入的回调
-        //         onReloadComplete?.Invoke();
-        //     }); // 调用GunClip的reload方法进行换弹
-        // }
 
         public override void Reload()
         {

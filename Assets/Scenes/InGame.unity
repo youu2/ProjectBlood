@@ -297,7 +297,7 @@ MonoBehaviour:
   ArchitectureFullTypeName: 
   ViewControllerFullTypeName: 
   reloadSound: {fileID: 8300000, guid: d24022c0527796243a021464a289f580, type: 3}
-  ShootSounds:
+  AkShootSounds:
   - {fileID: 8300000, guid: f0db78d998d0fd74ba058b4ae3a13306, type: 3}
   AKOneShotSound: {fileID: 8300000, guid: e651b5dcb10f12241aae693b0ab4f16f, type: 3}
   Sprite: {fileID: 1722467178}

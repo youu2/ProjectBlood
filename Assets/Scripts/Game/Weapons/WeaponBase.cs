@@ -8,11 +8,24 @@ namespace ProjectBlood
     public abstract class WeaponBase : ViewController, IWeapon
     {
         private Coroutine _reloadCoroutine;   // 原先的设计放在GunClip,这会依赖MonoBehaviour,违反单一职责原则
+        protected virtual int MaxAmmo{get; set;} = 10;
         protected GunClip gunClip;
         protected IAudioManager AudioManager;
+        private AudioPlayer _shootClipPlayer;
+        private AudioPlayer _shootLoopPlayer;
+        protected virtual AudioClip DryFireClick { get; }
+        public virtual void InitGunClip()
+        {
+            if(gunClip == null)
+            {
+                gunClip = new GunClip(MaxAmmo);
+                gunClip.UpdateClipUI();
+            }
+        }
         public virtual void Awake()
         {
             AudioManager = new AudioKitManager();
+            InitGunClip();
         }
         // public abstract float HitDamage { get; }
         public AudioClip reloadSound;
@@ -48,7 +61,7 @@ namespace ProjectBlood
             // 播放换弹音效
             if (reloadSound != null)
             {
-                AudioManager.PlayOneShot(reloadSound);
+                _shootClipPlayer = AudioManager.PlayOneShot(reloadSound);
                 yield return new WaitForSeconds(reloadSound.length);
             }
             else
@@ -68,20 +81,21 @@ namespace ProjectBlood
             _reloadCoroutine = null;
         }
 
-        protected void StopReload()
+        public void StopReload()
         {
+            InitGunClip();
             if (_reloadCoroutine != null)
             {
                 StopCoroutine(_reloadCoroutine);
                 _reloadCoroutine = null;
             }
             gunClip.CancelReload();
-            AudioManager?.StopOneShot();
+            AudioManager?.Stop(_shootClipPlayer);
         }
 
         public virtual void SwitchFromSet(){}
         public virtual void SwitchToSet(){} // 切回武器时的特殊处理逻辑
-        public virtual AudioClip GetShootEndSound() { return null; } // 获取shootEnd音效，用于切换武器时播放(全自动武器)
+        // public virtual AudioClip GetShootEndSound() { return null; } // 获取shootEnd音效，用于切换武器时播放(全自动武器)
         public virtual AudioClip GetCurrentlyPlayingSound() { return null; } // 获取当前正在播放的音效（用于半自动武器）
         public virtual bool ShouldDelayHide() { return recentlyFired && (Time.time - lastFireTime) < FIRE_SOUND_DURATION_THRESHOLD; } // 是否应该延迟隐藏
         public virtual float GetHideDelayTime() { return FIRE_SOUND_DURATION_THRESHOLD; } // 获取延迟隐藏时间
