@@ -52,7 +52,7 @@ namespace ProjectBlood
                 if (!gunClip.isReloading)
                 {
                     Player.DisplayText("[R] to Reload!");
-                    AudioManager?.PlayOneShot(DryFireClick);
+                    AudioManager?.PlayOneShot("DryFireClick");
                     reloadTextShown = true;
                 }
             }
@@ -90,14 +90,13 @@ namespace ProjectBlood
 
         public override void SwitchToSet()
 		{
+            InitGunClip();
 			gunClip.UpdateClipUI();
 			newClip = true;
 		}
         
-        public override bool HasFired() => hasFired;
+        // public override bool HasFired() => hasFired;
         
-        // public override AudioClip GetShootEndSound() => ShootEndSound;
-        
-        public override bool IsPlayingShootEnd() => false;
+        // public override bool IsPlayingShootEnd() => false;
     }
 }

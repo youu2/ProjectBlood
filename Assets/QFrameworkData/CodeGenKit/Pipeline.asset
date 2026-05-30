@@ -19,17 +19,14 @@ MonoBehaviour:
     From: 0
     NameToFullName: []
     BindInfos:
-    - TypeName: ProjectBlood.Room
-      PathToRoot: Room
-      MemberName: Room
-    - TypeName: ProjectBlood.Door
-      PathToRoot: Door
-      MemberName: Door
-    - TypeName: ProjectBlood.Chest
-      PathToRoot: Chest
-      MemberName: Chest
-    ScriptsFolder: Assets\Scripts\Game\System
-    ClassName: MapController
+    - TypeName: SpriteRenderer
+      PathToRoot: Sprite
+      MemberName: Sprite
+    - TypeName: PlayerBullet
+      PathToRoot: MP5Bullet
+      MemberName: MP5Bullet
+    ScriptsFolder: Assets\Scripts\Game\Weapons
+    ClassName: MP5
     Namespace: ProjectBlood
     MainCode: 
     DesignerCode: 

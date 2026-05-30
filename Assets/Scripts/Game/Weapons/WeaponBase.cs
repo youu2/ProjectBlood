@@ -13,7 +13,7 @@ namespace ProjectBlood
         protected IAudioManager AudioManager;
         private AudioPlayer _shootClipPlayer;
         private AudioPlayer _shootLoopPlayer;
-        protected virtual AudioClip DryFireClick { get; }
+        // protected virtual AudioClip DryFireClick { get; }
         public virtual void InitGunClip()
         {
             if(gunClip == null)

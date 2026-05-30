@@ -7,11 +7,10 @@ namespace ProjectBlood
 	public partial class AK : AutomaticWeapon
 	{
 		public List<AudioClip> AkShootSounds = new List<AudioClip>();
-		public AudioClip AKOneShotSound;
         protected override AudioClip OneShotSound => AKOneShotSound;
 		protected override List<AudioClip> ShootSounds => AkShootSounds;
         protected override AudioClip ShootEndSound => AKShootEnd;
-		private FireFlash fireFlash = new FireFlash(); // DE的枪口火焰特效组件
+		private FireFlash fireFlash = new FireFlash(); // 枪口火焰特效组件
         public override void Awake()
         {
 			MaxAmmo = 30;
@@ -29,14 +28,5 @@ namespace ProjectBlood
 			fireFlash.Flash(bullet.transform.position, shootDir); // 显示枪口火焰特效
 		}
 		
-		public override bool HasFired()
-		{
-			return hasFired;
-		}
-		
-		public override void HideSprite()
-		{
-			Sprite.enabled = false;
-		}
 	}
 }
