@@ -18,7 +18,7 @@ namespace ProjectBlood
         [Tooltip("是否使用翻转来朝向玩家（关闭则直接旋转）")]
         public bool useFlipSprite = true;
 
-		void Awake()
+		protected virtual void Awake()
 		{
 			spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 			rb = GetComponent<Rigidbody2D>();
