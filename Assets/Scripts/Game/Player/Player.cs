@@ -66,14 +66,13 @@ namespace ProjectBlood
 		{
 			var previousWeapon = currentWeapon;
 			
-			// 停止上一把武器的所有状态（音效已在 WeaponBase 中处理）
-			previousWeapon?.StopAttacking();
-			previousWeapon?.StopReload();
+			// 停止上一把武器的所有状态
+			previousWeapon?.SwitchFromSet();
 			previousWeapon?.Hide();
 			
 			// 切换到新武器
 			currentWeapon = weapons[index];
-			currentWeapon.BloodBank = bloodBank;
+			// currentWeapon.BloodBank = bloodBank;
 			currentWeapon.SwitchToSet();
 			currentWeapon.Show();
 			
@@ -253,14 +252,30 @@ namespace ProjectBlood
 			GameUI.UpdateBloodText(bloodBank);
 
 			// 切枪
-			// if(Input.GetKeyDown(KeyCode.Alpha1))
-			// {
-			// 	useWeapon(0);
-			// }
-			// if(Input.GetKeyDown(KeyCode.Alpha2))
-			// {
-			// 	useWeapon(1);
-			// }
+			if(Input.GetKeyDown(KeyCode.Alpha1))
+			{
+				UseWeapon(0);
+			}
+			if(Input.GetKeyDown(KeyCode.Alpha2))
+			{
+				UseWeapon(1);
+			}
+			if(Input.GetKeyDown(KeyCode.Alpha3))
+			{
+				UseWeapon(2);
+			}
+			if(Input.GetKeyDown(KeyCode.Alpha4))
+			{
+				UseWeapon(3);
+			}
+			if(Input.GetKeyDown(KeyCode.Alpha5))
+			{
+				UseWeapon(4);
+			}
+			if(Input.GetKeyDown(KeyCode.Alpha6))
+			{
+				UseWeapon(5);
+			}
 			if(Input.mouseScrollDelta.y > 0 || Input.GetKeyDown(KeyCode.Q)) // 鼠标滚轮向上滚动切换到上一个武器
 			{
 				// 使用模运算实现循环切换武器

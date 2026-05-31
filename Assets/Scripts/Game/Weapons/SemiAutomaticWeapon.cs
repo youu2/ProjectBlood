@@ -1,37 +1,60 @@
 using QFramework;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace ProjectBlood
 {
     public abstract class SemiAutomaticWeapon : WeaponBase
     {
-        protected bool canFire = true;
-        protected float fireRate = 0.5f;  // 开火间隔
-        
-        public override void StartAttacking(Vector2 shootDir)
-        {
-            if (canFire && gunClip != null && gunClip.CanShoot())
-            {
-                Attack(shootDir);
-                gunClip.Shoot();
-                canFire = false;
-                Invoke(nameof(ResetFire), fireRate);
-            }
-        }
-        
+        protected AttackInterval attackInterval;
+        protected bool newClip = true;
+        protected bool hasFired = false;
+        protected bool reloadTextShown = false;
+        protected AudioPlayer _shootLoopPlayer;
+        protected abstract List<AudioClip> ShootSounds { get; }
         public override void KeepAttacking(Vector2 shootDir)
         {
-            // 半自动武器只在按下时开火一次，不需要持续攻击逻辑
-        }
+            if (attackInterval.CanAttack() && gunClip.CanShoot()) // 只有在满足攻击间隔且有弹药时才允许攻击
+            {        
+                Attack(shootDir);
+                attackInterval.RecordAttackTime();
+                gunClip.Shoot(); // 射击时减少弹药量
+                reloadTextShown = false; // 有弹药时重置 reload 文本显示标记
+            }else if(!gunClip.CanShoot() && !reloadTextShown){
+				if(!gunClip.isReloading)
+				{
+					Player.DisplayText("[R] to Reload!");
+                    AudioManager.PlayOneShot("DryFireClick");
+					reloadTextShown = true; // 标记已经显示过 reload 文本
+				}
+			}
+			TryPlayDryFireClick();
+		}
         
         public override void StopAttacking()
         {
-            // 半自动武器不需要停止逻辑
+            // 射速较慢，无循环音效，停止攻击时不需要尾音
         }
         
-        private void ResetFire()
+        protected void TryPlayDryFireClick()
         {
-            canFire = true;
+            if (Time.frameCount % 50 == 0 && attackInterval.CanAttack() && gunClip != null && !gunClip.isReloading)
+            {
+                AudioManager?.PlayOneShot("DryFireClick");
+            }
         }
+    
+        public override void SwitchFromSet()
+        {
+            StopReload();  // 调用 WeaponBase 的方法，内部会处理 gunClip.CancelReload()
+            reloadTextShown = false; // 切出武器时重置 reload 文本显示标记
+           	Player.HideText(); // 切换武器时隐藏 reload 文本
+        }
+
+        public override void SwitchToSet()
+		{
+            InitGunClip();
+			gunClip.UpdateClipUI();
+		}
     }
 }

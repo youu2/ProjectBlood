@@ -94,9 +94,5 @@ namespace ProjectBlood
 			gunClip.UpdateClipUI();
 			newClip = true;
 		}
-        
-        // public override bool HasFired() => hasFired;
-        
-        // public override bool IsPlayingShootEnd() => false;
     }
 }

@@ -7,7 +7,7 @@ namespace ProjectBlood
 	public partial class Laser : AutomaticWeapon
 	{
 		// public PlayerBullet Bullet;
-		public float HitDamage = 0.5f;
+		public float HitDamage = 12f;
 
 		[Header("=== 激光攻击设置 ===")]
 		[Tooltip("激光实际攻击宽度")]
@@ -19,6 +19,8 @@ namespace ProjectBlood
         protected override AudioClip ShootEndSound => LaserEnd;
 		public override void Awake()
 		{
+			BloodRequired = 8;
+            ReloadTime = 2.8f;
 			MaxAmmo = 120;
 			gunClip = new GunClip(MaxAmmo);
 			attackInterval = new AttackInterval(0.2f);
@@ -35,16 +37,6 @@ namespace ProjectBlood
 			
 			//  伤害检测：使用 BoxCast（有宽度）
 			var damageHit = Physics2D.BoxCast(startPos, new Vector2(laserWidth, laserWidth), 0f, shootDir, Mathf.Infinity, targetLayer);
-			
-			// // 激光绘制：使用 Raycast（严格沿瞄准方向）
-			// var renderHit = Physics2D.Raycast(startPos, shootDir, Mathf.Infinity, targetLayer);
-			
-			// // 更新 LineRenderer 显示 - 严格沿瞄准方向
-			// if (SelfLineRenderer != null)
-			// {
-			// 	SelfLineRenderer.SetPosition(0, startPos); // 设置激光的起始点
-			// 	SelfLineRenderer.SetPosition(1, renderHit.collider != null ? (Vector3)renderHit.point : (startPos + shootDir * 100f)); // 结束点沿瞄准方向
-			// }
 
 			// 如果击中了敌人，造成伤害
 			if (damageHit.collider != null)

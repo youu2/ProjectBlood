@@ -13,26 +13,25 @@ namespace ProjectBlood
         protected IAudioManager AudioManager;
         private AudioPlayer _shootClipPlayer;
         private AudioPlayer _shootLoopPlayer;
-        // protected virtual AudioClip DryFireClick { get; }
+        protected virtual float ReloadTime{get; set;} = 1.5f;
         public virtual void InitGunClip()
         {
             if(gunClip == null)
             {
                 gunClip = new GunClip(MaxAmmo);
-                gunClip.UpdateClipUI();
             }
+            gunClip.UpdateClipUI();
         }
         public virtual void Awake()
         {
             AudioManager = new AudioKitManager();
             InitGunClip();
         }
-        // public abstract float HitDamage { get; }
         public AudioClip reloadSound;
         protected bool recentlyFired = false; // 标记是否最近开火过（用于半自动武器延迟隐藏）
         protected float lastFireTime = 0f; // 上次开火时间
         protected const float FIRE_SOUND_DURATION_THRESHOLD = 0.8f; // 开火后多久内算作"正在播放枪声"
-        public virtual int BloodRequired { get; } = 5; // 每次换弹需要的血量
+        public virtual int BloodRequired { get; set;} = 5; // 每次换弹需要的血量
         public BloodBank BloodBank { get; set; } // 血液银行引用
         public abstract void Attack(Vector2 shootDir);
         public virtual void StartAttacking(Vector2 shootDir)
@@ -62,7 +61,7 @@ namespace ProjectBlood
             if (reloadSound != null)
             {
                 _shootClipPlayer = AudioManager.PlayOneShot(reloadSound);
-                yield return new WaitForSeconds(reloadSound.length);
+                yield return new WaitForSeconds(ReloadTime);
             }
             else
             {

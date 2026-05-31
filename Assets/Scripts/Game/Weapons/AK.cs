@@ -13,6 +13,8 @@ namespace ProjectBlood
 		private FireFlash fireFlash = new FireFlash(); // 枪口火焰特效组件
         public override void Awake()
         {
+			BloodRequired = 5;
+            ReloadTime = 2.0f;
 			MaxAmmo = 30;
 			gunClip = new GunClip(MaxAmmo);
 			attackInterval = new AttackInterval(0.12f);
