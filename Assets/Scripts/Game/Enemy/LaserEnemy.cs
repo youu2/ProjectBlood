@@ -10,8 +10,9 @@ namespace ProjectBlood
     {
         private AudioKitManager AudioManager = new AudioKitManager();
         private AudioPlayer _loopPlayer;
+
         [Header("=== Laser Settings ===")]
-        public LineRenderer laserLine;
+        public LineRenderer laserLinePrefab;
         [Range(0.1f, 2f)]
         public float laserWidth = 0.3f;
         public Color laserColor = Color.magenta;
@@ -23,7 +24,7 @@ namespace ProjectBlood
         [Header("=== Attack Settings ===")]
         public float chargeTime = 1.5f;
         public float damageFrequency = 5f;
-        public float damageAmount = 10f;
+        public float damagePerHit = 10f;
 
         [Header("=== Movement Settings ===")]
         public float rotationSpeed = 180f;
@@ -37,15 +38,16 @@ namespace ProjectBlood
         public float spreadAngle = 0f;
         public bool randomSpread = false;
 
-        [Header("=== Bounce Settings ===")]
-        public bool enableBounce = false;
-        public int maxBounceCount = 2;
-
         [Header("=== Audio Settings ===")]
         public AudioClip chargeSound;
         public AudioClip fireSound;
         public AudioClip laserLoopSound;
         public AudioClip attackEndSound;
+
+        [Header("=== Fire Flash Settings ===")]
+        public SpriteRenderer fireFlashRenderer;
+        public Sprite[] fireFlashSprites;
+        public int framesPerSprite = 3;
 
         public enum State
         {
@@ -60,9 +62,12 @@ namespace ProjectBlood
         protected Player player;
         protected float chargeProgress = 0f;
         protected Coroutine damageCoroutine;
-        protected List<Vector3> laserPoints = new List<Vector3>();
+        protected List<List<Vector3>> laserPointsList = new List<List<Vector3>>();
+        protected List<LineRenderer> laserLines = new List<LineRenderer>();
         protected float currentWanderTime = 0f;
         protected Vector3 wanderDirection;
+        protected int currentSpriteIndex = 0;
+        protected int frameCounter = 0;
 
         protected override void Awake()
         {
@@ -84,17 +89,10 @@ namespace ProjectBlood
             if (spriteRenderer == null)
                 spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 
-            if (laserLine == null)
-                laserLine = GetComponent<LineRenderer>();
+            CreateLaserLines();
 
-            if (laserLine != null)
-            {
-                laserLine.startWidth = laserWidth;
-                laserLine.endWidth = laserWidth;
-                laserLine.startColor = laserColor;
-                laserLine.endColor = laserColor;
-                laserLine.enabled = false;
-            }
+            if (fireFlashRenderer != null)
+                fireFlashRenderer.enabled = false;
 
             if (player == null)
                 player = Player.player1;
@@ -107,7 +105,35 @@ namespace ProjectBlood
             chargeTime = Mathf.Max(0, chargeTime);
             laserDuration = Mathf.Max(0.1f, laserDuration);
             damageFrequency = Mathf.Max(1f, damageFrequency);
-            maxBounceCount = Mathf.Max(0, maxBounceCount);
+            framesPerSprite = Mathf.Max(1, framesPerSprite);
+        }
+
+        void CreateLaserLines()
+        {
+            for (int i = 0; i < laserCount; i++)
+            {
+                LineRenderer lr;
+                if (laserLinePrefab != null)
+                {
+                    lr = Instantiate(laserLinePrefab, transform);
+                    lr.name = "LaserLine_" + i;
+                }
+                else
+                {
+                    GameObject laserObj = new GameObject("LaserLine_" + i);
+                    laserObj.transform.parent = transform;
+                    lr = laserObj.AddComponent<LineRenderer>();
+                }
+
+                lr.startWidth = laserWidth;
+                lr.endWidth = laserWidth;
+                lr.startColor = laserColor;
+                lr.endColor = laserColor;
+                lr.enabled = false;
+
+                laserLines.Add(lr);
+                laserPointsList.Add(new List<Vector3>());
+            }
         }
 
         void Update()
@@ -132,6 +158,7 @@ namespace ProjectBlood
                     UpdateAim();
                     break;
                 case State.Fire:
+                    UpdateFireFlash();
                     break;
             }
         }
@@ -183,6 +210,20 @@ namespace ProjectBlood
             SmoothRotate(dirToPlayer);
         }
 
+        void UpdateFireFlash()
+        {
+            if (fireFlashRenderer == null || fireFlashSprites == null || fireFlashSprites.Length == 0)
+                return;
+
+            frameCounter++;
+            if (frameCounter >= framesPerSprite)
+            {
+                frameCounter = 0;
+                currentSpriteIndex = (currentSpriteIndex + 1) % fireFlashSprites.Length;
+                fireFlashRenderer.sprite = fireFlashSprites[currentSpriteIndex];
+            }
+        }
+
         Vector3 GetDirectionToPlayer()
         {
             return (player.transform.position - transform.position).normalized;
@@ -225,18 +266,27 @@ namespace ProjectBlood
 
         void ShowChargeIndicator()
         {
-            if (laserLine == null) return;
+            if (laserLines.Count == 0) return;
 
-            laserLine.enabled = true;
-            if (chargeMaterial != null)
-                laserLine.material = chargeMaterial;
-            laserLine.startWidth = laserWidth * chargeProgress;
-            laserLine.endWidth = laserWidth * chargeProgress;
-            // laserLine.startColor = Color.Lerp(Color.red, laserColor, chargeProgress);
-            // laserLine.endColor = Color.Lerp(Color.red, laserColor, chargeProgress);
             Vector3 startPos = transform.position + transform.right * laserStartOffset;
-            laserLine.SetPosition(0, startPos);
-            laserLine.SetPosition(1, startPos + transform.right * attackRange);
+            float width = laserWidth * chargeProgress;
+
+            for (int i = 0; i < laserLines.Count; i++)
+            {
+                LineRenderer lr = laserLines[i];
+                if (lr == null) continue;
+
+                lr.enabled = true;
+                if (chargeMaterial != null)
+                    lr.material = chargeMaterial;
+                lr.startWidth = width;
+                lr.endWidth = width;
+
+                float angleOffset = GetLaserAngleOffset(i);
+                Vector3 laserDir = RotateVector(transform.right, angleOffset);
+                lr.SetPosition(0, startPos);
+                lr.SetPosition(1, startPos + laserDir * attackRange);
+            }
         }
 
         IEnumerator FireSequence()
@@ -245,25 +295,48 @@ namespace ProjectBlood
             AudioManager.PlayOneShot(fireSound);
             _loopPlayer = AudioManager.PlayLoop(laserLoopSound);
 
-            if (laserLine != null)
+            foreach (LineRenderer lr in laserLines)
             {
-                if (fireMaterial != null)
-                    laserLine.material = fireMaterial;
-                laserLine.startWidth = laserWidth;
-                laserLine.endWidth = laserWidth;
-                laserLine.startColor = laserColor;
-                laserLine.endColor = laserColor;
+                if (lr != null)
+                {
+                    if (fireMaterial != null)
+                        lr.material = fireMaterial;
+                    lr.startWidth = laserWidth;
+                    lr.endWidth = laserWidth;
+                    lr.startColor = laserColor;
+                    lr.endColor = laserColor;
+                }
             }
+
+            ShowFireFlash();
 
             damageCoroutine = StartCoroutine(ApplyContinuousDamage());
             yield return StartCoroutine(UpdateLaserBeam());
             StopCoroutine(damageCoroutine);
             AudioManager.Stop(_loopPlayer);
             AudioManager.PlayOneShot(attackEndSound);
-            // AudioKit.PlaySound(attackEndSound);
             yield return StartCoroutine(FadeOutLaser());
-            laserPoints.Clear();
+            HideFireFlash();
+            foreach (var points in laserPointsList)
+                points.Clear();
             currentState = State.Chase;
+        }
+
+        void ShowFireFlash()
+        {
+            if (fireFlashRenderer == null || fireFlashSprites == null || fireFlashSprites.Length == 0)
+                return;
+
+            currentSpriteIndex = 0;
+            frameCounter = 0;
+            fireFlashRenderer.sprite = fireFlashSprites[0];
+            fireFlashRenderer.enabled = true;
+        }
+
+        void HideFireFlash()
+        {
+            if (fireFlashRenderer != null)
+                fireFlashRenderer.enabled = false;
         }
 
         IEnumerator UpdateLaserBeam()
@@ -280,8 +353,10 @@ namespace ProjectBlood
                     float angleOffset = GetLaserAngleOffset(i);
                     Vector3 laserDir = RotateVector(transform.right, angleOffset);
                     Vector3 startPos = transform.position + transform.right * laserStartOffset;
-                    CalculateLaserPath(startPos, laserDir, maxBounceCount);
-                    UpdateLaserVisuals();
+                    
+                    laserPointsList[i].Clear();
+                    CalculateLaserPath(i, startPos, laserDir);
+                    UpdateLaserVisuals(i);
                 }
 
                 elapsed += Time.deltaTime;
@@ -310,56 +385,47 @@ namespace ProjectBlood
             ).normalized;
         }
 
-        void CalculateLaserPath(Vector3 start, Vector3 direction, int bouncesLeft)
+        void CalculateLaserPath(int laserIndex, Vector3 start, Vector3 direction)
         {
-            if (bouncesLeft < 0) return;
-
-            laserPoints.Clear();
-            laserPoints.Add(start);
+            laserPointsList[laserIndex].Add(start);
 
             RaycastHit2D hit = Physics2D.Raycast(start, direction, Mathf.Infinity, LayerMask.GetMask("Wall"));
 
             if (hit.collider != null)
             {
-                laserPoints.Add(hit.point);
-                CheckEnemyDamage(start, hit.point);
-
-                if (enableBounce && bouncesLeft > 0 && hit.collider.CompareTag("Wall"))
-                {
-                    Vector3 reflectedDir = Vector3.Reflect(direction, hit.normal).normalized;
-                    CalculateLaserPath((Vector3)hit.point + reflectedDir * 0.1f, reflectedDir, bouncesLeft - 1);
-                }
+                laserPointsList[laserIndex].Add(hit.point);
             }
             else
             {
-                Vector3 endPoint = start + direction * 50f;
-                laserPoints.Add(endPoint);
-                CheckEnemyDamage(start, endPoint);
+                Vector3 endPoint = start + direction * attackRange;
+                laserPointsList[laserIndex].Add(endPoint);
             }
         }
 
-        void UpdateLaserVisuals()
+        void UpdateLaserVisuals(int laserIndex)
         {
-            if (laserLine == null || laserPoints.Count < 2) return;
+            if (laserLines.Count <= laserIndex || laserPointsList.Count <= laserIndex) return;
+            
+            LineRenderer lr = laserLines[laserIndex];
+            List<Vector3> points = laserPointsList[laserIndex];
+            
+            if (lr == null || points.Count < 2) return;
 
-            laserLine.positionCount = laserPoints.Count;
-            laserLine.SetPositions(laserPoints.ToArray());
+            lr.positionCount = points.Count;
+            lr.SetPositions(points.ToArray());
         }
 
-        void CheckEnemyDamage(Vector3 start, Vector3 end)
+        void CheckPlayerDamage(Vector3 start, Vector3 end)
         {
             Vector3 direction = (end - start).normalized;
             float distance = Vector3.Distance(start, end);
 
-            RaycastHit2D hit = Physics2D.Raycast(start, direction, distance, LayerMask.GetMask("Enemy"));
+            RaycastHit2D hit = Physics2D.Raycast(start, direction, distance, LayerMask.GetMask("Player"));
 
-            if (hit.collider != null && hit.collider.gameObject != gameObject)
+            if (hit.collider != null)
             {
-                IDamageable damageable = hit.collider.GetComponent<IDamageable>();
-                if (damageable != null && !damageable.IsDying)
-                {
-                    damageable.TakeDamage(damageAmount);
-                }
+                Global.currentHP.Value -= damagePerHit;
+                if (Global.currentHP.Value < 0) Global.currentHP.Value = 0;
             }
         }
 
@@ -369,9 +435,13 @@ namespace ProjectBlood
 
             while (currentState == State.Fire)
             {
-                for (int i = 0; i < laserPoints.Count - 1; i++)
+                for (int laserIndex = 0; laserIndex < laserPointsList.Count; laserIndex++)
                 {
-                    CheckEnemyDamage(laserPoints[i], laserPoints[i + 1]);
+                    List<Vector3> points = laserPointsList[laserIndex];
+                    for (int i = 0; i < points.Count - 1; i++)
+                    {
+                        CheckPlayerDamage(points[i], points[i + 1]);
+                    }
                 }
 
                 yield return new WaitForSeconds(interval);
@@ -380,7 +450,7 @@ namespace ProjectBlood
 
         IEnumerator FadeOutLaser()
         {
-            if (laserLine == null) yield break;
+            if (laserLines.Count == 0) yield break;
 
             float duration = 0.2f;
             float elapsed = 0f;
@@ -391,8 +461,14 @@ namespace ProjectBlood
                 float t = elapsed / duration;
                 float width = Mathf.Lerp(startWidth, 0f, t);
 
-                laserLine.startWidth = width;
-                laserLine.endWidth = width;
+                foreach (LineRenderer lr in laserLines)
+                {
+                    if (lr != null)
+                    {
+                        lr.startWidth = width;
+                        lr.endWidth = width;
+                    }
+                }
 
                 elapsed += Time.deltaTime;
                 yield return null;
@@ -403,8 +479,11 @@ namespace ProjectBlood
 
         void HideLaser()
         {
-            if (laserLine != null)
-                laserLine.enabled = false;
+            foreach (LineRenderer lr in laserLines)
+            {
+                if (lr != null)
+                    lr.enabled = false;
+            }
         }
 
         protected override IEnumerator DeathSequence()
@@ -413,6 +492,7 @@ namespace ProjectBlood
                 StopCoroutine(damageCoroutine);
 
             HideLaser();
+            HideFireFlash();
 
             yield return StartCoroutine(base.DeathSequence());
         }

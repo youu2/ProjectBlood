@@ -1,3 +1,4 @@
+// 基础近战敌人
 using UnityEngine;
 using QFramework;
 using System.Collections;
@@ -76,6 +77,9 @@ namespace ProjectBlood
 		{
 			if (isDying) return;
 			AudioKit.PlaySound("Torch Impact 2", volume: 0.5f);
+			FxManager.Instance.EnemyHurt.Instantiate()
+			.Position2D(transform.Position2D())
+			.Show();
 			this.currentHealth -= Damage;
 			if (currentHealth <= 0f)
 			{
