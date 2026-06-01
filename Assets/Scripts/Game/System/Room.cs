@@ -67,7 +67,13 @@ namespace ProjectBlood
 			// 生成并记录所有生成的敌人
 			for (int i = 0; i < enemyCount; i++)
 			{
-				var enemyObj = Instantiate(MapController.instance.Enemy1);
+				var enemyToGen = RandomUtility.Choose(
+					MapController.instance.Enemy1,
+					MapController.instance.Enemy2,
+					MapController.instance.Enemy3,
+					MapController.instance.Enemy4
+					);
+				var enemyObj = Instantiate(enemyToGen);
 				enemyObj.transform.position = pos2Gen[i];
 				var enemy = enemyObj.GetComponent<IDamageable>();
 				enemy.Room = this;

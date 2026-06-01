@@ -369,7 +369,7 @@ namespace ProjectBlood
                     {
                         var EnemyPos = new Vector3(x, y, 0);
                         roomObj.AddEnemy(EnemyPos);
-                        // var enemy = Instantiate(Enemy);
+                        // var enemy = Instantiate(Enemy1);
                         // enemy.transform.position = new Vector3(x, y, 0);
                     }
                     else if (roomConfig.roomMap[i][j] == 'X')

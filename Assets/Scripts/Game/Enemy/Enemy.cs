@@ -75,11 +75,10 @@ namespace ProjectBlood
 
 		public void TakeDamage(float Damage)
 		{
+			Debug.Log($"TakeDamage called. isDying: {isDying}, currentHealth: {currentHealth}, Damage: {Damage}");
 			if (isDying) return;
 			AudioKit.PlaySound("Torch Impact 2", volume: 0.5f);
-			FxManager.Instance.EnemyHurt.Instantiate()
-			.Position2D(transform.Position2D())
-			.Show();
+			FxManager.PlayEnemyHurtFX(transform.Position2D());
 			this.currentHealth -= Damage;
 			if (currentHealth <= 0f)
 			{
@@ -107,6 +106,7 @@ namespace ProjectBlood
 		// Death process (Flash first, then destroy, avoid enemy disappearing directly)
         protected virtual IEnumerator DeathSequence()
 		{
+			Debug.Log($"DeathSequence called.");
 			// Drop experience item, destroy enemy
 			// Global.GenerateExp(this.gameObject);
             if (Room != null)

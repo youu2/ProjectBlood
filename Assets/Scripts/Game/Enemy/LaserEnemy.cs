@@ -165,6 +165,8 @@ namespace ProjectBlood
 
         void UpdateChase()
         {
+            if (player == null) return;
+            
             Vector3 dirToPlayer = GetDirectionToPlayer();
             SmoothRotate(dirToPlayer);
             transform.position += dirToPlayer * moveSpeed * Time.deltaTime;
@@ -186,6 +188,8 @@ namespace ProjectBlood
 
         void UpdateWander()
         {
+            if (player == null) return;
+            
             transform.position += wanderDirection * moveSpeed * Time.deltaTime;
             currentWanderTime += Time.deltaTime;
 
@@ -206,6 +210,8 @@ namespace ProjectBlood
 
         void UpdateAim()
         {
+            if (player == null) return;
+            
             Vector3 dirToPlayer = GetDirectionToPlayer();
             SmoothRotate(dirToPlayer);
         }
@@ -226,6 +232,8 @@ namespace ProjectBlood
 
         Vector3 GetDirectionToPlayer()
         {
+            if (player == null)
+                return transform.right;
             return (player.transform.position - transform.position).normalized;
         }
 
@@ -246,6 +254,12 @@ namespace ProjectBlood
 
             while (chargeProgress < 1f)
             {
+                if (player == null)
+                {
+                    HideLaser();
+                    yield break;
+                }
+                
                 chargeProgress += Time.deltaTime / chargeTime;
                 Vector3 dirToPlayer = GetDirectionToPlayer();
                 SmoothRotate(dirToPlayer);
@@ -345,6 +359,12 @@ namespace ProjectBlood
 
             while (elapsed < laserDuration)
             {
+                if (player == null)
+                {
+                    HideLaser();
+                    yield break;
+                }
+                
                 Vector3 dirToPlayer = GetDirectionToPlayer();
                 SmoothRotate(dirToPlayer);
 
@@ -424,8 +444,7 @@ namespace ProjectBlood
 
             if (hit.collider != null)
             {
-                Global.currentHP.Value -= damagePerHit;
-                if (Global.currentHP.Value < 0) Global.currentHP.Value = 0;
+                Player.player1.TakeDamage(damagePerHit);
             }
         }
 
@@ -491,6 +510,7 @@ namespace ProjectBlood
             if (damageCoroutine != null)
                 StopCoroutine(damageCoroutine);
 
+            AudioManager.Stop(_loopPlayer);
             HideLaser();
             HideFireFlash();
 

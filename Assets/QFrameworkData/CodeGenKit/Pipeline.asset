@@ -22,6 +22,9 @@ MonoBehaviour:
     - TypeName: ParticleSystem
       PathToRoot: EnemyHurt
       MemberName: EnemyHurt
+    - TypeName: ParticleSystem
+      PathToRoot: PlayerHurt
+      MemberName: PlayerHurt
     ScriptsFolder: Assets/Scripts/Game
     ClassName: FxManager
     Namespace: ProjectBlood

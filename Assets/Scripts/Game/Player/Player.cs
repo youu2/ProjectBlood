@@ -94,23 +94,45 @@ namespace ProjectBlood
 			HurtBox.OnTriggerEnter2DEvent((Collider2D col)=>
 			{
 				var hitBox = col.GetComponent<HitBox>();
-				// 如果撞到的东西没有伤害能力，就跳过受伤流程
-				if (hitBox == null) return; 
-				Global.currentHP.Value -= col.GetComponent<HitBox>().owner.GetComponent<IDamageable>().HitDamage;
-				if (Global.currentHP.Value < 0) Global.currentHP.Value = 0; // 避免HP变成负数
-				if (Global.currentHP.Value > 0)
+				if (hitBox == null) return;
+				TakeDamage(hitBox.owner.GetComponent<IDamageable>().HitDamage);
+			}).UnRegisterWhenGameObjectDestroyed(gameObject);
+			Global.currentHP.RegisterWithInitValue(currentHP =>
+			{
+				if (currentHP <= 0)
 				{
-					AudioKit.PlaySound("Hurt");
-					return;
-				} 
-				// 死亡时根据当前等级获得传承点数
-				Global.SettleLegacyPoints();
-				AudioKit.PlaySound("WilhelmScream");
-				this.DestroyGameObjGracefully();
-				UIKit.OpenPanel<UIGameOverPanel>();
+					Death();
+				}
 			}).UnRegisterWhenGameObjectDestroyed(gameObject);
 		}
-		
+
+		public void TakeDamage(float damage)
+		{
+			FxManager.PlayPlayerHurtFX(transform.Position2D());
+			Global.currentHP.Value -= damage;
+			if (Global.currentHP.Value < 0) Global.currentHP.Value = 0;
+			
+			if (Global.currentHP.Value > 0)
+			{
+				AudioKit.PlaySound("Hurt");
+			}
+			else
+			{
+				Death();
+			}
+		}
+
+		private void Death()
+		{
+			Global.SettleLegacyPoints();
+			AudioKit.PlaySound("WilhelmScream");
+			this.DestroyGameObjGracefully();
+			UIKit.OpenPanel<UIGameOverPanel>();
+		}
+		// Global.currentHP.RegisterWithInitValue(currentHP =>
+		// 	{
+		// 		HPText.text = "HP: " + currentHP + "/" + Global.MAX_HP;
+		// 	}).UnRegisterWhenGameObjectDestroyed(gameObject);
 		void Update()
 		{
 			float horizontal = Input.GetAxis("Horizontal"); // A/D
