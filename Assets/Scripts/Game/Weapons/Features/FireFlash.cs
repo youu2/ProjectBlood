@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ProjectBlood
 {
-    public class FireFlash : MonoBehaviour
+    public class FireFlash
     {
         public void Flash(Vector2 position, Vector2 direction)
         {

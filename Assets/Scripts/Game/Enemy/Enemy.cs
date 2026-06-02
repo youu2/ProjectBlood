@@ -75,10 +75,10 @@ namespace ProjectBlood
 
 		public void TakeDamage(float Damage)
 		{
-			Debug.Log($"TakeDamage called. isDying: {isDying}, currentHealth: {currentHealth}, Damage: {Damage}");
 			if (isDying) return;
 			AudioKit.PlaySound("Torch Impact 2", volume: 0.5f);
 			FxManager.PlayEnemyHurtFX(transform.Position2D());
+			FxManager.DrawEnemyBlood(transform.Position2D());
 			this.currentHealth -= Damage;
 			if (currentHealth <= 0f)
 			{
@@ -149,7 +149,7 @@ namespace ProjectBlood
 		public bool IsDying { get => isDying; }
 		public GameObject GameObject { get => gameObject; }
 		public Room Room { get; set; }
-        public void OnDestroy()
+        public virtual void OnDestroy()
         {
             if (Room != null)
             {

@@ -271,7 +271,7 @@ namespace ProjectBlood
             yield return StartCoroutine(base.DeathSequence());
         }
 
-        public void UpdateRotate(Vector3 dirToPlayer)
+        public override void UpdateRotate(Vector3 dirToPlayer)
         {
             if(dirToPlayer.x < 0)
             {

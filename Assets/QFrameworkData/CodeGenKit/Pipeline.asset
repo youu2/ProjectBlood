@@ -25,6 +25,12 @@ MonoBehaviour:
     - TypeName: ParticleSystem
       PathToRoot: PlayerHurt
       MemberName: PlayerHurt
+    - TypeName: SpriteRenderer
+      PathToRoot: EnemyBlood
+      MemberName: EnemyBlood
+    - TypeName: SpriteRenderer
+      PathToRoot: PlayerBlood
+      MemberName: PlayerBlood
     ScriptsFolder: Assets/Scripts/Game
     ClassName: FxManager
     Namespace: ProjectBlood

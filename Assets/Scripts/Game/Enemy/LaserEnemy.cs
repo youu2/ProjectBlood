@@ -520,5 +520,11 @@ namespace ProjectBlood
         protected override void FixedUpdate()
         {
         }
+
+        public override void OnDestroy()
+        {
+            AudioManager.Stop(_loopPlayer);
+            base.OnDestroy();
+        }
     }
 }

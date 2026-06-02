@@ -109,6 +109,7 @@ namespace ProjectBlood
 		public void TakeDamage(float damage)
 		{
 			FxManager.PlayPlayerHurtFX(transform.Position2D());
+			FxManager.DrawPlayerBlood(transform.Position2D());
 			Global.currentHP.Value -= damage;
 			if (Global.currentHP.Value < 0) Global.currentHP.Value = 0;
 			

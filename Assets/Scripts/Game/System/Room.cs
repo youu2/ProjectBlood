@@ -51,10 +51,6 @@ namespace ProjectBlood
 
 		void GenerateEnemy()
 		{
-			// if(currentEnemyWaveConfig == null)
-			// {
-			// 	return;
-			// }
 			
 			enemyWaveConfigList.RemoveAt(0);
 			// 每次生成3-6个敌人

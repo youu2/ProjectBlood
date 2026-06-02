@@ -1,4 +1,4 @@
-// Generate Id:84c1bd7c-1607-4d50-8ed5-95bd8a692e3a
+// Generate Id:21d20607-518d-4c97-b0d5-29263928e3ec
 using UnityEngine;
 
 namespace ProjectBlood
@@ -8,6 +8,10 @@ namespace ProjectBlood
 		public ParticleSystem EnemyHurt;
 		
 		public ParticleSystem PlayerHurt;
+		
+		public SpriteRenderer EnemyBlood;
+		
+		public SpriteRenderer PlayerBlood;
 		
 	}
 }
