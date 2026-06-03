@@ -43,15 +43,9 @@ namespace ProjectBlood
 			this.roomGenerateConfig = roomGenerateConfig;
 			return this;
 		}
-	
-		void Start()
-		{
-			
-		}
 
 		void GenerateEnemy()
 		{
-			
 			enemyWaveConfigList.RemoveAt(0);
 			// 每次生成3-6个敌人
 			var enemyCount = Random.Range(3,6);

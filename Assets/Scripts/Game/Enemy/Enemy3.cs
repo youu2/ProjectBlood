@@ -242,7 +242,7 @@ namespace ProjectBlood
             }
         }
 
-        public new void TakeDamage(float damage)
+        public void TakeDamage(float damage)
         {
             if (isDying) return;
             
@@ -252,7 +252,7 @@ namespace ProjectBlood
             {
                 // 生成掉落物
                 Global.GenerateDrops(this.gameObject);
-                StartCoroutine(DeathSequence());
+                // StartCoroutine(DeathSequence());
             }
             else
             {
@@ -261,15 +261,15 @@ namespace ProjectBlood
         }
         
         // 死亡序列（闪红后销毁）
-        protected override IEnumerator DeathSequence()
-        {
-            // 停止射击协程
-            if (shootCoroutine != null)
-                StopCoroutine(shootCoroutine);
+        // protected override IEnumerator DeathSequence()
+        // {
+        //     // 停止射击协程
+        //     if (shootCoroutine != null)
+        //         StopCoroutine(shootCoroutine);
             
-            // 调用基类的死亡序列
-            yield return StartCoroutine(base.DeathSequence());
-        }
+        //     // 调用基类的死亡序列
+        //     yield return StartCoroutine(base.DeathSequence());
+        // }
 
         public override void UpdateRotate(Vector3 dirToPlayer)
         {

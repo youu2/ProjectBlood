@@ -19,20 +19,14 @@ MonoBehaviour:
     From: 0
     NameToFullName: []
     BindInfos:
-    - TypeName: ParticleSystem
-      PathToRoot: EnemyHurt
-      MemberName: EnemyHurt
-    - TypeName: ParticleSystem
-      PathToRoot: PlayerHurt
-      MemberName: PlayerHurt
     - TypeName: SpriteRenderer
-      PathToRoot: EnemyBlood
-      MemberName: EnemyBlood
+      PathToRoot: Sprite
+      MemberName: Sprite
     - TypeName: SpriteRenderer
-      PathToRoot: PlayerBlood
-      MemberName: PlayerBlood
-    ScriptsFolder: Assets/Scripts/Game
-    ClassName: FxManager
+      PathToRoot: LaserPoint
+      MemberName: LaserPoint
+    ScriptsFolder: Assets\Scripts\Game\Weapons
+    ClassName: Laser
     Namespace: ProjectBlood
     MainCode: 
     DesignerCode: 

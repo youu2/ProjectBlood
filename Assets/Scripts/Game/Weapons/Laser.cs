@@ -6,7 +6,6 @@ namespace ProjectBlood
 {
 	public partial class Laser : AutomaticWeapon
 	{
-		// public PlayerBullet Bullet;
 		public float HitDamage = 12f;
 
 		[Header("=== 激光攻击设置 ===")]
@@ -32,7 +31,7 @@ namespace ProjectBlood
 			// 真正的激光逻辑：使用 BoxCast 或多条 Raycast 检测第一个敌人，直接造成伤害
 			if (!gunClip.CanShoot()) return;
 
-			Vector2 startPos = Bullet.Position2D();
+			Vector2 startPos = LaserPoint.Position2D();
 			var targetLayer = LayerMask.GetMask("Enemy", "Wall"); // 所有可以阻挡激光的物体层级
 			
 			//  伤害检测：使用 BoxCast（有宽度）
@@ -44,7 +43,9 @@ namespace ProjectBlood
 				var damageable = damageHit.collider.GetComponent<IDamageable>();
 				if (damageable != null && !damageable.IsDying)
 				{
-					damageable.TakeDamage(HitDamage); // 直接造成伤害，不需要子弹
+					// 计算击退方向：从玩家到敌人的方向
+					Vector2 playerToEnemyDir = (damageHit.collider.transform.position - Player.player1.transform.position).normalized;
+					damageable.TakeDamage(HitDamage, playerToEnemyDir);
 				}
 			}
 		}
@@ -85,7 +86,7 @@ namespace ProjectBlood
 
 		private void DrawLaser(Vector2 shootDir)
 		{
-			Vector2 startPos = Bullet.Position2D();
+			Vector2 startPos = LaserPoint.Position2D();
 			var targetLayer = LayerMask.GetMask("Enemy", "Wall");
 			var renderHit = Physics2D.Raycast(startPos, shootDir, Mathf.Infinity, targetLayer);
 			

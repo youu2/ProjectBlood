@@ -1,4 +1,4 @@
-// Generate Id:ba613ea4-6186-4fb8-982f-fdf338305613
+// Generate Id:2346d485-561d-4dc9-acf5-5a644f21b631
 using UnityEngine;
 
 namespace ProjectBlood
@@ -7,7 +7,7 @@ namespace ProjectBlood
 	{
 		public SpriteRenderer Sprite;
 		
-		public PlayerBullet Bullet;
+		public SpriteRenderer LaserPoint;
 		
 		public UnityEngine.AudioSource SelfShortAudioSource;
 		

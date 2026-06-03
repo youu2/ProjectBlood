@@ -91,12 +91,6 @@ namespace ProjectBlood
 
 		void Start()
 		{
-			HurtBox.OnTriggerEnter2DEvent((Collider2D col)=>
-			{
-				var hitBox = col.GetComponent<HitBox>();
-				if (hitBox == null) return;
-				TakeDamage(hitBox.owner.GetComponent<IDamageable>().HitDamage);
-			}).UnRegisterWhenGameObjectDestroyed(gameObject);
 			Global.currentHP.RegisterWithInitValue(currentHP =>
 			{
 				if (currentHP <= 0)

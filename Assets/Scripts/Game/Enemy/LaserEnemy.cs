@@ -505,17 +505,17 @@ namespace ProjectBlood
             }
         }
 
-        protected override IEnumerator DeathSequence()
-        {
-            if (damageCoroutine != null)
-                StopCoroutine(damageCoroutine);
+        // protected override IEnumerator DeathSequence()
+        // {
+        //     if (damageCoroutine != null)
+        //         StopCoroutine(damageCoroutine);
 
-            AudioManager.Stop(_loopPlayer);
-            HideLaser();
-            HideFireFlash();
+        //     AudioManager.Stop(_loopPlayer);
+        //     HideLaser();
+        //     HideFireFlash();
 
-            yield return StartCoroutine(base.DeathSequence());
-        }
+        //     yield return StartCoroutine(base.DeathSequence());
+        // }
 
         protected override void FixedUpdate()
         {
@@ -523,7 +523,11 @@ namespace ProjectBlood
 
         public override void OnDestroy()
         {
+            if (damageCoroutine != null)
+                StopCoroutine(damageCoroutine);
             AudioManager.Stop(_loopPlayer);
+            HideLaser();
+            HideFireFlash();
             base.OnDestroy();
         }
     }

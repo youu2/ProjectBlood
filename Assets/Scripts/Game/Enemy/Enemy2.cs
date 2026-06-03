@@ -287,7 +287,7 @@ namespace ProjectBlood
         public float HitDamage { get => Damage; }
         public bool IsDying { get => isDying; }
         
-        public void TakeDamage(float damage)
+        public void TakeDamage(float damage, Vector2 hitDir)
         {
             if (isDying) return;
             

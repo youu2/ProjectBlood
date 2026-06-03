@@ -37,20 +37,20 @@ public class PlayerBullet : MonoBehaviour
     //     //UIKit.OpenPanel<UIGamePassPanel>();
     // }
 
-    public virtual void OnTriggerEnter2D(Collider2D collision)
+    public virtual void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            //UIKit.OpenPanel<UIGamePassPanel>();
-            collision.gameObject.GetComponent<IDamageable>().TakeDamage(damage);
-            // this.gameObject.SetActive(false); // Disable bullet after hitting an enemy
-            Destroy(this.gameObject); // Destroy bullet after hitting an enemy
+            // 计算玩家到敌人的方向
+            Vector2 playerToEnemyDir = (collision.transform.position - Player.player1.transform.position).normalized;
+            
+            collision.gameObject.GetComponent<IDamageable>()
+                .TakeDamage(damage, playerToEnemyDir);
+            Destroy(this.gameObject);
         }
         else
         {
-            // this.gameObject.SetActive(false); // Disable bullet on any collision
-            Destroy(this.gameObject); // Destroy bullet on any collision
+            Destroy(this.gameObject);
         }
-        //UIKit.OpenPanel<UIGamePassPanel>();
     }
 }

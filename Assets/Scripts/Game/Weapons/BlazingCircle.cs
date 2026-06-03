@@ -29,15 +29,10 @@ namespace ProjectBlood
 					float distance = Vector2.Distance(Player.player1.transform.position, enemy.transform.position);
 					if (distance <= _attackRange)
 					{
-						// enemy.TakeDamage(Global.BlazingCircleDamage.Value);
-						// //enemy.Sprite.color = Color.white;
-						//enemy.getSprite().color = Color.white;
 						var enemyRefCache = enemy;
-						enemyRefCache.TakeDamage(Global.BlazingCircleDamage.Value);
-						// ActionKit.Delay(0.3f, () =>
-						// {
-						// 	enemyRefCache.getSprite().color = Color.red;
-						// }).StartGlobal();
+						// 计算击退方向：从玩家到敌人的方向
+						Vector2 playerToEnemyDir = (enemy.transform.position - Player.player1.transform.position).normalized;
+						enemyRefCache.TakeDamage(Global.BlazingCircleDamage.Value, playerToEnemyDir);
 					}
 
 				}

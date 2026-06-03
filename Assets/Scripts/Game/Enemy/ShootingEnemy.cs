@@ -316,40 +316,26 @@ namespace ProjectBlood
             }
         }
 
-
-        // 受击处理
-        public new void TakeDamage(float damage)
-        {
-            if (isDying) return;
+        // // 死亡序列
+        // protected override IEnumerator DeathSequence()
+        // {
+        //     // 停止射击协程
+        //     if (shootCoroutine != null)
+        //         StopCoroutine(shootCoroutine);
             
-            AudioKit.PlaySound("Torch Impact 2", volume: 0.5f);
-            currentHealth -= damage;
-            
-            if (currentHealth <= 0f)
-            {
-                Global.GenerateDrops(gameObject);
-                StartCoroutine(DeathSequence());
-            }
-            else
-            {
-                StartCoroutine(FlashWhite());
-            }
-        }
+        //     yield return StartCoroutine(base.DeathSequence());
+        // }
 
-        // 死亡序列
-        protected override IEnumerator DeathSequence()
-        {
-            // 停止射击协程
-            if (shootCoroutine != null)
-                StopCoroutine(shootCoroutine);
-            
-            yield return StartCoroutine(base.DeathSequence());
-        }
 
-        // 覆盖基类的FixedUpdate, 使用自己的状态机控制移动
         protected override void FixedUpdate()
         {
-            // 空实现
+
+        }
+        public override void OnDestroy()
+        {
+            if (shootCoroutine != null)
+                StopCoroutine(shootCoroutine);
+            base.OnDestroy();
         }
     }
 }
