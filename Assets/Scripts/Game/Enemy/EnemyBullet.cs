@@ -1,30 +1,29 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ProjectBlood;
+using QFramework;
 
 public class EnemyBullet : MonoBehaviour
 {
-    // Start is called before the first frame update
     public Vector2 direction;
     public float speed = 10.0f;
-    void Start()
-    {
-        
-    }
+    public float damage = 10f; // 子弹伤害值
 
-    // Update is called once per frame
     void Update()
     {
-        // 移动
         transform.Translate(direction.normalized * speed * Time.deltaTime, Space.World);
     }
+
     void OnTriggerEnter2D(Collider2D collision)
     {
-        // 敌人子弹碰撞后消失
-        if (!collision.gameObject.CompareTag("Player"))
+        // 碰撞到玩家时造成伤害
+        if (collision.gameObject.CompareTag("Player"))
         {
-            // this.gameObject.SetActive(false); // Disable bullet on any collision
-            Destroy(this.gameObject); // Destroy bullet on any collision
+            Player.player1.TakeDamage(damage);
         }
+        
+        // 无论碰撞到什么都销毁子弹
+        this.DestroyGameObjGracefully();
     }
 }

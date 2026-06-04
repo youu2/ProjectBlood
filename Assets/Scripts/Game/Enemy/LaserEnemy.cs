@@ -8,7 +8,7 @@ namespace ProjectBlood
 {
     public class LaserEnemy : Enemy
     {
-        private AudioKitManager AudioManager = new AudioKitManager();
+        // private AudioKitManager AudioManager = new AudioKitManager();
         private AudioPlayer _loopPlayer;
 
         [Header("=== Laser Settings ===")]
@@ -306,8 +306,8 @@ namespace ProjectBlood
         IEnumerator FireSequence()
         {
             currentState = State.Fire;
-            AudioManager.PlayOneShot(fireSound);
-            _loopPlayer = AudioManager.PlayLoop(laserLoopSound);
+            AudioKitManager.Instance.PlayOneShot(fireSound);
+            _loopPlayer = AudioKitManager.Instance.PlayLoop(laserLoopSound);
 
             foreach (LineRenderer lr in laserLines)
             {
@@ -327,8 +327,8 @@ namespace ProjectBlood
             damageCoroutine = StartCoroutine(ApplyContinuousDamage());
             yield return StartCoroutine(UpdateLaserBeam());
             StopCoroutine(damageCoroutine);
-            AudioManager.Stop(_loopPlayer);
-            AudioManager.PlayOneShot(attackEndSound);
+            AudioKitManager.Instance.Stop(_loopPlayer);
+            AudioKitManager.Instance.PlayOneShot(attackEndSound);
             yield return StartCoroutine(FadeOutLaser());
             HideFireFlash();
             foreach (var points in laserPointsList)
@@ -525,7 +525,7 @@ namespace ProjectBlood
         {
             if (damageCoroutine != null)
                 StopCoroutine(damageCoroutine);
-            AudioManager.Stop(_loopPlayer);
+            AudioKitManager.Instance.Stop(_loopPlayer);
             HideLaser();
             HideFireFlash();
             base.OnDestroy();

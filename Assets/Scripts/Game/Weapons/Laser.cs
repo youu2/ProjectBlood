@@ -77,7 +77,7 @@ namespace ProjectBlood
 				if(!gunClip.isReloading)
 				{
 					Player.DisplayText("[R] to Reload!");
-                    AudioManager.PlayOneShot("DryFireClick");
+                    AudioKitManager.Instance.PlayOneShot("DryFireClick");
 					reloadTextShown = true; // 标记已经显示过 reload 文本
 				}
 			}

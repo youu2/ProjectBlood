@@ -103,6 +103,7 @@ namespace ProjectBlood
 
 		protected virtual void Death(Vector2 HitDir)
 		{
+			AudioKitManager.Instance.PlayOneShot("KillSFX");
 			if (Room != null)
             {
                 Room.GetEnemies().Remove(this);

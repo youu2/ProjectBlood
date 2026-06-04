@@ -10,7 +10,7 @@ namespace ProjectBlood
         private Coroutine _reloadCoroutine;   // 原先的设计放在GunClip,这会依赖MonoBehaviour,违反单一职责原则
         protected virtual int MaxAmmo{get; set;} = 10;
         protected GunClip gunClip;
-        protected IAudioManager AudioManager;
+        // protected IAudioManager AudioManager;
         private AudioPlayer _shootClipPlayer;
         private AudioPlayer _shootLoopPlayer;
         protected virtual float ReloadTime{get; set;} = 1.5f;
@@ -24,7 +24,7 @@ namespace ProjectBlood
         }
         public virtual void Awake()
         {
-            AudioManager = new AudioKitManager();
+            // AudioManager = new AudioKitManager();
             InitGunClip();
         }
         public AudioClip reloadSound;
@@ -60,7 +60,7 @@ namespace ProjectBlood
             // 播放换弹音效
             if (reloadSound != null)
             {
-                _shootClipPlayer = AudioManager.PlayOneShot(reloadSound);
+                _shootClipPlayer = AudioKitManager.Instance.PlayOneShot(reloadSound);
                 yield return new WaitForSeconds(ReloadTime);
             }
             else
@@ -89,7 +89,7 @@ namespace ProjectBlood
                 _reloadCoroutine = null;
             }
             gunClip.CancelReload();
-            AudioManager?.Stop(_shootClipPlayer);
+            AudioKitManager.Instance?.Stop(_shootClipPlayer);
         }
 
         public virtual void SwitchFromSet(){}

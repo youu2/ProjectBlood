@@ -5,6 +5,12 @@ namespace ProjectBlood{
     // 简单封装QF AudioKit
     public class AudioKitManager : IAudioManager
     {
+        private static readonly AudioKitManager instance = new AudioKitManager();
+        
+        public static AudioKitManager Instance => instance;
+        
+        private AudioKitManager() { }  // 私有构造函数，防止外部 new
+        
         public AudioPlayer PlayOneShot(AudioClip clip, float volume = 1f)
         {
             if (clip != null)
