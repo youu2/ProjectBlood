@@ -48,7 +48,7 @@ namespace ProjectBlood
 					damageable.TakeDamage(HitDamage, playerToEnemyDir);
 				}
 			}
-			CameraUtils.ShakeMainCamera(0.05f, 5);
+			CameraUtils.ShakeMainCamera(0.06f, 5);
 		}
 		
 		public override void KeepAttacking(Vector2 shootDir)

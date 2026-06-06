@@ -20520,7 +20520,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1422697998}
   - component: {fileID: 1422697995}
-  - component: {fileID: 1422697997}
   - component: {fileID: 1422697996}
   m_Layer: 0
   m_Name: Enemy1Body
@@ -20597,20 +20596,6 @@ MonoBehaviour:
   CustomComponentName: Enemy4Body
   CustomComment: 
   mComponentName: SpriteRenderer
---- !u!114 &1422697997
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1422697994}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a21930eda712a8b49bfc4b4479627421, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sortingBase: 0
-  offset: 0
 --- !u!4 &1422697998
 Transform:
   m_ObjectHideFlags: 0
@@ -21255,7 +21240,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1624778913}
   - component: {fileID: 1624778910}
-  - component: {fileID: 1624778912}
   - component: {fileID: 1624778911}
   m_Layer: 0
   m_Name: Enemy4Body
@@ -21332,20 +21316,6 @@ MonoBehaviour:
   CustomComponentName: Enemy4Body
   CustomComment: 
   mComponentName: SpriteRenderer
---- !u!114 &1624778912
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1624778909}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a21930eda712a8b49bfc4b4479627421, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sortingBase: 0
-  offset: 0
 --- !u!4 &1624778913
 Transform:
   m_ObjectHideFlags: 0
@@ -21978,7 +21948,7 @@ LineRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1650208643
   m_SortingLayer: 4
-  m_SortingOrder: 6
+  m_SortingOrder: 5
   m_Positions:
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 1}
@@ -22051,7 +22021,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1761024823}
   - component: {fileID: 1761024820}
-  - component: {fileID: 1761024822}
   - component: {fileID: 1761024821}
   m_Layer: 0
   m_Name: Enemy3Body
@@ -22128,20 +22097,6 @@ MonoBehaviour:
   CustomComponentName: Enemy4Body
   CustomComment: 
   mComponentName: SpriteRenderer
---- !u!114 &1761024822
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1761024819}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a21930eda712a8b49bfc4b4479627421, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sortingBase: 0
-  offset: 0
 --- !u!4 &1761024823
 Transform:
   m_ObjectHideFlags: 0
@@ -24438,7 +24393,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2125814650}
   - component: {fileID: 2125814647}
-  - component: {fileID: 2125814649}
   - component: {fileID: 2125814648}
   m_Layer: 0
   m_Name: Enemy2Body
@@ -24515,20 +24469,6 @@ MonoBehaviour:
   CustomComponentName: Enemy4Body
   CustomComment: 
   mComponentName: SpriteRenderer
---- !u!114 &2125814649
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2125814646}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a21930eda712a8b49bfc4b4479627421, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sortingBase: 0
-  offset: 0
 --- !u!4 &2125814650
 Transform:
   m_ObjectHideFlags: 0
