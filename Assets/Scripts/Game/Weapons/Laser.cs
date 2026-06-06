@@ -48,6 +48,7 @@ namespace ProjectBlood
 					damageable.TakeDamage(HitDamage, playerToEnemyDir);
 				}
 			}
+			CameraUtils.ShakeMainCamera(0.05f, 5);
 		}
 		
 		public override void KeepAttacking(Vector2 shootDir)
@@ -89,9 +90,10 @@ namespace ProjectBlood
 			Vector2 startPos = LaserPoint.Position2D();
 			var targetLayer = LayerMask.GetMask("Enemy", "Wall");
 			var renderHit = Physics2D.Raycast(startPos, shootDir, Mathf.Infinity, targetLayer);
-			
+
 			if (SelfLineRenderer != null)
 			{
+				SelfLineRenderer.enabled = true; // 启用 LineRenderer
 				SelfLineRenderer.SetPosition(0, startPos);
 				SelfLineRenderer.SetPosition(1, renderHit.collider != null ? (Vector3)renderHit.point : (startPos + shootDir * 100f));
 			}
@@ -105,6 +107,7 @@ namespace ProjectBlood
 			{
 				if (SelfLineRenderer != null)
 				{
+					SelfLineRenderer.enabled = false; // 禁用 LineRenderer
 					SelfLineRenderer.SetPosition(0, Vector3.zero);
 					SelfLineRenderer.SetPosition(1, Vector3.zero);
 				}

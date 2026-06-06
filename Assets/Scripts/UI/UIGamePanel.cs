@@ -37,7 +37,7 @@ namespace ProjectBlood
 
 			Global.Coin.RegisterWithInitValue(Coin =>
 			{
-				CoinText.text = "Coin: " + Coin;
+				CoinText.text = Coin.ToString();
 			}).UnRegisterWhenGameObjectDestroyed(gameObject);
 
 			Global.Level.Register(Level =>

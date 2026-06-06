@@ -83,9 +83,6 @@ namespace ProjectBlood
 			this.currentHealth -= Damage;
 			if (currentHealth <= 0f)
 			{
-				// Drop experience item, destroy enemy
-				Global.GenerateDrops(this.gameObject);
-                // StartCoroutine(DeathSequence()); // Resulting in death: Start the death coroutine
 				Death(HitDir);
             }
 		}
@@ -104,6 +101,7 @@ namespace ProjectBlood
 		protected virtual void Death(Vector2 HitDir)
 		{
 			AudioKitManager.Instance.PlayOneShot("KillSFX");
+			Global.GenerateDrops(this.gameObject);
 			if (Room != null)
             {
                 Room.GetEnemies().Remove(this);

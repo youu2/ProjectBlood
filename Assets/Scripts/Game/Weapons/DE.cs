@@ -30,8 +30,11 @@ namespace ProjectBlood
             bullet.gameObject.SetActive(true);
 
             int randomIndex = Random.Range(0, ShootSounds.Count);
-            AudioKitManager.Instance.PlayOneShot(ShootSounds[randomIndex]);
+            AudioKitManager.Instance.PlayOneShot(ShootSounds[randomIndex], 0.5f);
             fireFlash.Flash(bullet.transform.position, shootDir); // 显示枪口火焰特效
+
+            //镜头震动
+            CameraUtils.ShakeMainCamera(0.15f, 7);
         }
     }
 }

@@ -29,6 +29,7 @@ namespace ProjectBlood
 			bullet.direction = shootDir;
 			bullet.gameObject.SetActive(true);
             fireFlash.Flash(bullet.transform.position, shootDir); // 显示枪口火焰特效
+			CameraUtils.ShakeMainCamera(0.1f, 7);
 		}
 		
 	}

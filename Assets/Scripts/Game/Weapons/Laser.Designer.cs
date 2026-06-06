@@ -1,4 +1,4 @@
-// Generate Id:2346d485-561d-4dc9-acf5-5a644f21b631
+// Generate Id:e75e398d-15ea-4c72-94e3-c3cc41c96137
 using UnityEngine;
 
 namespace ProjectBlood
@@ -17,9 +17,9 @@ namespace ProjectBlood
 		
 		public UnityEngine.AudioClip LaserEnd;
 		
-		public UnityEngine.LineRenderer SelfLineRenderer;
-		
 		public UnityEngine.AudioClip DryFireClick;
+		
+		public UnityEngine.LineRenderer SelfLineRenderer;
 		
 	}
 }

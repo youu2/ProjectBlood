@@ -1,4 +1,4 @@
-// Generate Id:1f9e79a1-d014-49b7-9c8f-7130b38edb31
+// Generate Id:9f8f8dc5-9a5a-4e82-adc5-6773a05f260d
 using UnityEngine;
 
 namespace ProjectBlood
