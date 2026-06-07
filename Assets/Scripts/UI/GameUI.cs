@@ -24,5 +24,7 @@ namespace ProjectBlood
                 GUIInstance.BloodText.text = $"Blood: {bloodBank.CurrentBloodAmount} / {bloodBank.MaxBloodAmount}";
             }
         }
+
+        
     }
 }

@@ -1,4 +1,4 @@
-// Generate Id:9463f0fa-294a-4a94-8364-36dd0e85675e
+// Generate Id:73ee60ea-8efa-4aca-83ae-5d9ce818149c
 using UnityEngine;
 
 namespace ProjectBlood
@@ -8,6 +8,8 @@ namespace ProjectBlood
 		public UnityEngine.UI.Text ClipText;
 		
 		public UnityEngine.UI.Text BloodText;
+		
+		public ProjectBlood.UIMap UIMap;
 		
 	}
 }

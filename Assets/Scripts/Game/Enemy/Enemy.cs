@@ -120,7 +120,7 @@ namespace ProjectBlood
 				}).Show();
 
 			var dieBodyOriginPos = transform.Position2D();
-			var dieBodyMoveToDistance = Random.Range(0.5f,1.3f);
+			var dieBodyMoveToDistance = Random.Range(0.5f,1.1f);
 
 			
 			ActionKit.Lerp(0,1,0.3f, (p) =>

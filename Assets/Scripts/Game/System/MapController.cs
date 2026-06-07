@@ -32,10 +32,6 @@ namespace ProjectBlood
         public TileBase randFloor => new TileBase[] { floor_0, floor_1, floor_2, floor_3 }[Random.Range(0, 4)];
         public Tilemap wallTilemap;
         public Tilemap floorTilemap;
-        // public GameObject Enemy2;
-        // public IDamageable Enemy => Enemy2.GetComponent<IDamageable>();
-        public Player player;
-        public int currentRoomPosX = 0;
         public GameObject Portal;
         public static MapController instance;
 
@@ -57,9 +53,14 @@ namespace ProjectBlood
             Right,
         }
 
+        public DynaGrid<RoomGenerateConfig> DynamicDoorLayout { get; private set; }
+        public DynaGrid<Room> RoomGrid {get; private set;}
+
         void Awake()
         {
             instance = this;
+            RoomGrid = new DynaGrid<Room>();
+            DynamicDoorLayout = new DynaGrid<RoomGenerateConfig>();
             // player.gameObject.SetActive(false); // Disable player at the start, will be enabled in Start() after instantiation
             // Enemy.gameObject.SetActive(false); // Disable enemy prefab at the start, will be enabled in Start() after instantiation
         }
@@ -133,7 +134,7 @@ namespace ProjectBlood
                         
             // 加入动态房门布局
             // layout是根据RoomType来生成的，所以每个动态网格对应一个RoomType
-            var dynamicDoorLayout = new DynaGrid<RoomGenerateConfig>();
+            // mGrid = new Dictionary<Tuple<int, int>, T>();
             // predictWeight: 预测权重，用于选择方向时的优先级，越高越倾向最优解（不易死路）
             bool GenerateRoomBFS(RoomNode roomNode, DynaGrid<RoomGenerateConfig> dynamicDoorLayout, int predictWeight)
             {
@@ -254,48 +255,47 @@ namespace ProjectBlood
             var predictWeight = 0;
             // GenerateRoomBFS(layout, dynamicDoorLayout, predictWeight);
 
-            while(!GenerateRoomBFS(layout, dynamicDoorLayout, predictWeight))
+            while(!GenerateRoomBFS(layout, DynamicDoorLayout, predictWeight))
             {
                 predictWeight++;
-                dynamicDoorLayout.Clear();
+                DynamicDoorLayout.Clear();
             }
-
-            dynamicDoorLayout.ForEach((x, y, roomGenerateConfig) =>
+            // 保存room用以后续访问state
+            // RoomGrid = new DynaGrid<Room>();
+            DynamicDoorLayout.ForEach((x, y, roomGenerateConfig) =>
             {
-                GenerateRoomByLayout(x, y, roomGenerateConfig);
+                var room = GenerateRoomByLayout(x, y, roomGenerateConfig);
+                RoomGrid[x,y] = room;
             });
 
             // 依次生成所有房间布局
-            void GenerateRoomByLayout(int x, int y, RoomGenerateConfig roomGenerateConfig)
+            Room GenerateRoomByLayout(int x, int y, RoomGenerateConfig roomGenerateConfig)
             {
                 var currentRoomPosX = x * (RoomConfig.InitRoom.roomMap.First().Length + 5);
                 var currentRoomPosY = y * (RoomConfig.InitRoom.roomMap.Count + 5);
 
                 if(roomGenerateConfig.roomNode.roomType == RoomType.InitRoom)
                 {
-                    GenerateRoom(currentRoomPosX,currentRoomPosY, RoomConfig.InitRoom, roomGenerateConfig);
-                    currentRoomPosX += RoomConfig.InitRoom.roomMap.First().Length + 5; // 更新当前房间的X坐标，为下一个房间做准备
+                    return GenerateRoom(currentRoomPosX,currentRoomPosY, RoomConfig.InitRoom, roomGenerateConfig);
                 }else if(roomGenerateConfig.roomNode.roomType == RoomType.NormalRoom)
                 {
-                    GenerateRoom(currentRoomPosX,currentRoomPosY, 
+                    return GenerateRoom(currentRoomPosX,currentRoomPosY, 
                     RoomConfig.normalRoomConfigList.GetRandomItem(), roomGenerateConfig);
-                    currentRoomPosX += RoomConfig.InitRoom.roomMap.First().Length + 5;
                 }else if(roomGenerateConfig.roomNode.roomType == RoomType.ChestRoom)
                 {
-                    GenerateRoom(currentRoomPosX,currentRoomPosY, RoomConfig.ChestRoom, roomGenerateConfig);
-                    currentRoomPosX += RoomConfig.ChestRoom.roomMap.First().Length + 5;
+                    return GenerateRoom(currentRoomPosX,currentRoomPosY, RoomConfig.ChestRoom, roomGenerateConfig);
                 }else if(roomGenerateConfig.roomNode.roomType == RoomType.BossRoom)
                 {
-                    GenerateRoom(currentRoomPosX,currentRoomPosY, RoomConfig.BossRoom, roomGenerateConfig);
-                    currentRoomPosX += RoomConfig.BossRoom.roomMap.First().Length + 5;
+                    return GenerateRoom(currentRoomPosX,currentRoomPosY, RoomConfig.BossRoom, roomGenerateConfig);
                 }
+                return null;
             }
 
             // GenerateRoomByLayout(0, 0, layout);
             GenerateCorridor();
             // 绘制过道（还未支持随机房间布局）
             void GenerateCorridor(){
-                dynamicDoorLayout.ForEach((x, y, roomGenerateConfig) =>
+                DynamicDoorLayout.ForEach((x, y, roomGenerateConfig) =>
                 {
                     var currentRoomPosX = x * (RoomConfig.InitRoom.roomMap.First().Length + 5);
                     var currentRoomPosY = y * (RoomConfig.InitRoom.roomMap.Count + 5);
@@ -333,7 +333,7 @@ namespace ProjectBlood
         }
 
         // 生成房间的函数
-        void GenerateRoom(int startPosX, int startPosY, RoomConfig roomConfig, RoomGenerateConfig roomGenerateConfig)
+        Room GenerateRoom(int startPosX, int startPosY, RoomConfig roomConfig, RoomGenerateConfig roomGenerateConfig)
         {
             var roomWidth = roomConfig.roomMap.First().Length;
             var roomHeight = roomConfig.roomMap.Count;
@@ -448,6 +448,7 @@ namespace ProjectBlood
                     }
                 }
             }
+            return roomObj;
         }
 
         // Update is called once per frame

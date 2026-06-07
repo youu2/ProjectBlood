@@ -19,14 +19,14 @@ MonoBehaviour:
     From: 0
     NameToFullName: []
     BindInfos:
-    - TypeName: SpriteRenderer
-      PathToRoot: Sprite
-      MemberName: Sprite
-    - TypeName: SpriteRenderer
-      PathToRoot: LaserPoint
-      MemberName: LaserPoint
-    ScriptsFolder: Assets\Scripts\Game\Weapons
-    ClassName: Laser
+    - TypeName: RectTransform
+      PathToRoot: MapRoot
+      MemberName: MapRoot
+    - TypeName: ProjectBlood.MapItem
+      PathToRoot: MapItem
+      MemberName: MapItem
+    ScriptsFolder: Assets/Scripts/UI/MiniMap
+    ClassName: UIMap
     Namespace: ProjectBlood
     MainCode: 
     DesignerCode: 

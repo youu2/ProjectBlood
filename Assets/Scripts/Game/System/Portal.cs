@@ -6,8 +6,8 @@ using QFramework;
 
 public class Portal : MonoBehaviour
 {
-    public MapController mapController;
-    public int targetRoomPosX; // 目标房间的X坐标
+    // public MapController mapController;
+    // public int targetRoomPosX; // 目标房间的X坐标
 
     private void OnTriggerEnter2D(Collider2D collision)
     {

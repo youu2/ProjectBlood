@@ -125,6 +125,9 @@ namespace ProjectBlood
 					door.Show();
 				}
 				AudioKit.PlaySound("DoorClosingSfx");
+			}else if(roomConfig.roomType != RoomType.NormalRoom)
+			{
+				roomState = RoomState.Finished;
 			}
 		}
 
