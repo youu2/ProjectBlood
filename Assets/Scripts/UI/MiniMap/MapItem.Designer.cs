@@ -1,4 +1,4 @@
-// Generate Id:91b183a3-65be-4a6c-a433-4fe4d905caa1
+// Generate Id:55f32983-d0e3-424e-bac6-21d61cf9d7cc
 using UnityEngine;
 
 namespace ProjectBlood
@@ -16,6 +16,8 @@ namespace ProjectBlood
 		public UnityEngine.UI.Image UpPath;
 		
 		public UnityEngine.UI.Image DownPath;
+		
+		public UnityEngine.UI.Image ChestIcon;
 		
 	}
 }

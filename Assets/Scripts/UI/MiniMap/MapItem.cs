@@ -27,6 +27,14 @@ namespace ProjectBlood
 				{
 					RightPath.Show();
 				}
+				if(dir == MapController.Direction.Down)
+				{
+					DownPath.Show();
+				}
+				if(dir == MapController.Direction.Left)
+				{
+					LeftPath.Show();
+				}
 			}
 		}
 		void Start()

@@ -19,14 +19,29 @@ MonoBehaviour:
     From: 0
     NameToFullName: []
     BindInfos:
-    - TypeName: RectTransform
-      PathToRoot: MapRoot
-      MemberName: MapRoot
-    - TypeName: ProjectBlood.MapItem
-      PathToRoot: MapItem
-      MemberName: MapItem
+    - TypeName: UnityEngine.UI.Image
+      PathToRoot: Icon
+      MemberName: Icon
+    - TypeName: UnityEngine.UI.Button
+      PathToRoot: TransportButton
+      MemberName: TransportButton
+    - TypeName: UnityEngine.UI.Image
+      PathToRoot: RightPath
+      MemberName: RightPath
+    - TypeName: UnityEngine.UI.Image
+      PathToRoot: LeftPath
+      MemberName: LeftPath
+    - TypeName: UnityEngine.UI.Image
+      PathToRoot: UpPath
+      MemberName: UpPath
+    - TypeName: UnityEngine.UI.Image
+      PathToRoot: DownPath
+      MemberName: DownPath
+    - TypeName: UnityEngine.UI.Image
+      PathToRoot: ChestIcon
+      MemberName: ChestIcon
     ScriptsFolder: Assets/Scripts/UI/MiniMap
-    ClassName: UIMap
+    ClassName: MapItem
     Namespace: ProjectBlood
     MainCode: 
     DesignerCode: 

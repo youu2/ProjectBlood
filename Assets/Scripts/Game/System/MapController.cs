@@ -260,8 +260,7 @@ namespace ProjectBlood
                 predictWeight++;
                 DynamicDoorLayout.Clear();
             }
-            // 保存room用以后续访问state
-            // RoomGrid = new DynaGrid<Room>();
+            
             DynamicDoorLayout.ForEach((x, y, roomGenerateConfig) =>
             {
                 var room = GenerateRoomByLayout(x, y, roomGenerateConfig);
@@ -276,11 +275,13 @@ namespace ProjectBlood
 
                 if(roomGenerateConfig.roomNode.roomType == RoomType.InitRoom)
                 {
-                    return GenerateRoom(currentRoomPosX,currentRoomPosY, RoomConfig.InitRoom, roomGenerateConfig);
+                    var initRoom = GenerateRoom(currentRoomPosX,currentRoomPosY, RoomConfig.InitRoom, roomGenerateConfig);
+                    Global.currentRoom = initRoom;
+                    initRoom.roomState = Room.RoomState.Finished;  // 设置出生点房间为已完成状态
+                    return initRoom;
                 }else if(roomGenerateConfig.roomNode.roomType == RoomType.NormalRoom)
                 {
-                    return GenerateRoom(currentRoomPosX,currentRoomPosY, 
-                    RoomConfig.normalRoomConfigList.GetRandomItem(), roomGenerateConfig);
+                    return GenerateRoom(currentRoomPosX,currentRoomPosY, RoomConfig.normalRoomConfigList.GetRandomItem(), roomGenerateConfig);
                 }else if(roomGenerateConfig.roomNode.roomType == RoomType.ChestRoom)
                 {
                     return GenerateRoom(currentRoomPosX,currentRoomPosY, RoomConfig.ChestRoom, roomGenerateConfig);
@@ -293,6 +294,7 @@ namespace ProjectBlood
 
             // GenerateRoomByLayout(0, 0, layout);
             GenerateCorridor();
+            Room.FindRoom();
             // 绘制过道（还未支持随机房间布局）
             void GenerateCorridor(){
                 DynamicDoorLayout.ForEach((x, y, roomGenerateConfig) =>

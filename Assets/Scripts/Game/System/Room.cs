@@ -11,13 +11,14 @@ namespace ProjectBlood
 		private List<Door> doorList = new List<Door>();
 		public RoomConfig roomConfig {get ; private set ;}
 		private HashSet<IDamageable> enemySet = new HashSet<IDamageable>();
-		public RoomState roomState = RoomState.Init;
+		public RoomState roomState = RoomState.Unknown;
 		public MapController.RoomGenerateConfig roomGenerateConfig {get ; private set ;}
 		private List<EnemyWaveConfig> enemyWaveConfigList = new List<EnemyWaveConfig>();
 		private EnemyWaveConfig currentEnemyWaveConfig = null;
 		
 		public enum RoomState
 		{
+			Unknown,
 			Init,
 			Battle,
 			Finished,
@@ -104,12 +105,61 @@ namespace ProjectBlood
 			enemyPosList.Add(enemyPos);
 		}
 
+		public static void FindRoom()
+        {
+            MapController.instance.RoomGrid.ForEach((x, y, room) =>
+            {
+                var playerX = Global.currentRoom.roomGenerateConfig.roomPosX;
+                var playerY = Global.currentRoom.roomGenerateConfig.roomPosY;
+                // 玩家会发现当前房间的相邻房间
+                if (room.roomState == Room.RoomState.Unknown
+				&& IsAdjacentRoom(Global.currentRoom, x, y, playerX, playerY))
+                {
+                    room.roomState = Room.RoomState.Init;
+                }
+            });
+        }
+
+		private static bool IsAdjacentRoom(Room room, int x, int y, int playerX, int playerY)
+		{
+			var gapX = x - playerX;
+			var gapY = y - playerY;
+			if((gapX == 1 && gapY == 0 && HasThisDoor(room, MapController.Direction.Right))
+			|| (gapX == -1 && gapY == 0 && HasThisDoor(room, MapController.Direction.Left))
+			|| (gapX == 0 && gapY == 1 && HasThisDoor(room, MapController.Direction.Up))
+			|| (gapX == 0 && gapY == -1 && HasThisDoor(room, MapController.Direction.Down)))
+			{
+				return true;
+			}
+			return false;
+		} 
+
+		private static bool HasThisDoor(Room room, MapController.Direction dir)
+		{
+			foreach (var door in room.doorList)
+			{
+				if(door.direction == dir)
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
+		private MapController.Direction DirOfRoom()
+		{
+			return MapController.Direction.Down;
+		}
+
 		private void OnTriggerEnter2D(Collider2D other)
 		{
 			// 玩家进入房间，生成敌人,关门
 			if (other.CompareTag("Player") && roomConfig.roomType == RoomType.NormalRoom)
 			{
 				Global.currentRoom = this;
+
+				FindRoom();
+				
 				if(roomState != RoomState.Init)
 				{
 					return;
