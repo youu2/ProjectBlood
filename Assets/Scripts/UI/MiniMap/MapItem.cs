@@ -16,9 +16,19 @@ namespace ProjectBlood
 		// 更新房间图标,过道
 		public void UpdateView()
 		{
+			// 先隐藏所有元素
+			UpPath.Hide();
+			RightPath.Hide();
+			DownPath.Hide();
+			LeftPath.Hide();
+			InitBG.Hide();
+			CurrentBG.Hide();
+			HomeIcon.Hide();
+			ChestIcon.Hide();
+
 			foreach(var dir in room.roomGenerateConfig.doorDirections)
 			{
-				// 只有右上是为了避免重复绘制过道
+				// 小地图需要全方向生成
 				if(dir == MapController.Direction.Up)
 				{
 					UpPath.Show();
@@ -36,10 +46,23 @@ namespace ProjectBlood
 					LeftPath.Show();
 				}
 			}
-		}
-		void Start()
-		{
-			
+			if(room.roomState == Room.RoomState.Init)
+			{
+				InitBG.Show();
+			}
+			if(room == Global.currentRoom)
+			{
+				CurrentBG.Show();
+			}
+			// 按照房间类型显示图标
+			if(room.roomConfig.roomType == RoomType.InitRoom)
+			{
+				HomeIcon.Show();
+			}
+			if(room.roomConfig.roomType == RoomType.ChestRoom)
+			{
+				ChestIcon.Show();
+			}
 		}
 	}
 }

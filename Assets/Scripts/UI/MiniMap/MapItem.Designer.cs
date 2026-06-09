@@ -1,12 +1,10 @@
-// Generate Id:55f32983-d0e3-424e-bac6-21d61cf9d7cc
+// Generate Id:4e9457e2-6cde-42a5-91d5-7c536d8096f7
 using UnityEngine;
 
 namespace ProjectBlood
 {
 	public partial class MapItem
 	{
-		public UnityEngine.UI.Image Icon;
-		
 		public UnityEngine.UI.Button TransportButton;
 		
 		public UnityEngine.UI.Image RightPath;
@@ -17,7 +15,13 @@ namespace ProjectBlood
 		
 		public UnityEngine.UI.Image DownPath;
 		
+		public UnityEngine.UI.Image CurrentBG;
+		
 		public UnityEngine.UI.Image ChestIcon;
+		
+		public UnityEngine.UI.Image HomeIcon;
+		
+		public UnityEngine.UI.Image InitBG;
 		
 	}
 }
