@@ -12,7 +12,6 @@ namespace ProjectBlood
 		protected override void OnInit(IUIData uiData = null)
 		{
 			mData = uiData as UIGamePanelData ?? new UIGamePanelData();
-			// please add init code here
 			// bind to Global properties
 			// update UI when properties change
 			Global.currentHP.RegisterWithInitValue(currentHP =>
@@ -43,6 +42,7 @@ namespace ProjectBlood
 			Global.Level.Register(Level =>
 			{
 				Time.timeScale = 0;
+				Global.FireEnabled.Value = false; // 禁用开火
 				UpgradeRoot.Show();
 				// BtnUpgradeDamage.Show();
 			}).UnRegisterWhenGameObjectDestroyed(gameObject);
@@ -59,6 +59,7 @@ namespace ProjectBlood
 			BtnUpgradeDamage.onClick.AddListener(() =>
 			{
 				Time.timeScale = 1;
+				Global.FireEnabled.Value = true; // 重新启用开火
 				// BtnUpgradeDamage.Hide();
 				UpgradeRoot.Hide();
 				Global.BlazingCircleDamage.Value *= 1.2f;
@@ -68,6 +69,7 @@ namespace ProjectBlood
 			BtnUpgradeAttackSpeed.onClick.AddListener(() =>
 			{
 				Time.timeScale = 1;
+				Global.FireEnabled.Value = true; // 重新启用开火
 				// BtnUpgradeAttackSpeed.Hide();
 				UpgradeRoot.Hide();
 				Global.BCAttackInterval.Value *= 0.91f;

@@ -27,6 +27,7 @@ namespace ProjectBlood
         public static BindableProperty<int> MAX_EXP = new BindableProperty<int>(5);
         public static BindableProperty<float> CoinDropRate = new BindableProperty<float>(0.30f); // 30% chance to drop coins
         public static Room currentRoom;
+        public static BindableProperty<bool> FireEnabled = new BindableProperty<bool>(true);
 
         [RuntimeInitializeOnLoadMethod]
         public static void Initialize()

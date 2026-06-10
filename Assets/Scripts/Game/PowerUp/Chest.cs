@@ -17,7 +17,8 @@ namespace ProjectBlood
             if (collider.GetComponent<CollectBox>() != null && !isCollected)
             {
 				AudioKit.PlaySound("RareLootSFX", volume: 1.0f);
-				
+				SelfSpriteRenderer.enabled = false;  // 只禁用渲染器，不禁用整个GameObject
+				ChestOpenSprite.Show();
 				isCollected = true;
 				// 延迟 45 帧后生成战利品
 				ActionKit.DelayFrame(45, () => {

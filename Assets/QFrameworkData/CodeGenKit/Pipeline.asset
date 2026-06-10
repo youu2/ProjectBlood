@@ -19,35 +19,11 @@ MonoBehaviour:
     From: 0
     NameToFullName: []
     BindInfos:
-    - TypeName: UnityEngine.UI.Button
-      PathToRoot: TransportButton
-      MemberName: TransportButton
-    - TypeName: UnityEngine.UI.Image
-      PathToRoot: RightPath
-      MemberName: RightPath
-    - TypeName: UnityEngine.UI.Image
-      PathToRoot: LeftPath
-      MemberName: LeftPath
-    - TypeName: UnityEngine.UI.Image
-      PathToRoot: UpPath
-      MemberName: UpPath
-    - TypeName: UnityEngine.UI.Image
-      PathToRoot: DownPath
-      MemberName: DownPath
-    - TypeName: UnityEngine.UI.Image
-      PathToRoot: CurrentBG
-      MemberName: CurrentBG
-    - TypeName: UnityEngine.UI.Image
-      PathToRoot: ChestIcon
-      MemberName: ChestIcon
-    - TypeName: UnityEngine.UI.Image
-      PathToRoot: HomeIcon
-      MemberName: HomeIcon
-    - TypeName: UnityEngine.UI.Image
-      PathToRoot: InitBG
-      MemberName: InitBG
-    ScriptsFolder: Assets/Scripts/UI/MiniMap
-    ClassName: MapItem
+    - TypeName: SpriteRenderer
+      PathToRoot: ChestOpenSprite
+      MemberName: ChestOpenSprite
+    ScriptsFolder: Assets/Scripts/Game/PowerUp
+    ClassName: Chest
     Namespace: ProjectBlood
     MainCode: 
     DesignerCode: 

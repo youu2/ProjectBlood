@@ -45,8 +45,8 @@ namespace ProjectBlood
 			weapons.Add(DE);
 			weapons.Add(MP5);
 			weapons.Add(ShotGun);
-			weapons.Add(AWP);
 			weapons.Add(AK);
+			weapons.Add(AWP);
 			weapons.Add(Laser);
 			// weapons.Add(Bow);
 			weaponSwitchSounds.Add(WeaponSwitchSound);
@@ -246,12 +246,12 @@ namespace ProjectBlood
 			}
 
 			//鼠标左键射击（朝平滑后的瞄准方向）
-			if (Input.GetMouseButtonDown(0) && playerBullet != null)
+			if (Input.GetMouseButtonDown(0) && playerBullet != null && Global.FireEnabled.Value)
 			{				
 				currentWeapon.StartAttacking(smoothAimDir);
 			}
 			//限制为固定射速
-			if(Input.GetMouseButton(0) && playerBullet != null)
+			if(Input.GetMouseButton(0) && playerBullet != null && Global.FireEnabled.Value)
 			{
 				currentWeapon.KeepAttacking(smoothAimDir);
 			}
