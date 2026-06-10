@@ -1,18 +1,17 @@
-using UnityEngine;
-using QFramework;
+// using UnityEngine;
+// using QFramework;
 
-namespace ProjectBlood
-{
-	public partial class HealthPotion : DropItem
-	{
-		protected override void Collect()
-		{
-			if (Global.currentHP.Value < Global.MAX_HP.Value)
-			{
-				AudioKit.PlaySound("HpPickup", volume: 0.6f);
-				Global.AddHP(1);
-				this.DestroyGameObjGracefully();
-			}
-		}
-	}
-}
+// namespace ProjectBlood
+// {
+// 	public partial class DirtyBlood : DropItem
+// 	{
+// 		public int bloodAmount = 20;
+
+// 		protected override void Collect()
+// 		{
+// 			AudioKit.PlaySound("HpPickup", volume: 0.6f);
+// 			Player.player1.bloodBank.AddBlood(bloodAmount);
+// 			this.DestroyGameObjGracefully();
+// 		}
+// 	}
+// }

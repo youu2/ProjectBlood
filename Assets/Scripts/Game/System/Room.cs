@@ -18,10 +18,11 @@ namespace ProjectBlood
 		
 		public enum RoomState
 		{
-			Unknown,
-			Init,
-			Battle,
-			Finished,
+			Unknown,	// 玩家探测范围外的房间，不会在小地图显示
+			Init,	// 玩家观测到的房间，但是没进入过
+			Battle,	
+			Finished,	// 战斗通关的房间
+			Idle,	// 无强制性战斗的房间，可拾取物不会飞向玩家
 		}
 		public Room WithRoomConfig(RoomConfig roomConfig)
 		{
@@ -177,7 +178,7 @@ namespace ProjectBlood
 				AudioKit.PlaySound("DoorClosingSfx");
 			}else if(roomConfig.roomType != RoomType.NormalRoom)
 			{
-				roomState = RoomState.Finished;
+				roomState = RoomState.Idle;
 			}
 		}
 

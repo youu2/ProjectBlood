@@ -1,4 +1,4 @@
-// Generate Id:d0acd40c-edb4-40fa-8fe4-58fab71c9c43
+// Generate Id:c0aa4d2f-eb4a-4590-8c40-b49ba6d17d34
 using UnityEngine;
 
 namespace ProjectBlood
@@ -9,7 +9,7 @@ namespace ProjectBlood
 		
 		public ProjectBlood.AnnihilationCore AnnihilationCore;
 		
-		public ProjectBlood.HealthPotion HealthPotion;
+		public ProjectBlood.DirtyBlood DirtyBlood;
 		
 		public ProjectBlood.Exp Exp;
 		

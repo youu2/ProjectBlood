@@ -22,7 +22,7 @@ namespace ProjectBlood
 				isCollected = true;
 				// 延迟 45 帧后生成战利品
 				ActionKit.DelayFrame(45, () => {
-					DropManager.Instance.HealthPotion.Instantiate()
+					DropManager.Instance.DirtyBlood.Instantiate()
 					.Position(this.transform.position + new Vector3(0, 1.3f, 0))  // slight offset for better visibility
 					.Show();
 				// 	this.DestroyGameObjGracefully();

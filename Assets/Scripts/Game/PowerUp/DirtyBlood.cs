@@ -1,0 +1,21 @@
+using UnityEngine;
+using QFramework;
+
+namespace ProjectBlood
+{
+	public partial class DirtyBlood : DropItem
+	{
+		public int bloodAmount = 20;
+
+		protected override void Collect()
+		{
+			if (Player.player1.bloodBank.CurrentBloodAmount >= Player.player1.bloodBank.MaxBloodAmount)
+			{
+				return;
+			}
+			AudioKit.PlaySound("HpPickup", volume: 0.6f);
+			Player.player1.bloodBank.AddBlood(bloodAmount);
+			this.DestroyGameObjGracefully();
+		}
+	}
+}

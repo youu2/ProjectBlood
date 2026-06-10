@@ -1,9 +1,9 @@
-// Generate Id:84408315-9e0c-44ca-851a-0b50c2d4ed1d
-using UnityEngine;
+// // Generate Id:d0acd40c-edb4-40fa-8fe4-58fab71c9c43
+// using UnityEngine;
 
-namespace ProjectBlood
-{
-	public partial class HealthPotion
-	{
-	}
-}
+// namespace ProjectBlood
+// {
+// 	public partial class DirtyBlood
+// 	{
+// 	}
+// }

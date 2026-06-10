@@ -126,9 +126,9 @@ namespace ProjectBlood
                 .Show();
         }
         
-        public static void GenerateHealthPotion(GameObject enemy)
+        public static void GenerateDirtyBlood(GameObject enemy)
         {
-            DropManager.Instance.HealthPotion.Instantiate()
+            DropManager.Instance.DirtyBlood.Instantiate()
                 .Position(enemy.Position() + new Vector3(-0.5f, -0.5f, 0))  // slight offset for better visibility
                 .Show();
         }
@@ -145,7 +145,7 @@ namespace ProjectBlood
             rand = Random.Range(0f, 100.0f);
             if (rand < 0.1 * 100)
             {
-                GenerateHealthPotion(enemy);
+                GenerateDirtyBlood(enemy);
                 return;
             }
         }
