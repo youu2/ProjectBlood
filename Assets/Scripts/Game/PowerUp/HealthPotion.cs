@@ -3,26 +3,16 @@ using QFramework;
 
 namespace ProjectBlood
 {
-	public partial class HealthPotion : ViewController
+	public partial class HealthPotion : DropItem
 	{
-		void Start()
+		protected override void Collect()
 		{
-			// Code Here
+			if (Global.currentHP.Value < Global.MAX_HP.Value)
+			{
+				AudioKit.PlaySound("HpPickup", volume: 0.6f);
+				Global.AddHP(1);
+				this.DestroyGameObjGracefully();
+			}
 		}
-
-		private void OnTriggerEnter2D(Collider2D collider)
-		{
-			// Check if the collider belongs to the player
-            if (collider.GetComponent<CollectBox>() != null)
-            {
-				if(Global.currentHP.Value < Global.MAX_HP.Value)
-				{
-					AudioKit.PlaySound("HpPickup", volume: 0.6f);
-					Global.AddHP(1);
-					this.DestroyGameObjGracefully();
-				}
-            }
-		}
-
 	}
 }
