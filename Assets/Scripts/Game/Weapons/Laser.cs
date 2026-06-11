@@ -6,8 +6,7 @@ namespace ProjectBlood
 {
 	public partial class Laser : AutomaticWeapon
 	{
-		public float HitDamage = 12f;
-
+		public float HitDamage = 14f;
 		[Header("=== 激光攻击设置 ===")]
 		[Tooltip("激光实际攻击宽度")]
 		public float laserWidth = 0.5f;
@@ -45,7 +44,20 @@ namespace ProjectBlood
 				{
 					// 计算击退方向：从玩家到敌人的方向
 					Vector2 playerToEnemyDir = (damageHit.collider.transform.position - Player.player1.transform.position).normalized;
-					damageable.TakeDamage(HitDamage, playerToEnemyDir);
+					
+					// 根据子弹是否被强化计算伤害
+					float damageMultiplier = IsBulletEnhanced ? 1.0f : 0.8f; // 未强化时伤害降低到80%
+					float finalDamage = HitDamage * damageMultiplier;
+					
+					damageable.TakeDamage(finalDamage, playerToEnemyDir);
+
+					// 应用吸血
+					if (GetLifestealPercent() > 0)
+					{
+						float lifestealAmount = finalDamage * (GetLifestealPercent() / 100f);
+						float newHP = Global.currentHP.Value + lifestealAmount;
+						Global.currentHP.Value = Mathf.Min(newHP, Global.MAX_HP.Value);
+					}
 				}
 			}
 			CameraUtils.ShakeMainCamera(0.06f, 5);

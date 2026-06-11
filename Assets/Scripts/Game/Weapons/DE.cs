@@ -13,7 +13,7 @@ namespace ProjectBlood
         private FireFlash fireFlash = new FireFlash(); // DE的枪口火焰特效组件
         public override void Awake()
         {
-            BloodRequired = 3;
+            // BloodRequired = 3;
             ReloadTime = 2.0f;
             MaxAmmo = 8;
 			gunClip = new GunClip(MaxAmmo);
@@ -28,6 +28,7 @@ namespace ProjectBlood
             var bullet = Instantiate(DEBullet, DEBullet.transform.position, bulletRotation);
             bullet.direction = shootDir;
             bullet.gameObject.SetActive(true);
+            ApplyLifestealToBullet(bullet);
 
             int randomIndex = Random.Range(0, ShootSounds.Count);
             AudioKitManager.Instance.PlayOneShot(ShootSounds[randomIndex], 0.5f);

@@ -74,6 +74,7 @@ namespace ProjectBlood
             }
         }
 
+		// 敌人受伤
 		public void TakeDamage(float Damage, Vector2 HitDir)
 		{
 			if (isDying) return;

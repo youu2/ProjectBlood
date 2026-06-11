@@ -7740,6 +7740,7 @@ GameObject:
   - component: {fileID: 586085907}
   - component: {fileID: 586085908}
   - component: {fileID: 586085909}
+  - component: {fileID: 586085910}
   m_Layer: 0
   m_Name: Chest
   m_TagString: Untagged
@@ -7756,10 +7757,11 @@ Transform:
   m_GameObject: {fileID: 586085903}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 13.58, y: -11.64, z: 0}
+  m_LocalPosition: {x: 13.246, y: -11.748, z: 0}
   m_LocalScale: {x: 1.5, y: 1.4, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1957149181}
   m_Father: {fileID: 1010387091}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &586085905
@@ -7833,6 +7835,8 @@ MonoBehaviour:
   PrefabFolder: Assets/Art/Prefab
   ArchitectureFullTypeName: 
   ViewControllerFullTypeName: 
+  ChestOpenSprite: {fileID: 1957149179}
+  SelfSpriteRenderer: {fileID: 586085905}
 --- !u!61 &586085907
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -7908,6 +7912,21 @@ MonoBehaviour:
   CustomComponentName: Chest
   CustomComment: 
   mComponentName: ProjectBlood.Chest
+--- !u!114 &586085910
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 586085903}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 411e729afed24c62a04e2b99d9122e78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Binds:
+  - MemberName: SelfSpriteRenderer
+    Object: {fileID: 586085905}
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0
@@ -8682,6 +8701,7 @@ MonoBehaviour:
   PrefabFolder: Assets/Art/Prefab
   ArchitectureFullTypeName: 
   ViewControllerFullTypeName: 
+  flySpeed: 12
 --- !u!58 &748113299
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -21300,7 +21320,7 @@ GameObject:
   - component: {fileID: 1447994472}
   - component: {fileID: 1447994471}
   m_Layer: 9
-  m_Name: HealthPotion
+  m_Name: DirtyBlood
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -21330,16 +21350,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 1447994469}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 604297baffb7195419cd3ee8aba062ab, type: 3}
+  m_Script: {fileID: 11500000, guid: 6d3cd441310901844b9b94aae8e2c1d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Namespace: ProjectBlood
-  ScriptName: HealthPotion
-  ScriptsFolder: Assets/Scripts/Game/PowerUp
+  ScriptName: DirtyBlood
+  ScriptsFolder: Assets\Scripts\Game\PowerUp
   GeneratePrefab: 0
   PrefabFolder: Assets/Art/Prefab
   ArchitectureFullTypeName: 
   ViewControllerFullTypeName: 
+  flySpeed: 12
+  bloodAmount: 20
 --- !u!114 &1447994472
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21355,7 +21377,7 @@ MonoBehaviour:
   MarkType: 0
   CustomComponentName: Coin
   CustomComment: 
-  mComponentName: ProjectBlood.HealthPotion
+  mComponentName: ProjectBlood.DirtyBlood
 --- !u!114 &1447994473
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21488,14 +21510,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Namespace: ProjectBlood
   ScriptName: DropManager
-  ScriptsFolder: Assets/Scripts/Game
+  ScriptsFolder: Assets/Scripts/Game/PowerUp
   GeneratePrefab: 0
   PrefabFolder: Assets/Art/Prefab
   ArchitectureFullTypeName: 
   ViewControllerFullTypeName: 
   Coin: {fileID: 1845647873}
   AnnihilationCore: {fileID: 151935121}
-  HealthPotion: {fileID: 1447994471}
+  DirtyBlood: {fileID: 1447994471}
   Exp: {fileID: 748113298}
 --- !u!4 &1454553319
 Transform:
@@ -21549,8 +21571,8 @@ Transform:
   - {fileID: 1791874274}
   - {fileID: 219810379}
   - {fileID: 1386963011}
-  - {fileID: 1296695877}
   - {fileID: 77108533}
+  - {fileID: 1296695877}
   - {fileID: 1748640868}
   - {fileID: 2043846053}
   - {fileID: 724306958}
@@ -22560,7 +22582,7 @@ MonoBehaviour:
   ArchitectureFullTypeName: 
   ViewControllerFullTypeName: 
   reloadSound: {fileID: 8300000, guid: 5fe03f7af8add814bbcddc42f64f15b8, type: 3}
-  HitDamage: 12
+  HitDamage: 13
   laserWidth: 1
   LaserShootSounds:
   - {fileID: 8300000, guid: 6e15092122a81c845bd2a5f5f8d5027c, type: 3}
@@ -22968,7 +22990,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1763419559
 RectTransform:
   m_ObjectHideFlags: 0
@@ -23561,11 +23583,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Namespace: ProjectBlood
   ScriptName: Coin
-  ScriptsFolder: Assets/Scripts/Game
+  ScriptsFolder: Assets\Scripts\Game\PowerUp
   GeneratePrefab: 0
   PrefabFolder: Assets/Art/Prefab
   ArchitectureFullTypeName: 
   ViewControllerFullTypeName: 
+  flySpeed: 12
 --- !u!114 &1845647874
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24444,6 +24467,107 @@ CapsuleCollider2D:
   m_Offset: {x: 0.006560546, y: 0}
   m_Size: {x: 0.6894596, y: 1}
   m_Direction: 0
+--- !u!1 &1957149178
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1957149181}
+  - component: {fileID: 1957149179}
+  - component: {fileID: 1957149180}
+  m_Layer: 0
+  m_Name: ChestOpenSprite
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!212 &1957149179
+SpriteRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1957149178}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_Sprite: {fileID: 21300000, guid: a1356079726f4fa4e8fe212d7c6cdba1, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 1.40625, y: 1}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_MaskInteraction: 0
+  m_SpriteSortPoint: 0
+--- !u!114 &1957149180
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1957149178}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d51f3a7c41ab0346b49ae50d456bece, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MarkType: 0
+  CustomComponentName: ChestOpen
+  CustomComment: 
+  mComponentName: SpriteRenderer
+--- !u!4 &1957149181
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1957149178}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 586085904}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1957454603
 GameObject:
   m_ObjectHideFlags: 0
@@ -25384,7 +25508,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &2100775680
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -31,8 +31,20 @@ namespace ProjectBlood
         protected bool recentlyFired = false; // 标记是否最近开火过（用于半自动武器延迟隐藏）
         protected float lastFireTime = 0f; // 上次开火时间
         protected const float FIRE_SOUND_DURATION_THRESHOLD = 0.8f; // 开火后多久内算作"正在播放枪声"
-        public virtual int BloodRequired { get; set;} = 5; // 每次换弹需要的血量
+        [SerializeField] protected int _bloodRequired = 5; // 每次换弹需要的血量
+        public virtual int BloodRequired { get { return _bloodRequired; } set { _bloodRequired = value; } } // 每次换弹需要的血量
         public BloodBank BloodBank { get; set; } // 血液银行引用
+        public LifestealFeature Lifesteal { get; set; } = new LifestealFeature(); // 吸血功能
+        public virtual float GetLifestealPercent() => Lifesteal.LifestealPercent; // 获取当前吸血比例
+        public bool IsBulletEnhanced { get; protected set; } = true; // 当前弹夹是否被血库强化
+        protected void ApplyLifestealToBullet(PlayerBullet bullet)
+        {
+            if (bullet != null)
+            {
+                bullet.lifestealPercent = GetLifestealPercent();
+                bullet.isEnhanced = IsBulletEnhanced;
+            }
+        }
         public abstract void Attack(Vector2 shootDir);
         public virtual void StartAttacking(Vector2 shootDir)
         {
@@ -71,8 +83,11 @@ namespace ProjectBlood
             
             gunClip.FinishReload();
             
-            // 消耗血液
-            if (BloodBank != null && BloodBank.CurrentBloodAmount >= BloodRequired)
+            // 根据换弹时血库状态决定当前弹夹是否被强化
+            IsBulletEnhanced = BloodBank != null && BloodBank.CurrentBloodAmount > 0;
+            
+            // 消耗血液（血库为空时也能换弹，只是子弹不会被强化）
+            if (IsBulletEnhanced)
             {
                 BloodBank.RemoveBlood(BloodRequired);
             }

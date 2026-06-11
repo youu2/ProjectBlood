@@ -46,6 +46,7 @@ namespace ProjectBlood
 				var bullet = Instantiate(DEBullet, DEBullet.transform.position, bulletRotation);
 				bullet.direction = finalDirection;
 				bullet.gameObject.SetActive(true);
+				ApplyLifestealToBullet(bullet);
 
 				// 播放射击声音，随机选择一个音效
 				int randomIndex = Random.Range(0, ShootSounds.Count);

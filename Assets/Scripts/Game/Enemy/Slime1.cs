@@ -11,7 +11,7 @@ namespace ProjectBlood
             body = FxManager.Instance.Enemy1Body;
             base.Awake();
         }
-        void OnCollisionEnter2D(Collision2D collision)
+        void OnTriggerEnter2D(Collider2D collision)
         {
             // 检测是否碰撞到玩家
             if (collision.gameObject.CompareTag("Player") && !isDying)

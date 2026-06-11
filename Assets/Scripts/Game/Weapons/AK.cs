@@ -27,6 +27,7 @@ namespace ProjectBlood
 			var bullet = Instantiate(AKBullet, AKBullet.transform.position, bulletRotation);
 			bullet.direction = shootDir;
 			bullet.gameObject.SetActive(true);
+			ApplyLifestealToBullet(bullet);
 			fireFlash.Flash(bullet.transform.position, shootDir); // 显示枪口火焰特效
 
 			//镜头震动

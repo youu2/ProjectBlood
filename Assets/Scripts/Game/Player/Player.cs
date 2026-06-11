@@ -261,7 +261,7 @@ namespace ProjectBlood
 			}
 
 			// 按R键换弹
-            if (Input.GetKeyDown(KeyCode.R) && bloodBank.CurrentBloodAmount >= currentWeapon.BloodRequired)
+            if (Input.GetKeyDown(KeyCode.R))
             {
                 currentWeapon.Reload(); // 调用GunClip的reload方法进行换弹
                 // GameUI.UpdateBloodText(bloodBank);

@@ -26,6 +26,7 @@ namespace ProjectBlood
             var bullet = Instantiate(Bullet, Bullet.transform.position, bulletRotation);
             bullet.direction = shootDir;
             bullet.gameObject.SetActive(true);
+            ApplyLifestealToBullet(bullet);
 
             int randomIndex = Random.Range(0, ShootSounds.Count);
             AudioKitManager.Instance.PlayOneShot(ShootSounds[randomIndex]);

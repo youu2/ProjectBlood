@@ -16,12 +16,12 @@ namespace ProjectBlood
 			// update UI when properties change
 			Global.currentHP.RegisterWithInitValue(currentHP =>
 			{
-				HPText.text = "HP: " + currentHP + "/" + Global.MAX_HP;
+				HPText.text = "HP: " + Mathf.FloorToInt(currentHP) + "/" + Mathf.FloorToInt(Global.MAX_HP.Value);
 			}).UnRegisterWhenGameObjectDestroyed(gameObject);
 
 			Global.MAX_HP.RegisterWithInitValue(maxHP =>
 			{
-				HPText.text = "HP: " + Global.currentHP + "/" + maxHP;
+				HPText.text = "HP: " + Mathf.FloorToInt(Global.currentHP.Value) + "/" + Mathf.FloorToInt(maxHP);
 			}).UnRegisterWhenGameObjectDestroyed(gameObject);
 
 			Global.Exp.RegisterWithInitValue(Exp =>
