@@ -6,11 +6,12 @@ namespace ProjectBlood
 	public abstract class DropItem : ViewController
 	{
 		public float flySpeed = 12f;
+		public bool autoCollectOnRoomFinish = true; // 房间完成后是否自动飞向玩家
 		private bool isFlyingToPlayer = false;
 
 		void Update()
 		{
-			if (!isFlyingToPlayer && Global.currentRoom != null && Global.currentRoom.roomState == Room.RoomState.Finished)
+			if (autoCollectOnRoomFinish && !isFlyingToPlayer && Global.currentRoom != null && Global.currentRoom.roomState == Room.RoomState.Finished)
 			{
 				isFlyingToPlayer = true;
 			}

@@ -54,3 +54,12 @@ TagManager:
   - name: Instances
     uniqueID: 1650208643
     locked: 0
+  - name: Player
+    uniqueID: 2199134175
+    locked: 0
+  - name: Weapon
+    uniqueID: 2576386819
+    locked: 0
+  - name: OnPlayer
+    uniqueID: 68139231
+    locked: 0

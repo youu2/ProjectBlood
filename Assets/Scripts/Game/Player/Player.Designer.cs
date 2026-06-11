@@ -1,4 +1,4 @@
-// Generate Id:9f8f8dc5-9a5a-4e82-adc5-6773a05f260d
+// Generate Id:0d7d28b8-93af-4f54-a2c4-3d133e574244
 using UnityEngine;
 
 namespace ProjectBlood
@@ -13,9 +13,9 @@ namespace ProjectBlood
 		
 		public ProjectBlood.ShotGun ShotGun;
 		
-		public ProjectBlood.AWP AWP;
-		
 		public ProjectBlood.AK AK;
+		
+		public ProjectBlood.AWP AWP;
 		
 		public ProjectBlood.Laser Laser;
 		
@@ -26,6 +26,7 @@ namespace ProjectBlood
 		public UnityEngine.UI.Text NoticeText;
 		
 		public SpriteRenderer AimMark;
+		public SpriteRenderer ShieldSprite;
 		
 		public UnityEngine.Rigidbody2D SelfRigidbody2D;
 		

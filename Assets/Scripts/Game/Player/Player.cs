@@ -19,6 +19,7 @@ namespace ProjectBlood
 		private AudioSource temporaryAudioSource; // 用于播放切换武器时的shootEnd音效
 		private WeaponBase weaponToHide = null; // 待隐藏的武器引用（用于半自动武器延迟隐藏）
 		public BloodBank bloodBank = new BloodBank(); // 血液银行组件，特殊资源，用于弹药管理和血量管理
+        private ShieldState shieldState = new ShieldState(); // 护盾状态
 		private Vector2 smoothAimDir; // 平滑过渡后的瞄准方向
 		private const float aimSmoothSpeed = 20f; // 瞄准平滑速度
 		private const float aimAngle = 35f; // 锁定角度
@@ -57,6 +58,9 @@ namespace ProjectBlood
 			{
 				weapon.BloodBank = bloodBank;
 			}
+			
+			// 初始化护盾状态
+			shieldState.Initialize(ShieldSprite);
 			
 			// 创建临时的 AudioSource 用于播放切换武器时的 shootEnd 音效
 			temporaryAudioSource = gameObject.AddComponent<AudioSource>();
@@ -102,6 +106,12 @@ namespace ProjectBlood
 
 		public void TakeDamage(float damage)
 		{
+			// 检查护盾是否抵挡伤害
+			if (shieldState.HandleDamage(transform.Position2D()))
+			{
+				return;
+			}
+			
 			FxManager.PlayPlayerHurtFX(transform.Position2D());
 			FxManager.DrawPlayerBlood(transform.Position2D());
 			Global.currentHP.Value -= damage;
@@ -116,6 +126,18 @@ namespace ProjectBlood
 				Death();
 			}
 		}
+
+        public void ActivateShield(int blockCount, float duration)
+        {
+            shieldState.Activate(blockCount, duration);
+            StartCoroutine(ShieldGracePeriodCoroutine(duration));
+        }
+
+        private IEnumerator ShieldGracePeriodCoroutine(float duration)
+        {
+            yield return new WaitForSeconds(duration);
+            shieldState.EndGracePeriod();
+        }
 
 		private void Death()
 		{

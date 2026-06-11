@@ -1,4 +1,4 @@
-// Generate Id:c0aa4d2f-eb4a-4590-8c40-b49ba6d17d34
+// Generate Id:d3c730b8-91cb-4a9d-ba41-b0ef8fe923c9
 using UnityEngine;
 
 namespace ProjectBlood
@@ -12,6 +12,8 @@ namespace ProjectBlood
 		public ProjectBlood.DirtyBlood DirtyBlood;
 		
 		public ProjectBlood.Exp Exp;
+		
+		public ProjectBlood.Shield Shield;
 		
 	}
 }

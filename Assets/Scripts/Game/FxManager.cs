@@ -67,6 +67,28 @@ namespace ProjectBlood
 			DrawBlood(originPos, Instance.EnemyBlood);
 		}
 
+		public static void PlayShieldBlockFX(Vector2 pos)
+		{
+			Instance.PlayerHurt.Instantiate()
+			.Position2D(pos)
+			.Show()
+			.Self(self =>
+			{
+				ActionKit.Delay(self.main.duration + 0.3f, self.DestroyGameObjGracefully).StartCurrentScene();
+			}).Play();
+		}
+
+		public static void PlayShieldBreakFX(Vector2 pos)
+		{
+			Instance.PlayerHurt.Instantiate()
+			.Position2D(pos)
+			.Show()
+			.Self(self =>
+			{
+				ActionKit.Delay(self.main.duration + 0.3f, self.DestroyGameObjGracefully).StartCurrentScene();
+			}).Play();
+		}
+
 		// public static void DrawEnemyBlood(Vector2 originPos)
 		// {
 		// 	var blood = Instance.EnemyBlood.Instantiate()

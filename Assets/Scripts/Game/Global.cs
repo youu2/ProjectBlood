@@ -133,6 +133,13 @@ namespace ProjectBlood
                 .Show();
         }
 
+        public static void GenerateShield(GameObject enemy)
+        {
+            DropManager.Instance.Shield.Instantiate()
+                .Position(enemy.Position() + new Vector3(0, 0.5f, 0))  // slight offset for better visibility
+                .Show();
+        }
+
         public static void GenerateDrops(GameObject enemy)
         {
             GenerateExp(enemy);
@@ -142,11 +149,26 @@ namespace ProjectBlood
                 GenerateCoin(enemy);
                 return;
             }
+            // 掉落Shield, 5%概率
             rand = Random.Range(0f, 100.0f);
-            if (rand < 0.1 * 100)
+            if (rand < 5f)
             {
-                GenerateDirtyBlood(enemy);
+                GenerateShield(enemy);
                 return;
+            }
+            // 只有当血库血量低于30%时才有可能掉落dirtyBlood
+            if (Player.player1 != null && Player.player1.bloodBank != null)
+            {
+                float bloodPercent = (float)Player.player1.bloodBank.CurrentBloodAmount / Player.player1.bloodBank.MaxBloodAmount;
+                if (bloodPercent < 0.3f)
+                {
+                    rand = Random.Range(0f, 100.0f);
+                    if (rand < 0.5 * 100)
+                    {
+                        GenerateDirtyBlood(enemy);
+                        return;
+                    }
+                }
             }
         }
 
