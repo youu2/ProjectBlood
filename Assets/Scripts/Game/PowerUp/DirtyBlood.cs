@@ -13,7 +13,7 @@ namespace ProjectBlood
 			{
 				return;
 			}
-			AudioKit.PlaySound("HpPickup", volume: 0.6f);
+			AudioKitManager.Instance.PlayOneShot("HpPickup", volume: 0.6f);
 			Player.player1.bloodBank.AddBlood(bloodAmount);
 			this.DestroyGameObjGracefully();
 		}

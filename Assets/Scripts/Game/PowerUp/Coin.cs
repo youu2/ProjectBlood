@@ -7,7 +7,7 @@ namespace ProjectBlood
 	{
 		protected override void Collect()
 		{
-			AudioKit.PlaySound("CoinPickup");
+			AudioKitManager.Instance.PlayOneShot("CoinPickup");
 			Global.AddCoin(1);
 			this.DestroyGameObjGracefully();
 		}

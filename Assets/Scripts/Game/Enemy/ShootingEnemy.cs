@@ -312,7 +312,7 @@ namespace ProjectBlood
         {
             if (shootSounds.Count > 0)
             {
-                AudioKit.PlaySound(shootSounds[Random.Range(0, shootSounds.Count)], volume: 0.2f);
+                AudioKitManager.Instance.PlayOneShot(shootSounds[Random.Range(0, shootSounds.Count)], volume: 0.2f);
             }
         }
 

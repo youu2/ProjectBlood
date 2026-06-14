@@ -20,7 +20,7 @@ namespace ProjectBlood
 			_currentSeconds += Time.deltaTime;
 			if (_currentSeconds >= Global.BCAttackInterval.Value)
 			{
-				AudioKit.PlaySound("Torch Attack Strike 1");
+				AudioKitManager.Instance.PlayOneShot("Torch Attack Strike 1");
 				_currentSeconds = 0;
 				var enemies = FindObjectsByType<Enemy>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
 				foreach (var enemy in enemies)

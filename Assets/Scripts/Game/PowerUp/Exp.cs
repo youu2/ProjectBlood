@@ -7,7 +7,7 @@ namespace ProjectBlood
 	{
 		protected override void Collect()
 		{
-			AudioKit.PlaySound("ExpPickup");
+			AudioKitManager.Instance.PlayOneShot("ExpPickup");
 			Global.AddExp(1);
 			this.DestroyGameObjGracefully();
 		}

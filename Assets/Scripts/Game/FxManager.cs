@@ -17,7 +17,7 @@ namespace ProjectBlood
 			.Show()
 			.Self(self =>
 			{
-				ActionKit.Delay(self.main.duration + 0.3f, self.DestroyGameObjGracefully).StartCurrentScene();
+				ActionKit.Delay(self.main.duration + 0.3f, () => self.gameObject.SetActive(false)).StartCurrentScene();
 				// StartCurrentScene用于在非MonoBehaviour类中启动协程，
 				// QFramework 在场景加载时会自动创建一个隐藏的 SceneCoroutineRunner GameObject，专门用来管理这些协程。
 			}).Play();
@@ -29,9 +29,7 @@ namespace ProjectBlood
 			.Show()
 			.Self(self =>
 			{
-				ActionKit.Delay(self.main.duration + 0.3f, self.DestroyGameObjGracefully).StartCurrentScene();
-				// StartCurrentScene用于在非MonoBehaviour类中启动协程，
-				// QFramework 在场景加载时会自动创建一个隐藏的 SceneCoroutineRunner GameObject，专门用来管理这些协程。
+				ActionKit.Delay(self.main.duration + 0.3f, () => self.gameObject.SetActive(false)).StartCurrentScene();
 			}).Play();
 		}
 
@@ -69,46 +67,25 @@ namespace ProjectBlood
 
 		public static void PlayShieldBlockFX(Vector2 pos)
 		{
-			Instance.PlayerHurt.Instantiate()
+			Instance.ShieldBlock.Instantiate()
 			.Position2D(pos)
 			.Show()
 			.Self(self =>
 			{
-				ActionKit.Delay(self.main.duration + 0.3f, self.DestroyGameObjGracefully).StartCurrentScene();
+				ActionKit.Delay(self.main.duration + 0.3f, () => self.gameObject.SetActive(false)).StartCurrentScene();
 			}).Play();
 		}
 
 		public static void PlayShieldBreakFX(Vector2 pos)
 		{
-			Instance.PlayerHurt.Instantiate()
+			Instance.ShieldBlock.Instantiate()
 			.Position2D(pos)
 			.Show()
 			.Self(self =>
 			{
-				ActionKit.Delay(self.main.duration + 0.3f, self.DestroyGameObjGracefully).StartCurrentScene();
+				ActionKit.Delay(self.main.duration + 0.3f, () => self.gameObject.SetActive(false)).StartCurrentScene();
 			}).Play();
 		}
-
-		// public static void DrawEnemyBlood(Vector2 originPos)
-		// {
-		// 	var blood = Instance.EnemyBlood.Instantiate()
-		// 	.Position2D(originPos)
-		// 	.EulerAnglesZ(Random.Range(0,360f))
-		// 	.LocalScale(0.1f)
-		// 	.Show();
-
-		// 	// 血液随机向一个地方飞溅
-		// 	var angle = Random.Range(0, 360);
-		// 	var radius = Random.Range(0.2f, 1.5f);
-		// 	var movePos = angle.AngleToDirection2D() * radius;
-		// 	var scaleTo = Random.Range(0.2f, 3.0f);
-		// 	ActionKit.Lerp(0, 1, Random.Range(0.1f, 0.3f),(p) =>
-		// 	{
-		// 		p = EaseUtility.InCubic(0, 1, p);
-		// 		blood.Position2D(originPos + movePos * p);
-		// 		blood.LocalScale(scaleTo * p);
-		// 	}).StartCurrentScene();
-		// }
 
 		void OnDestroy()
 		{

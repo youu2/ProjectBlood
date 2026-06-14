@@ -249,7 +249,7 @@ namespace ProjectBlood
 
         IEnumerator ChargeSequence()
         {
-            AudioKit.PlaySound(chargeSound);
+            AudioKitManager.Instance.PlayOneShot(chargeSound);
             chargeProgress = 0f;
 
             while (chargeProgress < 1f)

@@ -281,7 +281,7 @@ namespace ProjectBlood
             int randomIndex = Random.Range(0, EnemyShootSounds.Count);
             // EnemyShotAudioSource.clip = EnemyShootSounds[randomIndex];
             // EnemyShotAudioSource.Play();
-            AudioKit.PlaySound("EnemyShoot1", volume: 0.2f);
+            AudioKitManager.Instance.PlayOneShot("EnemyShoot1", volume: 0.2f);
         }
 
         public float HitDamage { get => Damage; }
@@ -291,7 +291,7 @@ namespace ProjectBlood
         {
             if (isDying) return;
             
-            AudioKit.PlaySound("Torch Impact 2", volume: 0.5f);
+            AudioKitManager.Instance.PlayOneShot("Torch Impact 2", volume: 0.5f);
             this.currentHealth -= damage;
             if (currentHealth <= 0f)
             {

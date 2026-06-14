@@ -50,7 +50,7 @@ namespace ProjectBlood
 
 				// 播放射击声音，随机选择一个音效
 				int randomIndex = Random.Range(0, ShootSounds.Count);
-				AudioKitManager.Instance.PlayOneShot(ShootSounds[randomIndex]);
+				AudioKitManager.Instance.PlayOneShot(ShootSounds[randomIndex], volume: 0.4f);
 			}
 			fireFlash.Flash(DEBullet.transform.position, shootDir); // 显示枪口火焰特效
 			CameraUtils.ShakeMainCamera(0.15f, 7);

@@ -78,7 +78,7 @@ namespace ProjectBlood
 		public void TakeDamage(float Damage, Vector2 HitDir)
 		{
 			if (isDying) return;
-			AudioKit.PlaySound("Torch Impact 2", volume: 0.5f);
+			AudioKitManager.Instance.PlayOneShot("Torch Impact 2", volume: 0.5f);
 			FxManager.PlayEnemyHurtFX(transform.Position2D());
 			FxManager.DrawEnemyBlood(transform.Position2D());
 			this.currentHealth -= Damage;

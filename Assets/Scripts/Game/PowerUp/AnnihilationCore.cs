@@ -16,7 +16,7 @@ namespace ProjectBlood
 			// Check if the collider belongs to the player
             if (collider.GetComponent<CollectBox>() != null)
             {
-				//AudioKit.PlaySound("AnnihilationCorePickup");
+				//AudioKitManager.Instance.PlayOneShot("AnnihilationCorePickup");
 				Global.AddAnnihilationCore(1);
 				this.DestroyGameObjGracefully();
             }

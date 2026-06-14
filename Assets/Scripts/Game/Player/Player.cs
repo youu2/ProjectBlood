@@ -60,7 +60,7 @@ namespace ProjectBlood
 			}
 			
 			// 初始化护盾状态
-			shieldState.Initialize(ShieldSprite);
+			shieldState.Initialize(ShieldSprite, this);
 			
 			// 创建临时的 AudioSource 用于播放切换武器时的 shootEnd 音效
 			temporaryAudioSource = gameObject.AddComponent<AudioSource>();
@@ -81,7 +81,7 @@ namespace ProjectBlood
 			currentWeapon.Show();
 			
 			// 播放切换音效（独立播放，不需要等待）
-			AudioKit.PlaySound(WeaponSwitchSound);
+			AudioKitManager.Instance.PlayOneShot(WeaponSwitchSound,volume: 0.3f);
 		}
 		
 		void HidePreviousWeapon()
@@ -119,7 +119,7 @@ namespace ProjectBlood
 			
 			if (Global.currentHP.Value > 0)
 			{
-				AudioKit.PlaySound("Hurt");
+				AudioKitManager.Instance.PlayOneShot("Hurt", volume: 0.5f);
 			}
 			else
 			{
@@ -130,19 +130,12 @@ namespace ProjectBlood
         public void ActivateShield(int blockCount, float duration)
         {
             shieldState.Activate(blockCount, duration);
-            StartCoroutine(ShieldGracePeriodCoroutine(duration));
         }
 
-        private IEnumerator ShieldGracePeriodCoroutine(float duration)
-        {
-            yield return new WaitForSeconds(duration);
-            shieldState.EndGracePeriod();
-        }
-
-		private void Death()
+        private void Death()
 		{
 			Global.SettleLegacyPoints();
-			AudioKit.PlaySound("WilhelmScream");
+			AudioKitManager.Instance.PlayOneShot("WilhelmScream");
 			this.DestroyGameObjGracefully();
 			UIKit.OpenPanel<UIGameOverPanel>();
 		}

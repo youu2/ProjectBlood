@@ -90,7 +90,7 @@ namespace ProjectBlood
 						GenerateEnemy();
 					}else{
 						roomState = RoomState.Finished;
-						AudioKit.PlaySound("DoorOpeningSfx");
+						AudioKitManager.Instance.PlayOneShot("DoorOpeningSfx");
 						foreach (var door in doorList)
 						{
 							door.Hide();
@@ -175,7 +175,7 @@ namespace ProjectBlood
 				{
 					door.Show();
 				}
-				AudioKit.PlaySound("DoorClosingSfx");
+				AudioKitManager.Instance.PlayOneShot("DoorClosingSfx");
 			}else if(roomConfig.roomType != RoomType.NormalRoom)
 			{
 				roomState = RoomState.Idle;

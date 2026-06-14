@@ -1,10 +1,9 @@
 using UnityEngine;
+using System.Collections;
 
 namespace ProjectBlood
 {
-    /// <summary>
-    /// 护盾状态管理类
-    /// </summary>
+    // 护盾状态管理类
     public class ShieldState
     {
         public bool IsActive { get; private set; }
@@ -15,10 +14,12 @@ namespace ProjectBlood
 
         private SpriteRenderer shieldSprite;
         private Vector2 playerPosition;
+        private MonoBehaviour coroutineRunner;
 
-        public void Initialize(SpriteRenderer sprite)
+        public void Initialize(SpriteRenderer sprite, MonoBehaviour runner)
         {
             shieldSprite = sprite;
+            coroutineRunner = runner;
         }
 
         public void Activate(int blockCount, float gracePeriodDuration)
@@ -34,6 +35,18 @@ namespace ProjectBlood
                 shieldSprite.enabled = true;
                 shieldSprite.gameObject.SetActive(true);
             }
+            
+            // 启动保护期协程
+            if (coroutineRunner != null)
+            {
+                coroutineRunner.StartCoroutine(GracePeriodCoroutine(gracePeriodDuration));
+            }
+        }
+
+        private IEnumerator GracePeriodCoroutine(float duration)
+        {
+            yield return new WaitForSeconds(duration);
+            EndGracePeriod();
         }
 
         public void EndGracePeriod()
@@ -47,11 +60,9 @@ namespace ProjectBlood
             }
         }
 
-        /// <summary>
-        /// 处理伤害
-        /// </summary>
-        /// <param name="playerPos">玩家位置，用于播放特效</param>
-        /// <returns>返回true表示护盾抵挡了伤害</returns>
+        // 处理伤害
+        // 参数: playerPos - 玩家位置，用于播放特效
+        // 返回: true表示护盾抵挡了伤害
         public bool HandleDamage(Vector2 playerPos)
         {
             if (!IsActive) return false;
@@ -70,6 +81,11 @@ namespace ProjectBlood
                 Deactivate();
                 // 播放碎裂特效
                 FxManager.PlayShieldBreakFX(playerPos);
+                // AudioKitManager.Instance.PlayOneShot("ShieldBreak");
+            }
+            else
+            {
+                AudioKitManager.Instance.PlayOneShot("ShieldBlock");
             }
 
             return true;
@@ -77,6 +93,7 @@ namespace ProjectBlood
 
         public void Deactivate()
         {
+            AudioKitManager.Instance.PlayOneShot("ShieldBreak");
             IsActive = false;
             IsInGracePeriod = false;
             RemainingBlocks = 0;

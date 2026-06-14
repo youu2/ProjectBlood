@@ -16,7 +16,7 @@ namespace ProjectBlood
 			// Check if the collider belongs to the player
             if (collider.GetComponent<CollectBox>() != null && !isCollected)
             {
-				AudioKit.PlaySound("RareLootSFX", volume: 1.0f);
+				AudioKitManager.Instance.PlayOneShot("RareLootSFX", volume: 1.0f);
 				SelfSpriteRenderer.enabled = false;  // 只禁用渲染器，不禁用整个GameObject
 				ChestOpenSprite.Show();
 				isCollected = true;

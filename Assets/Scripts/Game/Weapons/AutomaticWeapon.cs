@@ -21,8 +21,8 @@ namespace ProjectBlood
             if (gunClip?.CanShoot() ?? false)
             {
                 // 播放单发音效和循环音效
-                AudioKitManager.Instance?.PlayOneShot(OneShotSound);
-                _shootLoopPlayer = AudioKitManager.Instance?.PlayLoop(ShootSounds[0]);
+                AudioKitManager.Instance?.PlayOneShot(OneShotSound, volume: 0.55f);
+                _shootLoopPlayer = AudioKitManager.Instance?.PlayLoop(ShootSounds[0], volume: 0.5f);
                 newClip = false;
                 hasFired = true;
             }
@@ -52,7 +52,7 @@ namespace ProjectBlood
                 if (!gunClip.isReloading)
                 {
                     Player.DisplayText("[R] to Reload!");
-                    AudioKitManager.Instance?.PlayOneShot("DryFireClick");
+                    AudioKitManager.Instance?.PlayOneShot("DryFireClick", volume: 0.7f);
                     reloadTextShown = true;
                 }
             }
@@ -63,7 +63,7 @@ namespace ProjectBlood
         {
             if (hasFired)
             {
-                AudioKitManager.Instance?.PlayOneShot(ShootEndSound);
+                AudioKitManager.Instance?.PlayOneShot(ShootEndSound,volume:0.7f);
             }
             AudioKitManager.Instance?.Stop(_shootLoopPlayer);
             _shootLoopPlayer = null;
@@ -74,7 +74,7 @@ namespace ProjectBlood
         {
             if (Time.frameCount % 50 == 0 && attackInterval.CanAttack() && gunClip != null && !gunClip.isReloading)
             {
-                AudioKitManager.Instance?.PlayOneShot("DryFireClick");
+                AudioKitManager.Instance?.PlayOneShot("DryFireClick", volume: 0.7f);
             }
         }
         

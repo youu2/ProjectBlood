@@ -72,7 +72,7 @@ namespace ProjectBlood
             // 播放换弹音效
             if (reloadSound != null)
             {
-                _shootClipPlayer = AudioKitManager.Instance.PlayOneShot(reloadSound);
+                _shootClipPlayer = AudioKitManager.Instance.PlayOneShot(reloadSound, volume: 0.5f);
                 yield return new WaitForSeconds(ReloadTime);
             }
             else

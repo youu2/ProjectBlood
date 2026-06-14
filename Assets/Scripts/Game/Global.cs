@@ -65,7 +65,7 @@ namespace ProjectBlood
 
             if (Exp.Value >= MAX_EXP.Value)
             {
-                AudioKit.PlaySound("LevelUp");
+                AudioKitManager.Instance.PlayOneShot("LevelUp");
                 Level.Value++;
                 Exp.Value -= MAX_EXP.Value;
                 MAX_EXP.Value = Mathf.CeilToInt(MAX_EXP.Value * 1.1f);
@@ -151,7 +151,7 @@ namespace ProjectBlood
             }
             // 掉落Shield, 5%概率
             rand = Random.Range(0f, 100.0f);
-            if (rand < 5f)
+            if (rand < 70f) // 测试 ///////////////////////////////////////   
             {
                 GenerateShield(enemy);
                 return;

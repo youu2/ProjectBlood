@@ -238,7 +238,7 @@ namespace ProjectBlood
 
             if (EnemyShootSounds.Count > 0)
             {
-                AudioKit.PlaySound(EnemyShootSounds[Random.Range(0, EnemyShootSounds.Count)], volume: 0.2f);
+                AudioKitManager.Instance.PlayOneShot(EnemyShootSounds[Random.Range(0, EnemyShootSounds.Count)], volume: 0.2f);
             }
         }
 
@@ -246,7 +246,7 @@ namespace ProjectBlood
         {
             if (isDying) return;
             
-            AudioKit.PlaySound("Torch Impact 2", volume: 0.5f);
+            AudioKitManager.Instance.PlayOneShot("Torch Impact 2", volume: 0.5f);
             this.currentHealth -= damage;
             if (currentHealth <= 0f)
             {

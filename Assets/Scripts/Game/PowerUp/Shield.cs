@@ -15,7 +15,7 @@ namespace ProjectBlood
 
         protected override void Collect()
         {
-            AudioKit.PlaySound("HpPickup", volume: 0.6f);
+            AudioKitManager.Instance.PlayOneShot("ShieldPickUp", volume: 1.0f);
             Player.player1.ActivateShield(initialBlockCount, initialDuration);
             this.DestroyGameObjGracefully();
         }
