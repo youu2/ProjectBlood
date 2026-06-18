@@ -47,6 +47,13 @@ public class PlayerBullet : MonoBehaviour
                 return;
             }
 
+            // 如果敌人在死亡流程中就跳过（防止多弹丸同时命中时重复触发吸血）
+            if (damageable.IsDying)
+            {
+                Destroy(this.gameObject);
+                return;
+            }
+
             // 读取敌人当前/最大血量，判断本击是否致命
             // 吸血机制：致命一击时改为从敌人死亡位置生成 PB 道具，不再直接加血
             float enemyCurrentHP = damageable.CurrentHealth;
