@@ -50,6 +50,15 @@ namespace ProjectBlood
 			{
 				InitBG.Show();
 			}
+			else if(room.roomConfig.roomType == RoomType.ChestRoom)
+			{
+				ChestIcon.Show();
+			}
+			else if(room.roomConfig.roomType == RoomType.BossRoom)
+			{
+				ChestIcon.Show();	// 暂无boss专属Icon
+			}
+
 			if(room == Global.currentRoom)
 			{
 				CurrentBG.Show();
@@ -59,10 +68,7 @@ namespace ProjectBlood
 			{
 				HomeIcon.Show();
 			}
-			if(room.roomConfig.roomType == RoomType.ChestRoom)
-			{
-				ChestIcon.Show();
-			}
+			
 		}
 	}
 }

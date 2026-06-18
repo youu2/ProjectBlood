@@ -13,6 +13,7 @@ namespace ProjectBlood
         public EnemyBullet enemyBullet;
         public float speed = 2.0f;
         public float currentHealth = 100.0f;
+        public float maxHealth = 100.0f; // 敌人总生命值，用于吸血 PB 换算
         public float Damage = 2.0f;
         public SpriteRenderer spriteRenderer;
         
@@ -53,7 +54,13 @@ namespace ProjectBlood
                 originalColor = spriteRenderer.color;
             }
             allColliders = GetComponentsInChildren<Collider2D>(true);
-            
+
+            // 记录敌人总生命值
+            if (maxHealth <= 0f)
+            {
+                maxHealth = currentHealth;
+            }
+
             if (player == null)
             {
                 player = Player.player1;
@@ -286,6 +293,8 @@ namespace ProjectBlood
 
         public float HitDamage { get => Damage; }
         public bool IsDying { get => isDying; }
+        public float CurrentHealth { get => currentHealth; }
+        public float MaxHealth { get => maxHealth; }
         
         public void TakeDamage(float damage, Vector2 hitDir)
         {

@@ -32,7 +32,7 @@ namespace ProjectBlood
 
 			Vector2 startPos = LaserPoint.Position2D();
 			var targetLayer = LayerMask.GetMask("Enemy", "Wall"); // 所有可以阻挡激光的物体层级
-			
+
 			//  伤害检测：使用 BoxCast（有宽度）
 			var damageHit = Physics2D.BoxCast(startPos, new Vector2(laserWidth, laserWidth), 0f, shootDir, Mathf.Infinity, targetLayer);
 
@@ -44,19 +44,23 @@ namespace ProjectBlood
 				{
 					// 计算击退方向：从玩家到敌人的方向
 					Vector2 playerToEnemyDir = (damageHit.collider.transform.position - Player.player1.transform.position).normalized;
-					
+
 					// 根据子弹是否被强化计算伤害
 					float damageMultiplier = IsBulletEnhanced ? 1.0f : 0.8f; // 未强化时伤害降低到80%
 					float finalDamage = HitDamage * damageMultiplier;
-					
+
+					// 判断本击是否致命
+					float enemyCurrentHP = damageable.CurrentHealth;
+					float enemyMaxHP = damageable.MaxHealth;
+					bool isLethal = enemyCurrentHP - finalDamage <= 0f;
+
 					damageable.TakeDamage(finalDamage, playerToEnemyDir);
 
-					// 应用吸血
-					if (GetLifestealPercent() > 0)
+					// 吸血：致命一击时按敌人总生命值换算为 PB 道具
+					if (isLethal && GetLifestealPercent() > 0f && Player.player1 != null && enemyMaxHP > 0f)
 					{
-						float lifestealAmount = finalDamage * (GetLifestealPercent() / 100f);
-						float newHP = Global.currentHP.Value + lifestealAmount;
-						Global.currentHP.Value = Mathf.Min(newHP, Global.MAX_HP.Value);
+						float totalLifesteal = enemyMaxHP * (GetLifestealPercent() / 100f);
+						Global.GeneratePureBlood(damageHit.collider.gameObject, totalLifesteal);
 					}
 				}
 			}

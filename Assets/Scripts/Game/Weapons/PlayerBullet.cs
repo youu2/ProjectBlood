@@ -36,19 +36,31 @@ public class PlayerBullet : MonoBehaviour
             // 根据子弹是否被强化计算伤害
             float damageMultiplier = isEnhanced ? 1.0f : 0.8f; // 未强化时伤害降低到80%
             float finalDamage = damage * damageMultiplier;
-            
+
             // 计算玩家到敌人的方向
             Vector2 playerToEnemyDir = (collision.transform.position - Player.player1.transform.position).normalized;
-            
-            collision.gameObject.GetComponent<IDamageable>()
-                .TakeDamage(finalDamage, playerToEnemyDir);
 
-            // 应用吸血
-            if (lifestealPercent > 0 && Player.player1 != null)
+            var damageable = collision.gameObject.GetComponent<IDamageable>();
+            if (damageable == null)
             {
-                float lifestealAmount = finalDamage * (lifestealPercent / 100f);
-                float newHP = Global.currentHP.Value + lifestealAmount;
-                Global.currentHP.Value = Mathf.Min(newHP, Global.MAX_HP.Value);
+                Destroy(this.gameObject);
+                return;
+            }
+
+            // 读取敌人当前/最大血量，判断本击是否致命
+            // 吸血机制：致命一击时改为从敌人死亡位置生成 PB 道具，不再直接加血
+            float enemyCurrentHP = damageable.CurrentHealth;
+            float enemyMaxHP = damageable.MaxHealth;
+            bool isLethal = enemyCurrentHP - finalDamage <= 0f;
+
+            // 应用伤害
+            damageable.TakeDamage(finalDamage, playerToEnemyDir);
+
+            // 吸血：致命一击时按敌人总生命值换算为 PB 道具
+            if (isLethal && lifestealPercent > 0f && Player.player1 != null && enemyMaxHP > 0f)
+            {
+                float totalLifesteal = enemyMaxHP * (lifestealPercent / 100f);
+                Global.GeneratePureBlood(collision.gameObject, totalLifesteal);
             }
 
             Destroy(this.gameObject);

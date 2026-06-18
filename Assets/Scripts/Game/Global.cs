@@ -65,7 +65,7 @@ namespace ProjectBlood
 
             if (Exp.Value >= MAX_EXP.Value)
             {
-                AudioKitManager.Instance.PlayOneShot("LevelUp");
+                AudioKitManager.Instance.PlayOneShot("LevelUp",volume: 0.5f);
                 Level.Value++;
                 Exp.Value -= MAX_EXP.Value;
                 MAX_EXP.Value = Mathf.CeilToInt(MAX_EXP.Value * 1.1f);
@@ -131,6 +131,32 @@ namespace ProjectBlood
             DropManager.Instance.DirtyBlood.Instantiate()
                 .Position(enemy.Position() + new Vector3(-0.5f, -0.5f, 0))  // slight offset for better visibility
                 .Show();
+        }
+
+        // 武器吸血击杀时，从敌人死亡位置生成多个 PB 道具
+        // 总治疗量 = 敌人总生命值 × 武器吸血百分比
+        // 数量 = 1 + floor(总治疗量 / 5)
+        // 单个 PB 治疗量 = 总治疗量 / 数量（保证 PB 治疗总和等于原吸血治疗量）
+        public static void GeneratePureBlood(GameObject enemy, float totalLifestealAmount)
+        {
+            if (DropManager.Instance == null || DropManager.Instance.PureBlood == null) return;
+            if (enemy == null) return;
+            if (totalLifestealAmount <= 0f) return;
+
+            int count = 1 + Mathf.FloorToInt(totalLifestealAmount / 5f);
+            if (count <= 0) return;
+            float healPerPB = totalLifestealAmount / count;
+
+            Vector3 origin = enemy.Position();
+            for (int i = 0; i < count; i++)
+            {
+                var pb = DropManager.Instance.PureBlood.Instantiate()
+                    .Position(origin);
+
+                pb.Initialize(healPerPB);
+
+                pb.Show();
+            }
         }
 
         public static void GenerateShield(GameObject enemy)

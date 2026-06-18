@@ -19,35 +19,26 @@ MonoBehaviour:
     From: 0
     NameToFullName: []
     BindInfos:
-    - TypeName: ParticleSystem
-      PathToRoot: EnemyHurt
-      MemberName: EnemyHurt
-    - TypeName: ParticleSystem
-      PathToRoot: PlayerHurt
-      MemberName: PlayerHurt
-    - TypeName: ParticleSystem
-      PathToRoot: ShieldBlock
-      MemberName: ShieldBlock
-    - TypeName: SpriteRenderer
-      PathToRoot: EnemyBlood
-      MemberName: EnemyBlood
-    - TypeName: SpriteRenderer
-      PathToRoot: PlayerBlood
-      MemberName: PlayerBlood
-    - TypeName: SpriteRenderer
-      PathToRoot: Enemy1Body
-      MemberName: Enemy1Body
-    - TypeName: SpriteRenderer
-      PathToRoot: Enemy2Body
-      MemberName: Enemy2Body
-    - TypeName: SpriteRenderer
-      PathToRoot: Enemy3Body
-      MemberName: Enemy3Body
-    - TypeName: SpriteRenderer
-      PathToRoot: Enemy4Body
-      MemberName: Enemy4Body
-    ScriptsFolder: Assets/Scripts/Game
-    ClassName: FxManager
+    - TypeName: ProjectBlood.Coin
+      PathToRoot: Coin
+      MemberName: Coin
+    - TypeName: ProjectBlood.AnnihilationCore
+      PathToRoot: AnnihilationCore
+      MemberName: AnnihilationCore
+    - TypeName: ProjectBlood.DirtyBlood
+      PathToRoot: DirtyBlood
+      MemberName: DirtyBlood
+    - TypeName: ProjectBlood.Exp
+      PathToRoot: Exp
+      MemberName: Exp
+    - TypeName: ProjectBlood.Shield
+      PathToRoot: Shield
+      MemberName: Shield
+    - TypeName: ProjectBlood.PureBlood
+      PathToRoot: PureBlood
+      MemberName: PureBlood
+    ScriptsFolder: Assets/Scripts/Game/PowerUp
+    ClassName: DropManager
     Namespace: ProjectBlood
     MainCode: 
     DesignerCode: 

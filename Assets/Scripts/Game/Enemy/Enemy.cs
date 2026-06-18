@@ -11,6 +11,7 @@ namespace ProjectBlood
 		protected SpriteRenderer spriteRenderer;
         public float moveSpeed = 2.0f;
         public float currentHealth = 100.0f;
+        public float maxHealth = 100.0f; // 敌人总生命值，记录初始血量用于吸血 PB 换算
         public float Damage = 5.0f;
         protected Color originalColor;  // Restore the original color after flash
         protected bool isDying = false; // Avoid repeating death process.
@@ -32,6 +33,12 @@ namespace ProjectBlood
 				Debug.LogError("Enemy: SpriteRenderer not found!");
 
 			originalColor = spriteRenderer.color;
+
+			// 记录敌人总生命值（仅在第一次初始化时记录，避免被多次实例化重置）
+			if (maxHealth <= 0f)
+			{
+				maxHealth = currentHealth;
+			}
 		}
 
 		void Start()
@@ -101,7 +108,7 @@ namespace ProjectBlood
 
 		protected virtual void Death(Vector2 HitDir)
 		{
-			AudioKitManager.Instance.PlayOneShot("KillSFX");
+			AudioKitManager.Instance.PlayOneShot("KillSFX", volume: 0.6f);
 			Global.GenerateDrops(this.gameObject);
 			if (Room != null)
             {
@@ -179,6 +186,8 @@ namespace ProjectBlood
 		public bool IsDying { get => isDying; }
 		public GameObject GameObject { get => gameObject; }
 		public Room Room { get; set; }
+		public float CurrentHealth { get => currentHealth; }
+		public float MaxHealth { get => maxHealth; }
         public virtual void OnDestroy()
         {
             if (Room != null)

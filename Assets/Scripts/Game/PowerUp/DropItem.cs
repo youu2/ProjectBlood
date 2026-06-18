@@ -5,7 +5,7 @@ namespace ProjectBlood
 {
 	public abstract class DropItem : ViewController
 	{
-		public float flySpeed = 12f;
+		public float speed = 12f;
 		public bool autoCollectOnRoomFinish = true; // 房间完成后是否自动飞向玩家
 		private bool isFlyingToPlayer = false;
 
@@ -18,12 +18,11 @@ namespace ProjectBlood
 
 			if (isFlyingToPlayer && Player.player1 != null)
 			{
-				transform.position = Vector3.MoveTowards(transform.position, Player.player1.transform.position, flySpeed * Time.deltaTime);
-
-				if (Vector3.Distance(transform.position, Player.player1.transform.position) < 0.3f)
-				{
-					Collect();
-				}
+				transform.position = Vector3.MoveTowards(
+					transform.position, 
+					Player.player1.transform.position, 
+					speed * Time.deltaTime
+				);
 			}
 		}
 
