@@ -1,25 +1,25 @@
 using System;
 using System.Collections.Generic;
 
-namespace ProjectBlood
+namespace Assets.Scripts.Game.System
 {
     public class EnemyWaveConfig
     {
-        
+
     }
     public enum RoomType
     {
         InitRoom,
         NormalRoom,
         ChestRoom,
+        ShopRoom,
         BossRoom,
     }
 
     public class RoomNode
     {
         public RoomType roomType = RoomType.InitRoom;
-        public List<RoomNode> Children = new List<RoomNode>();
-
+        public List<RoomNode> Children = new();
         public RoomNode(RoomType roomType)
         {
             this.roomType = roomType;
@@ -27,7 +27,7 @@ namespace ProjectBlood
 
         public RoomNode NextRoom(RoomType roomType, Action<RoomNode> branch = null)
         {
-            var roomNode = new RoomNode(roomType);
+            RoomNode roomNode = new(roomType);
             Children.Add(roomNode);
             branch?.Invoke(roomNode);
             return roomNode;
@@ -38,11 +38,12 @@ namespace ProjectBlood
     {
         public RoomType roomType;
         public List<string> roomMap;
-        
+
         /*
-            地图：18x18格，边界为（'1'和‘2’）房门为（'d'）内部地面（' '） 玩家（'P'） 敌人（'e'） 传送门（'#'） 宝箱（'C'）
+            地图：18x18格，边界为（'1'和‘2’）房门为（'d'）内部地面（' '） 玩家（'P'） 敌人（'e'） 传送门（'#'） 宝箱（'c'）
+            商店（'s'） 商人（'b'）
         */
-        public static RoomConfig InitRoom = new RoomConfig()
+        public static RoomConfig InitRoom = new()
         {
             roomType = RoomType.InitRoom,
             roomMap = new List<string>()
@@ -69,7 +70,7 @@ namespace ProjectBlood
             }
         };
 
-        public static List<RoomConfig> normalRoomConfigList = new List<RoomConfig>()
+        public static List<RoomConfig> normalRoomConfigList = new()
         {
             new RoomConfig()
             {
@@ -151,7 +152,7 @@ namespace ProjectBlood
             }
         };
 
-        public static RoomConfig ChestRoom = new RoomConfig()
+        public static RoomConfig ChestRoom = new()
         {
             roomType = RoomType.ChestRoom,
             roomMap = new List<string>()
@@ -178,7 +179,34 @@ namespace ProjectBlood
             }
         };
 
-        public static RoomConfig BossRoom = new RoomConfig()
+        public static RoomConfig ShopRoom = new()
+        {
+            roomType = RoomType.ShopRoom,
+            roomMap = new List<string>()
+            {
+                "21111111ddd11111112",
+                "2                 2",
+                "2                 2",
+                "2                 2",
+                "2                 2",
+                "2                 2",
+                "2                 2",
+                "2                 2",
+                "d                 d",
+                "d    s   s   s    d",
+                "d                 d",
+                "2                 2",
+                "2                 2",
+                "2                 2",
+                "2                 2",
+                "2                 2",
+                "2                 2",
+                "2                 2",
+                "21111111ddd11111112"
+            }
+        };
+
+        public static RoomConfig BossRoom = new()
         {
             roomType = RoomType.BossRoom,
             roomMap = new List<string>()

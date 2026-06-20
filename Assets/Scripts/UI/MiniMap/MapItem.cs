@@ -1,5 +1,6 @@
 using UnityEngine;
 using QFramework;
+using Assets.Scripts.Game.System;
 
 namespace ProjectBlood
 {
@@ -25,6 +26,7 @@ namespace ProjectBlood
 			CurrentBG.Hide();
 			HomeIcon.Hide();
 			ChestIcon.Hide();
+			ShopIcon.Hide();
 
 			foreach(var dir in room.roomGenerateConfig.doorDirections)
 			{
@@ -53,6 +55,10 @@ namespace ProjectBlood
 			else if(room.roomConfig.roomType == RoomType.ChestRoom)
 			{
 				ChestIcon.Show();
+			}
+			else if(room.roomConfig.roomType == RoomType.ShopRoom)
+			{
+				ShopIcon.Show();
 			}
 			else if(room.roomConfig.roomType == RoomType.BossRoom)
 			{

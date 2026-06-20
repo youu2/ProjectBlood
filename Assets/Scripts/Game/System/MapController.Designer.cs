@@ -1,4 +1,4 @@
-// Generate Id:cd4f21a1-586e-403d-8365-19098820e6ba
+// Generate Id:a82b1a91-b9de-43a7-8652-75c6c3dbe2d1
 using UnityEngine;
 
 namespace ProjectBlood
@@ -10,6 +10,8 @@ namespace ProjectBlood
 		public ProjectBlood.Door Door;
 		
 		public ProjectBlood.Chest Chest;
+		
+		public ProjectBlood.ShopItem ShopItem;
 		
 		public UnityEngine.GameObject Enemy1;
 		

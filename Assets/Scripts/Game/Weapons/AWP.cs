@@ -29,7 +29,7 @@ namespace ProjectBlood
             ApplyLifestealToBullet(bullet);
 
             int randomIndex = Random.Range(0, ShootSounds.Count);
-            AudioKitManager.Instance.PlayOneShot(ShootSounds[randomIndex], volume: 0.5f);
+            AudioKitManager.Instance.PlayOneShot(ShootSounds[randomIndex], volume: 0.6f);
     		fireFlash.Flash(bullet.transform.position, shootDir); // 显示枪口火焰特效
 
             CameraUtils.ShakeMainCamera(0.15f, 7);

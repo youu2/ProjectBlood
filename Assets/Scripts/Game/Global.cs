@@ -17,7 +17,7 @@ namespace ProjectBlood
         // The player's level will be converted into Legacy points upon death, which can be used for Metaprogression System.
         public static BindableProperty<int> LegacyPoint = new BindableProperty<int>(0);
         public static BindableProperty<float> BlazingCircleDamage = new BindableProperty<float>(35.0f);
-        public static BindableProperty<float> RemainingTime  = new BindableProperty<float>(180);
+        public static BindableProperty<float> RemainingTime = new BindableProperty<float>(180);
         public static BindableProperty<int> currentNum = new BindableProperty<int>(0);    // current number of active enemies
         public static BindableProperty<int> cumulativeNum = new BindableProperty<int>(0);   // cumulative number of generated enemies so far
         public static BindableProperty<int> CurrentWaves = new BindableProperty<int>(1);
@@ -36,26 +36,26 @@ namespace ProjectBlood
             // Set AudioKit to ignore same sound played in the same frame
             AudioKit.PlaySoundMode = AudioKit.PlaySoundModes.IgnoreSameSoundInGlobalFrames;
             ResKit.Init();
-            UIKit.Root.SetResolution(1920, 1080,1.0f);
+            UIKit.Root.SetResolution(1920, 1080, 1.0f);
             // Load from PlayerPrefs
-			Global.LegacyPoint.Value = PlayerPrefs.GetInt("LegacyPoint", 0);
+            Global.LegacyPoint.Value = PlayerPrefs.GetInt("LegacyPoint", 0);
             Global.CoinDropRate.Value = PlayerPrefs.GetFloat("CoinDropRate", 0.30f);
             //Global.MAX_HP.Value = PlayerPrefs.GetFloat("MAX_HP", 30.0f);
             // Register change callbacks
-			LegacyPoint.Register(legacy =>
-			{
-				PlayerPrefs.SetInt("LegacyPoint", legacy);
-			});
+            LegacyPoint.Register(legacy =>
+            {
+                PlayerPrefs.SetInt("LegacyPoint", legacy);
+            });
 
-			CoinDropRate.Register(coinDropRate =>
-			{
-				PlayerPrefs.SetFloat("CoinDropRate", coinDropRate);
-			});
+            CoinDropRate.Register(coinDropRate =>
+            {
+                PlayerPrefs.SetFloat("CoinDropRate", coinDropRate);
+            });
 
             MAX_HP.Register(maxHP =>
-			{
-				PlayerPrefs.SetFloat("MAX_HP", maxHP);
-			});
+            {
+                PlayerPrefs.SetFloat("MAX_HP", maxHP);
+            });
         }
 
         // level up after getting 5 exp, then increase the required exp by 10%
@@ -65,7 +65,7 @@ namespace ProjectBlood
 
             if (Exp.Value >= MAX_EXP.Value)
             {
-                AudioKitManager.Instance.PlayOneShot("LevelUp",volume: 0.5f);
+                AudioKitManager.Instance.PlayOneShot("LevelUp", volume: 0.5f);
                 Level.Value++;
                 Exp.Value -= MAX_EXP.Value;
                 MAX_EXP.Value = Mathf.CeilToInt(MAX_EXP.Value * 1.1f);
@@ -79,6 +79,11 @@ namespace ProjectBlood
             Coin.Value += amount;
         }
 
+        public static void SpendCoin(int amount)
+        {
+            Coin.Value -= amount;
+        }
+
         public static void SettleLegacyPoints()
         {
             int legacyPointsGained = Level.Value - 1; // Gain Legacy points equal to the number of upgrades upon death
@@ -86,7 +91,7 @@ namespace ProjectBlood
             Debug.Log("You have gained " + legacyPointsGained + " Legacy Points!");
             Debug.Log("Your current legacy points: " + LegacyPoint.Value);
         }
-        
+
         // restart game
         public static void ResetLevel()
         {
@@ -125,7 +130,7 @@ namespace ProjectBlood
                 .Position(enemy.Position() + new Vector3(0.5f, 0.5f, 0))  // slight offset for better visibility
                 .Show();
         }
-        
+
         public static void GenerateDirtyBlood(GameObject enemy)
         {
             DropManager.Instance.DirtyBlood.Instantiate()
@@ -218,6 +223,6 @@ namespace ProjectBlood
             // This is a placeholder; actual implementation may vary
             Debug.Log("Annihilation Cores increased by " + amount);
         }
-        
+
     }
 }

@@ -2,6 +2,7 @@ using UnityEngine;
 using QFramework;
 using System.Collections.Generic;
 using System.Linq;
+using Assets.Scripts.Game.System;
 
 namespace ProjectBlood
 {
@@ -108,8 +109,18 @@ namespace ProjectBlood
 
 		public static void FindRoom()
         {
+			if (Global.currentRoom == null || Global.currentRoom.roomGenerateConfig == null)
+			{
+				return;
+			}
+			
             MapController.instance.RoomGrid.ForEach((x, y, room) =>
             {
+				if (room == null || room.roomGenerateConfig == null)
+				{
+					return;
+				}
+				
                 var playerX = Global.currentRoom.roomGenerateConfig.roomPosX;
                 var playerY = Global.currentRoom.roomGenerateConfig.roomPosY;
                 // 玩家会发现当前房间的相邻房间
@@ -137,9 +148,14 @@ namespace ProjectBlood
 
 		private static bool HasThisDoor(Room room, MapController.Direction dir)
 		{
+			if (room == null || room.doorList == null)
+			{
+				return false;
+			}
+			
 			foreach (var door in room.doorList)
 			{
-				if(door.direction == dir)
+				if (door != null && door.direction == dir)
 				{
 					return true;
 				}
@@ -154,29 +170,45 @@ namespace ProjectBlood
 
 		private void OnTriggerEnter2D(Collider2D other)
 		{
-			// 玩家进入房间，生成敌人,关门
-			if (other.CompareTag("Player") && roomConfig.roomType == RoomType.NormalRoom)
+			if (!other.CompareTag("Player"))
 			{
-				Global.currentRoom = this;
+				return;
+			}
 
-				FindRoom();
-				
-				if(roomState != RoomState.Init)
-				{
-					return;
-				}
-				else if(roomState == RoomState.Init)
+			if (roomConfig == null || roomGenerateConfig == null)
+			{
+				return;
+			}
+
+			Global.currentRoom = this;	// 非战斗房间也要更新currentRoom
+
+			if (roomState == RoomState.Unknown)
+			{
+				roomState = RoomState.Init;
+			}
+
+			FindRoom();	// 非战斗房间也要更新周围房间
+
+			if (roomConfig.roomType == RoomType.NormalRoom)
+			{
+				if (roomState == RoomState.Init)
 				{
 					roomState = RoomState.Battle;
+					GenerateEnemy();
+					if (doorList != null)
+					{
+						foreach (var door in doorList)
+						{
+							if (door != null)
+							{
+								door.Show();
+							}
+						}
+					}
+					AudioKitManager.Instance.PlayOneShot("DoorClosingSfx");
 				}
-
-				GenerateEnemy();
-				foreach (var door in doorList)
-				{
-					door.Show();
-				}
-				AudioKitManager.Instance.PlayOneShot("DoorClosingSfx");
-			}else if(roomConfig.roomType != RoomType.NormalRoom)
+			}
+			else
 			{
 				roomState = RoomState.Idle;
 			}

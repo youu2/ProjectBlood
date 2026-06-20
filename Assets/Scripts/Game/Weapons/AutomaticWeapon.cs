@@ -22,7 +22,7 @@ namespace ProjectBlood
             {
                 // 播放单发音效和循环音效
                 AudioKitManager.Instance?.PlayOneShot(OneShotSound, volume: 0.55f);
-                _shootLoopPlayer = AudioKitManager.Instance?.PlayLoop(ShootSounds[0], volume: 0.5f);
+                _shootLoopPlayer = AudioKitManager.Instance?.PlayLoop(ShootSounds[0], volume: 0.65f);
                 newClip = false;
                 hasFired = true;
             }
