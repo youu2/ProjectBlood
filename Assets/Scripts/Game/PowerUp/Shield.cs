@@ -11,6 +11,7 @@ namespace ProjectBlood
         void Awake()
         {
             autoCollectOnRoomFinish = false; // 护盾不会在房间完成后自动飞向玩家
+            price = 10;
         }
 
         protected override void Collect()

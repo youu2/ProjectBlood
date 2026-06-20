@@ -42,6 +42,7 @@ namespace ProjectBlood
         void Awake()
         {
             autoCollectOnRoomFinish = false;
+            price = 1;
         }
 
         void OnEnable()

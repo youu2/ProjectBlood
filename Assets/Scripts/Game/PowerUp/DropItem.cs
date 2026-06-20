@@ -7,6 +7,7 @@ namespace ProjectBlood
 	{
 		public float speed = 12f;
 		public bool autoCollectOnRoomFinish = true; // 房间完成后是否自动飞向玩家
+		public int price = 1; // 物品价格
 		private bool isFlyingToPlayer = false;
 
 		void Update()

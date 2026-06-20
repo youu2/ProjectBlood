@@ -179,8 +179,10 @@ MonoBehaviour:
   PrefabFolder: Assets/Art/Prefab
   ArchitectureFullTypeName: 
   ViewControllerFullTypeName: 
-  goods: {fileID: 32606525}
-  price: 0
+  goodsPool:
+  - {fileID: 1447994471}
+  - {fileID: 32606525}
+  - {fileID: 1290254963}
   Icon: {fileID: 527058240}
   Tips: {fileID: 834436676}
   PriceText: {fileID: 1054410692}
@@ -332,6 +334,7 @@ MonoBehaviour:
   ViewControllerFullTypeName: 
   speed: 12
   autoCollectOnRoomFinish: 0
+  price: 10
   initialBlockCount: 5
   initialDuration: 5
 --- !u!61 &32606526
@@ -9288,7 +9291,7 @@ Canvas:
   m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
-  m_SortingLayerID: 1650208643
+  m_SortingLayerID: 68139231
   m_SortingOrder: 100
   m_TargetDisplay: 0
 --- !u!1 &748113297
@@ -9333,6 +9336,7 @@ MonoBehaviour:
   ViewControllerFullTypeName: 
   speed: 12
   autoCollectOnRoomFinish: 1
+  price: 1
 --- !u!58 &748113299
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -21280,11 +21284,12 @@ MonoBehaviour:
   ViewControllerFullTypeName: 
   speed: 12
   autoCollectOnRoomFinish: 1
+  price: 1
   ejectSpeed: 5
   ejectDrag: 10
   flyDuration: 0.3
   chaseSpeed: 16
-  turnSmoothness: 10
+  turnSmoothness: 12
 --- !u!114 &1290254964
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22627,7 +22632,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 10.393, y: -0.664, z: 0.010404872}
-  m_LocalScale: {x: 0.8, y: 0.7, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1454553319}
@@ -22653,6 +22658,7 @@ MonoBehaviour:
   ViewControllerFullTypeName: 
   speed: 12
   autoCollectOnRoomFinish: 1
+  price: 5
   bloodAmount: 20
 --- !u!114 &1447994472
 MonoBehaviour:
@@ -24816,6 +24822,7 @@ MonoBehaviour:
   ViewControllerFullTypeName: 
   speed: 12
   autoCollectOnRoomFinish: 1
+  price: 1
 --- !u!114 &1845647874
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25039,8 +25046,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4280216575
+  m_fontColor: {r: 1, g: 0.9210245, b: 0.11635202, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
