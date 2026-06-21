@@ -18,7 +18,7 @@ namespace ProjectBlood
         public float flyDuration = 0.15f;
 
         [Header("追踪阶段")]
-        
+
         [Tooltip("追踪阶段目标速度")]
         public float chaseSpeed = 16f;
         [Tooltip("方向平滑插值系数（越大转向越快）")]
@@ -39,13 +39,13 @@ namespace ProjectBlood
         private float stateStartTime;
         private bool collected;
 
-        void Awake()
+        private void Awake()
         {
-            autoCollectOnRoomFinish = false;
+            autoCollectOnRoomFinish = true;
             price = 1;
         }
 
-        void OnEnable()
+        private void OnEnable()
         {
             collected = false;
             velocity = Vector2.zero;
@@ -59,10 +59,17 @@ namespace ProjectBlood
             velocity = ejectDir * ejectSpeed;
         }
 
-        void Update()
+        private void Update()
         {
-            if (collected) return;
-            if (Player.player1 == null) return;
+            if (collected)
+            {
+                return;
+            }
+
+            if (Player.player1 == null)
+            {
+                return;
+            }
 
             switch (currentState)
             {
@@ -71,6 +78,8 @@ namespace ProjectBlood
                     break;
                 case State.Chasing:
                     UpdateChasing();
+                    break;
+                default:
                     break;
             }
 
@@ -103,7 +112,10 @@ namespace ProjectBlood
             // 平滑转向
             Vector2 currentDir = velocity.sqrMagnitude > 0.001f ? velocity.normalized : ejectDir;
             Vector2 newDir = Vector2.Lerp(currentDir, dirToPlayer, Time.deltaTime * turnSmoothness);
-            if (newDir.sqrMagnitude > 0.0001f) newDir.Normalize();
+            if (newDir.sqrMagnitude > 0.0001f)
+            {
+                newDir.Normalize();
+            }
 
             // 加速追踪
             float speed = Mathf.Max(velocity.magnitude, chaseSpeed);
@@ -123,13 +135,17 @@ namespace ProjectBlood
 
         protected override void Collect()
         {
-            if (collected) return;
+            if (collected)
+            {
+                return;
+            }
+
             collected = true;
 
             if (Player.player1 != null)
             {
                 Global.AddHP(healAmount);
-                AudioKitManager.Instance.PlayOneShot("PureBloodPickUp");
+                _ = AudioKitManager.Instance.PlayOneShot("PureBloodPickUp");
             }
 
             this.DestroyGameObjGracefully();
