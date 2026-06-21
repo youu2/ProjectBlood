@@ -5,7 +5,6 @@ using UnityEngine.Tilemaps;
 using System.Linq;
 using QFramework;
 using Unity.Collections;
-using Assets.Scripts.Game.System;
 
 namespace ProjectBlood
 {
@@ -74,63 +73,8 @@ namespace ProjectBlood
 
 
 
-            // 全图布局
-            // InitRoom -> NormalRoom -> NormalRoom -> ChestRoom -> BossRoom
-            var layout = new RoomNode(RoomType.InitRoom);
-            layout.NextRoom(RoomType.ShopRoom)
-                .NextRoom(RoomType.NormalRoom)
-                .NextRoom(RoomType.NormalRoom)
-                .NextRoom(RoomType.NormalRoom)
-                .NextRoom(RoomType.NormalRoom, branchRoom =>
-                {
-                    branchRoom.NextRoom(RoomType.NormalRoom)
-                        .NextRoom(RoomType.NormalRoom)
-                        .NextRoom(RoomType.NormalRoom)
-                        .NextRoom(RoomType.ChestRoom)
-                        .NextRoom(RoomType.BossRoom);
-                })
-                .NextRoom(RoomType.NormalRoom)
-                .NextRoom(RoomType.NormalRoom)
-                .NextRoom(RoomType.NormalRoom)
-                .NextRoom(RoomType.NormalRoom, branchRoom =>
-                {
-                    branchRoom.NextRoom(RoomType.NormalRoom)
-                        .NextRoom(RoomType.NormalRoom)
-                        .NextRoom(RoomType.NormalRoom)
-                        .NextRoom(RoomType.ChestRoom)
-                        .NextRoom(RoomType.BossRoom);
-                })
-                .NextRoom(RoomType.NormalRoom)
-                .NextRoom(RoomType.NormalRoom)
-                .NextRoom(RoomType.NormalRoom, branchRoom =>
-                {
-                    branchRoom.NextRoom(RoomType.NormalRoom)
-                        .NextRoom(RoomType.ChestRoom)
-                        .NextRoom(RoomType.BossRoom);
-                })
-                .NextRoom(RoomType.NormalRoom)
-                .NextRoom(RoomType.NormalRoom, branchRoom =>
-                {
-                    branchRoom.NextRoom(RoomType.NormalRoom)
-                        .NextRoom(RoomType.ChestRoom)
-                        .NextRoom(RoomType.BossRoom);
-                })
-                .NextRoom(RoomType.NormalRoom)
-                .NextRoom(RoomType.NormalRoom)
-                .NextRoom(RoomType.NormalRoom, branchRoom =>
-                {
-                    branchRoom.NextRoom(RoomType.NormalRoom)
-                        .NextRoom(RoomType.ChestRoom)
-                        .NextRoom(RoomType.BossRoom);
-                })
-                .NextRoom(RoomType.ChestRoom)
-                .NextRoom(RoomType.NormalRoom, branchRoom =>
-                {
-                    branchRoom.NextRoom(RoomType.NormalRoom)
-                        .NextRoom(RoomType.ChestRoom)
-                        .NextRoom(RoomType.BossRoom);
-                })
-                .NextRoom(RoomType.BossRoom);
+            // 随机全图布局
+            var layout = Level1.Config.InitRoom;
 
             // 加入动态房门布局
             // layout是根据RoomType来生成的，所以每个动态网格对应一个RoomType

@@ -2,7 +2,6 @@ using UnityEngine;
 using QFramework;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.Scripts.Game.System;
 
 namespace ProjectBlood
 {
@@ -10,35 +9,35 @@ namespace ProjectBlood
 	{
 		private List<Vector3> enemyPosList = new List<Vector3>();
 		private List<Door> doorList = new List<Door>();
-		public RoomConfig roomConfig {get ; private set ;}
+		public RoomConfig roomConfig { get; private set; }
 		private HashSet<IDamageable> enemySet = new HashSet<IDamageable>();
 		public RoomState roomState = RoomState.Unknown;
-		public MapController.RoomGenerateConfig roomGenerateConfig {get ; private set ;}
+		public MapController.RoomGenerateConfig roomGenerateConfig { get; private set; }
 		private List<EnemyWaveConfig> enemyWaveConfigList = new List<EnemyWaveConfig>();
 		private EnemyWaveConfig currentEnemyWaveConfig = null;
-		
+
 		public enum RoomState
 		{
-			Unknown,	// 玩家探测范围外的房间，不会在小地图显示
-			Init,	// 玩家观测到的房间，但是没进入过
-			Battle,	
-			Finished,	// 战斗通关的房间
-			Idle,	// 无强制性战斗的房间，可拾取物不会飞向玩家
+			Unknown,    // 玩家探测范围外的房间，不会在小地图显示
+			Init,   // 玩家观测到的房间，但是没进入过
+			Battle,
+			Finished,   // 战斗通关的房间
+			Idle,   // 无强制性战斗的房间，可拾取物不会飞向玩家
 		}
 		public Room WithRoomConfig(RoomConfig roomConfig)
 		{
 			this.roomConfig = roomConfig;
-			
+
 			// 在设置 roomConfig 后立即初始化敌人波次配置
-			if(roomConfig.roomType == RoomType.NormalRoom)
+			if (roomConfig.roomType == RoomType.NormalRoom)
 			{
-				var wavesCount = Random.Range(1,4);
+				var wavesCount = Random.Range(1, 4);
 				for (int i = 0; i < wavesCount; i++)
 				{
 					enemyWaveConfigList.Add(new EnemyWaveConfig());
 				}
 			}
-			
+
 			return this;
 		}
 		public Room WithRoomGenerateConfig(MapController.RoomGenerateConfig roomGenerateConfig)
@@ -51,7 +50,7 @@ namespace ProjectBlood
 		{
 			enemyWaveConfigList.RemoveAt(0);
 			// 每次生成3-6个敌人
-			var enemyCount = Random.Range(3,6);
+			var enemyCount = Random.Range(3, 6);
 			// 按照离玩家的距离排序enemyPosList，距离玩家远的敌人优先生成
 			var pos2Gen = enemyPosList
 				.OrderByDescending(pos => (Player.player1.Position2D() - pos.ToVector2()).magnitude)
@@ -79,17 +78,19 @@ namespace ProjectBlood
 
 		private void Update()
 		{
-			if(Time.frameCount % 30 == 0)
+			if (Time.frameCount % 30 == 0)
 			{
 				enemySet.RemoveWhere(enemy => enemy.IsDying);
-			
+
 				if (enemySet.Count == 0 && roomState == RoomState.Battle)
 				{
 					// 所有敌人死亡后，生成下一批敌人
-					if(enemyWaveConfigList.Count > 0)
+					if (enemyWaveConfigList.Count > 0)
 					{
 						GenerateEnemy();
-					}else{
+					}
+					else
+					{
 						roomState = RoomState.Finished;
 						AudioKitManager.Instance.PlayOneShot("DoorOpeningSfx");
 						foreach (var door in doorList)
@@ -101,42 +102,42 @@ namespace ProjectBlood
 				}
 			}
 		}
-		
+
 		public void AddEnemy(Vector3 enemyPos)
 		{
 			enemyPosList.Add(enemyPos);
 		}
 
 		public static void FindRoom()
-        {
+		{
 			if (Global.currentRoom == null || Global.currentRoom.roomGenerateConfig == null)
 			{
 				return;
 			}
-			
-            MapController.instance.RoomGrid.ForEach((x, y, room) =>
-            {
+
+			MapController.instance.RoomGrid.ForEach((x, y, room) =>
+			{
 				if (room == null || room.roomGenerateConfig == null)
 				{
 					return;
 				}
-				
-                var playerX = Global.currentRoom.roomGenerateConfig.roomPosX;
-                var playerY = Global.currentRoom.roomGenerateConfig.roomPosY;
-                // 玩家会发现当前房间的相邻房间
-                if (room.roomState == Room.RoomState.Unknown
+
+				var playerX = Global.currentRoom.roomGenerateConfig.roomPosX;
+				var playerY = Global.currentRoom.roomGenerateConfig.roomPosY;
+				// 玩家会发现当前房间的相邻房间
+				if (room.roomState == Room.RoomState.Unknown
 				&& IsAdjacentRoom(Global.currentRoom, x, y, playerX, playerY))
-                {
-                    room.roomState = Room.RoomState.Init;
-                }
-            });
-        }
+				{
+					room.roomState = Room.RoomState.Init;
+				}
+			});
+		}
 
 		private static bool IsAdjacentRoom(Room room, int x, int y, int playerX, int playerY)
 		{
 			var gapX = x - playerX;
 			var gapY = y - playerY;
-			if((gapX == 1 && gapY == 0 && HasThisDoor(room, MapController.Direction.Right))
+			if ((gapX == 1 && gapY == 0 && HasThisDoor(room, MapController.Direction.Right))
 			|| (gapX == -1 && gapY == 0 && HasThisDoor(room, MapController.Direction.Left))
 			|| (gapX == 0 && gapY == 1 && HasThisDoor(room, MapController.Direction.Up))
 			|| (gapX == 0 && gapY == -1 && HasThisDoor(room, MapController.Direction.Down)))
@@ -144,7 +145,7 @@ namespace ProjectBlood
 				return true;
 			}
 			return false;
-		} 
+		}
 
 		private static bool HasThisDoor(Room room, MapController.Direction dir)
 		{
@@ -152,7 +153,7 @@ namespace ProjectBlood
 			{
 				return false;
 			}
-			
+
 			foreach (var door in room.doorList)
 			{
 				if (door != null && door.direction == dir)
@@ -180,14 +181,14 @@ namespace ProjectBlood
 				return;
 			}
 
-			Global.currentRoom = this;	// 非战斗房间也要更新currentRoom
+			Global.currentRoom = this;  // 非战斗房间也要更新currentRoom
 
 			if (roomState == RoomState.Unknown)
 			{
 				roomState = RoomState.Init;
 			}
 
-			FindRoom();	// 非战斗房间也要更新周围房间
+			FindRoom(); // 非战斗房间也要更新周围房间
 
 			if (roomConfig.roomType == RoomType.NormalRoom)
 			{

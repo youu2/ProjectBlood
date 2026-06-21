@@ -1,6 +1,5 @@
 using UnityEngine;
 using QFramework;
-using Assets.Scripts.Game.System;
 
 namespace ProjectBlood
 {
@@ -28,53 +27,53 @@ namespace ProjectBlood
 			ChestIcon.Hide();
 			ShopIcon.Hide();
 
-			foreach(var dir in room.roomGenerateConfig.doorDirections)
+			foreach (var dir in room.roomGenerateConfig.doorDirections)
 			{
 				// 小地图需要全方向生成
-				if(dir == MapController.Direction.Up)
+				if (dir == MapController.Direction.Up)
 				{
 					UpPath.Show();
 				}
-				if(dir == MapController.Direction.Right)
+				if (dir == MapController.Direction.Right)
 				{
 					RightPath.Show();
 				}
-				if(dir == MapController.Direction.Down)
+				if (dir == MapController.Direction.Down)
 				{
 					DownPath.Show();
 				}
-				if(dir == MapController.Direction.Left)
+				if (dir == MapController.Direction.Left)
 				{
 					LeftPath.Show();
 				}
 			}
-			if(room.roomState == Room.RoomState.Init)
+			if (room.roomState == Room.RoomState.Init)
 			{
 				InitBG.Show();
 			}
-			else if(room.roomConfig.roomType == RoomType.ChestRoom)
+			else if (room.roomConfig.roomType == RoomType.ChestRoom)
 			{
 				ChestIcon.Show();
 			}
-			else if(room.roomConfig.roomType == RoomType.ShopRoom)
+			else if (room.roomConfig.roomType == RoomType.ShopRoom)
 			{
 				ShopIcon.Show();
 			}
-			else if(room.roomConfig.roomType == RoomType.BossRoom)
+			else if (room.roomConfig.roomType == RoomType.BossRoom)
 			{
-				ChestIcon.Show();	// 暂无boss专属Icon
+				ChestIcon.Show();   // 暂无boss专属Icon
 			}
 
-			if(room == Global.currentRoom)
+			if (room == Global.currentRoom)
 			{
 				CurrentBG.Show();
 			}
 			// 按照房间类型显示图标
-			if(room.roomConfig.roomType == RoomType.InitRoom)
+			if (room.roomConfig.roomType == RoomType.InitRoom)
 			{
 				HomeIcon.Show();
 			}
-			
+
 		}
 	}
 }

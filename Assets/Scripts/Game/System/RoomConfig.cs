@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Assets.Scripts.Game.System
+namespace ProjectBlood
 {
     public class EnemyWaveConfig
     {
