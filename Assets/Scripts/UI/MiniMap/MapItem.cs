@@ -61,7 +61,7 @@ namespace ProjectBlood
 			}
 			else if (room.roomConfig.roomType == RoomType.BossRoom)
 			{
-				ChestIcon.Show();   // 暂无boss专属Icon
+				BossIcon.Show();   // 暂无boss专属Icon
 			}
 
 			if (room == Global.currentRoom)

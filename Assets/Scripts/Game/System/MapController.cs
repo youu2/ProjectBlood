@@ -71,10 +71,8 @@ namespace ProjectBlood
                 room.Hide();
             }
 
-
-
             // 随机全图布局
-            var layout = Level1.Config.InitRoom;
+            var layout = Level1_1.Config.InitRoom;
 
             // 加入动态房门布局
             // layout是根据RoomType来生成的，所以每个动态网格对应一个RoomType

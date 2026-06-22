@@ -1,4 +1,4 @@
-// Generate Id:7660935c-098a-4f52-ba3e-c319cb0cdd4b
+// Generate Id:31ab409f-2d36-4838-8515-9f838b05cf5b
 using UnityEngine;
 
 namespace ProjectBlood
@@ -24,6 +24,10 @@ namespace ProjectBlood
 		public UnityEngine.UI.Image InitBG;
 		
 		public UnityEngine.UI.Image ShopIcon;
+		
+		public UnityEngine.UI.Image BossIcon;
+		
+		public UnityEngine.UI.Image SpecialEventIcon;
 		
 	}
 }

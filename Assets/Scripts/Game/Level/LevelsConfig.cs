@@ -6,11 +6,17 @@ namespace ProjectBlood
     public class LevelsConfig : ViewController
     {
         public RoomNode InitRoom = new(RoomType.InitRoom);
+        public int difficulty;
     }
 
-    public class Level1
+    public class Level1_1
     {
-        public static LevelsConfig Config = new LevelsConfig().Self(self =>
+        public static LevelsConfig Config = new LevelsConfig()
+        .Self(self =>
+        {
+            self.difficulty = 0;
+        })
+        .Self(self =>
         {
             var randomConfigIndex = Random.Range(0, 3);
             if (randomConfigIndex == 0)

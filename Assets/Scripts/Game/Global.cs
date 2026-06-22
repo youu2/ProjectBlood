@@ -28,8 +28,9 @@ namespace ProjectBlood
         public static BindableProperty<float> CoinDropRate = new BindableProperty<float>(0.30f); // 30% chance to drop coins
         public static Room currentRoom;
         public static BindableProperty<bool> FireEnabled = new BindableProperty<bool>(true);
+        public static int currentDifficulty;    // 0 - 9 共10个难度等级
 
-        [RuntimeInitializeOnLoadMethod]
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         public static void Initialize()
         {
             // Initialize AudioKit, ResKit, UIKit
@@ -40,7 +41,9 @@ namespace ProjectBlood
             // Load from PlayerPrefs
             Global.LegacyPoint.Value = PlayerPrefs.GetInt("LegacyPoint", 0);
             Global.CoinDropRate.Value = PlayerPrefs.GetFloat("CoinDropRate", 0.30f);
-            //Global.MAX_HP.Value = PlayerPrefs.GetFloat("MAX_HP", 30.0f);
+            Global.MAX_HP.Value = PlayerPrefs.GetFloat("MAX_HP", 30.0f);
+            currentDifficulty = Level1_1.Config.difficulty;
+
             // Register change callbacks
             LegacyPoint.Register(legacy =>
             {

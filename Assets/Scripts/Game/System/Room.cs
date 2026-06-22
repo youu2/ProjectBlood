@@ -2,6 +2,7 @@ using UnityEngine;
 using QFramework;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace ProjectBlood
 {
@@ -28,15 +29,15 @@ namespace ProjectBlood
 		{
 			this.roomConfig = roomConfig;
 
-			// 在设置 roomConfig 后立即初始化敌人波次配置
-			if (roomConfig.roomType == RoomType.NormalRoom)
-			{
-				var wavesCount = Random.Range(1, 4);
-				for (int i = 0; i < wavesCount; i++)
-				{
-					enemyWaveConfigList.Add(new EnemyWaveConfig());
-				}
-			}
+			// // 在设置 roomConfig 后立即初始化敌人波次配置
+			// if (roomConfig.roomType == RoomType.NormalRoom)
+			// {
+			// 	var wavesCount = Random.Range(1, 4);
+			// 	for (int i = 0; i < wavesCount; i++)
+			// 	{
+			// 		enemyWaveConfigList.Add(new EnemyWaveConfig());
+			// 	}
+			// }
 
 			return this;
 		}
@@ -46,27 +47,21 @@ namespace ProjectBlood
 			return this;
 		}
 
-		void GenerateEnemy()
+		void GenerateEnemy(EnemyWaveConfig waveConfig)
 		{
 			enemyWaveConfigList.RemoveAt(0);
-			// 每次生成3-6个敌人
-			var enemyCount = Random.Range(3, 6);
+			// 每次根据难度分数随机生成敌人
+			var enemyCount = waveConfig.Enemy2GenList.Count;
 			// 按照离玩家的距离排序enemyPosList，距离玩家远的敌人优先生成
 			var pos2Gen = enemyPosList
 				.OrderByDescending(pos => (Player.player1.Position2D() - pos.ToVector2()).magnitude)
 				.Take(enemyCount).ToList();
 
 			// 生成并记录所有生成的敌人
-			for (int i = 0; i < enemyCount; i++)
+			foreach (GameObject enemy2Gen in waveConfig.Enemy2GenList)
 			{
-				var enemyToGen = RandomUtility.Choose(
-					MapController.instance.Enemy1,
-					MapController.instance.Enemy2,
-					MapController.instance.Enemy3,
-					MapController.instance.Enemy4
-					);
-				var enemyObj = Instantiate(enemyToGen);
-				enemyObj.transform.position = pos2Gen[i];
+				var enemyObj = Instantiate(enemy2Gen);
+				enemyObj.transform.position = pos2Gen.GetAndRemoveRandomItem();
 				var enemy = enemyObj.GetComponent<IDamageable>();
 				enemy.Room = this;
 				if (enemy != null)
@@ -74,6 +69,27 @@ namespace ProjectBlood
 					enemySet.Add(enemy);
 				}
 			}
+
+
+
+			// // 生成并记录所有生成的敌人
+			// for (int i = 0; i < enemyCount; i++)
+			// {
+			// 	var enemyToGen = RandomUtility.Choose(
+			// 		MapController.instance.Enemy1,
+			// 		MapController.instance.Enemy2,
+			// 		MapController.instance.Enemy3,
+			// 		MapController.instance.Enemy4
+			// 		);
+			// 	var enemyObj = Instantiate(enemyToGen);
+			// 	enemyObj.transform.position = pos2Gen[i];
+			// 	var enemy = enemyObj.GetComponent<IDamageable>();
+			// 	enemy.Room = this;
+			// 	if (enemy != null)
+			// 	{
+			// 		enemySet.Add(enemy);
+			// 	}
+			// }
 		}
 
 		private void Update()
@@ -87,7 +103,8 @@ namespace ProjectBlood
 					// 所有敌人死亡后，生成下一批敌人
 					if (enemyWaveConfigList.Count > 0)
 					{
-						GenerateEnemy();
+						var wave = enemyWaveConfigList[0];
+						GenerateEnemy(wave);
 					}
 					else
 					{
@@ -103,6 +120,7 @@ namespace ProjectBlood
 			}
 		}
 
+		// 保存一个房间配置中所有的敌人位置
 		public void AddEnemy(Vector3 enemyPos)
 		{
 			enemyPosList.Add(enemyPos);
@@ -195,7 +213,28 @@ namespace ProjectBlood
 				if (roomState == RoomState.Init)
 				{
 					roomState = RoomState.Battle;
-					GenerateEnemy();
+
+					var difficultyLevel = Global.currentDifficulty;
+					var difficultyScore = UnityEngine.Random.Range(3, 6 + 1) + 2 * difficultyLevel;
+
+					// 难度等级影响敌人波次，0-2为1-2波，3-5为1-3波，6-8为2-4波，9为3-5波
+					var waveCount = UnityEngine.Random.Range(Math.Max(1, difficultyLevel / 3), difficultyLevel / 3 + 2 + 1);
+
+					for (int i = 0; i < waveCount; i++)
+					{
+						var targetScore = difficultyScore;
+						var waveConfig = new EnemyWaveConfig();
+
+						while (targetScore > 0 && waveCount > 0)
+						{
+							var enemyScore2Gen = Math.Min(UnityEngine.Random.Range(1, 4 + 1), targetScore);
+							targetScore -= enemyScore2Gen;
+							waveConfig.Enemy2GenList.Add(EnemyFactory.EnemyByScore(enemyScore2Gen));
+						}
+						enemyWaveConfigList.Add(waveConfig);
+					}
+
+					// GenerateEnemy();
 					if (doorList != null)
 					{
 						foreach (var door in doorList)

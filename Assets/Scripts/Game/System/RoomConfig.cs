@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace ProjectBlood
 {
     public class EnemyWaveConfig
     {
-
+        public List<GameObject> Enemy2GenList = new List<GameObject>();
     }
     public enum RoomType
     {
