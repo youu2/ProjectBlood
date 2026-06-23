@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 5150691048810713025}
   - component: {fileID: 4365978342055026328}
   m_Layer: 7
-  m_Name: DemonEye
+  m_Name: DemonI
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32,7 +32,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 3.12, y: -2.99, z: -0.07529362}
-  m_LocalScale: {x: 2.6, y: 2.6, z: 1}
+  m_LocalScale: {x: 2.3, y: 2.3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2304640991620345468}
@@ -177,9 +177,9 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.01772954, y: 0.010120227}
+  m_Offset: {x: -0.004086357, y: 0.010120227}
   serializedVersion: 2
-  m_Radius: 0.37249503
+  m_Radius: 0.35067913
 --- !u!50 &1247706901492828723
 Rigidbody2D:
   serializedVersion: 4
@@ -430,7 +430,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.07, y: 1.63, z: 0.07529362}
-  m_LocalScale: {x: 2.6, y: 2.6, z: 1}
+  m_LocalScale: {x: 2.3, y: 2.3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7273599652840117102}

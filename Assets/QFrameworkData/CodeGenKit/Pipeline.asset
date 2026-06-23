@@ -18,9 +18,21 @@ MonoBehaviour:
     GameObject: {fileID: 0}
     From: 0
     NameToFullName: []
-    BindInfos: []
-    ScriptsFolder: Assets/Scripts/Game/Enemy
-    ClassName: EnemyFactory
+    BindInfos:
+    - TypeName: UnityEngine.UI.Text
+      PathToRoot: ClipText
+      MemberName: ClipText
+    - TypeName: UnityEngine.UI.Text
+      PathToRoot: BloodText
+      MemberName: BloodText
+    - TypeName: ProjectBlood.UIMap
+      PathToRoot: UIMap
+      MemberName: UIMap
+    - TypeName: TMPro.TextMeshProUGUI
+      PathToRoot: LevelText
+      MemberName: LevelText
+    ScriptsFolder: Assets\Scripts\UI
+    ClassName: GameUI
     Namespace: ProjectBlood
     MainCode: 
     DesignerCode: 

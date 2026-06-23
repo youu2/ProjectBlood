@@ -15,7 +15,8 @@ public class Portal : MonoBehaviour
         {
             // 传送玩家到目标房间
             // 先设置为直接通关
-            UIKit.OpenPanel<UIGamePassPanel>();
+            // UIKit.OpenPanel<UIGamePassPanel>();
+            // AudioKitManager.Instance.PlayOneShot("WinMusic");
         }
     }
 }

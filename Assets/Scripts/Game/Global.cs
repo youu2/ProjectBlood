@@ -42,7 +42,7 @@ namespace ProjectBlood
             Global.LegacyPoint.Value = PlayerPrefs.GetInt("LegacyPoint", 0);
             Global.CoinDropRate.Value = PlayerPrefs.GetFloat("CoinDropRate", 0.30f);
             Global.MAX_HP.Value = PlayerPrefs.GetFloat("MAX_HP", 30.0f);
-            currentDifficulty = Level1_1.Config.difficulty;
+            currentDifficulty = 0;
 
             // Register change callbacks
             LegacyPoint.Register(legacy =>

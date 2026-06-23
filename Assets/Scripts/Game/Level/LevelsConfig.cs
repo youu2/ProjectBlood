@@ -6,16 +6,12 @@ namespace ProjectBlood
     public class LevelsConfig : ViewController
     {
         public RoomNode InitRoom = new(RoomType.InitRoom);
-        public int difficulty;
+        // public int difficulty;
     }
 
     public class Level1_1
     {
         public static LevelsConfig Config = new LevelsConfig()
-        .Self(self =>
-        {
-            self.difficulty = 0;
-        })
         .Self(self =>
         {
             var randomConfigIndex = Random.Range(0, 3);
@@ -27,10 +23,6 @@ namespace ProjectBlood
                     branch.NextRoom(RoomType.NormalRoom)
                     .NextRoom(RoomType.ChestRoom);
                 })
-                .NextRoom(RoomType.ShopRoom, branch =>
-                {
-                    branch.NextRoom(RoomType.NormalRoom);
-                })
                 .NextRoom(RoomType.NormalRoom)
                 .NextRoom(RoomType.BossRoom);
             }
@@ -39,37 +31,74 @@ namespace ProjectBlood
                 self.InitRoom
                 .NextRoom(RoomType.NormalRoom, branch =>
                 {
-                    branch.NextRoom(RoomType.ChestRoom, branch =>
+                    branch.NextRoom(RoomType.NormalRoom, branch =>
                     {
-                        branch.NextRoom(RoomType.NormalRoom)
-                        .NextRoom(RoomType.ShopRoom);
+                        branch.NextRoom(RoomType.NormalRoom);
                     })
-                    .NextRoom(RoomType.NormalRoom)
                     .NextRoom(RoomType.BossRoom);
                 })
-                .NextRoom(RoomType.NormalRoom)
-                .NextRoom(RoomType.ShopRoom);
+                .NextRoom(RoomType.ChestRoom);
             }
             else if (randomConfigIndex == 2)
             {
                 self.InitRoom
                 .NextRoom(RoomType.NormalRoom, branch =>
                 {
-                    branch.NextRoom(RoomType.ChestRoom, branch =>
+                    branch.NextRoom(RoomType.ChestRoom)
+                    .NextRoom(RoomType.BossRoom);
+
+                    branch.NextRoom(RoomType.NormalRoom);
+                })
+                .NextRoom(RoomType.NormalRoom);
+            }
+        });
+    }
+
+    public class Level1_2
+    {
+        public static LevelsConfig Config = new LevelsConfig()
+        .Self(self =>
+        {
+            var randomConfigIndex = Random.Range(0, 3);
+            if (randomConfigIndex == 0)
+            {
+                self.InitRoom
+                .NextRoom(RoomType.NormalRoom, branch =>
+                {
+                    branch.NextRoom(RoomType.NormalRoom)
+                    .NextRoom(RoomType.ChestRoom);
+                })
+                .NextRoom(RoomType.NormalRoom)
+                .NextRoom(RoomType.ShopRoom)
+                .NextRoom(RoomType.BossRoom);
+            }
+            else if (randomConfigIndex == 1)
+            {
+                self.InitRoom
+                .NextRoom(RoomType.NormalRoom, branch =>
+                {
+                    branch.NextRoom(RoomType.NormalRoom, branch =>
                     {
-                        branch.NextRoom(RoomType.ShopRoom);
+                        branch.NextRoom(RoomType.NormalRoom)
+                        .NextRoom(RoomType.ShopRoom);
                     })
+                    .NextRoom(RoomType.BossRoom);
+                })
+                .NextRoom(RoomType.ChestRoom);
+            }
+            else if (randomConfigIndex == 2)
+            {
+                self.InitRoom
+                .NextRoom(RoomType.NormalRoom, branch =>
+                {
+                    branch.NextRoom(RoomType.ChestRoom)
                     .NextRoom(RoomType.BossRoom);
 
                     branch.NextRoom(RoomType.NormalRoom);
                 })
                 .NextRoom(RoomType.NormalRoom)
-                .NextRoom(RoomType.ChestRoom);
+                .NextRoom(RoomType.ShopRoom);
             }
-
-
-        }
-
-        );
+        });
     }
 }
