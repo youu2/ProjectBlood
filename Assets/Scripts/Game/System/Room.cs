@@ -225,7 +225,7 @@ namespace ProjectBlood
 						var targetScore = difficultyScore;
 						var waveConfig = new EnemyWaveConfig();
 
-						while (targetScore > 0 && waveCount > 0)
+						while (targetScore > 0)
 						{
 							var enemyScore2Gen = Math.Min(UnityEngine.Random.Range(1, 4 + 1), targetScore);
 							targetScore -= enemyScore2Gen;

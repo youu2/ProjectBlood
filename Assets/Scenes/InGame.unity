@@ -612,7 +612,7 @@ MonoBehaviour:
   ViewControllerFullTypeName: 
   reloadSound: {fileID: 8300000, guid: d24022c0527796243a021464a289f580, type: 3}
   _bloodRequired: 5
-  spreadAngle: 2
+  spreadAngle: 10
   AkShootSounds:
   - {fileID: 8300000, guid: f0db78d998d0fd74ba058b4ae3a13306, type: 3}
   Sprite: {fileID: 1722467178}
@@ -6176,7 +6176,7 @@ MonoBehaviour:
   ViewControllerFullTypeName: 
   reloadSound: {fileID: 8300000, guid: 0c5b3a3b3eb27774bbbfe67257ec43c6, type: 3}
   _bloodRequired: 5
-  spreadAngle: 2
+  spreadAngle: 15
   MP5ShootSounds:
   - {fileID: 8300000, guid: 593ec271f0b2aba408edc2faed165701, type: 3}
   Sprite: {fileID: 452932114}
