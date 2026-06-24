@@ -9,25 +9,25 @@ namespace ProjectBlood
 {
     public class LevelGenHelper
     {
-        public static List<MapController.Direction> GetValidDirections(int roomPosX, int roomPosY, 
+        public static List<MapController.Direction> GetValidDirections(int roomPosX, int roomPosY,
                                         DynaGrid<MapController.RoomGenerateConfig> dynamicDoorLayout)
         {
             // 获取可以延申的方向
             List<MapController.Direction> validDirections = new List<MapController.Direction>();
             // 检查四个方向是否有空房间
-            if(dynamicDoorLayout[roomPosX + 1, roomPosY] == null)// 右方  
+            if (dynamicDoorLayout[roomPosX + 1, roomPosY] == null)// 右方  
             {
                 validDirections.Add(MapController.Direction.Right);
             }
-            if(dynamicDoorLayout[roomPosX - 1, roomPosY] == null)// 左方
+            if (dynamicDoorLayout[roomPosX - 1, roomPosY] == null)// 左方
             {
                 validDirections.Add(MapController.Direction.Left);
             }
-            if(dynamicDoorLayout[roomPosX, roomPosY + 1] == null)// 上方
+            if (dynamicDoorLayout[roomPosX, roomPosY + 1] == null)// 上方
             {
                 validDirections.Add(MapController.Direction.Up);
             }
-            if(dynamicDoorLayout[roomPosX, roomPosY - 1] == null)// 下方
+            if (dynamicDoorLayout[roomPosX, roomPosY - 1] == null)// 下方
             {
                 validDirections.Add(MapController.Direction.Down);
             }
@@ -48,36 +48,48 @@ namespace ProjectBlood
 
             var directionsWithCount = new List<DirectionWithCount>();
 
-            if (validDirections.Count == 0) 
+            if (validDirections.Count == 0)
             {
                 // Debug.LogError("没有可以延申的方向");
                 return directionsWithCount;
             }
-            foreach(var direction in validDirections)
+            foreach (var direction in validDirections)
             {
-                if(direction == MapController.Direction.Right)
+                if (direction == MapController.Direction.Right)
                 {
                     var rightRoomValidDirections = GetValidDirections(roomPosX + 1, roomPosY, dynamicDoorLayout);
-                    directionsWithCount.Add(new DirectionWithCount { Direction = direction, 
-                    Count = rightRoomValidDirections.Count });
+                    directionsWithCount.Add(new DirectionWithCount
+                    {
+                        Direction = direction,
+                        Count = rightRoomValidDirections.Count
+                    });
                 }
-                else if(direction == MapController.Direction.Left)
+                else if (direction == MapController.Direction.Left)
                 {
                     var leftRoomValidDirections = GetValidDirections(roomPosX - 1, roomPosY, dynamicDoorLayout);
-                    directionsWithCount.Add(new DirectionWithCount { Direction = direction, 
-                    Count = leftRoomValidDirections.Count });
+                    directionsWithCount.Add(new DirectionWithCount
+                    {
+                        Direction = direction,
+                        Count = leftRoomValidDirections.Count
+                    });
                 }
-                else if(direction == MapController.Direction.Up)
+                else if (direction == MapController.Direction.Up)
                 {
                     var upRoomValidDirections = GetValidDirections(roomPosX, roomPosY + 1, dynamicDoorLayout);
-                    directionsWithCount.Add(new DirectionWithCount { Direction = direction, 
-                    Count = upRoomValidDirections.Count });
+                    directionsWithCount.Add(new DirectionWithCount
+                    {
+                        Direction = direction,
+                        Count = upRoomValidDirections.Count
+                    });
                 }
-                else if(direction == MapController.Direction.Down)
+                else if (direction == MapController.Direction.Down)
                 {
                     var downRoomValidDirections = GetValidDirections(roomPosX, roomPosY - 1, dynamicDoorLayout);
-                    directionsWithCount.Add(new DirectionWithCount { Direction = direction, 
-                    Count = downRoomValidDirections.Count });
+                    directionsWithCount.Add(new DirectionWithCount
+                    {
+                        Direction = direction,
+                        Count = downRoomValidDirections.Count
+                    });
                 }
             }
 

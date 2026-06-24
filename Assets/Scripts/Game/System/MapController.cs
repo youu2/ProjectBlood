@@ -10,7 +10,6 @@ namespace ProjectBlood
 {
     public partial class MapController : ViewController
     {
-        // Start is called before the first frame update
         public TileBase wall_0;
         public TileBase wall_1;
         public TileBase wall_2;
@@ -20,7 +19,7 @@ namespace ProjectBlood
         public TileBase wallH1;
         public TileBase wallH2;
         public TileBase wallH3;
-        // Floor 
+
         public TileBase floor_0;
         public TileBase floor_1;
         public TileBase floor_2;
@@ -29,10 +28,16 @@ namespace ProjectBlood
         public TileBase randWall => new TileBase[] { wall_0, wall_1, wall_2, wall_3 }[Random.Range(0, 4)];
         public TileBase randWallH => new TileBase[] { wallH0, wallH1, wallH2, wallH3 }[Random.Range(0, 4)];
         public TileBase randFloor => new TileBase[] { floor_0, floor_1, floor_2, floor_3 }[Random.Range(0, 4)];
+
         public Tilemap wallTilemap;
         public Tilemap floorTilemap;
         public GameObject Portal;
         public static MapController instance;
+
+        // 动态门布局网格，存储每个房间的生成配置（房间节点、门方向、网格坐标）
+        public DynaGrid<RoomGenerateConfig> DynamicDoorLayout { get; private set; }
+        // 房间实例网格，存储已生成的房间对象引用
+        public DynaGrid<Room> RoomGrid { get; private set; }
 
         public class RoomGenerateConfig
         {
@@ -40,8 +45,6 @@ namespace ProjectBlood
             public HashSet<Direction> doorDirections { get; set; }
             public int roomPosX { get; set; }
             public int roomPosY { get; set; }
-            // public int roomWidth;
-            // public int roomHeight;
         }
 
         public enum Direction
@@ -52,253 +55,262 @@ namespace ProjectBlood
             Right,
         }
 
-        public DynaGrid<RoomGenerateConfig> DynamicDoorLayout { get; private set; }
-        public DynaGrid<Room> RoomGrid { get; private set; }
-
         void Awake()
         {
             instance = this;
             RoomGrid = new DynaGrid<Room>();
             DynamicDoorLayout = new DynaGrid<RoomGenerateConfig>();
-            // player.gameObject.SetActive(false); // Disable player at the start, will be enabled in Start() after instantiation
-            // Enemy.gameObject.SetActive(false); // Disable enemy prefab at the start, will be enabled in Start() after instantiation
         }
+
         void Start()
         {
-            // 隐藏所有现有的房间实例
+            HideAllExistingRooms();
+            InitializeLevel(Level1_1.Config);
+        }
+
+        // 隐藏场景中所有已存在的房间实例
+        private void HideAllExistingRooms()
+        {
             foreach (var room in FindObjectsOfType<Room>())
             {
                 room.Hide();
             }
+        }
 
-            // 随机全图布局
-            var layout = Level1_1.Config.InitRoom;
+        // 初始化关卡，生成房间布局和连接通道 参数：levelConfig - 关卡配置
+        private void InitializeLevel(LevelsConfig levelConfig)
+        {
+            var layout = levelConfig.InitRoom;
 
-            // 加入动态房门布局
-            // layout是根据RoomType来生成的，所以每个动态网格对应一个RoomType
-            // mGrid = new Dictionary<Tuple<int, int>, T>();
-            // predictWeight: 预测权重，用于选择方向时的优先级，越高越倾向最优解（不易死路）
-            bool GenerateRoomBFS(RoomNode roomNode, DynaGrid<RoomGenerateConfig> dynamicDoorLayout, int predictWeight)
-            {
-                // 广度优先遍历生成房间
-                // 先做无分支的路径
-                var roomQueue = new Queue<RoomGenerateConfig>(); // 用于存储待生成的房间
-                roomQueue.Enqueue(new RoomGenerateConfig()  // InitRoom
-                {
-                    roomNode = roomNode,
-                    roomPosX = 0,
-                    roomPosY = 0,
-                    doorDirections = new HashSet<Direction>(),
-                });
+            GenerateRoomLayoutBFS(layout);
+            GenerateRoomsFromLayout();
+            GenerateCorridors();
 
-                while (roomQueue.Count > 0)
-                {
-                    var generateConfig = roomQueue.Dequeue();
-                    dynamicDoorLayout[generateConfig.roomPosX, generateConfig.roomPosY] = generateConfig;
+            Room.FindRoom();
+        }
 
-                    // 获取可以延申的方向
-                    List<Direction> validDirections = LevelGenHelper.GetValidDirections(generateConfig.roomPosX, generateConfig.roomPosY, dynamicDoorLayout);
+        // 使用广度优先搜索(BFS)生成房间布局，通过预测权重控制分支方向，避免生成死路 参数：rootRoom - 根房间节点（起始房间）
+        private void GenerateRoomLayoutBFS(RoomNode rootRoom)
+        {
+            int predictWeight = 0;
 
-                    if (generateConfig.roomNode.Children.Count > validDirections.Count)
-                    {
-                        Debug.LogWarning("没有足够的可以延申的方向");
-                        return false;
-                    }
-
-                    foreach (var childRoom in generateConfig.roomNode.Children)
-                    {
-                        var directionsWithCount = LevelGenHelper.PredictDirectionWithCount(
-                            generateConfig.roomPosX, generateConfig.roomPosY, dynamicDoorLayout);
-
-                        directionsWithCount.Sort((a, b) => b.Count - a.Count);
-
-                        if (directionsWithCount.Count == 0)
-                        {
-                            Debug.LogWarning("没有可以延申的方向");
-                            return false;
-                        }
-
-                        Direction nextDirection;
-                        if (Random.Range(0, 100) < predictWeight)
-                        {
-                            nextDirection = directionsWithCount.First().Direction;
-                        }
-                        else
-                        {
-                            nextDirection = directionsWithCount.GetAndRemoveRandomItem().Direction;
-                        }
-
-                        RoomGenerateConfig newRoomConfig = null;
-                        int newX = 0, newY = 0;
-
-
-                        // 生成新的房间
-                        if (nextDirection == Direction.Right)
-                        {
-                            newX = generateConfig.roomPosX + 1;
-                            newY = generateConfig.roomPosY;
-                            newRoomConfig = new RoomGenerateConfig()
-                            {
-                                roomPosX = newX,
-                                roomPosY = newY,
-                                roomNode = childRoom,
-                                doorDirections = new HashSet<Direction>() { Direction.Left },
-                            };
-                        }
-                        else if (nextDirection == Direction.Left)
-                        {
-                            newX = generateConfig.roomPosX - 1;
-                            newY = generateConfig.roomPosY;
-                            newRoomConfig = new RoomGenerateConfig()
-                            {
-                                roomPosX = newX,
-                                roomPosY = newY,
-                                roomNode = childRoom,
-                                doorDirections = new HashSet<Direction>() { Direction.Right },
-                            };
-                        }
-                        else if (nextDirection == Direction.Up)
-                        {
-                            newX = generateConfig.roomPosX;
-                            newY = generateConfig.roomPosY + 1;
-                            newRoomConfig = new RoomGenerateConfig()
-                            {
-                                roomPosX = newX,
-                                roomPosY = newY,
-                                roomNode = childRoom,
-                                doorDirections = new HashSet<Direction>() { Direction.Down },
-                            };
-                        }
-                        else if (nextDirection == Direction.Down)
-                        {
-                            newX = generateConfig.roomPosX;
-                            newY = generateConfig.roomPosY - 1;
-                            newRoomConfig = new RoomGenerateConfig()
-                            {
-                                roomPosX = newX,
-                                roomPosY = newY,
-                                roomNode = childRoom,
-                                doorDirections = new HashSet<Direction>() { Direction.Up },
-                            };
-                        }
-
-                        // 如果新的房间存在，添加到队列中
-                        if (newRoomConfig != null)
-                        {
-                            generateConfig.doorDirections.Add(nextDirection);
-                            dynamicDoorLayout[newX, newY] = newRoomConfig;
-                            roomQueue.Enqueue(newRoomConfig);
-                        }
-                    }
-
-
-
-                }
-                return true;
-            }
-
-            var predictWeight = 0;
-            // GenerateRoomBFS(layout, dynamicDoorLayout, predictWeight);
-
-            while (!GenerateRoomBFS(layout, DynamicDoorLayout, predictWeight))
+            while (!TryGenerateRoomLayout(rootRoom, predictWeight))
             {
                 predictWeight++;
                 DynamicDoorLayout.Clear();
             }
+        }
 
-            DynamicDoorLayout.ForEach((x, y, roomGenerateConfig) =>
+        // 尝试生成房间布局的核心算法 参数：rootRoom - 根房间节点，predictWeight - 预测权重（越高越倾向选择最优方向） 返回是否成功生成布局
+        private bool TryGenerateRoomLayout(RoomNode rootRoom, int predictWeight)
+        {
+            var roomQueue = new Queue<RoomGenerateConfig>();
+            roomQueue.Enqueue(new RoomGenerateConfig()
             {
-                var room = GenerateRoomByLayout(x, y, roomGenerateConfig);
-                RoomGrid[x, y] = room;
+                roomNode = rootRoom,
+                roomPosX = 0,
+                roomPosY = 0,
+                doorDirections = new HashSet<Direction>(),
             });
 
-            // 依次生成所有房间布局
-            Room GenerateRoomByLayout(int x, int y, RoomGenerateConfig roomGenerateConfig)
+            while (roomQueue.Count > 0)
+            {
+                var generateConfig = roomQueue.Dequeue();
+                DynamicDoorLayout[generateConfig.roomPosX, generateConfig.roomPosY] = generateConfig;
+
+                List<Direction> validDirections = LevelGenHelper.GetValidDirections(
+                    generateConfig.roomPosX, generateConfig.roomPosY, DynamicDoorLayout);
+
+                if (generateConfig.roomNode.Children.Count > validDirections.Count)
+                {
+                    Debug.LogWarning("没有足够的可以延伸的方向");
+                    return false;
+                }
+
+                foreach (var childRoom in generateConfig.roomNode.Children)
+                {
+                    var directionsWithCount = LevelGenHelper.PredictDirectionWithCount(
+                        generateConfig.roomPosX, generateConfig.roomPosY, DynamicDoorLayout);
+
+                    directionsWithCount.Sort((a, b) => b.Count - a.Count);
+
+                    if (directionsWithCount.Count == 0)
+                    {
+                        Debug.LogWarning("没有可以延伸的方向");
+                        return false;
+                    }
+
+                    Direction nextDirection = SelectNextDirection(directionsWithCount, predictWeight);
+                    RoomGenerateConfig newRoomConfig = CreateRoomConfig(generateConfig, childRoom, nextDirection);
+
+                    if (newRoomConfig != null)
+                    {
+                        generateConfig.doorDirections.Add(nextDirection);
+                        DynamicDoorLayout[newRoomConfig.roomPosX, newRoomConfig.roomPosY] = newRoomConfig;
+                        roomQueue.Enqueue(newRoomConfig);
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        // 根据预测权重选择下一个房间延伸方向 参数：directionsWithCount - 带预测计数的方向列表，predictWeight - 预测权重 返回选中的方向
+        private Direction SelectNextDirection(List<LevelGenHelper.DirectionWithCount> directionsWithCount, int predictWeight)
+        {
+            if (Random.Range(0, 100) < predictWeight)
+            {
+                return directionsWithCount.First().Direction;
+            }
+            else
+            {
+                return directionsWithCount.GetAndRemoveRandomItem().Direction;
+            }
+        }
+
+        // 根据方向创建新的房间配置 参数：parentConfig - 父房间配置，childRoom - 子房间节点，direction - 延伸方向 返回新房间配置（失败返回null）
+        private RoomGenerateConfig CreateRoomConfig(RoomGenerateConfig parentConfig, RoomNode childRoom, Direction direction)
+        {
+            int newX = parentConfig.roomPosX;
+            int newY = parentConfig.roomPosY;
+            HashSet<Direction> doorDir = new HashSet<Direction>();
+
+            switch (direction)
+            {
+                case Direction.Right:
+                    newX = parentConfig.roomPosX + 1;
+                    doorDir.Add(Direction.Left);
+                    break;
+                case Direction.Left:
+                    newX = parentConfig.roomPosX - 1;
+                    doorDir.Add(Direction.Right);
+                    break;
+                case Direction.Up:
+                    newY = parentConfig.roomPosY + 1;
+                    doorDir.Add(Direction.Down);
+                    break;
+                case Direction.Down:
+                    newY = parentConfig.roomPosY - 1;
+                    doorDir.Add(Direction.Up);
+                    break;
+            }
+
+            return new RoomGenerateConfig()
+            {
+                roomPosX = newX,
+                roomPosY = newY,
+                roomNode = childRoom,
+                doorDirections = doorDir,
+            };
+        }
+
+        // 根据布局生成所有房间实例
+        private void GenerateRoomsFromLayout()
+        {
+            DynamicDoorLayout.ForEach((x, y, roomGenerateConfig) =>
+            {
+                var room = CreateRoomByType(x, y, roomGenerateConfig);
+                RoomGrid[x, y] = room;
+            });
+        }
+
+        // 根据房间类型创建房间实例 参数：gridX - 网格X坐标，gridY - 网格Y坐标，roomGenerateConfig - 房间生成配置 返回创建的房间实例
+        private Room CreateRoomByType(int gridX, int gridY, RoomGenerateConfig roomGenerateConfig)
+        {
+            var currentRoomPosX = gridX * (RoomConfig.InitRoom.roomMap.First().Length + 5);
+            var currentRoomPosY = gridY * (RoomConfig.InitRoom.roomMap.Count + 5);
+
+            switch (roomGenerateConfig.roomNode.roomType)
+            {
+                case RoomType.InitRoom:
+                    var initRoom = GenerateRoom(currentRoomPosX, currentRoomPosY, RoomConfig.InitRoom, roomGenerateConfig);
+                    Global.currentRoom = initRoom;
+                    initRoom.roomState = Room.RoomState.Finished;
+                    return initRoom;
+
+                case RoomType.NormalRoom:
+                    return GenerateRoom(currentRoomPosX, currentRoomPosY, RoomConfig.normalRoomConfigList.GetRandomItem(), roomGenerateConfig);
+
+                case RoomType.ChestRoom:
+                    return GenerateRoom(currentRoomPosX, currentRoomPosY, RoomConfig.ChestRoom, roomGenerateConfig);
+
+                case RoomType.ShopRoom:
+                    return GenerateRoom(currentRoomPosX, currentRoomPosY, RoomConfig.ShopRoom, roomGenerateConfig);
+
+                case RoomType.BossRoom:
+                    return GenerateRoom(currentRoomPosX, currentRoomPosY, RoomConfig.BossRoom, roomGenerateConfig);
+
+                default:
+                    return null;
+            }
+        }
+
+        // 生成房间之间的连接通道
+        private void GenerateCorridors()
+        {
+            DynamicDoorLayout.ForEach((x, y, roomGenerateConfig) =>
             {
                 var currentRoomPosX = x * (RoomConfig.InitRoom.roomMap.First().Length + 5);
                 var currentRoomPosY = y * (RoomConfig.InitRoom.roomMap.Count + 5);
+                var roomWidth = RoomConfig.InitRoom.roomMap.First().Length;
+                var roomHeight = RoomConfig.InitRoom.roomMap.Count;
 
-                if (roomGenerateConfig.roomNode.roomType == RoomType.InitRoom)
+                if (roomGenerateConfig.doorDirections.Contains(Direction.Right))
                 {
-                    var initRoom = GenerateRoom(currentRoomPosX, currentRoomPosY, RoomConfig.InitRoom, roomGenerateConfig);
-                    Global.currentRoom = initRoom;
-                    initRoom.roomState = Room.RoomState.Finished;  // 设置出生点房间为已完成状态
-                    return initRoom;
+                    DrawHorizontalCorridor(currentRoomPosX, currentRoomPosY, roomWidth, roomHeight);
                 }
-                else if (roomGenerateConfig.roomNode.roomType == RoomType.NormalRoom)
+
+                if (roomGenerateConfig.doorDirections.Contains(Direction.Up))
                 {
-                    return GenerateRoom(currentRoomPosX, currentRoomPosY, RoomConfig.normalRoomConfigList.GetRandomItem(), roomGenerateConfig);
+                    DrawVerticalCorridor(currentRoomPosX, currentRoomPosY, roomWidth, roomHeight);
                 }
-                else if (roomGenerateConfig.roomNode.roomType == RoomType.ChestRoom)
-                {
-                    return GenerateRoom(currentRoomPosX, currentRoomPosY, RoomConfig.ChestRoom, roomGenerateConfig);
-                }
-                else if (roomGenerateConfig.roomNode.roomType == RoomType.ShopRoom)
-                {
-                    return GenerateRoom(currentRoomPosX, currentRoomPosY, RoomConfig.ShopRoom, roomGenerateConfig);
-                }
-                else if (roomGenerateConfig.roomNode.roomType == RoomType.BossRoom)
-                {
-                    return GenerateRoom(currentRoomPosX, currentRoomPosY, RoomConfig.BossRoom, roomGenerateConfig);
-                }
-                return null;
-            }
-
-            // GenerateRoomByLayout(0, 0, layout);
-            GenerateCorridor();
-            Room.FindRoom();
-            // 绘制过道（还未支持随机房间布局）
-            void GenerateCorridor()
-            {
-                DynamicDoorLayout.ForEach((x, y, roomGenerateConfig) =>
-                {
-                    var currentRoomPosX = x * (RoomConfig.InitRoom.roomMap.First().Length + 5);
-                    var currentRoomPosY = y * (RoomConfig.InitRoom.roomMap.Count + 5);
-                    var roomWidth = RoomConfig.InitRoom.roomMap.First().Length;
-                    var roomHeight = RoomConfig.InitRoom.roomMap.Count;
-                    if (roomGenerateConfig.doorDirections.Contains(Direction.Right))// 绘制水平过道
-                    {
-                        for (int i = 0; i < 5; i++)
-                        {
-                            floorTilemap.SetTile(new Vector3Int(currentRoomPosX + roomWidth + i, currentRoomPosY - roomHeight / 2, 0), randFloor);
-                            floorTilemap.SetTile(new Vector3Int(currentRoomPosX + roomWidth + i, currentRoomPosY - roomHeight / 2 + 1, 0), randFloor);
-                            floorTilemap.SetTile(new Vector3Int(currentRoomPosX + roomWidth + i, currentRoomPosY - roomHeight / 2 - 1, 0), randFloor);
-
-                            wallTilemap.SetTile(new Vector3Int(currentRoomPosX + roomWidth + i, currentRoomPosY - roomHeight / 2 + 2, 0), randWall);
-                            wallTilemap.SetTile(new Vector3Int(currentRoomPosX + roomWidth + i, currentRoomPosY - roomHeight / 2 - 2, 0), randWall);
-                        }
-                    }
-
-                    if (roomGenerateConfig.doorDirections.Contains(Direction.Up))// 绘制垂直过道
-                    {
-                        for (int i = 0; i < 5; i++)
-                        {
-                            floorTilemap.SetTile(new Vector3Int(currentRoomPosX + roomWidth / 2, currentRoomPosY + i + 1, 0), randFloor);
-                            floorTilemap.SetTile(new Vector3Int(currentRoomPosX + roomWidth / 2 + 1, currentRoomPosY + i + 1, 0), randFloor);
-                            floorTilemap.SetTile(new Vector3Int(currentRoomPosX + roomWidth / 2 - 1, currentRoomPosY + i + 1, 0), randFloor);
-
-                            wallTilemap.SetTile(new Vector3Int(currentRoomPosX + roomWidth / 2 + 2, currentRoomPosY + i + 1, 0), randWall);
-                            wallTilemap.SetTile(new Vector3Int(currentRoomPosX + roomWidth / 2 - 2, currentRoomPosY + i + 1, 0), randWall);
-                        }
-                    }
-                });
-            }
-
-
+            });
         }
 
-        // 生成房间的函数
+        // 绘制水平通道（向右延伸） 参数：roomPosX - 房间X坐标，roomPosY - 房间Y坐标，roomWidth - 房间宽度，roomHeight - 房间高度
+        private void DrawHorizontalCorridor(int roomPosX, int roomPosY, int roomWidth, int roomHeight)
+        {
+            int corridorY = roomPosY - roomHeight / 2;
+
+            for (int i = 0; i < 5; i++)
+            {
+                floorTilemap.SetTile(new Vector3Int(roomPosX + roomWidth + i, corridorY, 0), randFloor);
+                floorTilemap.SetTile(new Vector3Int(roomPosX + roomWidth + i, corridorY + 1, 0), randFloor);
+                floorTilemap.SetTile(new Vector3Int(roomPosX + roomWidth + i, corridorY - 1, 0), randFloor);
+
+                wallTilemap.SetTile(new Vector3Int(roomPosX + roomWidth + i, corridorY + 2, 0), randWall);
+                wallTilemap.SetTile(new Vector3Int(roomPosX + roomWidth + i, corridorY - 2, 0), randWall);
+            }
+        }
+
+        // 绘制垂直通道（向上延伸） 参数：roomPosX - 房间X坐标，roomPosY - 房间Y坐标，roomWidth - 房间宽度，roomHeight - 房间高度
+        private void DrawVerticalCorridor(int roomPosX, int roomPosY, int roomWidth, int roomHeight)
+        {
+            int corridorX = roomPosX + roomWidth / 2;
+
+            for (int i = 0; i < 5; i++)
+            {
+                floorTilemap.SetTile(new Vector3Int(corridorX, roomPosY + i + 1, 0), randFloor);
+                floorTilemap.SetTile(new Vector3Int(corridorX + 1, roomPosY + i + 1, 0), randFloor);
+                floorTilemap.SetTile(new Vector3Int(corridorX - 1, roomPosY + i + 1, 0), randFloor);
+
+                wallTilemap.SetTile(new Vector3Int(corridorX + 2, roomPosY + i + 1, 0), randWall);
+                wallTilemap.SetTile(new Vector3Int(corridorX - 2, roomPosY + i + 1, 0), randWall);
+            }
+        }
+
+        // 生成单个房间的具体实现，根据房间配置绘制墙体、地板和放置游戏对象 参数：startPosX - 起始X坐标，startPosY - 起始Y坐标，roomConfig - 房间配置，roomGenerateConfig - 房间生成配置 返回生成的房间实例
         Room GenerateRoom(int startPosX, int startPosY, RoomConfig roomConfig, RoomGenerateConfig roomGenerateConfig)
         {
             var roomWidth = roomConfig.roomMap.First().Length;
             var roomHeight = roomConfig.roomMap.Count;
             var roomCenter = new Vector2(0.5f + startPosX + roomWidth / 2, 0.5f + startPosY - roomHeight / 2);
+
             var roomObj = Room.InstantiateWithParent(this)
                             .WithRoomConfig(roomConfig)
                             .WithRoomGenerateConfig(roomGenerateConfig)
                             .Position(roomCenter).Show();
 
-            // 房间碰撞器的大小，用于检测玩家是否进入房间,略小于房间大小
             roomObj.SelfBoxCollider2D.size = new Vector2(roomWidth - 3.0f, roomHeight - 3.0f);
 
             for (int i = 0; i < roomConfig.roomMap.Count; i++)
@@ -307,127 +319,146 @@ namespace ProjectBlood
                 {
                     var x = j + startPosX;
                     var y = startPosY - i;
-                    floorTilemap.SetTile(new Vector3Int(x, y, 0), randFloor); // 每个地方都要铺设地面
-                    if (roomConfig.roomMap[i][j] == '2')
-                    {
-                        wallTilemap.SetTile(new Vector3Int(x, y, 0), randWall);
-                    }
-                    else if (roomConfig.roomMap[i][j] == '1')
-                    {
-                        wallTilemap.SetTile(new Vector3Int(x, y, 0), randWallH);
-                    }
-                    else if (roomConfig.roomMap[i][j] == 'P')
-                    {
-                        Player.player1.transform.position = new Vector3(x, y, 0);
-                    }
-                    else if (roomConfig.roomMap[i][j] == 'e')
-                    {
-                        var EnemyPos = new Vector3(x, y, 0);
-                        roomObj.AddEnemy(EnemyPos);
-                        // var enemy = Instantiate(Enemy1);
-                        // enemy.transform.position = new Vector3(x, y, 0);
-                    }
-                    else if (roomConfig.roomMap[i][j] == 'X')
-                    {
-                        var boss = Instantiate(Enemy1); // 这里暂时使用Enemy,以后可以替换成Boss的prefab
-                        boss.transform.position = new Vector3(x, y, 0);
-                    }
-                    else if (roomConfig.roomMap[i][j] == '#')
-                    {
-                        var portal = Instantiate(Portal);
-                        portal.transform.position = new Vector3(x, y, 0);
-                    }
-                    else if (roomConfig.roomMap[i][j] == 'd')
-                    {
-                        // 创建门并设置属性
-                        // var door = Door.InstantiateWithParent(roomObj)
-                        // .Position2D(new Vector3(x + 0.5f, y + 0.5f, 0))
-                        // .Hide();
-                        // roomObj.AddDoor(door);
 
-                        // 根据config的doorDirections判断是否需要绘制这个‘d’
-                        var doorDistance = new Vector2(x + 0.5f, y + 0.5f) - roomCenter;
-                        if (doorDistance.x.Abs() > doorDistance.y.Abs()) // 说明这个‘d’在左边或右边
-                        {
-                            if (doorDistance.x > 0 && roomGenerateConfig.doorDirections.Contains(Direction.Right))  // 说明这个‘d’在右边
-                            {
-                                var door = Door.InstantiateWithParent(roomObj)
-                                .Position2D(new Vector3(x + 0.5f, y + 0.5f, 0))
-                                .WithDirection(Direction.Right)
-                                .Hide();
-                                roomObj.AddDoor(door);
-                            }
-                            else if (doorDistance.x < 0 && roomGenerateConfig.doorDirections.Contains(Direction.Left))  // 说明这个‘d’在左边
-                            {
-                                var door = Door.InstantiateWithParent(roomObj)
-                                .Position2D(new Vector3(x + 0.5f, y + 0.5f, 0))
-                                .WithDirection(Direction.Left)
-                                .Hide();
-                                roomObj.AddDoor(door);
-                            }
-                            else    // 说明这个‘d’不在路线规划内，绘制墙
-                            {
-                                wallTilemap.SetTile(new Vector3Int(x, y, 0), randWall);
-                            }
-                        }
-                        else    // 说明这个‘d’在上方或下方
-                        {
-                            if (doorDistance.y > 0 && roomGenerateConfig.doorDirections.Contains(Direction.Up))  // 说明这个‘d’在上方
-                            {
-                                var door = Door.InstantiateWithParent(roomObj)
-                                .Position2D(new Vector3(x + 0.5f, y + 0.5f, 0))
-                                .WithDirection(Direction.Up)
-                                .Hide();
-                                roomObj.AddDoor(door);
-                            }
-                            else if (doorDistance.y < 0 && roomGenerateConfig.doorDirections.Contains(Direction.Down))  // 说明这个‘d’在下方
-                            {
-                                var door = Door.InstantiateWithParent(roomObj)
-                                .Position2D(new Vector3(x + 0.5f, y + 0.5f, 0))
-                                .WithDirection(Direction.Down)
-                                .Hide();
-                                roomObj.AddDoor(door);
-                            }
-                            else    // 说明这个‘d’不在路线规划内，绘制墙
-                            {
-                                wallTilemap.SetTile(new Vector3Int(x, y, 0), randWallH);
-                            }
-                        }
+                    floorTilemap.SetTile(new Vector3Int(x, y, 0), randFloor);
 
-
-
-                    }
-                    else if (roomConfig.roomMap[i][j] == 'c')
-                    {
-                        // 创建宝箱并设置属性
-                        var chest = Chest.InstantiateWithParent(roomObj)
-                        .Position2D(new Vector3(x + 0.5f, y + 0.5f, 0))
-                        .Show();
-                    }
-                    else if (roomConfig.roomMap[i][j] == 's')
-                    {
-                        // 创建宝箱并设置属性
-                        var chest = ShopItem.InstantiateWithParent(roomObj)
-                        .Position2D(new Vector3(x + 0.5f, y + 0.5f, 0))
-                        .Show();
-                    }
-                    // else if (roomConfig.roomMap[i][j] == 'b')
-                    // {
-                    //     // 创建宝箱并设置属性
-                    //     var chest = ShopItem.InstantiateWithParent(roomObj)
-                    //     .Position2D(new Vector3(x + 0.5f, y + 0.5f, 0))
-                    //     .Show();
-                    // }
+                    char tileType = roomConfig.roomMap[i][j];
+                    HandleTileType(tileType, x, y, roomCenter, roomObj, roomGenerateConfig);
                 }
             }
+
             return roomObj;
         }
 
-        // Update is called once per frame
+        // 根据瓦片类型处理不同的游戏对象放置逻辑 参数：tileType - 瓦片类型字符，x - X坐标，y - Y坐标，roomCenter - 房间中心坐标，roomObj - 房间实例，roomGenerateConfig - 房间生成配置
+        private void HandleTileType(char tileType, int x, int y, Vector2 roomCenter, Room roomObj, RoomGenerateConfig roomGenerateConfig)
+        {
+            float worldX = x + 0.5f;
+            float worldY = y + 0.5f;
+            Vector3 worldPos = new Vector3(worldX, worldY, 0);
+
+            switch (tileType)
+            {
+                case '2':
+                    wallTilemap.SetTile(new Vector3Int(x, y, 0), randWall);
+                    break;
+
+                case '1':
+                    wallTilemap.SetTile(new Vector3Int(x, y, 0), randWallH);
+                    break;
+
+                case 'P':
+                    Player.player1.transform.position = worldPos;
+                    break;
+
+                case 'e':
+                    roomObj.AddEnemy(worldPos);
+                    break;
+
+                case 'X':
+                    var boss = Instantiate(Enemy1);
+                    boss.transform.position = worldPos;
+                    break;
+
+                case '#':
+                    var portal = Instantiate(Portal);
+                    portal.transform.position = worldPos;
+                    break;
+
+                case 'd':
+                    HandleDoorPlacement(x, y, roomCenter, roomObj, roomGenerateConfig);
+                    break;
+
+                case 'c':
+                    Chest.InstantiateWithParent(roomObj)
+                        .Position2D(worldPos)
+                        .Show();
+                    break;
+
+                case 's':
+                    ShopItem.InstantiateWithParent(roomObj)
+                        .Position2D(worldPos)
+                        .Show();
+                    break;
+            }
+        }
+
+        // 处理门的放置逻辑，根据房间连接方向决定是否放置门或墙 参数：x - 网格X坐标，y - 网格Y坐标，roomCenter - 房间中心，roomObj - 房间实例，roomGenerateConfig - 房间生成配置
+        private void HandleDoorPlacement(int x, int y, Vector2 roomCenter, Room roomObj, RoomGenerateConfig roomGenerateConfig)
+        {
+            Vector3 worldPos = new Vector3(x + 0.5f, y + 0.5f, 0);
+            var doorDistance = worldPos - (Vector3)roomCenter;
+
+            if (Mathf.Abs(doorDistance.x) > Mathf.Abs(doorDistance.y))
+            {
+                if (doorDistance.x > 0 && roomGenerateConfig.doorDirections.Contains(Direction.Right))
+                {
+                    var door = Door.InstantiateWithParent(roomObj)
+                        .Position2D(worldPos)
+                        .WithDirection(Direction.Right)
+                        .Hide();
+                    roomObj.AddDoor(door);
+                }
+                else if (doorDistance.x < 0 && roomGenerateConfig.doorDirections.Contains(Direction.Left))
+                {
+                    var door = Door.InstantiateWithParent(roomObj)
+                        .Position2D(worldPos)
+                        .WithDirection(Direction.Left)
+                        .Hide();
+                    roomObj.AddDoor(door);
+                }
+                else
+                {
+                    wallTilemap.SetTile(new Vector3Int(x, y, 0), randWall);
+                }
+            }
+            else
+            {
+                if (doorDistance.y > 0 && roomGenerateConfig.doorDirections.Contains(Direction.Up))
+                {
+                    var door = Door.InstantiateWithParent(roomObj)
+                        .Position2D(worldPos)
+                        .WithDirection(Direction.Up)
+                        .Hide();
+                    roomObj.AddDoor(door);
+                }
+                else if (doorDistance.y < 0 && roomGenerateConfig.doorDirections.Contains(Direction.Down))
+                {
+                    var door = Door.InstantiateWithParent(roomObj)
+                        .Position2D(worldPos)
+                        .WithDirection(Direction.Down)
+                        .Hide();
+                    roomObj.AddDoor(door);
+                }
+                else
+                {
+                    wallTilemap.SetTile(new Vector3Int(x, y, 0), randWallH);
+                }
+            }
+        }
+
+        public void LoadNextLevel()
+        {
+            Global.currentDifficulty += 1;
+
+            foreach (var room in FindObjectsOfType<Room>())
+            {
+                Destroy(room.gameObject);
+            }
+
+            wallTilemap.ClearAllTiles();
+            floorTilemap.ClearAllTiles();
+
+            RoomGrid.Clear();
+            DynamicDoorLayout.Clear();
+
+            InitializeLevel(Level1_2.Config);
+        }
+
         void Update()
         {
-
         }
+
         void OnDestroy()
         {
             instance = null;
