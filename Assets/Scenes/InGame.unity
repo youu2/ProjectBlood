@@ -846,7 +846,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   direction: {x: 0, y: 0}
   speed: 35
-  damage: 12
+  damage: 15
   lifestealPercent: 0
   isEnhanced: 1
 --- !u!114 &90749827
@@ -7706,7 +7706,7 @@ AudioSource:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 2828753150d4b1141bb0aa6578da03c1, type: 3}
@@ -10009,7 +10009,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   direction: {x: 0, y: 0}
   speed: 35
-  damage: 1000
+  damage: 50
   lifestealPercent: 0
   isEnhanced: 1
 --- !u!50 &1003618896
@@ -21325,7 +21325,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   direction: {x: 0, y: 0}
   speed: 30
-  damage: 12
+  damage: 100
   lifestealPercent: 0
   isEnhanced: 1
 --- !u!114 &1332613238

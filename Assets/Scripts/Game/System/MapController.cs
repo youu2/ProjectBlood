@@ -64,17 +64,7 @@ namespace ProjectBlood
 
         void Start()
         {
-            HideAllExistingRooms();
             InitializeLevel(Level1_1.Config);
-        }
-
-        // 隐藏场景中所有已存在的房间实例
-        private void HideAllExistingRooms()
-        {
-            foreach (var room in FindObjectsOfType<Room>())
-            {
-                room.Hide();
-            }
         }
 
         // 初始化关卡，生成房间布局和连接通道 参数：levelConfig - 关卡配置
@@ -441,9 +431,26 @@ namespace ProjectBlood
         {
             Global.currentDifficulty += 1;
 
+            FxManager.ClearAllEffects();
+
             foreach (var room in FindObjectsOfType<Room>())
             {
                 Destroy(room.gameObject);
+            }
+
+            foreach (var enemy in FindObjectsOfType<Enemy>())
+            {
+                Destroy(enemy.gameObject);
+            }
+
+            foreach (var portal in FindObjectsOfType<Portal>())
+            {
+                Destroy(portal.gameObject);
+            }
+
+            foreach (var dropItem in FindObjectsOfType<DropItem>())
+            {
+                Destroy(dropItem.gameObject);
             }
 
             wallTilemap.ClearAllTiles();

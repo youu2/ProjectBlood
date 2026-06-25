@@ -215,8 +215,8 @@ namespace ProjectBlood
 					roomState = RoomState.Battle;
 
 					var difficultyLevel = Global.currentDifficulty; // 通常是0 - 9
-					var difficultyScore = UnityEngine.Random.Range(3, 6 + 1) + 2 * difficultyLevel - 2 / (difficultyLevel + 1);
-					// 前期都是低分敌人，所以限制前3关的difficultyScore来避免生成过多的低级敌人
+					var difficultyScore = UnityEngine.Random.Range(3, 6 + 1) + 2 * difficultyLevel - 1 / (difficultyLevel + 1);
+					// 第一关都是1分敌人，所以限制第一关的difficultyScore来避免生成过多的低级敌人
 
 					// 难度等级影响敌人波次，0-2为1-2波，3-5为1-3波，6-8为2-4波，9为3-5波
 					var waveCount = UnityEngine.Random.Range(Math.Max(1, difficultyLevel / 3), difficultyLevel / 3 + 2 + 1);
@@ -236,7 +236,6 @@ namespace ProjectBlood
 						enemyWaveConfigList.Add(waveConfig);
 					}
 
-					// GenerateEnemy();
 					if (doorList != null)
 					{
 						foreach (var door in doorList)
