@@ -6,6 +6,11 @@
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                         游戏主架构 (Global)                                  │
 │  ┌───────────────────────────────────────────────────────────────────────┐  │
+│  │                    全局状态层 (Global)                               │  │
+│  │  静态类管理：HP、金币、当前关卡难度、游戏暂停状态                     │  │
+│  └───────────────────────────────────────────────────────────────────────┘  │
+│                              ▲                                            │
+│  ┌───────────────────────────────────────────────────────────────────────┐  │
 │  │                  QFramework 框架层                                    │  │
 │  │  AudioKit │ ResKit │ UIKit │ BindableProperty (响应式数据绑定)         │  │
 │  └───────────────────────────────────────────────────────────────────────┘  │
@@ -13,27 +18,31 @@
 │  ┌───────────────────┐  ┌───────────────────────────────┐  ┌───────────┐   │
 │  │      UI 层         │  │           业务逻辑层            │  │   数据层    │   │
 │  │                   │  │                               │  │           │   │
-│  │ UIGamePanel       │  │ PlayerController              │  │ Global    │   │
-│  │ UIGameOver        │  │ EnemySystem                   │  │ RoomConfig│   │
-│  │ UIGamePass        │  │ WeaponSystem                  │  │ Waves     │   │
-│  │ UIGameStart       │  │   ├── LifestealFeature        │  │           │   │
-│  │ UIMap             │  │   └── GunClip / BloodBank     │  └───────────┘   │
-│  └───────────────────┘  │ MapController                 │                  │
+│  │ UIGamePanel       │  │ Player                        │  │ RoomConfig│   │
+│  │ UIGameOverPanel   │  │ Enemy 系统                    │  │ Waves     │   │
+│  │ UIGamePassPanel   │  │   ├── Enemy（基类）            │  │ DynaGrid  │   │
+│  │ UIGameStartPanel  │  │   └── EnemyFactory            │  │ LevelsConfig│  │
+│  │ UIMap             │  │ Weapon 系统                    │  │           │   │
+│  └───────────────────┘  │   ├── WeaponBase              │  └───────────┘   │
+│                         │   ├── LifestealFeature        │                  │
+│                         │   ├── GunClip / BloodBank     │                  │
+│                         │   └── IWeapon 接口             │                  │
+│                         │ MapController                 │                  │
 │                         │   ├── RoomGrid                │                  │
 │                         │   └── DynamicDoorLayout       │                  │
-│                         │ WaveSystem                    │                  │
+│                         │ WavesSystem                   │                  │
 │                         │ DropManager                   │                  │
+│                         │   ├── DropItem                │                  │
 │                         │   ├── Shield / DirtyBlood     │                  │
-│                         │   ├── PureBlood (纯血)        │                  │
-│                         │   └── Coin (金币)              │                  │
+│                         │   └── PureBlood (纯血)        │                  │
 │                         │ ShieldState                   │                  │
-│                         │ ShopSystem                    │                  │
-│                         │   └── ShopItem (商品池随机)    │                  │
+│                         │ FxManager                     │                  │
+│                         │ ShopItem（商店道具）            │                  │
 │                         └───────────────────────────────┘                  │
 │                              │                                            │
 │  ┌───────────────────────────────────────────────────────────────────────┐  │
 │  │                     Unity 引擎层                                      │  │
-│  │  Physics2D │ Tilemap │ Coroutine │ PlayerPrefs │ DynaGrid            │  │
+│  │  Physics2D │ Tilemap │ Coroutine │ PlayerPrefs                        │  │
 │  └───────────────────────────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -44,21 +53,22 @@
 
 | 模块                   | 职责说明                                    | 划分理由                                                               |
 | -------------------- | --------------------------------------- | ------------------------------------------------------------------ |
-| **Global**           | 管理全局游戏状态（HP、经验、金币、等级、传承点），提供全局数据访问和操作接口 | 采用单例模式集中管理游戏核心数据，使用 BindableProperty 实现响应式更新，确保 UI 与数据实时同步，降低模块间耦合 |
-| **PlayerController** | 负责玩家输入处理、移动、自动瞄准、武器切换和战斗逻辑              | 将玩家相关逻辑聚合，便于维护和扩展，武器系统通过接口 (IWeapon) 实现解耦                          |
-| **EnemySystem**      | 管理敌人 AI 行为（追击、攻击、死亡），包含多种敌人类型           | 采用状态机模式实现复杂敌人行为，通过 IDamageable 接口统一伤害系统                            |
+| **Global**           | 管理全局游戏状态（HP、金币、当前关卡难度等），提供全局数据访问和操作接口 | 静态类集中管理游戏核心数据，使用 BindableProperty 实现响应式更新，确保 UI 与数据实时同步 |
+| **Player**           | 负责玩家输入处理、移动、自动瞄准、武器切换和战斗逻辑              | 将玩家相关逻辑聚合在一个类中，便于维护和扩展，武器通过接口 (IWeapon) 实现解耦 |
+| **Enemy 系统**          | 管理敌人 AI 行为（追击、攻击、死亡），包含多种敌人类型           | 由 Enemy 基类和 EnemyFactory 工厂组成，通过 IDamageable 接口统一伤害系统                 |
 | **EnemyFactory**     | 单例工厂类，集中管理敌人预制体，按难度分数生成对应敌人             | 解耦敌人生成与配置，便于扩展新敌人类型，支持难度曲线控制                                       |
-| **WeaponSystem**     | 管理武器切换、射击、换弹逻辑，支持多种武器类型                 | 定义 IWeapon 接口抽象武器行为，通过特性系统 (Features) 扩展武器能力，提高可扩展性                |
-| **MapGenerator**     | 基于 BFS 算法生成程序化地图，管理房间布局和连接              | 将地图生成逻辑独立，便于调整地图算法和房间配置，支持动态门布局                                    |
+| **Weapon 系统**         | 管理武器切换、射击、换弹逻辑，支持多种武器类型                 | 由 WeaponBase 基类和多个武器特性组件组成，通过 IWeapon 接口抽象武器行为，提高可扩展性        |
+| **MapController**    | 基于 BFS 算法生成程序化地图，管理房间布局和门的动态开关         | 将地图生成逻辑独立，便于调整地图算法和房间配置，支持动态门布局                                    |
 | **LevelsConfig**     | 关卡配置系统，通过树形结构预设多种关卡布局，支持难度分级            | 替换硬编码地图布局，支持随机布局选择，增加重玩价值，便于调整关卡难度曲线                               |
-| **WaveSystem**       | 管理敌人波次生成和难度递增                           | 实现动态敌人池机制，根据波次自动解锁更强敌人，控制战斗节奏                                      |
-| **DropManager**      | 管理敌人掉落物生成（经验、金币、脏血、护盾、纯血）               | 集中处理掉落逻辑，便于调整掉落概率和物品类型，支持自动飞向玩家机制                                  |
-| **PureBloodSystem**  | 管理纯血道具的飞射、追踪和拾取治疗逻辑                     | 将吸血效果转化为可拾取道具，增加操作手感和视觉反馈                                          |
-| **ShopSystem**       | 管理商店商品随机出货和购买逻辑                         | 提供金币消耗途径，增加游戏经济系统完整性                                               |
-| **MiniMapSystem**    | 管理小地图渲染、房间状态显示、玩家位置追踪                   | 实时显示玩家周围房间，渐进式发现机制，增强探索体验                                          |
-| **ShieldSystem**     | 管理护盾激活、保护期、格挡次数和碎裂逻辑                    | 提供临时伤害抵挡能力，保护期机制增加策略深度                                             |
-| **LifestealSystem**  | 管理武器吸血特性、等级升级、吸血量计算                     | 支持武器成长，增加战斗续航能力，丰富战斗策略                                             |
-| **UI 层**             | 管理游戏界面（主菜单、HUD、结算界面）                    | 遵循 MVVM 模式，通过 BindableProperty 实现数据驱动 UI 更新                        |
+| **WavesSystem**      | 管理敌人波次生成和难度递增                           | 实现动态敌人池机制，根据波次自动解锁更强敌人，控制战斗节奏                                      |
+| **DropManager**      | 管理敌人掉落物生成（金币、脏血、护盾、纯血）                   | 集中处理掉落逻辑，便于调整掉落概率和物品类型，支持自动飞向玩家机制                                  |
+| **PureBlood**        | 纯血道具的飞射、追踪和拾取治疗逻辑                       | 将吸血效果转化为可拾取道具，增加操作手感和视觉反馈，由 DropManager 管理生成                           |
+| **ShopItem**         | 商店商品随机出货和购买逻辑                             | 提供金币消耗途径，增加游戏经济系统完整性                                               |
+| **UIMap（小地图）**      | 小地图渲染、房间状态显示、玩家位置追踪                       | 实时显示玩家周围房间，渐进式发现机制，增强探索体验                                          |
+| **ShieldState**      | 护盾激活、保护期、格挡次数和碎裂逻辑管理                      | 提供临时伤害抵挡能力，保护期机制增加策略深度                                             |
+| **LifestealFeature** | 武器吸血特性、等级升级、吸血量计算                         | 以武器特性组件形式存在，支持武器成长，增加战斗续航能力                                    |
+| **FxManager**        | 集中管理血迹、尸体、粒子等特效对象的生成与清理                 | 统一管理视觉特效对象，提供 ClearAllEffects 接口便于场景切换时批量清理                           |
+| **UI 层**             | 管理游戏界面（主菜单、HUD、结算界面等）                   | 遵循 MVVM 模式，通过 BindableProperty 实现数据驱动 UI 更新                        |
 
 ***
 
@@ -108,7 +118,7 @@
 
 采用 `PlayerPrefs` + `BindableProperty` 实现跨场景数据持久化和响应式更新。
 
-> 详见：Global 单例类实现
+> 详见：Global 静态类实现
 
 ***
 
@@ -184,7 +194,47 @@
 
 ***
 
-### 设计 16：升级与成长系统 📋
+### 设计 16：加载界面系统 ✅
+
+使用 `SceneManager.LoadSceneAsync()` 实现异步场景加载，配合 `GameUI.ShowLoadingPage()` 显示过渡界面，支持 `allowSceneActivation=false` 暂停激活机制。
+
+> 详细设计见：[功能说明文档](file:///e:/unity/project/ProjectBlood/Technical%20Documentation/功能说明文档.md) 第12章「加载界面系统」
+
+***
+
+### 设计 17：关卡切换系统 ✅
+
+采用场景重载方式实现关卡切换，通过 `Global.currentDifficulty` 静态变量传递进度，支持通关判定（`currentDifficulty >= LevelConfigs.Count`）。
+
+> 详细设计见：[功能说明文档](file:///e:/unity/project/ProjectBlood/Technical%20Documentation/功能说明文档.md) 第13章「关卡切换系统」
+
+***
+
+### 设计 18：全局暂停状态管理 ✅
+
+通过 `Global.IsGamePaused` 静态变量统一管理游戏暂停状态，控制玩家操作权限，在 `MapController.Start()` 中重置确保新场景状态正确。
+
+> 详细设计见：[功能说明文档](file:///e:/unity/project/ProjectBlood/Technical%20Documentation/功能说明文档.md) 第14章「全局暂停状态管理」
+
+***
+
+### 设计 19：关卡名称显示系统 ✅
+
+`GameUI.ShowLevelText()` 使用协程实现淡入→保持→淡出动画，自动去除"Level "前缀显示关卡编号。
+
+> 详细设计见：[功能说明文档](file:///e:/unity/project/ProjectBlood/Technical%20Documentation/功能说明文档.md) 第15章「关卡名称显示系统」
+
+***
+
+### 设计 20：特效管理系统（FxManager）✅
+
+集中管理血迹、尸体、粒子效果等特效对象，提供 `ClearAllEffects()` 接口，场景重载时自动清理。
+
+> 详细设计见：[功能说明文档](file:///e:/unity/project/ProjectBlood/Technical%20Documentation/功能说明文档.md) 第16章「特效管理系统」
+
+***
+
+### 设计 21：升级与成长系统 📋
 
 **背景**：如何设计武器升级和玩家成长系统？
 
@@ -202,16 +252,13 @@
 
 | 设计模式          | 应用场景                                       | 实现效果      |
 | ------------- | ------------------------------------------ | --------- |
-| **单例模式**      | Global、DropManager、FxManager、MapController | 确保全局唯一访问点 |
+| **单例模式**      | EnemyFactory、DropManager、FxManager、MapController | 确保全局唯一访问点 |
 | **状态机模式**     | 敌人 AI 行为管理、纯血道具（Flying/Chasing）            | 清晰的状态转换逻辑 |
 | **策略模式**      | 武器系统（IWeapon 接口）                           | 统一接口，灵活替换 |
 | **观察者模式**     | BindableProperty 数据绑定                      | 自动响应状态变化  |
-| **组件化模式**     | 武器特性系统（LifestealFeature、GunClip）           | 能力模块化组合   |
+| **组件化模式**     | 武器特性系统（LifestealFeature、GunClip、BloodBank）   | 能力模块化组合   |
 | **模板方法模式**    | Enemy 基类定义受伤/死亡流程，子类可重写具体实现                | 代码复用，扩展性强 |
-| **工厂模式**      | FxManager 统一创建特效实例、DropManager 生成掉落物       | 集中管理，便于维护 |
-| **组合模式**      | BloodBank 与 WeaponBase 的集成                 | 资源管理解耦    |
-| **迭代器模式**     | DynaGrid 遍历房间网格                            | 简化网格访问    |
-| **生产者-消费者模式** | BFS房间生成算法                                  | 高效的层级遍历   |
+| **工厂模式**      | EnemyFactory 按难度分数生成对应敌人类型               | 解耦敌人生成与配置，便于扩展新敌人类型 |
 
 ***
 
@@ -230,5 +277,5 @@
 
 ***
 
-*文档版本：v1.3*\
-*最后更新：2026-06-23*
+*文档版本：v1.5*\
+*最后更新：2026-06-27*
