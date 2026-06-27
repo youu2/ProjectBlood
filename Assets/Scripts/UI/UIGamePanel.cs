@@ -42,7 +42,7 @@ namespace ProjectBlood
 			Global.Level.Register(Level =>
 			{
 				Time.timeScale = 0;
-				Global.FireEnabled.Value = false; // 禁用开火
+				Global.IsGamePaused = true; // 禁用武器操作
 				UpgradeRoot.Show();
 				// BtnUpgradeDamage.Show();
 			}).UnRegisterWhenGameObjectDestroyed(gameObject);
@@ -59,8 +59,8 @@ namespace ProjectBlood
 			BtnUpgradeDamage.onClick.AddListener(() =>
 			{
 				Time.timeScale = 1;
-				Global.FireEnabled.Value = true; // 重新启用开火
-				// BtnUpgradeDamage.Hide();
+				Global.IsGamePaused = false; // 重新启用开火
+											 // BtnUpgradeDamage.Hide();
 				UpgradeRoot.Hide();
 				Global.BlazingCircleDamage.Value *= 1.2f;
 				//BlazingCircle.upgrade();
@@ -69,8 +69,8 @@ namespace ProjectBlood
 			BtnUpgradeAttackSpeed.onClick.AddListener(() =>
 			{
 				Time.timeScale = 1;
-				Global.FireEnabled.Value = true; // 重新启用开火
-				// BtnUpgradeAttackSpeed.Hide();
+				Global.IsGamePaused = false; // 重新启用开火
+											 // BtnUpgradeAttackSpeed.Hide();
 				UpgradeRoot.Hide();
 				Global.BCAttackInterval.Value *= 0.91f;
 			});
@@ -87,19 +87,19 @@ namespace ProjectBlood
 			}).UnRegisterWhenGameObjectDestroyed(gameObject);
 
 		}
-		
+
 		protected override void OnOpen(IUIData uiData = null)
 		{
 		}
-		
+
 		protected override void OnShow()
 		{
 		}
-		
+
 		protected override void OnHide()
 		{
 		}
-		
+
 		protected override void OnClose()
 		{
 		}

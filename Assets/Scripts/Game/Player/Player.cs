@@ -19,19 +19,21 @@ namespace ProjectBlood
 		private AudioSource temporaryAudioSource; // 用于播放切换武器时的shootEnd音效
 		private WeaponBase weaponToHide = null; // 待隐藏的武器引用（用于半自动武器延迟隐藏）
 		public BloodBank bloodBank = new BloodBank(); // 血液银行组件，特殊资源，用于弹药管理和血量管理
-        private ShieldState shieldState = new ShieldState(); // 护盾状态
+		private ShieldState shieldState = new ShieldState(); // 护盾状态
 		private Vector2 smoothAimDir; // 平滑过渡后的瞄准方向
 		private const float aimSmoothSpeed = 20f; // 瞄准平滑速度
 		private const float aimAngle = 35f; // 锁定角度
-		// 显示跟随玩家的提示文本
-		public static void DisplayText(string text){
+											// 显示跟随玩家的提示文本
+		public static void DisplayText(string text)
+		{
 			player1.StartCoroutine(player1.ShowText(text, 2.0f));
 		}
 
-		public static void HideText(){
+		public static void HideText()
+		{
 			player1.NoticeText.Hide();
 		}
-		
+
 		IEnumerator ShowText(string text, float duration)
 		{
 			player1.NoticeText.text = text;
@@ -58,32 +60,32 @@ namespace ProjectBlood
 			{
 				weapon.BloodBank = bloodBank;
 			}
-			
+
 			// 初始化护盾状态
 			shieldState.Initialize(ShieldSprite, this);
-			
+
 			// 创建临时的 AudioSource 用于播放切换武器时的 shootEnd 音效
 			temporaryAudioSource = gameObject.AddComponent<AudioSource>();
 		}
-		
+
 		void UseWeapon(int index)
 		{
 			var previousWeapon = currentWeapon;
-			
+
 			// 停止上一把武器的所有状态
 			previousWeapon?.SwitchFromSet();
 			previousWeapon?.Hide();
-			
+
 			// 切换到新武器
 			currentWeapon = weapons[index];
 			// currentWeapon.BloodBank = bloodBank;
 			currentWeapon.SwitchToSet();
 			currentWeapon.Show();
-			
+
 			// 播放切换音效（独立播放，不需要等待）
-			AudioKitManager.Instance.PlayOneShot(WeaponSwitchSound,volume: 0.3f);
+			AudioKitManager.Instance.PlayOneShot(WeaponSwitchSound, volume: 0.3f);
 		}
-		
+
 		void HidePreviousWeapon()
 		{
 			if (weaponToHide != null)
@@ -111,12 +113,12 @@ namespace ProjectBlood
 			{
 				return;
 			}
-			
+
 			FxManager.PlayPlayerHurtFX(transform.Position2D());
 			FxManager.DrawPlayerBlood(transform.Position2D());
 			Global.currentHP.Value -= damage;
 			if (Global.currentHP.Value < 0) Global.currentHP.Value = 0;
-			
+
 			if (Global.currentHP.Value > 0)
 			{
 				AudioKitManager.Instance.PlayOneShot("Hurt", volume: 0.5f);
@@ -127,12 +129,12 @@ namespace ProjectBlood
 			}
 		}
 
-        public void ActivateShield(int blockCount, float duration)
-        {
-            shieldState.Activate(blockCount, duration);
-        }
+		public void ActivateShield(int blockCount, float duration)
+		{
+			shieldState.Activate(blockCount, duration);
+		}
 
-        private void Death()
+		private void Death()
 		{
 			Global.SettleLegacyPoints();
 			AudioKitManager.Instance.PlayOneShot("WilhelmScream");
@@ -162,7 +164,7 @@ namespace ProjectBlood
 			// 转成世界坐标，Z 要设成 0（2D 游戏）
 			mouseScreenPos.z = 0;
 			Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
-			
+
 			// 计算从玩家指向鼠标的方向
 			Vector2 shootDir = (mouseWorldPos - transform.position).normalized;
 
@@ -170,23 +172,23 @@ namespace ProjectBlood
 			if (Global.currentRoom && Global.currentRoom.GetEnemies().Count > 0)
 			{
 				var enemies = Global.currentRoom.GetEnemies();
-				
+
 				// 将 HashSet 转换为 List 并过滤掉已销毁或正在死亡的敌人
 				var enemiesList = enemies.Where(enemy => enemy != null && !enemy.IsDying).ToList();
-				
+
 				if (enemiesList.Count > 0)
 				{
 					// 将敌人按离鼠标指针的距离从近到远排序
-					var sortedEnemies = enemiesList.OrderBy(enemy => 
+					var sortedEnemies = enemiesList.OrderBy(enemy =>
 						Vector2.Distance(enemy.GameObject.transform.position, mouseWorldPos)
 					).ToList();
-					
+
 					// 获取 Wall Layer 的掩码
 					int wallLayer = LayerMask.GetMask("Wall");
-					
+
 					// 标记是否找到了可瞄准的敌人
 					bool foundTarget = false;
-					
+
 					// 遍历排序后的敌人，找到第一个没有障碍物的
 					foreach (var enemy in sortedEnemies)
 					{
@@ -195,34 +197,34 @@ namespace ProjectBlood
 						{
 							continue;
 						}
-						
+
 						// 检查玩家到敌人之间是否有墙壁障碍物
 						Vector2 playerPos = transform.position;
 						Vector2 enemyPos = enemy.GameObject.transform.position;
 						Vector2 dirToEnemy = (enemyPos - playerPos).normalized;
-						
+
 						// 检查敌人是否在鼠标方向的30度范围内
 						float angleToEnemy = Vector2.Angle(shootDir, dirToEnemy);
 						if (angleToEnemy > aimAngle)
 						{
 							continue;
 						}
-						
+
 						// 使用射线检测，只检测 Wall 层的物体
 						RaycastHit2D hit = Physics2D.Linecast(playerPos, enemyPos, wallLayer);
-						
+
 						// 如果没有碰到墙壁
 						if (hit.collider == null)
 						{
 							// 瞄准这个敌人
 							shootDir = dirToEnemy;
 							AimMark.Position2D(enemyPos);
-							AimMark.Show();	// 显示瞄准标记
+							AimMark.Show(); // 显示瞄准标记
 							foundTarget = true;
 							break;
 						}
 					}
-					
+
 					// 如果没有找到可瞄准的敌人，隐藏瞄准标记
 					if (!foundTarget)
 					{
@@ -240,16 +242,16 @@ namespace ProjectBlood
 				// 如果没有敌人，隐藏瞄准标记
 				AimMark.Hide();
 			}
-			
+
 			// 平滑过渡瞄准方向
 			smoothAimDir = Vector2.Lerp(smoothAimDir, shootDir, Time.deltaTime * aimSmoothSpeed);
 			smoothAimDir.Normalize();
 
 			// 让武器朝向平滑后的瞄准方向
 			float angle = Mathf.Atan2(smoothAimDir.y, smoothAimDir.x) * Mathf.Rad2Deg;
-        	weaponTransform.eulerAngles = new Vector3(0, 0, angle);
+			weaponTransform.eulerAngles = new Vector3(0, 0, angle);
 			// 当瞄准左边时翻转武器（假设武器默认朝右）
-			if(smoothAimDir.x < 0)
+			if (smoothAimDir.x < 0)
 			{
 				weaponTransform.localScale = new Vector3(1, -1, 1);
 				spriteRenderer.flipX = true;
@@ -261,67 +263,67 @@ namespace ProjectBlood
 			}
 
 			//鼠标左键射击（朝平滑后的瞄准方向）
-			if (Input.GetMouseButtonDown(0) && playerBullet != null && Global.FireEnabled.Value)
-			{				
+			if (Input.GetMouseButtonDown(0) && playerBullet != null && !Global.IsGamePaused)
+			{
 				currentWeapon.StartAttacking(smoothAimDir);
 			}
 			//限制为固定射速
-			if(Input.GetMouseButton(0) && playerBullet != null && Global.FireEnabled.Value)
+			if (Input.GetMouseButton(0) && playerBullet != null && !Global.IsGamePaused)
 			{
 				currentWeapon.KeepAttacking(smoothAimDir);
 			}
-			if(Input.GetMouseButtonUp(0) && playerBullet != null)
+			if (Input.GetMouseButtonUp(0) && playerBullet != null)
 			{
 				currentWeapon.StopAttacking();
 			}
 
 			// 按R键换弹
-            if (Input.GetKeyDown(KeyCode.R))
-            {
-                currentWeapon.Reload(); // 调用GunClip的reload方法进行换弹
-                // GameUI.UpdateBloodText(bloodBank);
-            }
+			if (Input.GetKeyDown(KeyCode.R) && !Global.IsGamePaused)
+			{
+				currentWeapon.Reload(); // 调用GunClip的reload方法进行换弹
+										// GameUI.UpdateBloodText(bloodBank);
+			}
 			GameUI.UpdateBloodText(bloodBank);
 
 			// 切枪
-			if(Input.GetKeyDown(KeyCode.Alpha1))
+			if (Input.GetKeyDown(KeyCode.Alpha1) && !Global.IsGamePaused)
 			{
 				UseWeapon(0);
 			}
-			if(Input.GetKeyDown(KeyCode.Alpha2))
+			if (Input.GetKeyDown(KeyCode.Alpha2) && !Global.IsGamePaused)
 			{
 				UseWeapon(1);
 			}
-			if(Input.GetKeyDown(KeyCode.Alpha3))
+			if (Input.GetKeyDown(KeyCode.Alpha3) && !Global.IsGamePaused)
 			{
 				UseWeapon(2);
 			}
-			if(Input.GetKeyDown(KeyCode.Alpha4))
+			if (Input.GetKeyDown(KeyCode.Alpha4) && !Global.IsGamePaused)
 			{
 				UseWeapon(3);
 			}
-			if(Input.GetKeyDown(KeyCode.Alpha5))
+			if (Input.GetKeyDown(KeyCode.Alpha5) && !Global.IsGamePaused)
 			{
 				UseWeapon(4);
 			}
-			if(Input.GetKeyDown(KeyCode.Alpha6))
+			if (Input.GetKeyDown(KeyCode.Alpha6) && !Global.IsGamePaused)
 			{
 				UseWeapon(5);
 			}
-			if(Input.mouseScrollDelta.y > 0 || Input.GetKeyDown(KeyCode.Q)) // 鼠标滚轮向上滚动切换到上一个武器
+			if ((Input.mouseScrollDelta.y > 0 || Input.GetKeyDown(KeyCode.Q)) && !Global.IsGamePaused) // 鼠标滚轮向上滚动切换到上一个武器
 			{
 				// 使用模运算实现循环切换武器
 				UseWeapon((weapons.IndexOf(currentWeapon) - 1 + weapons.Count) % weapons.Count);
 			}
-			else if(Input.mouseScrollDelta.y < 0 || Input.GetKeyDown(KeyCode.E)) // 鼠标滚轮向下滚动切换到下一个武器
-			{				
+			else if ((Input.mouseScrollDelta.y < 0 || Input.GetKeyDown(KeyCode.E)) && !Global.IsGamePaused) // 鼠标滚轮向下滚动切换到下一个武器
+			{
 				UseWeapon((weapons.IndexOf(currentWeapon) + 1) % weapons.Count);
 			}
 		}
 
-        private void OnDestroy()
-        {
+		private void OnDestroy()
+		{
 			player1 = null;
-        }
+		}
 	}
 }

@@ -1,4 +1,4 @@
-// Generate Id:ca3ad753-46f6-43f8-9ba8-8e0610e7a096
+// Generate Id:ff501e1e-a5ed-44e7-9441-204149ed5bf1
 using UnityEngine;
 
 namespace ProjectBlood
@@ -12,6 +12,10 @@ namespace ProjectBlood
 		public ProjectBlood.UIMap UIMap;
 		
 		public TMPro.TextMeshProUGUI LevelText;
+		
+		public UnityEngine.UI.Image LoadingPage;
+		
+		public TMPro.TextMeshProUGUI LoadingText;
 		
 	}
 }

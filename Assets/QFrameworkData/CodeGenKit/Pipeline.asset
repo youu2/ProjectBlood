@@ -31,6 +31,12 @@ MonoBehaviour:
     - TypeName: TMPro.TextMeshProUGUI
       PathToRoot: LevelText
       MemberName: LevelText
+    - TypeName: UnityEngine.UI.Image
+      PathToRoot: LoadingPage
+      MemberName: LoadingPage
+    - TypeName: TMPro.TextMeshProUGUI
+      PathToRoot: LoadingPage/LoadingText
+      MemberName: LoadingText
     ScriptsFolder: Assets\Scripts\UI
     ClassName: GameUI
     Namespace: ProjectBlood

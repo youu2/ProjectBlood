@@ -28,7 +28,7 @@ namespace ProjectBlood
 				this.CloseSelf();
 				Global.ResetLevel();
 				Time.timeScale = 1.0f;
-				SceneManager.LoadScene("InGame");
+				GameUI.ShowLoadingPage("InGame");
 			});
 
 			BtnLegacyUpgrade.onClick.AddListener(() =>
@@ -57,19 +57,19 @@ namespace ProjectBlood
 			});
 
 		}
-		
+
 		protected override void OnOpen(IUIData uiData = null)
 		{
 		}
-		
+
 		protected override void OnShow()
 		{
 		}
-		
+
 		protected override void OnHide()
 		{
 		}
-		
+
 		protected override void OnClose()
 		{
 		}

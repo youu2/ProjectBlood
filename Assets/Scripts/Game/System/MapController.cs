@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.SceneManagement;
 using System.Linq;
 using QFramework;
 using Unity.Collections;
@@ -64,12 +65,24 @@ namespace ProjectBlood
 
         void Start()
         {
-            InitializeLevel(Level1_1.Config);
+            Global.IsGamePaused = false;
+            if (Global.currentDifficulty >= Global.LevelConfigs.Count)
+            {
+                UIKit.OpenPanel<UIGamePassPanel>();
+                return;
+            }
+            else
+            {
+                InitializeLevel(Global.LevelConfigs[Global.currentDifficulty]);
+            }
         }
+
 
         // 初始化关卡，生成房间布局和连接通道 参数：levelConfig - 关卡配置
         private void InitializeLevel(LevelsConfig levelConfig)
         {
+            GameUI.ShowLevelText(levelConfig.LevelName, duration: 3);
+
             var layout = levelConfig.InitRoom;
 
             GenerateRoomLayoutBFS(layout);
@@ -430,36 +443,14 @@ namespace ProjectBlood
         public void LoadNextLevel()
         {
             Global.currentDifficulty += 1;
-
-            FxManager.ClearAllEffects();
-
-            foreach (var room in FindObjectsOfType<Room>())
+            if (Global.currentDifficulty >= Global.LevelConfigs.Count)
             {
-                Destroy(room.gameObject);
+                UIKit.OpenPanel<UIGamePassPanel>();
             }
-
-            foreach (var enemy in FindObjectsOfType<Enemy>())
+            else
             {
-                Destroy(enemy.gameObject);
+                GameUI.ShowLoadingPage(SceneManager.GetActiveScene().name);
             }
-
-            foreach (var portal in FindObjectsOfType<Portal>())
-            {
-                Destroy(portal.gameObject);
-            }
-
-            foreach (var dropItem in FindObjectsOfType<DropItem>())
-            {
-                Destroy(dropItem.gameObject);
-            }
-
-            wallTilemap.ClearAllTiles();
-            floorTilemap.ClearAllTiles();
-
-            RoomGrid.Clear();
-            DynamicDoorLayout.Clear();
-
-            InitializeLevel(Level1_2.Config);
         }
 
         void Update()

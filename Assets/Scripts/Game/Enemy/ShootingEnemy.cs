@@ -13,41 +13,41 @@ namespace ProjectBlood
         [Header("=== 基础设置 ===")]
         [Tooltip("子弹预制体")]
         public EnemyBullet enemyBullet;
-        
+
         [Tooltip("移动速度")]
         public float speed = 2.0f;
 
         [Header("=== 状态机设置 ===")]
         [Tooltip("追击范围:进入这个距离切换到Wander状态")]
         public float chaseRange = 8f;
-        
+
         [Tooltip("攻击范围:超出这个距离回到Chase状态")]
         public float attackRange = 10f;
-        
+
         [Tooltip("Wander状态持续时间(秒)")]
         public float wanderDuration = 1.0f;
 
         [Header("=== 射击模式 ===")]
         [Tooltip("两次连射之间的间隔(秒)")]
         public float shootInterval = 2.0f;
-        
+
         [Tooltip("连射中每发子弹间隔(秒)")]
         public float burstInterval = 0.2f;
-        
+
         [Tooltip("一次连射的子弹数量")]
         public int shotsPerBurst = 3;
-        
+
         [Tooltip("总共进行几次连射")]
         public int totalBurstCount = 2;
 
         [Header("=== 散射弹丸设置 ===")]
         [Tooltip("每次射击同时发射的散射弹丸数量")]
         public int scatterBulletCount = 3;
-        
+
         [Tooltip("散布角度(总角度范围, 单位:度)")]
         [Range(0f, 180f)]
         public float scatterAngle = 45f;
-        
+
         [Tooltip("是否使用随机散布(false=均匀分布)")]
         public bool useRandomScatter = false;
 
@@ -85,16 +85,16 @@ namespace ProjectBlood
                 originalColor = spriteRenderer.color;
             }
             allColliders = GetComponentsInChildren<Collider2D>(true);
-            
+
             // 获取玩家引用
             if (player == null)
             {
                 player = Player.player1;
             }
-            
+
             // 参数校验
             ValidateParameters();
-            
+
             // 开始状态
             if (player != null)
             {
@@ -110,37 +110,37 @@ namespace ProjectBlood
                 Debug.LogWarning($"[{gameObject.name}] chaseRange 必须大于0, 已重置为默认值8");
                 chaseRange = 8f;
             }
-            
+
             if (attackRange <= chaseRange)
             {
                 Debug.LogWarning($"[{gameObject.name}] attackRange 必须大于 chaseRange, 已重置为 chaseRange + 2");
                 attackRange = chaseRange + 2f;
             }
-            
+
             if (burstInterval <= 0)
             {
                 Debug.LogWarning($"[{gameObject.name}] burstInterval 必须大于0, 已重置为默认值0.2");
                 burstInterval = 0.2f;
             }
-            
+
             if (shotsPerBurst < 1)
             {
                 Debug.LogWarning($"[{gameObject.name}] shotsPerBurst 至少为1, 已重置为1");
                 shotsPerBurst = 1;
             }
-            
+
             if (totalBurstCount < 1)
             {
                 Debug.LogWarning($"[{gameObject.name}] totalBurstCount 至少为1, 已重置为1");
                 totalBurstCount = 1;
             }
-            
+
             if (scatterBulletCount < 1)
             {
                 Debug.LogWarning($"[{gameObject.name}] scatterBulletCount 至少为1, 已重置为1");
                 scatterBulletCount = 1;
             }
-            
+
             if (scatterAngle < 0)
             {
                 Debug.LogWarning($"[{gameObject.name}] scatterAngle 不能为负数, 已重置为0");
@@ -152,25 +152,25 @@ namespace ProjectBlood
         void Update()
         {
             if (isDying) return;
-            
+
             if (player == null)
             {
                 currentState = State.Idle;
                 return;
             }
-            
+
             m_DirectionToPlayer = (player.transform.position - transform.position).normalized;
-            
+
             switch (currentState)
             {
                 case State.Chase:
                     UpdateChaseState();
                     break;
-                    
+
                 case State.Wander:
                     UpdateWanderState();
                     break;
-                    
+
                 case State.Shoot:
                     UpdateShootState();
                     break;
@@ -220,6 +220,7 @@ namespace ProjectBlood
         // 开始Wander状态
         protected virtual void StartWander()
         {
+            if (player == null) return;
             currentWanderTime = 0.0f;
             Vector3 dirToPlayer = (player.transform.position - transform.position).normalized;
             Vector3 perpendicular = new Vector3(-dirToPlayer.y, dirToPlayer.x, 0);
@@ -245,7 +246,7 @@ namespace ProjectBlood
                     FireBullet();
                     yield return new WaitForSeconds(burstInterval);
                 }
-                
+
                 // 如果不是最后一轮, 等待连射间隔
                 if (burstIndex < totalBurstCount - 1)
                 {
@@ -266,13 +267,13 @@ namespace ProjectBlood
 
             Vector3 dirToPlayer = (player.transform.position - transform.position).normalized;
             UpdateRotate(dirToPlayer);
-            
+
             // 发射散射弹丸
             for (int i = 0; i < scatterBulletCount; i++)
             {
                 float angle = CalculateBulletAngle(i);
                 Vector3 bulletDirection = CalculateBulletDirection(dirToPlayer, angle);
-                
+
                 EnemyBullet bullet = Instantiate(enemyBullet, transform.position, Quaternion.identity);
                 bullet.direction = bulletDirection;
                 bullet.gameObject.SetActive(true);
@@ -322,7 +323,7 @@ namespace ProjectBlood
         //     // 停止射击协程
         //     if (shootCoroutine != null)
         //         StopCoroutine(shootCoroutine);
-            
+
         //     yield return StartCoroutine(base.DeathSequence());
         // }
 

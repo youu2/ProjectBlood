@@ -15,31 +15,32 @@ namespace ProjectBlood
 			mData = uiData as UIGamePassPanelData ?? new UIGamePassPanelData();
 
 			Time.timeScale = 0;
+			Global.IsGamePaused = true;
 			ActionKit.OnUpdate.Register(() =>
 			{
 				if (Input.GetKeyDown(KeyCode.Space))
 				{
 					this.CloseSelf();
-					SceneManager.LoadScene("InGame");
 					Global.ResetLevel();
+					GameUI.ShowLoadingPage("InGame");
 				}
 			}).UnRegisterWhenGameObjectDestroyed(gameObject);
 
 			BtnBackHome.onClick.AddListener(() =>
 			{
 				this.CloseSelf();
-				SceneManager.LoadScene("GameStart");
+				GameUI.ShowLoadingPage("GameStart");
 			});
 		}
-		
+
 		protected override void OnOpen(IUIData uiData = null)
 		{
 		}
-		
+
 		protected override void OnShow()
 		{
 		}
-		
+
 		protected override void OnHide()
 		{
 		}
@@ -47,6 +48,7 @@ namespace ProjectBlood
 		protected override void OnClose()
 		{
 			Time.timeScale = 1;
+			Global.IsGamePaused = false;
 		}
 	}
 }

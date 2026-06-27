@@ -29,6 +29,8 @@ namespace ProjectBlood
         public static Room currentRoom;
         public static BindableProperty<bool> FireEnabled = new BindableProperty<bool>(true);
         public static int currentDifficulty;    // 0 - 9 共10个难度等级
+        public static List<LevelsConfig> LevelConfigs = new List<LevelsConfig>();
+        public static bool IsGamePaused = false;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         public static void Initialize()
@@ -43,6 +45,10 @@ namespace ProjectBlood
             Global.CoinDropRate.Value = PlayerPrefs.GetFloat("CoinDropRate", 0.30f);
             Global.MAX_HP.Value = PlayerPrefs.GetFloat("MAX_HP", 30.0f);
             currentDifficulty = 0;
+
+            LevelConfigs.Clear();
+            LevelConfigs.Add(Level1_1.Config);
+            LevelConfigs.Add(Level1_2.Config);
 
             // Register change callbacks
             LegacyPoint.Register(legacy =>
@@ -110,6 +116,7 @@ namespace ProjectBlood
             BCAttackInterval.Value = 1.5f;
             MAX_EXP.Value = 5;
             Coin.Value = 0;
+            currentDifficulty = 0;
         }
 
         public static void ResetWave()

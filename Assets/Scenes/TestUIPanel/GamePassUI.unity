@@ -1145,9 +1145,77 @@ PrefabInstance:
       propertyPath: BtnBackHome
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 6214332596721336920, guid: 8c676b0b4da6d344bbae1971cb6ca9e8, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6214332596721336920, guid: 8c676b0b4da6d344bbae1971cb6ca9e8, type: 3}
+      propertyPath: m_Interactable
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6214332596721336920, guid: 8c676b0b4da6d344bbae1971cb6ca9e8, type: 3}
+      propertyPath: m_Colors.m_NormalColor.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6214332596721336920, guid: 8c676b0b4da6d344bbae1971cb6ca9e8, type: 3}
+      propertyPath: m_Colors.m_NormalColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6214332596721336920, guid: 8c676b0b4da6d344bbae1971cb6ca9e8, type: 3}
+      propertyPath: m_Colors.m_NormalColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7145835593684685355, guid: 8c676b0b4da6d344bbae1971cb6ca9e8, type: 3}
+      propertyPath: m_fontColor.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7145835593684685355, guid: 8c676b0b4da6d344bbae1971cb6ca9e8, type: 3}
+      propertyPath: m_fontColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7145835593684685355, guid: 8c676b0b4da6d344bbae1971cb6ca9e8, type: 3}
+      propertyPath: m_fontColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7145835593684685355, guid: 8c676b0b4da6d344bbae1971cb6ca9e8, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4294967295
+      objectReference: {fileID: 0}
+    - target: {fileID: 7345471104447251222, guid: 8c676b0b4da6d344bbae1971cb6ca9e8, type: 3}
+      propertyPath: m_Color.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7345471104447251222, guid: 8c676b0b4da6d344bbae1971cb6ca9e8, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7345471104447251222, guid: 8c676b0b4da6d344bbae1971cb6ca9e8, type: 3}
+      propertyPath: m_Color.r
+      value: 0.7196069
+      objectReference: {fileID: 0}
+    - target: {fileID: 7345471104447251222, guid: 8c676b0b4da6d344bbae1971cb6ca9e8, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7564845179975367271, guid: 8c676b0b4da6d344bbae1971cb6ca9e8, type: 3}
       propertyPath: m_Name
       value: UIGamePassPanel
+      objectReference: {fileID: 0}
+    - target: {fileID: 7953488421223400441, guid: 8c676b0b4da6d344bbae1971cb6ca9e8, type: 3}
+      propertyPath: m_fontColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7953488421223400441, guid: 8c676b0b4da6d344bbae1971cb6ca9e8, type: 3}
+      propertyPath: m_fontColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7953488421223400441, guid: 8c676b0b4da6d344bbae1971cb6ca9e8, type: 3}
+      propertyPath: m_fontColor.r
+      value: 0.74368143
+      objectReference: {fileID: 0}
+    - target: {fileID: 7953488421223400441, guid: 8c676b0b4da6d344bbae1971cb6ca9e8, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4278255550
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

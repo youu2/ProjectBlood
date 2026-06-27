@@ -271,6 +271,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: UIRoot
       objectReference: {fileID: 0}
+    - target: {fileID: 1000012438581554, guid: c70aac0028afd42eabc9e0c55824c824, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 114574186442532806, guid: c70aac0028afd42eabc9e0c55824c824, type: 3}
       propertyPath: m_ReferenceResolution.x
       value: 1920
@@ -1117,6 +1121,10 @@ PrefabInstance:
       propertyPath: WeaponText
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 1471683666944701009, guid: bd3103483edad4840b33ec999dbb6609, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2184599067197971712, guid: bd3103483edad4840b33ec999dbb6609, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1200,6 +1208,10 @@ PrefabInstance:
     - target: {fileID: 7564845179975367271, guid: bd3103483edad4840b33ec999dbb6609, type: 3}
       propertyPath: m_Name
       value: UIGamePanel
+      objectReference: {fileID: 0}
+    - target: {fileID: 7564845179975367271, guid: bd3103483edad4840b33ec999dbb6609, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
