@@ -1,4 +1,4 @@
-// Generate Id:858a9563-bc76-42ad-a6d9-fe03a03ae677
+// Generate Id:a0acdd80-9506-4520-aa00-096fe2fd6613
 using UnityEngine;
 
 namespace ProjectBlood
@@ -6,6 +6,14 @@ namespace ProjectBlood
 	public partial class Player
 	{
 		public CircleCollider2D HurtBox;
+		
+		public TMPro.TextMeshProUGUI NoticeText;
+		
+		public SpriteRenderer AimMark;
+		
+		public SpriteRenderer ShieldSprite;
+		
+		public Animator PlayerAnimator;
 		
 		public ProjectBlood.DE DE;
 		
@@ -22,12 +30,6 @@ namespace ProjectBlood
 		public ProjectBlood.DE Bow;
 		
 		public UnityEngine.SpriteRenderer FireFlash;
-		
-		public TMPro.TextMeshProUGUI NoticeText;
-		
-		public SpriteRenderer AimMark;
-		
-		public SpriteRenderer ShieldSprite;
 		
 		public UnityEngine.Rigidbody2D SelfRigidbody2D;
 		

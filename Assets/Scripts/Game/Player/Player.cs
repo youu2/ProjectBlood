@@ -11,19 +11,59 @@ namespace ProjectBlood
 		public float moveSpeed = 3.5f;
 		public static Player player1;
 		public PlayerBullet playerBullet;
-		public SpriteRenderer spriteRenderer;
-		public Transform weaponTransform;
-		public WeaponBase currentWeapon;
-		private List<WeaponBase> weapons = new List<WeaponBase>();
+		public Transform weaponTransform; // 当前武器的Transform引用，用于控制武器朝向
+		public WeaponBase currentWeapon; // 当前装备的武器
+		private List<WeaponBase> weapons = new List<WeaponBase>(); // 武器列表
 		private List<AudioClip> weaponSwitchSounds = new List<AudioClip>();
 		private AudioSource temporaryAudioSource; // 用于播放切换武器时的shootEnd音效
 		private WeaponBase weaponToHide = null; // 待隐藏的武器引用（用于半自动武器延迟隐藏）
 		public BloodBank bloodBank = new BloodBank(); // 血液银行组件，特殊资源，用于弹药管理和血量管理
 		private ShieldState shieldState = new ShieldState(); // 护盾状态
-		private Vector2 smoothAimDir; // 平滑过渡后的瞄准方向
-		private const float aimSmoothSpeed = 20f; // 瞄准平滑速度
-		private const float aimAngle = 35f; // 锁定角度
-											// 显示跟随玩家的提示文本
+		private Vector2 smoothAimDir; // 平滑过渡后的瞄准方向（单位向量）
+		private const float aimSmoothSpeed = 20f; // 瞄准平滑速度，值越大过渡越快
+		private const float aimAngle = 35f; // 自动锁敌的角度范围（度）
+		private bool isFacingRight = true; // 角色当前朝向：true=朝右，false=朝左
+
+		// 设置角色水平朝向
+		// faceLeft: true=朝左，false=朝右
+		// 实现原理：
+		// 1. 修改Player根对象localScale.x实现Sprite镜像翻转
+		// 2. NoticeText反向翻转以保持文字正向显示（-1 × -1 = 1）
+		// 3. isFacingRight记录当前朝向状态
+		private void SetFlipX(bool faceLeft)
+		{
+			float scaleX = faceLeft ? -1f : 1f;
+			transform.localScale = new Vector3(scaleX, 1f, 1f);
+			NoticeText.transform.localScale = new Vector3(scaleX, 1f, 1f);
+			isFacingRight = !faceLeft;
+		}
+
+		// 根据瞄准方向更新武器朝向和角色朝向
+		// aimDir: 瞄准方向向量（单位向量）
+		// 核心原理：Player翻转后，子对象的旋转和缩放会被镜像，
+		// 因此朝左时需要对武器进行额外的旋转和缩放补偿
+		private void UpdateWeaponAim(Vector2 aimDir)
+		{
+			float angle = Mathf.Atan2(aimDir.y, aimDir.x) * Mathf.Rad2Deg;
+
+			if (aimDir.x < 0)
+			{
+				// 朝左：武器X轴翻转 + 旋转180度补偿Player镜像的影响
+				// localScale.x = -1：水平翻转武器Sprite
+				// eulerAngles = (180, 180, angle)：抵消Player翻转带来的旋转镜像
+				weaponTransform.localScale = new Vector3(-1, 1, 1);
+				weaponTransform.eulerAngles = new Vector3(180, 180, angle);
+			}
+			else
+			{
+				// 朝右：武器保持默认朝向
+				weaponTransform.localScale = new Vector3(1, 1, 1);
+				SetFlipX(false);
+				weaponTransform.eulerAngles = new Vector3(0, 0, angle);
+			}
+		}
+
+		// 显示跟随玩家的提示文本
 		public static void DisplayText(string text)
 		{
 			player1.StartCoroutine(player1.ShowText(text, 2.0f));
@@ -51,7 +91,6 @@ namespace ProjectBlood
 			weapons.Add(AK);
 			weapons.Add(AWP);
 			weapons.Add(Laser);
-			// weapons.Add(Bow);
 			weaponSwitchSounds.Add(WeaponSwitchSound);
 			UseWeapon(0); // 默认装备第一把武器
 			NoticeText.Hide();
@@ -78,9 +117,15 @@ namespace ProjectBlood
 
 			// 切换到新武器
 			currentWeapon = weapons[index];
-			// currentWeapon.BloodBank = bloodBank;
+			weaponTransform = currentWeapon.transform;
 			currentWeapon.SwitchToSet();
 			currentWeapon.Show();
+
+			// 立即将新武器对准当前瞄准方向，避免切枪时的一帧延迟
+			if (smoothAimDir != Vector2.zero)
+			{
+				UpdateWeaponAim(smoothAimDir);
+			}
 
 			// 播放切换音效（独立播放，不需要等待）
 			AudioKitManager.Instance.PlayOneShot(WeaponSwitchSound, volume: 0.3f);
@@ -141,19 +186,16 @@ namespace ProjectBlood
 			this.DestroyGameObjGracefully();
 			UIKit.OpenPanel<UIGameOverPanel>();
 		}
-		// Global.currentHP.RegisterWithInitValue(currentHP =>
-		// 	{
-		// 		HPText.text = "HP: " + currentHP + "/" + Global.MAX_HP;
-		// 	}).UnRegisterWhenGameObjectDestroyed(gameObject);
+
 		void Update()
 		{
 			float horizontal = Input.GetAxis("Horizontal"); // A/D
 			float vertical = Input.GetAxis("Vertical");     // W/S
 			weaponTransform = currentWeapon.transform;
-			if (horizontal != 0 || vertical != 0)
-			{
-				spriteRenderer.flipX = horizontal < 0; // 根据输入方向调整角色朝向
-			}
+
+			// 设置移动动画状态
+			bool isMoving = horizontal != 0 || vertical != 0;
+			PlayerAnimator.SetBool("isMoving", isMoving);
 
 			// 保持任意方向速度一致
 			var direction = new Vector2(horizontal, vertical).normalized;
@@ -244,23 +286,13 @@ namespace ProjectBlood
 			}
 
 			// 平滑过渡瞄准方向
+			// 使用线性插值使武器旋转更自然，避免方向突变
+			// 速度由aimSmoothSpeed控制插值速度，值越大过渡越快
 			smoothAimDir = Vector2.Lerp(smoothAimDir, shootDir, Time.deltaTime * aimSmoothSpeed);
 			smoothAimDir.Normalize();
 
-			// 让武器朝向平滑后的瞄准方向
-			float angle = Mathf.Atan2(smoothAimDir.y, smoothAimDir.x) * Mathf.Rad2Deg;
-			weaponTransform.eulerAngles = new Vector3(0, 0, angle);
-			// 当瞄准左边时翻转武器（假设武器默认朝右）
-			if (smoothAimDir.x < 0)
-			{
-				weaponTransform.localScale = new Vector3(1, -1, 1);
-				spriteRenderer.flipX = true;
-			}
-			else
-			{
-				weaponTransform.localScale = new Vector3(1, 1, 1);
-				spriteRenderer.flipX = false;
-			}
+			// 更新武器朝向和角色朝向
+			UpdateWeaponAim(smoothAimDir);
 
 			//鼠标左键射击（朝平滑后的瞄准方向）
 			if (Input.GetMouseButtonDown(0) && playerBullet != null && !Global.IsGamePaused)
@@ -280,8 +312,7 @@ namespace ProjectBlood
 			// 按R键换弹
 			if (Input.GetKeyDown(KeyCode.R) && !Global.IsGamePaused)
 			{
-				currentWeapon.Reload(); // 调用GunClip的reload方法进行换弹
-										// GameUI.UpdateBloodText(bloodBank);
+				currentWeapon.Reload();
 			}
 			GameUI.UpdateBloodText(bloodBank);
 

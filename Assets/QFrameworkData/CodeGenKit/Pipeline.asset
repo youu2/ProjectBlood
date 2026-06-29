@@ -19,26 +19,47 @@ MonoBehaviour:
     From: 0
     NameToFullName: []
     BindInfos:
-    - TypeName: UnityEngine.UI.Text
-      PathToRoot: ClipText
-      MemberName: ClipText
-    - TypeName: UnityEngine.UI.Text
-      PathToRoot: BloodText
-      MemberName: BloodText
-    - TypeName: ProjectBlood.UIMap
-      PathToRoot: UIMap
-      MemberName: UIMap
+    - TypeName: CircleCollider2D
+      PathToRoot: HurtBox
+      MemberName: HurtBox
     - TypeName: TMPro.TextMeshProUGUI
-      PathToRoot: LevelText
-      MemberName: LevelText
-    - TypeName: UnityEngine.UI.Image
-      PathToRoot: LoadingPage
-      MemberName: LoadingPage
-    - TypeName: TMPro.TextMeshProUGUI
-      PathToRoot: LoadingPage/LoadingText
-      MemberName: LoadingText
-    ScriptsFolder: Assets\Scripts\UI
-    ClassName: GameUI
+      PathToRoot: Notice/NoticeText
+      MemberName: NoticeText
+    - TypeName: SpriteRenderer
+      PathToRoot: AimMark
+      MemberName: AimMark
+    - TypeName: SpriteRenderer
+      PathToRoot: ShieldSprite
+      MemberName: ShieldSprite
+    - TypeName: Animator
+      PathToRoot: PlayerAnimator
+      MemberName: PlayerAnimator
+    - TypeName: ProjectBlood.DE
+      PathToRoot: PlayerAnimator/Weapon/DE
+      MemberName: DE
+    - TypeName: ProjectBlood.MP5
+      PathToRoot: PlayerAnimator/Weapon/MP5
+      MemberName: MP5
+    - TypeName: ProjectBlood.ShotGun
+      PathToRoot: PlayerAnimator/Weapon/ShotGun
+      MemberName: ShotGun
+    - TypeName: ProjectBlood.AK
+      PathToRoot: PlayerAnimator/Weapon/AK
+      MemberName: AK
+    - TypeName: ProjectBlood.AWP
+      PathToRoot: PlayerAnimator/Weapon/AWP
+      MemberName: AWP
+    - TypeName: ProjectBlood.Laser
+      PathToRoot: PlayerAnimator/Weapon/Laser
+      MemberName: Laser
+    - TypeName: ProjectBlood.DE
+      PathToRoot: PlayerAnimator/Weapon/Bow
+      MemberName: Bow
+    - TypeName: UnityEngine.SpriteRenderer
+      PathToRoot: PlayerAnimator/Weapon/FireFlash
+      MemberName: FireFlash
+    ScriptsFolder: Assets\Scripts\Game\Player
+    ClassName: Player
     Namespace: ProjectBlood
     MainCode: 
     DesignerCode: 
