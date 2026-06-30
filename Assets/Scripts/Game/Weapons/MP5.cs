@@ -30,6 +30,7 @@ namespace ProjectBlood
             ApplyLifestealToBullet(bullet);
             fireFlash.Flash(bullet.transform.position, shootDir); // 显示枪口火焰特效
             CameraUtils.ShakeMainCamera(0.1f, 7);
+            WeaponAnimator.SetTrigger("FastShot");
         }
 
     }

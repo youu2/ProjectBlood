@@ -4,19 +4,21 @@ using System.Collections;
 
 namespace ProjectBlood
 {
-    [ ViewControllerChild ]
+    [ViewControllerChild]
     public abstract class WeaponBase : ViewController, IWeapon
     {
         private Coroutine _reloadCoroutine;   // 原先的设计放在GunClip,这会依赖MonoBehaviour,违反单一职责原则
-        protected virtual int MaxAmmo{get; set;} = 10;
+        protected virtual int MaxAmmo { get; set; } = 10;
         protected GunClip gunClip;
         // protected IAudioManager AudioManager;
         private AudioPlayer _shootClipPlayer;
         private AudioPlayer _shootLoopPlayer;
-        protected virtual float ReloadTime{get; set;} = 1.5f;
+        protected virtual float ReloadTime { get; set; } = 1.5f;
+        protected bool isPlayingRecoil = false; // 是否正在播放后坐力动画
+        protected float recoilAnimationDuration = 0.5f; // 后坐力动画持续时间（与OneShot.anim时长一致）
         public virtual void InitGunClip()
         {
-            if(gunClip == null)
+            if (gunClip == null)
             {
                 gunClip = new GunClip(MaxAmmo);
             }
@@ -54,9 +56,9 @@ namespace ProjectBlood
         public abstract void StopAttacking();
         public virtual void Reload()
         {
-            if(gunClip != null && gunClip.CanReload())
+            if (gunClip != null && gunClip.CanReload())
             {
-                if(_reloadCoroutine != null)
+                if (_reloadCoroutine != null)
                 {
                     StopCoroutine(_reloadCoroutine);
                 }
@@ -68,7 +70,7 @@ namespace ProjectBlood
         private IEnumerator ReloadCoroutine()
         {
             gunClip.StartReload();
-            
+
             // 播放换弹音效
             if (reloadSound != null)
             {
@@ -80,18 +82,18 @@ namespace ProjectBlood
                 // 默认换弹时间
                 yield return new WaitForSeconds(1.5f);
             }
-            
+
             gunClip.FinishReload();
-            
+
             // 根据换弹时血库状态决定当前弹夹是否被强化
             IsBulletEnhanced = BloodBank != null && BloodBank.CurrentBloodAmount > 0;
-            
+
             // 消耗血液（血库为空时也能换弹，只是子弹不会被强化）
             if (IsBulletEnhanced)
             {
                 BloodBank.RemoveBlood(BloodRequired);
             }
-            
+
             _reloadCoroutine = null;
         }
 
@@ -107,14 +109,40 @@ namespace ProjectBlood
             AudioKitManager.Instance?.Stop(_shootClipPlayer);
         }
 
-        public virtual void SwitchFromSet(){}
-        public virtual void SwitchToSet(){} // 切回武器时的特殊处理逻辑
+        public virtual void SwitchFromSet() { }
+        public virtual void SwitchToSet() { } // 切回武器时的特殊处理逻辑
         // public virtual AudioClip GetShootEndSound() { return null; } // 获取shootEnd音效，用于切换武器时播放(全自动武器)
         public virtual AudioClip GetCurrentlyPlayingSound() { return null; } // 获取当前正在播放的音效（用于半自动武器）
         public virtual bool ShouldDelayHide() { return recentlyFired && (Time.time - lastFireTime) < FIRE_SOUND_DURATION_THRESHOLD; } // 是否应该延迟隐藏
         public virtual float GetHideDelayTime() { return FIRE_SOUND_DURATION_THRESHOLD; } // 获取延迟隐藏时间
-        public virtual void HideSprite() {} // 隐藏武器的sprite，子类需要重写
+        public virtual void HideSprite() { } // 隐藏武器的sprite，子类需要重写
         public virtual bool HasFired() { return false; } // 检查武器是否真正开火过
         public virtual bool IsPlayingShootEnd() { return false; } // 检查是否正在播放 shootEnd 音效
+
+        // /// <summary>
+        // /// 检查武器是否正在播放后坐力动画（用于暂停武器朝向更新）
+        // /// </summary>
+        // public virtual bool IsPlayingRecoilAnimation()
+        // {
+        //     return isPlayingRecoil;
+        // }
+
+        // /// <summary>
+        // /// 触发后坐力动画状态（会在指定时间后自动结束）
+        // /// </summary>
+        // protected void TriggerRecoilAnimation()
+        // {
+        //     isPlayingRecoil = true;
+        //     StartCoroutine(ResetRecoilAnimation());
+        // }
+
+        // /// <summary>
+        // /// 重置后坐力动画状态的协程
+        // /// </summary>
+        // private IEnumerator ResetRecoilAnimation()
+        // {
+        //     yield return new WaitForSeconds(recoilAnimationDuration);
+        //     isPlayingRecoil = false;
+        // }
     }
 }

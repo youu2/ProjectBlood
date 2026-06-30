@@ -31,6 +31,8 @@ namespace ProjectBlood
 
             //镜头震动
             CameraUtils.ShakeMainCamera(0.08f, 5);
+            // 触发快速射击动画
+            WeaponAnimator.SetTrigger("FastShot");
         }
 
     }

@@ -11,7 +11,7 @@ namespace ProjectBlood
 		public float moveSpeed = 3.5f;
 		public static Player player1;
 		public PlayerBullet playerBullet;
-		public Transform weaponTransform; // 当前武器的Transform引用，用于控制武器朝向
+		// public Transform weaponTransform; // 当前武器的Transform引用，用于控制武器朝向
 		public WeaponBase currentWeapon; // 当前装备的武器
 		private List<WeaponBase> weapons = new List<WeaponBase>(); // 武器列表
 		private List<AudioClip> weaponSwitchSounds = new List<AudioClip>();
@@ -33,9 +33,9 @@ namespace ProjectBlood
 		private void SetFlipX(bool faceLeft)
 		{
 			float scaleX = faceLeft ? -1f : 1f;
-			transform.localScale = new Vector3(scaleX, 1f, 1f);
-			NoticeText.transform.localScale = new Vector3(scaleX, 1f, 1f);
-			isFacingRight = !faceLeft;
+			transform.localScale = new Vector3(1.2f * scaleX, 1.2f, 1f);
+			NoticeText.transform.localScale = new Vector3(0.0005f * scaleX, 0.0005f, 1f);
+			// isFacingRight = !faceLeft;
 		}
 
 		// 根据瞄准方向更新武器朝向和角色朝向
@@ -50,17 +50,16 @@ namespace ProjectBlood
 			{
 				// 朝左：武器X轴翻转 + 旋转180度补偿Player镜像的影响
 				// localScale.x = -1：水平翻转武器Sprite
-				// eulerAngles = (180, 180, angle)：抵消Player翻转带来的旋转镜像
-				weaponTransform.localScale = new Vector3(-1, 1, 1);
-				weaponTransform.eulerAngles = new Vector3(180, 180, angle);
+				SetFlipX(true);
+				Arm.localScale = new Vector3(-1, -1, 1);
 			}
 			else
 			{
 				// 朝右：武器保持默认朝向
-				weaponTransform.localScale = new Vector3(1, 1, 1);
+				Arm.localScale = new Vector3(1, 1, 1);
 				SetFlipX(false);
-				weaponTransform.eulerAngles = new Vector3(0, 0, angle);
 			}
+			Arm.eulerAngles = new Vector3(0, 0, angle);
 		}
 
 		// 显示跟随玩家的提示文本
@@ -117,7 +116,7 @@ namespace ProjectBlood
 
 			// 切换到新武器
 			currentWeapon = weapons[index];
-			weaponTransform = currentWeapon.transform;
+			// weaponTransform = currentWeapon.transform;
 			currentWeapon.SwitchToSet();
 			currentWeapon.Show();
 
@@ -191,7 +190,7 @@ namespace ProjectBlood
 		{
 			float horizontal = Input.GetAxis("Horizontal"); // A/D
 			float vertical = Input.GetAxis("Vertical");     // W/S
-			weaponTransform = currentWeapon.transform;
+															// weaponTransform = currentWeapon.transform;
 
 			// 设置移动动画状态
 			bool isMoving = horizontal != 0 || vertical != 0;
@@ -290,7 +289,6 @@ namespace ProjectBlood
 			// 速度由aimSmoothSpeed控制插值速度，值越大过渡越快
 			smoothAimDir = Vector2.Lerp(smoothAimDir, shootDir, Time.deltaTime * aimSmoothSpeed);
 			smoothAimDir.Normalize();
-
 			// 更新武器朝向和角色朝向
 			UpdateWeaponAim(smoothAimDir);
 
@@ -350,6 +348,25 @@ namespace ProjectBlood
 			{
 				UseWeapon((weapons.IndexOf(currentWeapon) + 1) % weapons.Count);
 			}
+		}
+
+		// 获取武器当前实际指向的单位向量
+		private Vector2 GetWeaponCurrentAimDir()
+		{
+			if (Arm == null) return Vector2.right; // 兜底：默认朝右
+
+			// 获取武器的原始旋转角度
+			float currentAngle = Arm.eulerAngles.z;
+
+			// 处理朝左时的 180° 补偿（因为朝左时 weaponTransform 做了 scale.x=-1 和 eulerAngles 180 补偿）
+			if (Arm.localScale.x < 0)
+			{
+				currentAngle = (currentAngle + 180) % 360; // 还原真实角度
+			}
+
+			// 将角度转换为 2D 方向向量（单位向量）
+			float radian = currentAngle * Mathf.Deg2Rad;
+			return new Vector2(Mathf.Cos(radian), Mathf.Sin(radian)).normalized;
 		}
 
 		private void OnDestroy()

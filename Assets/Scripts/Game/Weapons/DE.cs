@@ -16,8 +16,8 @@ namespace ProjectBlood
             // BloodRequired = 3;
             ReloadTime = 2.0f;
             MaxAmmo = 8;
-			gunClip = new GunClip(MaxAmmo);
-			attackInterval = new AttackInterval(1.0f);
+            gunClip = new GunClip(MaxAmmo);
+            attackInterval = new AttackInterval(1.0f);
             base.Awake();
         }
 
@@ -36,6 +36,7 @@ namespace ProjectBlood
 
             //镜头震动
             CameraUtils.ShakeMainCamera(0.15f, 7);
+            WeaponAnimator.SetTrigger("SingleShoot");
         }
     }
 }

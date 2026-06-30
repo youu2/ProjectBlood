@@ -4,8 +4,8 @@ using System.Collections.Generic;
 
 namespace ProjectBlood
 {
-	public partial class AWP : SemiAutomaticWeapon
-	{
+    public partial class AWP : SemiAutomaticWeapon
+    {
         public List<AudioClip> AWPShootSounds = new List<AudioClip>();
         protected override List<AudioClip> ShootSounds => AWPShootSounds;
         private FireFlash fireFlash = new FireFlash(); // 枪口火焰特效组件
@@ -14,9 +14,9 @@ namespace ProjectBlood
             BloodRequired = 5;
             ReloadTime = 2.4f;
             MaxAmmo = 10;
-			gunClip = new GunClip(MaxAmmo);
-			attackInterval = new AttackInterval(1.6f);
-			base.Awake();
+            gunClip = new GunClip(MaxAmmo);
+            attackInterval = new AttackInterval(1.6f);
+            base.Awake();
         }
 
         public override void Attack(Vector2 shootDir)
@@ -30,9 +30,11 @@ namespace ProjectBlood
 
             int randomIndex = Random.Range(0, ShootSounds.Count);
             AudioKitManager.Instance.PlayOneShot(ShootSounds[randomIndex], volume: 0.6f);
-    		fireFlash.Flash(bullet.transform.position, shootDir); // 显示枪口火焰特效
+            fireFlash.Flash(bullet.transform.position, shootDir); // 显示枪口火焰特效
 
+            // 镜头震动, 触发单射击动画
             CameraUtils.ShakeMainCamera(0.15f, 7);
+            WeaponAnimator.SetTrigger("SingleShoot");
         }
-	}
+    }
 }

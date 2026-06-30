@@ -1,4 +1,4 @@
-// Generate Id:a0acdd80-9506-4520-aa00-096fe2fd6613
+// Generate Id:b5216120-bd15-47ff-949c-0f13622e91a2
 using UnityEngine;
 
 namespace ProjectBlood
@@ -14,6 +14,10 @@ namespace ProjectBlood
 		public SpriteRenderer ShieldSprite;
 		
 		public Animator PlayerAnimator;
+		
+		public Transform Arm;
+		
+		public UnityEngine.Transform Weapon;
 		
 		public ProjectBlood.DE DE;
 		

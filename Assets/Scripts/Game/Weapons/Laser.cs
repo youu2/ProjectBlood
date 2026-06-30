@@ -14,11 +14,12 @@ namespace ProjectBlood
 		// public GunClip gunClip = new GunClip(120); // 激光的弹夹，最大弹药量为120
 		protected override AudioClip OneShotSound => LaserStart;
 		protected override List<AudioClip> ShootSounds => LaserShootSounds;
-        protected override AudioClip ShootEndSound => LaserEnd;
+		protected override AudioClip ShootEndSound => LaserEnd;
+		public UnityEngine.LineRenderer SelfLineRenderer;
 		public override void Awake()
 		{
 			BloodRequired = 8;
-            ReloadTime = 2.8f;
+			ReloadTime = 2.8f;
 			MaxAmmo = 120;
 			gunClip = new GunClip(MaxAmmo);
 			attackInterval = new AttackInterval(0.2f);
@@ -64,9 +65,9 @@ namespace ProjectBlood
 					}
 				}
 			}
-			CameraUtils.ShakeMainCamera(0.06f, 5);
+			CameraUtils.ShakeMainCamera(0.04f, 5);
 		}
-		
+
 		public override void KeepAttacking(Vector2 shootDir)
 		{
 			// 为了让打空弹夹后继续按住左键同时换弹后能够正确触发循环开火音效
@@ -76,7 +77,8 @@ namespace ProjectBlood
 				newClip = false;
 			}
 
-			if (gunClip.CanShoot()){
+			if (gunClip.CanShoot())
+			{
 				DrawLaser(shootDir);
 			}
 
@@ -86,15 +88,17 @@ namespace ProjectBlood
 				attackInterval.RecordAttackTime();
 				gunClip.Shoot();
 				reloadTextShown = false; // 有弹药时重置 reload 文本显示标记
-			}else if (!gunClip.CanShoot() && !reloadTextShown)
+				WeaponAnimator.SetBool("isLaserShooting", true);
+			}
+			else if (!gunClip.CanShoot() && !reloadTextShown)
 			{
 				// 没有弹药时停止射击声音
 				StopAttacking();
 				newClip = true;
-				if(!gunClip.isReloading)
+				if (!gunClip.isReloading)
 				{
 					Player.DisplayText("[R] to Reload!");
-                    AudioKitManager.Instance.PlayOneShot("DryFireClick", volume: 0.7f);
+					AudioKitManager.Instance.PlayOneShot("DryFireClick", volume: 0.7f);
 					reloadTextShown = true; // 标记已经显示过 reload 文本
 				}
 			}
@@ -119,7 +123,7 @@ namespace ProjectBlood
 		{
 			// 只有在真正开火过的情况下才播放结束音效
 			// hasFired 为 true 表示已经开火过
-			if(hasFired)
+			if (hasFired)
 			{
 				if (SelfLineRenderer != null)
 				{
@@ -129,6 +133,7 @@ namespace ProjectBlood
 				}
 			}
 			base.StopAttacking();
+			WeaponAnimator.SetBool("isLaserShooting", false);
 		}
 
 	}

@@ -6,7 +6,7 @@ namespace ProjectBlood
 {
 	public partial class ShotGun : SemiAutomaticWeapon
 	{
-        public List<AudioClip> ShotGunSounds = new List<AudioClip>();
+		public List<AudioClip> ShotGunSounds = new List<AudioClip>();
 		protected override List<AudioClip> ShootSounds => ShotGunSounds;
 		[SerializeField] private float spreadAngle = 30f; // 圆锥散射角度，例如30度，可调节
 		[SerializeField] private int bulletCount = 5; // 每次攻击生成的子弹数量
@@ -15,13 +15,13 @@ namespace ProjectBlood
 		public override void Awake()
 		{
 			BloodRequired = 5;
-            ReloadTime = 2.1f;
-            MaxAmmo = 6;
+			ReloadTime = 2.1f;
+			MaxAmmo = 6;
 			gunClip = new GunClip(MaxAmmo);
 			attackInterval = new AttackInterval(1.0f);
 			base.Awake();
 		}
-        public override void Attack(Vector2 shootDir)
+		public override void Attack(Vector2 shootDir)
 		{
 			// 基准方向（准心瞄准方向）
 			Vector2 baseDirection = shootDir.normalized;
@@ -54,6 +54,7 @@ namespace ProjectBlood
 			}
 			fireFlash.Flash(DEBullet.transform.position, shootDir); // 显示枪口火焰特效
 			CameraUtils.ShakeMainCamera(0.15f, 7);
+			WeaponAnimator.SetTrigger("SingleShoot");
 		}
 	}
 }
