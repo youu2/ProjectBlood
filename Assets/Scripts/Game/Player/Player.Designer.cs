@@ -1,4 +1,4 @@
-// Generate Id:b5216120-bd15-47ff-949c-0f13622e91a2
+// Generate Id:36f33fbc-5c72-4e58-9ab1-b935bc96093d
 using UnityEngine;
 
 namespace ProjectBlood
@@ -10,8 +10,6 @@ namespace ProjectBlood
 		public TMPro.TextMeshProUGUI NoticeText;
 		
 		public SpriteRenderer AimMark;
-		
-		public SpriteRenderer ShieldSprite;
 		
 		public Animator PlayerAnimator;
 		
@@ -34,6 +32,8 @@ namespace ProjectBlood
 		public ProjectBlood.DE Bow;
 		
 		public UnityEngine.SpriteRenderer FireFlash;
+		
+		public SpriteRenderer ShieldSprite;
 		
 		public UnityEngine.Rigidbody2D SelfRigidbody2D;
 		

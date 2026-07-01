@@ -11,6 +11,10 @@ namespace ProjectBlood
 	{
 		protected override void OnInit(IUIData uiData = null)
 		{
+			GameUI.GUIInstance.ClipText.Show();
+			GameUI.GUIInstance.BloodText.Show();
+			GameUI.GUIInstance.UIMap.Show();
+
 			mData = uiData as UIGamePanelData ?? new UIGamePanelData();
 			// bind to Global properties
 			// update UI when properties change

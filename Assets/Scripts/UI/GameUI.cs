@@ -10,8 +10,18 @@ namespace ProjectBlood
         public static GameUI GUIInstance;
         private void Awake()
         {
-            GUIInstance = this;
+            // 每次进入场景都会新建一个GameUI实例，自动销毁避免重复实例
+            if (GUIInstance != null && GUIInstance != this)
+            {
+                Destroy(gameObject);
+            }
+            else
+            {
+                GUIInstance = this;
+            }
+            DontDestroyOnLoad(gameObject);
         }
+
         public static void UpdateClipText(GunClip gunClip)
         {
             if (GUIInstance != null && GUIInstance.ClipText != null)
@@ -69,7 +79,8 @@ namespace ProjectBlood
         private string[] loadingDots = new string[] { "Loading", "Loading.", "Loading..", "Loading..." };
         private int loadingDotIndex = 0;
 
-        public static void ShowLoadingPage(string sceneName, System.Action onLoadingComplete = null, float minDuration = 2f)
+        // 显示加载页面的同时加载场景，等待加载完成或最小加载时间
+        public static void ShowLoadingPage(string sceneName, System.Action onLoadingComplete = null, float minDuration = 1.5f)
         {
             if (GUIInstance != null)
             {
@@ -82,18 +93,27 @@ namespace ProjectBlood
             // 隐藏游戏UI面板
             UIKit.HidePanel<UIGamePanel>();
 
-            LoadingPage.gameObject.SetActive(true);
+            if (LoadingPage != null)
+            {
+                LoadingPage.gameObject.SetActive(true);
+            }
+
             Global.IsGamePaused = true;
             loadingDotIndex = 0;
 
+            // 开始加载场景, 但不激活场景
             AsyncOperation asyncOp = SceneManager.LoadSceneAsync(sceneName);
             asyncOp.allowSceneActivation = false;
 
             float elapsed = 0f;
-            // 等待加载完成(progress>=0.9)且时间够
+            // 等待加载完成(progress>=0.9)且超过最小加载时间
             while (asyncOp.progress < 0.9f || elapsed < minDuration)
             {
-                LoadingText.text = loadingDots[loadingDotIndex];
+                // 循环显示加载点文本，每0.4秒切换一次
+                if (LoadingText != null)
+                {
+                    LoadingText.text = loadingDots[loadingDotIndex];
+                }
                 loadingDotIndex = (loadingDotIndex + 1) % loadingDots.Length;
                 float dotCycleTime = 0.4f;
                 float startUnscaledTime = Time.unscaledTime;
@@ -107,13 +127,18 @@ namespace ProjectBlood
 
             // 激活场景
             asyncOp.allowSceneActivation = true;
+
             // 等待场景完全激活
             while (!asyncOp.isDone)
             {
                 yield return null;
             }
 
-            LoadingPage.gameObject.SetActive(false);
+
+            if (LoadingPage != null)
+            {
+                LoadingPage.gameObject.SetActive(false);
+            }
             Global.IsGamePaused = false;
             onLoadingComplete?.Invoke();
         }

@@ -13,7 +13,8 @@ namespace ProjectBlood
 		protected override void OnInit(IUIData uiData = null)
 		{
 			mData = uiData as UIGameStartPanelData ?? new UIGameStartPanelData();
-			Time.timeScale = 0.0f;
+			Time.timeScale = 0;
+			Global.IsGamePaused = true;
 			// Load Legacy Point from PlayerPrefs
 			Global.LegacyPoint.Value = PlayerPrefs.GetInt("LegacyPoint", 0);
 			// Register change callback
@@ -72,6 +73,8 @@ namespace ProjectBlood
 
 		protected override void OnClose()
 		{
+			Time.timeScale = 1;
+			Global.IsGamePaused = false;
 		}
 	}
 }

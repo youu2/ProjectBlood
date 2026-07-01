@@ -511,6 +511,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4155605797612644138, guid: 17d3c800398587047b66d84b8e7c00c0, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4598381515349922812, guid: 17d3c800398587047b66d84b8e7c00c0, type: 3}
       propertyPath: m_Name
       value: UIGameStartPanel
