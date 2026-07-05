@@ -116,10 +116,14 @@ MonoBehaviour:
   maxHealth: 100
   Damage: 1
   useFlipSprite: 0
+  attackRange: 30
+  chaseRange: 10
+  WanderDuration: 2
+  currentState: 0
   Triangle: {fileID: 2518356013211664919}
   SelfRigidbody2D: {fileID: 1247706901492828723}
   laserLinePrefab: {fileID: 7168842082730242219, guid: 23d4ff38c03ab824da007d21ea652fe6, type: 3}
-  laserWidth: 0.75
+  laserWidth: 2
   laserColor: {r: 1, g: 1, b: 1, a: 1}
   laserDuration: 2
   chargeMaterial: {fileID: 2100000, guid: 138a1c2f51fc1af4a93aa430d6854ccd, type: 2}
@@ -129,9 +133,6 @@ MonoBehaviour:
   damageFrequency: 3
   damagePerHit: 1
   rotationSpeed: 200
-  attackRange: 15
-  chaseRange: 13
-  wanderDuration: 1.5
   laserCount: 1
   spreadAngle: 0
   randomSpread: 0
@@ -144,7 +145,6 @@ MonoBehaviour:
   - {fileID: 21300000, guid: e9f561d7837ba48488559bcb39a19d49, type: 3}
   - {fileID: 21300000, guid: 8003f969da5dc494ba1a16846623bc8d, type: 3}
   framesPerSprite: 3
-  currentState: 0
 --- !u!58 &380176598445208031
 CircleCollider2D:
   m_ObjectHideFlags: 0

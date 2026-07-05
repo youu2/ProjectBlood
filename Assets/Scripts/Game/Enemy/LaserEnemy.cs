@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using ProjectBlood;
 using QFramework;
 using UnityEngine;
 
@@ -8,64 +7,50 @@ namespace ProjectBlood
 {
     public class LaserEnemy : Enemy
     {
-        // private AudioKitManager AudioManager = new AudioKitManager();
         private AudioPlayer _loopPlayer;
 
-        [Header("=== Laser Settings ===")]
+        [Header("=== 激光设置 ===")]
         public LineRenderer laserLinePrefab;
-        [Range(0.1f, 2f)]
-        public float laserWidth = 0.3f;
+        [Range(0.1f, 2f)] public float laserWidth = 0.3f;
         public Color laserColor = Color.magenta;
         public float laserDuration = 0.8f;
         public Material chargeMaterial;
         public Material fireMaterial;
         public float laserStartOffset = 0.55f;
-
-        [Header("=== Attack Settings ===")]
         public float chargeTime = 1.5f;
+
+        [Header("=== 攻击设置 ===")]
         public float damageFrequency = 5f;
         public float damagePerHit = 10f;
-
-        [Header("=== Movement Settings ===")]
         public float rotationSpeed = 180f;
-        public float attackRange = 15f;
-        public float chaseRange = 20f;
-        public float wanderDuration = 1.0f;
 
-        [Header("=== Multi-Laser Settings ===")]
+        [Header("=== 多激光设置 ===")]
         public int laserCount = 1;
-        [Range(0f, 180f)]
+        [Range(0f, 360f)]
         public float spreadAngle = 0f;
         public bool randomSpread = false;
 
-        [Header("=== Audio Settings ===")]
+        [Header("=== 音效设置 ===")]
         public AudioClip chargeSound;
         public AudioClip fireSound;
         public AudioClip laserLoopSound;
         public AudioClip attackEndSound;
 
-        [Header("=== Fire Flash Settings ===")]
+        [Header("=== 激光点设置 ===")]
         public SpriteRenderer fireFlashRenderer;
         public Sprite[] fireFlashSprites;
         public int framesPerSprite = 3;
-
-        public enum State
-        {
-            Idle,
-            Chase,
-            Wander,
-            Aim,
-            Fire
-        }
-        public State currentState = State.Idle;
-
         protected Player player;
         protected float chargeProgress = 0f;
-        protected Coroutine damageCoroutine;
+        private Coroutine _damageCoroutine;
+        private Coroutine _chargeCoroutine;
         protected List<List<Vector3>> laserPointsList = new List<List<Vector3>>();
         protected List<LineRenderer> laserLines = new List<LineRenderer>();
-        protected float currentWanderTime = 0f;
-        protected Vector3 wanderDirection;
+        protected List<Vector3[]> laserPointArrays = new List<Vector3[]>();
+        private int _wallLayer;
+        private int _playerLayer;
+        // protected float currentWanderTime = 0f;
+        // protected Vector3 wanderDirection;
         protected int currentSpriteIndex = 0;
         protected int frameCounter = 0;
 
@@ -88,6 +73,9 @@ namespace ProjectBlood
         {
             if (spriteRenderer == null)
                 spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+
+            _wallLayer = LayerMask.GetMask("Wall");
+            _playerLayer = LayerMask.GetMask("Player");
 
             CreateLaserLines();
 
@@ -132,91 +120,20 @@ namespace ProjectBlood
                 lr.enabled = false;
 
                 laserLines.Add(lr);
-                laserPointsList.Add(new List<Vector3>());
+                laserPointsList.Add(new List<Vector3>(2));
+                laserPointArrays.Add(new Vector3[2]);
             }
         }
 
-        void Update()
+        protected override void StartFire()
         {
-            if (isDying) return;
-
-            if (player == null)
-            {
-                currentState = State.Idle;
-                return;
-            }
-
-            switch (currentState)
-            {
-                case State.Chase:
-                    UpdateChase();
-                    break;
-                case State.Wander:
-                    UpdateWander();
-                    break;
-                case State.Aim:
-                    UpdateAim();
-                    break;
-                case State.Fire:
-                    UpdateFireFlash();
-                    break;
-            }
+            currentState = State.Fire;
+            if (_chargeCoroutine != null)
+                StopCoroutine(_chargeCoroutine);
+            _chargeCoroutine = StartCoroutine(ChargeSequence());
         }
 
-        void UpdateChase()
-        {
-            if (player == null) return;
-            
-            Vector3 dirToPlayer = GetDirectionToPlayer();
-            SmoothRotate(dirToPlayer);
-            transform.position += dirToPlayer * moveSpeed * Time.deltaTime;
-
-            if (Vector3.Distance(transform.position, player.transform.position) <= chaseRange)
-            {
-                currentState = State.Wander;
-                StartWander();
-            }
-        }
-
-        void StartWander()
-        {
-            currentWanderTime = 0f;
-            Vector3 dirToPlayer = GetDirectionToPlayer();
-            Vector3 perpendicular = new Vector3(-dirToPlayer.y, dirToPlayer.x, 0);
-            wanderDirection = Random.Range(0, 2) == 0 ? perpendicular : -perpendicular;
-        }
-
-        void UpdateWander()
-        {
-            if (player == null) return;
-            
-            transform.position += wanderDirection * moveSpeed * Time.deltaTime;
-            currentWanderTime += Time.deltaTime;
-
-            Vector3 dirToPlayer = GetDirectionToPlayer();
-            SmoothRotate(dirToPlayer);
-
-            if (currentWanderTime >= wanderDuration)
-            {
-                currentState = State.Aim;
-                StartCoroutine(ChargeSequence());
-            }
-
-            if (Vector3.Distance(transform.position, player.transform.position) > attackRange)
-            {
-                currentState = State.Chase;
-            }
-        }
-
-        void UpdateAim()
-        {
-            if (player == null) return;
-            
-            Vector3 dirToPlayer = GetDirectionToPlayer();
-            SmoothRotate(dirToPlayer);
-        }
-
-        void UpdateFireFlash()
+        protected override void UpdateFire(float distanceToPlaye)  // 更新枪口激光点
         {
             if (fireFlashRenderer == null || fireFlashSprites == null || fireFlashSprites.Length == 0)
                 return;
@@ -230,21 +147,18 @@ namespace ProjectBlood
             }
         }
 
-        Vector3 GetDirectionToPlayer()
+        protected void UpdateFireFlash()  // 更新枪口激光点
         {
-            if (player == null)
-                return transform.right;
-            return (player.transform.position - transform.position).normalized;
-        }
+            if (fireFlashRenderer == null || fireFlashSprites == null || fireFlashSprites.Length == 0)
+                return;
 
-        void SmoothRotate(Vector3 direction)
-        {
-            if (direction.x == 0 && direction.y == 0) return;
-
-            float targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            float currentAngle = transform.eulerAngles.z;
-            float newAngle = Mathf.LerpAngle(currentAngle, targetAngle, rotationSpeed * Time.deltaTime / 180f);
-            transform.eulerAngles = new Vector3(0, 0, newAngle);
+            frameCounter++;
+            if (frameCounter >= framesPerSprite)
+            {
+                frameCounter = 0;
+                currentSpriteIndex = (currentSpriteIndex + 1) % fireFlashSprites.Length;
+                fireFlashRenderer.sprite = fireFlashSprites[currentSpriteIndex];
+            }
         }
 
         IEnumerator ChargeSequence()
@@ -259,10 +173,8 @@ namespace ProjectBlood
                     HideLaser();
                     yield break;
                 }
-                
+
                 chargeProgress += Time.deltaTime / chargeTime;
-                Vector3 dirToPlayer = GetDirectionToPlayer();
-                SmoothRotate(dirToPlayer);
                 ShowChargeIndicator();
 
                 if (Vector3.Distance(transform.position, player.transform.position) > attackRange)
@@ -323,17 +235,17 @@ namespace ProjectBlood
             }
 
             ShowFireFlash();
-
-            damageCoroutine = StartCoroutine(ApplyContinuousDamage());
+            _damageCoroutine = StartCoroutine(ApplyContinuousDamage()); // 持续造成伤害直到退出开火状态
             yield return StartCoroutine(UpdateLaserBeam());
-            StopCoroutine(damageCoroutine);
+            StopCoroutine(_damageCoroutine);
             AudioKitManager.Instance.Stop(_loopPlayer);
             AudioKitManager.Instance.PlayOneShot(attackEndSound);
             yield return StartCoroutine(FadeOutLaser());
             HideFireFlash();
+
             foreach (var points in laserPointsList)
                 points.Clear();
-            currentState = State.Chase;
+            currentState = State.Chase; // 激光敌人攻击距离很远，所以攻击完之后直接进入追击状态，这样就能用追击距离控制交火距离
         }
 
         void ShowFireFlash()
@@ -364,19 +276,18 @@ namespace ProjectBlood
                     HideLaser();
                     yield break;
                 }
-                
-                Vector3 dirToPlayer = GetDirectionToPlayer();
-                SmoothRotate(dirToPlayer);
+
+                UpdateRotate(direction);
 
                 for (int i = 0; i < laserCount; i++)
                 {
                     float angleOffset = GetLaserAngleOffset(i);
                     Vector3 laserDir = RotateVector(transform.right, angleOffset);
                     Vector3 startPos = transform.position + transform.right * laserStartOffset;
-                    
+
                     laserPointsList[i].Clear();
-                    CalculateLaserPath(i, startPos, laserDir);
-                    UpdateLaserVisuals(i);
+                    CalculateLaserPath(i, startPos, laserDir); // 计算激光的起点终点
+                    UpdateLaserVisuals(i);  // 绘制
                 }
 
                 elapsed += Time.deltaTime;
@@ -405,34 +316,45 @@ namespace ProjectBlood
             ).normalized;
         }
 
+        // 计算激光路径
+        // 1. 检查是否碰撞到墙
+        // 2. 如果没有碰撞到墙，计算激光路径到玩家
         void CalculateLaserPath(int laserIndex, Vector3 start, Vector3 direction)
         {
-            laserPointsList[laserIndex].Add(start);
+            var points = laserPointsList[laserIndex];
+            points.Clear();
+            points.Add(start);
 
-            RaycastHit2D hit = Physics2D.Raycast(start, direction, Mathf.Infinity, LayerMask.GetMask("Wall"));
+            RaycastHit2D hit = Physics2D.Raycast(start, direction, attackRange, _wallLayer);
 
             if (hit.collider != null)
             {
-                laserPointsList[laserIndex].Add(hit.point);
+                points.Add(hit.point);
             }
             else
             {
-                Vector3 endPoint = start + direction * attackRange;
-                laserPointsList[laserIndex].Add(endPoint);
+                points.Add(start + direction * attackRange);
             }
         }
 
         void UpdateLaserVisuals(int laserIndex)
         {
             if (laserLines.Count <= laserIndex || laserPointsList.Count <= laserIndex) return;
-            
+
+            // 获取当前激光对应的LineRenderer和路径点列表
             LineRenderer lr = laserLines[laserIndex];
             List<Vector3> points = laserPointsList[laserIndex];
-            
+
+            // 路径点不足2个就无法画线
+            // 原本有计划实现激光反射，所以可能有两个以上的路径点
             if (lr == null || points.Count < 2) return;
 
             lr.positionCount = points.Count;
-            lr.SetPositions(points.ToArray());
+            for (int i = 0; i < points.Count; i++)
+            {
+                laserPointArrays[laserIndex][i] = points[i];
+            }
+            lr.SetPositions(laserPointArrays[laserIndex]);
         }
 
         void CheckPlayerDamage(Vector3 start, Vector3 end)
@@ -440,7 +362,7 @@ namespace ProjectBlood
             Vector3 direction = (end - start).normalized;
             float distance = Vector3.Distance(start, end);
 
-            RaycastHit2D hit = Physics2D.Raycast(start, direction, distance, LayerMask.GetMask("Player"));
+            RaycastHit2D hit = Physics2D.Raycast(start, direction, distance, _playerLayer);
 
             if (hit.collider != null)
             {
@@ -505,26 +427,12 @@ namespace ProjectBlood
             }
         }
 
-        // protected override IEnumerator DeathSequence()
-        // {
-        //     if (damageCoroutine != null)
-        //         StopCoroutine(damageCoroutine);
-
-        //     AudioManager.Stop(_loopPlayer);
-        //     HideLaser();
-        //     HideFireFlash();
-
-        //     yield return StartCoroutine(base.DeathSequence());
-        // }
-
-        protected override void FixedUpdate()
-        {
-        }
-
         public override void OnDestroy()
         {
-            if (damageCoroutine != null)
-                StopCoroutine(damageCoroutine);
+            if (_damageCoroutine != null)
+                StopCoroutine(_damageCoroutine);
+            if (_chargeCoroutine != null)
+                StopCoroutine(_chargeCoroutine);
             AudioKitManager.Instance.Stop(_loopPlayer);
             HideLaser();
             HideFireFlash();

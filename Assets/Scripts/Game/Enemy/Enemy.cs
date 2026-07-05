@@ -7,64 +7,139 @@ namespace ProjectBlood
 {
 	public partial class Enemy : ViewController, IDamageable
 	{
+		[Header("=== 基础敌人设置 ===")]
 		[SerializeField] protected SpriteRenderer body;
 		protected SpriteRenderer spriteRenderer;
 		public float moveSpeed = 2.0f;
-		public float currentHealth = 100.0f;
+		public float currentHealth;
 		public float maxHealth = 100.0f; // 敌人总生命值，记录初始血量用于吸血 PB 换算
-		public float Damage = 5.0f;
-		protected Color originalColor;  // Restore the original color after flash
-		protected bool isDying = false; // Avoid repeating death process.
-		protected Collider2D[] allColliders;
-		private Rigidbody2D rb;
-		protected Vector3 direction;
+		[SerializeField] protected float Damage = 5.0f;
+		protected Vector3 direction;    // 敌人朝向玩家的方向
 		[Tooltip("是否使用翻转来朝向玩家（关闭则直接旋转）")]
 		public bool useFlipSprite = true;
+		[Tooltip("攻击距离通常要比追击距离远一点, 避免Wander期间敌人自己走出攻击范围")]
+		[SerializeField] protected float attackRange = 12f;  // 攻击范围:超出这个距离回到Chase状态
+		[SerializeField] protected float chaseRange = 10f;    // 追击范围:进入这个距离切换到Wander状态
+		[SerializeField] protected float WanderDuration = 2.0f;
+		protected float currentWanderTime = 0.0f;
+		protected Vector3 wanderDirection = Vector3.right;
+
+		public enum State
+		{
+			Idle,   // 空闲状态
+			Chase,  // 追逐玩家
+			Wander, // 游走，结束时开启充能
+			Fire    // 攻击
+		}
+		public State currentState = State.Idle;
 
 		protected virtual void Awake()
 		{
-			spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-			rb = GetComponent<Rigidbody2D>();
-
-			// get all 2D colliders on itself and child objects
-			allColliders = GetComponentsInChildren<Collider2D>(true);
-
-			if (spriteRenderer == null)
-				Debug.LogError("Enemy: SpriteRenderer not found!");
-
-			originalColor = spriteRenderer.color;
-
+			spriteRenderer = GetComponentInChildren<SpriteRenderer>();  // 用于朝向控制
+			currentHealth = maxHealth;
 			// 记录敌人总生命值（仅在第一次初始化时记录，避免被多次实例化重置）
-			if (maxHealth <= 0f)
+			// if (maxHealth <= 0f)
+			// {
+			// 	maxHealth = currentHealth;
+			// }
+			if (Player.player1 != null) currentState = State.Chase;
+		}
+
+		protected virtual void Update()
+		{
+
+			if (Player.player1 == null)
 			{
-				maxHealth = currentHealth;
+				currentState = State.Idle;
+				return;
 			}
-		}
 
-		void Start()
-		{
-			// Code Here
-		}
-
-		protected virtual void FixedUpdate()
-		{
-			if (Player.player1)
-			{
-				direction = (Player.player1.transform.position - transform.position).normalized;
-				//transform.Translate(direction * Time.deltaTime * moveSpeed);
-				SelfRigidbody2D.velocity = direction * moveSpeed;
-			}
-		}
-
-		void Update()
-		{
+			direction = GetDirectionToPlayer();
 			UpdateRotate(direction);
-			if (isDying) return;  // stop moving during death process
+			float distanceToPlayer = GetDistanceToPlayer();
+
+			switch (currentState)
+			{
+				case State.Chase:
+					UpdateChase(distanceToPlayer);
+					break;
+				case State.Wander:
+					UpdateWander(distanceToPlayer);
+					break;
+				case State.Fire:
+					UpdateFire(distanceToPlayer);
+					break;
+			}
+		}
+
+		protected float GetDistanceToPlayer()
+		{
+			return Vector3.Distance(transform.position, Player.player1.transform.position);
+		}
+
+		protected virtual void UpdateChase(float distanceToPlayer)
+		{
+			transform.position += direction * moveSpeed * Time.deltaTime;
+			if (distanceToPlayer <= chaseRange)
+			{
+				currentState = State.Wander;
+				StartWander();
+			}
+		}
+
+		protected virtual void StartWander()
+		{
+			currentWanderTime = 0f;
+			Vector3 perpendicular = new Vector3(-direction.y, direction.x, 0);
+			wanderDirection = Random.Range(0, 2) == 0 ? perpendicular : -perpendicular;
+		}
+
+		protected virtual void UpdateWander(float distanceToPlayer)
+		{
+			if (Player.player1 == null) return;
+			if (currentWanderTime >= WanderDuration)
+			{
+				StartFire();
+			}
+			if (distanceToPlayer > attackRange)
+			{
+				currentState = State.Chase;
+			}
+			transform.position += wanderDirection * moveSpeed * Time.deltaTime;
+			currentWanderTime += Time.deltaTime;
+
+		}
+
+		protected virtual void StartFire()
+		{
+			currentState = State.Fire;
+		}
+
+		protected virtual void MakeDamage()
+		{
+			Player.player1?.TakeDamage(HitDamage);
+		}
+
+		protected virtual void UpdateFire(float distanceToPlayer)
+		{
+			if (Player.player1 == null) return;
+			if (distanceToPlayer > attackRange)
+			{
+				currentState = State.Chase;
+			}
+		}
+
+		protected Vector3 GetDirectionToPlayer()
+		{
+			if (Player.player1 == null)
+				return transform.right;
+			return (Player.player1.transform.position - transform.position).normalized;
 		}
 
 		// 更新朝向面向玩家
 		public virtual void UpdateRotate(Vector3 dirToPlayer)
 		{
+			if (dirToPlayer.x == 0 && dirToPlayer.y == 0) return;
 			if (spriteRenderer != null)
 			{
 				if (useFlipSprite)
@@ -82,27 +157,15 @@ namespace ProjectBlood
 		}
 
 		// 敌人受伤
-		public void TakeDamage(float Damage, Vector2 HitDir)
+		public void TakeDamage(float damage, Vector2 HitDir)
 		{
-			if (isDying) return;
 			AudioKitManager.Instance.PlayOneShot("Torch Impact 2", volume: 0.5f);
 			FxManager.PlayEnemyHurtFX(transform.Position2D());
 			FxManager.DrawEnemyBlood(transform.Position2D());
-			this.currentHealth -= Damage;
+			currentHealth -= damage;
 			if (currentHealth <= 0f)
 			{
 				Death(HitDir);
-			}
-		}
-
-		// flash after the enemy is hit
-		protected virtual IEnumerator FlashWhite()
-		{
-			if (spriteRenderer != null)
-			{
-				spriteRenderer.color = Color.white;  // flash
-				yield return new WaitForSeconds(0.18f);
-				spriteRenderer.color = originalColor; // restore original color
 			}
 		}
 
@@ -114,12 +177,7 @@ namespace ProjectBlood
 			{
 				Room.GetEnemies().Remove(this);
 			}
-			isDying = true;
 			moveSpeed = 0f;
-			if (allColliders != null)
-			{
-				foreach (var c in allColliders) if (c) c.enabled = false;
-			}
 
 			FxManager.SpawnEnemyBody(body, transform.Position2D(), HitDir);
 
@@ -127,49 +185,7 @@ namespace ProjectBlood
 			this.DestroyGameObjGracefully();
 		}
 
-		// Death process (Flash first, then destroy, avoid enemy disappearing directly)
-		// protected virtual IEnumerator DeathSequence()
-		// {
-		// 	// Drop experience item, destroy enemy
-		// 	// Global.GenerateExp(this.gameObject);
-		//     if (Room != null)
-		//     {
-		//         Room.GetEnemies().Remove(this);
-		//     }
-		//     isDying = true;
-		//     moveSpeed = 0f;
-		// 	if (allColliders != null)
-		//     {
-		//         foreach (var c in allColliders) if (c) c.enabled = false;
-		//     }
-
-		//     // flash before death
-		// 	if (spriteRenderer != null)
-		// 	{
-		// 		for (int i = 0; i < 3; i++)
-		// 		{
-		// 			spriteRenderer.color = Color.white;
-
-		// 			yield return new WaitForSeconds(0.08f);
-
-		// 			spriteRenderer.color = Color.red;
-
-		// 			yield return new WaitForSeconds(0.08f);
-		// 		}
-		// 	}
-		//     yield return new WaitForSeconds(0.15f);
-		// 	// enemySpawner.EnemyDestroyed();
-		// 	Global.currentNum.Value -= 1;
-		//     this.DestroyGameObjGracefully();
-		// }
-
-		// public SpriteRenderer GetSprite()
-		// {
-		// 	return spriteRenderer;
-		// }
-
 		public float HitDamage { get => Damage; }
-		public bool IsDying { get => isDying; }
 		public GameObject GameObject { get => gameObject; }
 		public Room Room { get; set; }
 		public float CurrentHealth { get => currentHealth; }

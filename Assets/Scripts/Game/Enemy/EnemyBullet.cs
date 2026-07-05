@@ -22,7 +22,7 @@ public class EnemyBullet : MonoBehaviour
         {
             Player.player1.TakeDamage(damage);
         }
-        
+
         // 无论碰撞到什么都销毁子弹
         this.DestroyGameObjGracefully();
     }

@@ -347,13 +347,16 @@ MonoBehaviour:
   ArchitectureFullTypeName: 
   ViewControllerFullTypeName: 
   body: {fileID: 7602382563342385730}
-  moveSpeed: 1.5
+  moveSpeed: 2
   currentHealth: 100
   maxHealth: 100
   Damage: 2
   useFlipSprite: 1
+  WanderDuration: 0
+  currentState: 0
   Triangle: {fileID: 5188537939753590579}
   SelfRigidbody2D: {fileID: 7883401417386688070}
+  AttackInterval: 1.5
 --- !u!114 &1998963291594443156
 MonoBehaviour:
   m_ObjectHideFlags: 0

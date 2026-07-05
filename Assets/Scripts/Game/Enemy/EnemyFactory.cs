@@ -20,16 +20,12 @@ namespace ProjectBlood
 			Instance = null;
 		}
 
-		// public static IDamageable GetSlimeBlue()
-		// {
-		// 	return Instance.SlimeBlue;
-		// }
 		public static GameObject EnemyByScore(int score)
 		{
-			if (score == 1) return Instance.SlimeBlue;
-			if (score == 2) return Instance.AG;
-			if (score == 3) return Instance.Compiler;
-			if (score == 4) return Instance.DemonI;
+			if (score == 1) return Instantiate(Instance.SlimeBlue).Hide();
+			if (score == 2) return Instantiate(Instance.AG).Hide();
+			if (score == 3) return Instantiate(Instance.Compiler).Hide();
+			if (score == 4) return Instantiate(Instance.DemonI).Hide();
 			return null;
 		}
 
