@@ -11,19 +11,17 @@ namespace ProjectBlood
 	{
 		protected override void OnInit(IUIData uiData = null)
 		{
-			GameUI.GUIInstance.ClipText.Show();
-			GameUI.GUIInstance.BloodText.Show();
-			GameUI.GUIInstance.UIMap.Show();
+			GameUI.ShowGameUI();
 
 			mData = uiData as UIGamePanelData ?? new UIGamePanelData();
 			// bind to Global properties
 			// update UI when properties change
 			Global.currentHP.RegisterWithInitValue(currentHP =>
 			{
-				HPText.text = "HP: " + Mathf.FloorToInt(currentHP) + "/" + Mathf.FloorToInt(Global.MAX_HP.Value);
+				HPText.text = "HP: " + Mathf.FloorToInt(currentHP) + "/" + Mathf.FloorToInt(Global.INGAME_MAX_HP.Value);
 			}).UnRegisterWhenGameObjectDestroyed(gameObject);
 
-			Global.MAX_HP.RegisterWithInitValue(maxHP =>
+			Global.INGAME_MAX_HP.RegisterWithInitValue(maxHP =>
 			{
 				HPText.text = "HP: " + Mathf.FloorToInt(Global.currentHP.Value) + "/" + Mathf.FloorToInt(maxHP);
 			}).UnRegisterWhenGameObjectDestroyed(gameObject);
@@ -64,25 +62,17 @@ namespace ProjectBlood
 			{
 				Time.timeScale = 1;
 				Global.IsGamePaused = false; // 重新启用开火
-											 // BtnUpgradeDamage.Hide();
 				UpgradeRoot.Hide();
-				Global.BlazingCircleDamage.Value *= 1.2f;
-				//BlazingCircle.upgrade();
+				PlayerUpgrade.UpgradeDamage();
 			});
 
-			BtnUpgradeAttackSpeed.onClick.AddListener(() =>
+			BtnUpgradeHP.onClick.AddListener(() =>
 			{
 				Time.timeScale = 1;
 				Global.IsGamePaused = false; // 重新启用开火
-											 // BtnUpgradeAttackSpeed.Hide();
 				UpgradeRoot.Hide();
-				Global.BCAttackInterval.Value *= 0.91f;
+				PlayerUpgrade.UpgradeHP();
 			});
-
-			// ActionKit.OnUpdate.Register(() =>
-			// {
-			// 	Global.RemainingTime.Value -= Time.deltaTime;
-			// }).UnRegisterWhenGameObjectDestroyed(gameObject);
 
 			// display Legacy Point
 			Global.LegacyPoint.RegisterWithInitValue(legacy =>

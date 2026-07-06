@@ -297,11 +297,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 220123113487038574}
-  - component: {fileID: 51770384332526387}
   - component: {fileID: 1998963291594443156}
   - component: {fileID: 7883401417386688070}
   - component: {fileID: 5159761165841011455}
   - component: {fileID: 126142792584932995}
+  - component: {fileID: 4737079034023530160}
   m_Layer: 7
   m_Name: SlimeBlue
   m_TagString: Enemy
@@ -327,36 +327,6 @@ Transform:
   - {fileID: 2520403382610342304}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &51770384332526387
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9221604444027369072}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1084483f85f09ec469d0598b08551f0e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Namespace: ProjectBlood
-  ScriptName: Enemy
-  ScriptsFolder: Assets\Scripts\Game\Enemy
-  GeneratePrefab: 0
-  PrefabFolder: Assets/Art/Prefab
-  ArchitectureFullTypeName: 
-  ViewControllerFullTypeName: 
-  body: {fileID: 7602382563342385730}
-  moveSpeed: 2
-  currentHealth: 100
-  maxHealth: 100
-  Damage: 2
-  useFlipSprite: 1
-  WanderDuration: 0
-  currentState: 0
-  Triangle: {fileID: 5188537939753590579}
-  SelfRigidbody2D: {fileID: 7883401417386688070}
-  AttackInterval: 1.5
 --- !u!114 &1998963291594443156
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -372,7 +342,7 @@ MonoBehaviour:
   MarkType: 0
   CustomComponentName: Enemy
   CustomComment: 
-  mComponentName: ProjectBlood.Enemy
+  mComponentName: ProjectBlood.MeleeEnemy
 --- !u!50 &7883401417386688070
 Rigidbody2D:
   serializedVersion: 4
@@ -450,3 +420,35 @@ CircleCollider2D:
   m_Offset: {x: 0, y: -0.016387582}
   serializedVersion: 2
   m_Radius: 0.41260016
+--- !u!114 &4737079034023530160
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9221604444027369072}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af6959b4d864b9e4fb52bd450e2da0a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Namespace: ProjectBlood
+  ScriptName: SlimeBlue
+  ScriptsFolder: Assets\Scripts\Game\Enemy
+  GeneratePrefab: 0
+  PrefabFolder: Assets/Art/Prefab
+  ArchitectureFullTypeName: 
+  ViewControllerFullTypeName: 
+  body: {fileID: 5188537939753590579}
+  moveSpeed: 2
+  currentHealth: 0
+  maxHealth: 100
+  Damage: 5
+  useFlipSprite: 1
+  attackRange: 1.5
+  chaseRange: 10
+  WanderDuration: 0
+  currentState: 0
+  Triangle: {fileID: 0}
+  SelfRigidbody2D: {fileID: 0}
+  AttackInterval: 1.5

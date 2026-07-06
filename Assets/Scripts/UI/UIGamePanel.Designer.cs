@@ -5,15 +5,13 @@ using QFramework;
 
 namespace ProjectBlood
 {
-	// Generate Id:db2837e7-ffd5-4266-a2fa-606c0664ab9c
+	// Generate Id:b694a3ec-b243-45bf-84b7-a8c0a443f73f
 	public partial class UIGamePanel
 	{
 		public const string Name = "UIGamePanel";
 		
 		[SerializeField]
 		public TMPro.TextMeshProUGUI HPText;
-		[SerializeField]
-		public TMPro.TextMeshProUGUI WeaponText;
 		[SerializeField]
 		public TMPro.TextMeshProUGUI ExpText;
 		[SerializeField]
@@ -29,14 +27,13 @@ namespace ProjectBlood
 		[SerializeField]
 		public UnityEngine.UI.Button BtnUpgradeDamage;
 		[SerializeField]
-		public UnityEngine.UI.Button BtnUpgradeAttackSpeed;
+		public UnityEngine.UI.Button BtnUpgradeHP;
 		
 		private UIGamePanelData mPrivateData = null;
 		
 		protected override void ClearUIComponents()
 		{
 			HPText = null;
-			WeaponText = null;
 			ExpText = null;
 			LegacyText = null;
 			CoinText = null;
@@ -44,7 +41,7 @@ namespace ProjectBlood
 			TimeText = null;
 			UpgradeRoot = null;
 			BtnUpgradeDamage = null;
-			BtnUpgradeAttackSpeed = null;
+			BtnUpgradeHP = null;
 			
 			mData = null;
 		}

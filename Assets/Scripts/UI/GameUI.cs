@@ -26,7 +26,7 @@ namespace ProjectBlood
         {
             if (GUIInstance != null && GUIInstance.ClipText != null)
             {
-                GUIInstance.ClipText.text = $"Ammo: {gunClip.currentAmmo} / {gunClip.maxAmmo}\n([R] to reload)";
+                GUIInstance.ClipText.text = $"Ammo: {gunClip.currentAmmo} / {gunClip.maxAmmo}";
             }
         }
         public static void UpdateBloodText(BloodBank bloodBank)
@@ -91,7 +91,8 @@ namespace ProjectBlood
         private IEnumerator LoadingPageCoroutine(string sceneName, System.Action onLoadingComplete, float minDuration)
         {
             // 隐藏游戏UI面板
-            UIKit.HidePanel<UIGamePanel>();
+            // UIKit.HidePanel<UIGamePanel>();
+            HideGameUI();
 
             if (LoadingPage != null)
             {
@@ -141,6 +142,24 @@ namespace ProjectBlood
             }
             Global.IsGamePaused = false;
             onLoadingComplete?.Invoke();
+        }
+
+        // 由于我同时使用（练习）了UnityEngine的GameUI和QF的UIGamePanel，
+        // 所以这里需要同时操作GameUI和UIGamePanel的显示隐藏状态
+        public static void HideGameUI()
+        {
+            UIKit.HidePanel<UIGamePanel>();
+            GUIInstance.ClipText.Hide();
+            GUIInstance.BloodText.Hide();
+            GUIInstance.UIMap.Hide();
+        }
+
+        public static void ShowGameUI()
+        {
+            UIKit.ShowPanel<UIGamePanel>();
+            GUIInstance.ClipText.Show();
+            GUIInstance.BloodText.Show();
+            GUIInstance.UIMap.Show();
         }
     }
 }

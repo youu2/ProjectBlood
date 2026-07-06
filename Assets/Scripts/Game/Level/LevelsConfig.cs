@@ -10,6 +10,7 @@ namespace ProjectBlood
         // public int difficulty;
     }
 
+    // 每个关卡有3种不同的布局，随机选择一种
     public class Level1_1
     {
         public static LevelsConfig Config = new LevelsConfig()
