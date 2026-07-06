@@ -14,8 +14,6 @@ namespace ProjectBlood
 		public WeaponBase currentWeapon; // 当前装备的武器
 		private List<WeaponBase> weapons = new List<WeaponBase>(); // 武器列表
 		private List<AudioClip> weaponSwitchSounds = new List<AudioClip>();
-		private AudioSource temporaryAudioSource; // 用于播放切换武器时的shootEnd音效
-		private WeaponBase weaponToHide = null; // 待隐藏的武器引用（用于半自动武器延迟隐藏）
 		public BloodBank bloodBank = new BloodBank(); // 血液银行组件，特殊资源，用于弹药管理和血量管理
 		private ShieldState shieldState = new ShieldState(); // 护盾状态
 		private Vector2 smoothAimDir; // 平滑过渡后的瞄准方向（单位向量）
@@ -98,7 +96,7 @@ namespace ProjectBlood
 			shieldState.Initialize(ShieldSprite, this);
 
 			// 创建临时的 AudioSource 用于播放切换武器时的 shootEnd 音效
-			temporaryAudioSource = gameObject.AddComponent<AudioSource>();
+			// temporaryAudioSource = gameObject.AddComponent<AudioSource>();
 		}
 
 		void UseWeapon(int index)

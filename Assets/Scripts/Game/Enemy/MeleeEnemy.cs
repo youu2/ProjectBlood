@@ -29,7 +29,7 @@ namespace ProjectBlood
         IEnumerator FireSequence()
         {
             MakeDamage();
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(AttackInterval);
             currentState = State.Chase;
         }
 

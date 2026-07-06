@@ -10,19 +10,15 @@ namespace ProjectBlood
 		[Header("=== 激光攻击设置 ===")]
 		[Tooltip("激光实际攻击宽度")]
 		public float laserWidth = 0.5f;
-		public List<AudioClip> LaserShootSounds = new List<AudioClip>();
-		// public GunClip gunClip = new GunClip(120); // 激光的弹夹，最大弹药量为120
-		protected override AudioClip OneShotSound => LaserStart;
-		protected override List<AudioClip> ShootSounds => LaserShootSounds;
-		protected override AudioClip ShootEndSound => LaserEnd;
-		public UnityEngine.LineRenderer SelfLineRenderer;
+		public LineRenderer SelfLineRenderer;
+		public SpriteRenderer LaserPoint;
 		public override void Awake()
 		{
 			BloodRequired = 8;
 			ReloadTime = 2.8f;
 			MaxAmmo = 120;
 			gunClip = new GunClip(MaxAmmo);
-			attackInterval = new AttackInterval(0.2f);
+			attackInterval = new AttackIntervalFeature(0.2f);
 			base.Awake();
 		}
 
@@ -58,9 +54,9 @@ namespace ProjectBlood
 					damageable.TakeDamage(finalDamage, playerToEnemyDir);
 
 					// 吸血：致命一击时按敌人总生命值换算为 PB 道具
-					if (isLethal && GetLifestealPercent() > 0f && Player.player1 != null && enemyMaxHP > 0f)
+					if (isLethal && Lifesteal.Level > 0 && Player.player1 != null && enemyMaxHP > 0f)
 					{
-						float totalLifesteal = enemyMaxHP * (GetLifestealPercent() / 100f);
+						float totalLifesteal = Lifesteal.GetLifestealAmount(enemyMaxHP);
 						Global.GeneratePureBlood(damageHit.collider.gameObject, totalLifesteal);
 					}
 				}

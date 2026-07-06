@@ -2,13 +2,13 @@ using UnityEngine;
 
 namespace ProjectBlood
 {
-    public class AttackInterval
+    public class AttackIntervalFeature
     {
         private float attackInterval;
 
         public float lastAttackTime = 0f;
 
-        public AttackInterval(float attackInterval = 0.5f)
+        public AttackIntervalFeature(float attackInterval = 0.5f)
         {
             this.attackInterval = attackInterval;
         }

@@ -7,15 +7,13 @@ namespace ProjectBlood
     public partial class AWP : SemiAutomaticWeapon
     {
         public List<AudioClip> AWPShootSounds = new List<AudioClip>();
-        protected override List<AudioClip> ShootSounds => AWPShootSounds;
-        private FireFlash fireFlash = new FireFlash(); // 枪口火焰特效组件
         public override void Awake()
         {
             BloodRequired = 5;
             ReloadTime = 2.4f;
             MaxAmmo = 10;
             gunClip = new GunClip(MaxAmmo);
-            attackInterval = new AttackInterval(1.6f);
+            attackInterval = new AttackIntervalFeature(1.6f);
             base.Awake();
         }
 

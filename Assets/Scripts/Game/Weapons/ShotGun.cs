@@ -7,20 +7,7 @@ namespace ProjectBlood
 	public partial class ShotGun : SemiAutomaticWeapon
 	{
 		public List<AudioClip> ShotGunSounds = new List<AudioClip>();
-		protected override List<AudioClip> ShootSounds => ShotGunSounds;
-		[SerializeField] private float spreadAngle = 30f; // 圆锥散射角度，例如30度，可调节
 		[SerializeField] private int bulletCount = 5; // 每次攻击生成的子弹数量
-		private FireFlash fireFlash = new FireFlash(); // 枪口火焰特效组件
-
-		public override void Awake()
-		{
-			BloodRequired = 5;
-			ReloadTime = 2.1f;
-			MaxAmmo = 6;
-			gunClip = new GunClip(MaxAmmo);
-			attackInterval = new AttackInterval(1.0f);
-			base.Awake();
-		}
 		public override void Attack(Vector2 shootDir)
 		{
 			// 基准方向（准心瞄准方向）
@@ -43,16 +30,15 @@ namespace ProjectBlood
 				Quaternion bulletRotation = Quaternion.AngleAxis(angle, Vector3.forward);
 
 				// 生成子弹，并设置其飞行方向
-				var bullet = Instantiate(DEBullet, DEBullet.transform.position, bulletRotation);
+				var bullet = Instantiate(Bullet, Bullet.transform.position, bulletRotation);
 				bullet.direction = finalDirection;
 				bullet.gameObject.SetActive(true);
 				ApplyLifestealToBullet(bullet);
-
-				// 播放射击声音，随机选择一个音效
-				int randomIndex = Random.Range(0, ShootSounds.Count);
-				AudioKitManager.Instance.PlayOneShot(ShootSounds[randomIndex], volume: 0.55f);
 			}
-			fireFlash.Flash(DEBullet.transform.position, shootDir); // 显示枪口火焰特效
+			// 播放射击声音，随机选择一个音效
+			int randomIndex = Random.Range(0, ShotGunSounds.Count);
+			AudioKitManager.Instance.PlayOneShot(ShotGunSounds[randomIndex], volume: FireVolume);
+			fireFlash.Flash(Bullet.transform.position, shootDir); // 显示枪口火焰特效
 			CameraUtils.ShakeMainCamera(0.15f, 7);
 			WeaponAnimator.SetTrigger("SingleShoot");
 		}

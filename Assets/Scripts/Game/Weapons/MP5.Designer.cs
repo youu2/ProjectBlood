@@ -5,21 +5,7 @@ namespace ProjectBlood
 {
 	public partial class MP5
 	{
-		public SpriteRenderer Sprite;
-		
-		public PlayerBullet MP5Bullet;
-		
-		public UnityEngine.AudioSource SelfShortAudioSource;
-		
-		public UnityEngine.AudioSource SelfAudioSource;
-		
-		public UnityEngine.AudioClip MP5ShootEnd;
-		
-		public UnityEngine.AudioClip MP5OneShotSound;
-		
-		public UnityEngine.AudioClip DryFireClick;
-		
-		public UnityEngine.Animator WeaponAnimator;
-		
+
+
 	}
 }

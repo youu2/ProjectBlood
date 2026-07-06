@@ -12,12 +12,7 @@ public class PlayerBullet : MonoBehaviour
     public float lifestealPercent = 0f; // 吸血比例(%)
     public bool isEnhanced = true; // 当前子弹是否被血库强化
 
-    void Start()
-    {
 
-    }
-
-    // Update is called once per frame
     void Update()
     {
         // 移动
@@ -71,11 +66,11 @@ public class PlayerBullet : MonoBehaviour
                 Global.GeneratePureBlood(collision.gameObject, totalLifesteal);
             }
 
-            Destroy(this.gameObject);
+            Destroy(gameObject);
         }
         else
         {
-            Destroy(this.gameObject);
+            Destroy(gameObject);
         }
     }
 }

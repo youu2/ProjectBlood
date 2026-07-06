@@ -433,7 +433,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Namespace: ProjectBlood
-  ScriptName: SlimeBlue
+  ScriptName: MeleeEnemy
   ScriptsFolder: Assets\Scripts\Game\Enemy
   GeneratePrefab: 0
   PrefabFolder: Assets/Art/Prefab
@@ -443,12 +443,12 @@ MonoBehaviour:
   moveSpeed: 2
   currentHealth: 0
   maxHealth: 100
-  Damage: 5
+  Damage: 2
   useFlipSprite: 1
   attackRange: 1.5
-  chaseRange: 10
+  chaseRange: 1
   WanderDuration: 0
   currentState: 0
   Triangle: {fileID: 0}
   SelfRigidbody2D: {fileID: 0}
-  AttackInterval: 1.5
+  AttackInterval: 3

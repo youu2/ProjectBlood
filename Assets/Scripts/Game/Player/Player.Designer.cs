@@ -1,4 +1,4 @@
-// Generate Id:36f33fbc-5c72-4e58-9ab1-b935bc96093d
+// Generate Id:63ac94cf-c364-46dc-a29e-a68aeb57ec55
 using UnityEngine;
 
 namespace ProjectBlood
@@ -17,19 +17,17 @@ namespace ProjectBlood
 		
 		public UnityEngine.Transform Weapon;
 		
-		public ProjectBlood.DE DE;
+		public ProjectBlood.SemiAutomaticWeapon DE;
 		
-		public ProjectBlood.MP5 MP5;
+		public ProjectBlood.AutomaticWeapon MP5;
 		
 		public ProjectBlood.ShotGun ShotGun;
 		
-		public ProjectBlood.AK AK;
+		public ProjectBlood.AutomaticWeapon AK;
 		
-		public ProjectBlood.AWP AWP;
+		public ProjectBlood.SemiAutomaticWeapon AWP;
 		
 		public ProjectBlood.Laser Laser;
-		
-		public ProjectBlood.DE Bow;
 		
 		public UnityEngine.SpriteRenderer FireFlash;
 		

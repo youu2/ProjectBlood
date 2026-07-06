@@ -4,13 +4,19 @@ using System.Collections.Generic;
 
 namespace ProjectBlood
 {
-    public abstract class SemiAutomaticWeapon : WeaponBase
+    public class SemiAutomaticWeapon : WeaponBase
     {
         protected bool newClip = true;
         protected bool hasFired = false;
         protected bool reloadTextShown = false;
         protected AudioPlayer _shootLoopPlayer;
-        protected abstract List<AudioClip> ShootSounds { get; }
+
+        public override void Attack(Vector2 shootDir)
+        {
+            base.Attack(shootDir);
+            int randomIndex = Random.Range(0, ShootSounds.Count);
+            AudioKitManager.Instance?.PlayOneShot(ShootSounds[randomIndex], FireVolume);
+        }
         public override void KeepAttacking(Vector2 shootDir)
         {
             if (attackInterval.CanAttack() && gunClip.CanShoot()) // 只有在满足攻击间隔且有弹药时才允许攻击
@@ -22,10 +28,11 @@ namespace ProjectBlood
             }
             else if (!gunClip.CanShoot() && !reloadTextShown)
             {
+                StopAttacking();
+                newClip = true;
                 if (!gunClip.isReloading)
                 {
-                    Player.DisplayText("[R] to Reload!");
-                    AudioKitManager.Instance.PlayOneShot("DryFireClick", volume: 0.7f);
+                    PlayFirstDryFireClick();
                     reloadTextShown = true; // 标记已经显示过 reload 文本
                 }
             }
