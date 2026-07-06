@@ -6,13 +6,11 @@ namespace ProjectBlood
 {
     public abstract class AutomaticWeapon : WeaponBase
     {
-        protected AttackInterval attackInterval;
         protected bool newClip = true;
         protected bool hasFired = false;
         protected bool reloadTextShown = false;
         protected AudioPlayer _shootLoopPlayer;
-        [SerializeField] protected float spreadAngle = 2f;
-
+        [Range(0, 360)][SerializeField] protected float spreadAngle = 2f;
         protected abstract AudioClip OneShotSound { get; }
         protected abstract AudioClip ShootEndSound { get; }
         protected abstract List<AudioClip> ShootSounds { get; }
@@ -34,7 +32,7 @@ namespace ProjectBlood
             if (gunClip?.CanShoot() ?? false)
             {
                 // 播放单发音效和循环音效
-                _ = (AudioKitManager.Instance?.PlayOneShot(OneShotSound, volume: 0.55f));
+                AudioKitManager.Instance?.PlayOneShot(OneShotSound, volume: 0.55f);
                 _shootLoopPlayer = AudioKitManager.Instance?.PlayLoop(ShootSounds[0], volume: 0.65f);
                 newClip = false;
                 hasFired = true;
@@ -43,7 +41,7 @@ namespace ProjectBlood
 
         public override void KeepAttacking(Vector2 shootDir)
         {
-            // 弹夹换新后继续按住左键的处理
+            // 弹夹换新后继续按住左键的处理，重新开始播放射击循环音效
             if (newClip && gunClip != null && gunClip.CanShoot())
             {
                 StartAttacking(shootDir);
@@ -65,7 +63,7 @@ namespace ProjectBlood
                 if (!gunClip.isReloading)
                 {
                     Player.DisplayText("[R] to Reload!");
-                    _ = (AudioKitManager.Instance?.PlayOneShot("DryFireClick", volume: 0.7f));
+                    AudioKitManager.Instance?.PlayOneShot("DryFireClick", volume: 0.7f);
                     reloadTextShown = true;
                 }
             }
@@ -76,19 +74,11 @@ namespace ProjectBlood
         {
             if (hasFired)
             {
-                _ = (AudioKitManager.Instance?.PlayOneShot(ShootEndSound, volume: 0.7f));
+                AudioKitManager.Instance?.PlayOneShot(ShootEndSound, volume: 0.7f);
             }
             AudioKitManager.Instance?.Stop(_shootLoopPlayer);
             _shootLoopPlayer = null;
             hasFired = false;
-        }
-
-        protected void TryPlayDryFireClick()
-        {
-            if (Time.frameCount % 50 == 0 && attackInterval.CanAttack() && gunClip != null && !gunClip.isReloading)
-            {
-                _ = (AudioKitManager.Instance?.PlayOneShot("DryFireClick", volume: 0.7f));
-            }
         }
 
         public override void SwitchFromSet()

@@ -14,7 +14,7 @@ public class PlayerBullet : MonoBehaviour
 
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
@@ -34,7 +34,7 @@ public class PlayerBullet : MonoBehaviour
         if (collision.gameObject.CompareTag("Enemy"))
         {
             // 根据子弹是否被强化计算伤害
-            float damageMultiplier = isEnhanced ? 1.0f : 0.8f; // 未强化时伤害降低到80%
+            float damageMultiplier = (isEnhanced ? 1.0f : 0.7f) * PlayerUpgrade.DamageRatio; // 未强化时伤害降低到70%
             float finalDamage = damage * damageMultiplier;
 
             // 计算玩家到敌人的方向
@@ -43,14 +43,14 @@ public class PlayerBullet : MonoBehaviour
             var damageable = collision.gameObject.GetComponent<IDamageable>();
             if (damageable == null)
             {
-                Destroy(this.gameObject);
+                Destroy(gameObject);
                 return;
             }
 
-            // 如果敌人在死亡流程中就跳过（防止多弹丸同时命中时重复触发吸血）
-            if (damageable.IsDying)
+            // 防止多弹丸同时命中时重复触发吸血）
+            if (damageable.CurrentHealth <= 0f)
             {
-                Destroy(this.gameObject);
+                Destroy(gameObject);
                 return;
             }
 
@@ -58,13 +58,14 @@ public class PlayerBullet : MonoBehaviour
             // 吸血机制：致命一击时改为从敌人死亡位置生成 PB 道具，不再直接加血
             float enemyCurrentHP = damageable.CurrentHealth;
             float enemyMaxHP = damageable.MaxHealth;
-            bool isLethal = enemyCurrentHP - finalDamage <= 0f;
+            bool isLethal = enemyCurrentHP - finalDamage <= 0f; // 判断是否致命一击
+
 
             // 应用伤害
             damageable.TakeDamage(finalDamage, playerToEnemyDir);
 
             // 吸血：致命一击时按敌人总生命值换算为 PB 道具
-            if (isLethal && lifestealPercent > 0f && Player.player1 != null && enemyMaxHP > 0f)
+            if (isLethal && lifestealPercent > 0f && Player.player1 != null && enemyMaxHP > 0f && isEnhanced)
             {
                 float totalLifesteal = enemyMaxHP * (lifestealPercent / 100f);
                 Global.GeneratePureBlood(collision.gameObject, totalLifesteal);

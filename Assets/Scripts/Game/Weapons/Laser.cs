@@ -41,7 +41,7 @@ namespace ProjectBlood
 			if (damageHit.collider != null)
 			{
 				var damageable = damageHit.collider.GetComponent<IDamageable>();
-				if (damageable != null && !damageable.IsDying)
+				if (damageable != null)
 				{
 					// 计算击退方向：从玩家到敌人的方向
 					Vector2 playerToEnemyDir = (damageHit.collider.transform.position - Player.player1.transform.position).normalized;

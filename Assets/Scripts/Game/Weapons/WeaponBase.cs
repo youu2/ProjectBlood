@@ -5,12 +5,12 @@ using System.Collections;
 namespace ProjectBlood
 {
     [ViewControllerChild]
-    public abstract class WeaponBase : ViewController, IWeapon
+    public abstract class WeaponBase : ViewController
     {
         private Coroutine _reloadCoroutine;   // 原先的设计放在GunClip,这会依赖MonoBehaviour,违反单一职责原则
         protected virtual int MaxAmmo { get; set; } = 10;
         protected GunClip gunClip;
-        // protected IAudioManager AudioManager;
+        protected AttackInterval attackInterval;
         private AudioPlayer _shootClipPlayer;
         private AudioPlayer _shootLoopPlayer;
         protected virtual float ReloadTime { get; set; } = 1.5f;
@@ -109,6 +109,14 @@ namespace ProjectBlood
             AudioKitManager.Instance?.Stop(_shootClipPlayer);
         }
 
+        protected void TryPlayDryFireClick()
+        {
+            if (Time.frameCount % 50 == 0 && attackInterval.CanAttack() && gunClip != null && !gunClip.isReloading)
+            {
+                AudioKitManager.Instance?.PlayOneShot("DryFireClick", volume: 0.7f);
+            }
+        }
+
         public virtual void SwitchFromSet() { }
         public virtual void SwitchToSet() { } // 切回武器时的特殊处理逻辑
         // public virtual AudioClip GetShootEndSound() { return null; } // 获取shootEnd音效，用于切换武器时播放(全自动武器)
@@ -118,31 +126,5 @@ namespace ProjectBlood
         public virtual void HideSprite() { } // 隐藏武器的sprite，子类需要重写
         public virtual bool HasFired() { return false; } // 检查武器是否真正开火过
         public virtual bool IsPlayingShootEnd() { return false; } // 检查是否正在播放 shootEnd 音效
-
-        // /// <summary>
-        // /// 检查武器是否正在播放后坐力动画（用于暂停武器朝向更新）
-        // /// </summary>
-        // public virtual bool IsPlayingRecoilAnimation()
-        // {
-        //     return isPlayingRecoil;
-        // }
-
-        // /// <summary>
-        // /// 触发后坐力动画状态（会在指定时间后自动结束）
-        // /// </summary>
-        // protected void TriggerRecoilAnimation()
-        // {
-        //     isPlayingRecoil = true;
-        //     StartCoroutine(ResetRecoilAnimation());
-        // }
-
-        // /// <summary>
-        // /// 重置后坐力动画状态的协程
-        // /// </summary>
-        // private IEnumerator ResetRecoilAnimation()
-        // {
-        //     yield return new WaitForSeconds(recoilAnimationDuration);
-        //     isPlayingRecoil = false;
-        // }
     }
 }

@@ -24,10 +24,10 @@ public class PenetratingBullet : PlayerBullet
             }
 
             // 如果敌人正在死亡，跳过（防止多弹丸同时命中时重复触发）
-            if (damageable.IsDying)
-            {
-                return;
-            }
+            // if (damageable.IsDying)
+            // {
+            //     return;
+            // }
 
             // 判断本击是否致命
             float enemyCurrentHP = damageable.CurrentHealth;
