@@ -10,50 +10,24 @@ namespace ProjectBlood
 {
     public class ShootingEnemy : Enemy
     {
-        [Header("=== 基础设置 ===")]
-        [Tooltip("子弹预制体")]
         public EnemyBullet enemyBullet;
+        [Header("=== 连射模式设置 ===")]
 
-        [Tooltip("移动速度")]
-        public float speed = 2.0f;
+        [Tooltip("总共进行几次连射")] public int totalBurstCount = 2;
+        [Tooltip("两次连射之间的间隔(秒)")] public float shootInterval = 2.0f;
+        [Tooltip("一次连射的子弹数量")] public int shotsPerBurst = 3;
+        [Tooltip("连射中每发子弹间隔(秒)")] public float burstInterval = 0.2f;
 
-        [Header("=== 状态机设置 ===")]
-        // [Tooltip("追击范围:进入这个距离切换到Wander状态")]
-        // public float chaseRange = 8f;
+        [Header("=== 散射模式设置 ===")]
+        [Tooltip("每次射击同时发射的散射弹丸数量,1表示不散射")] public int scatterBulletCount = 3;
 
-        // [Tooltip("攻击范围:超出这个距离回到Chase状态")]
-        // // public float attackRange = 10f;
-
-        [Tooltip("Wander状态持续时间(秒)")]
-        public float wanderDuration = 1.0f;
-
-        [Header("=== 射击模式 ===")]
-        [Tooltip("两次连射之间的间隔(秒)")]
-        public float shootInterval = 2.0f;
-
-        [Tooltip("连射中每发子弹间隔(秒)")]
-        public float burstInterval = 0.2f;
-
-        [Tooltip("一次连射的子弹数量")]
-        public int shotsPerBurst = 3;
-
-        [Tooltip("总共进行几次连射")]
-        public int totalBurstCount = 2;
-
-        [Header("=== 散射弹丸设置 ===")]
-        [Tooltip("每次射击同时发射的散射弹丸数量")]
-        public int scatterBulletCount = 3;
-
-        [Tooltip("散布角度(总角度范围, 单位:度)")]
-        [Range(0f, 180f)]
-        public float scatterAngle = 45f;
+        [Tooltip("散布角度(总角度范围, 单位:度)")][Range(0f, 360f)] public float scatterAngle = 45f;
 
         [Tooltip("是否使用随机散布(false=均匀分布)")]
         public bool useRandomScatter = false;
 
-        [Header("=== 音效设置 ===")]
-        [Tooltip("射击音效列表(随机播放)")]
-        public List<AudioClip> shootSounds = new List<AudioClip>();
+        [Header("=== 音效相关设置 ===")]
+        [Tooltip("射击音效列表(随机播放)")] public List<AudioClip> shootSounds = new List<AudioClip>();
 
         // 内部状态
         protected Player player;
@@ -81,43 +55,9 @@ namespace ProjectBlood
             }
         }
 
-        // 追击状态更新
-        // protected override void UpdateChase()
-        // {
-        //     // UpdateRotate(direction);
-        //     transform.position += direction * speed * Time.deltaTime;
-
-        //     // 进入追击范围, 切换到Wander
-        //     if (Vector3.Distance(transform.position, player.transform.position) < chaseRange)
-        //     {
-        //         currentState = State.Wander;
-        //         StartWander();
-        //     }
-        // }
-
-        // Wander状态更新
-        // protected override void UpdateWander()
-        // {
-        //     transform.position += wanderDirection * speed * Time.deltaTime;
-        //     currentWanderTime += Time.deltaTime;
-
-        //     // 移动时间到, 切换到Fire
-        //     if (currentWanderTime >= wanderDuration)
-        //     {
-        //         currentState = State.Fire;
-        //         StartFire();
-        //     }
-
-        //     // 玩家跑出攻击范围, 回到Chase
-        //     if (Vector3.Distance(transform.position, player.transform.position) > attackRange)
-        //     {
-        //         currentState = State.Chase;
-        //     }
-        // }
-
         protected override void UpdateFire(float distanceToPlayer)
         {
-            // 射击逻辑由协程处理
+            // 射击状态无逐帧更新逻辑，仅在StartFire()时触发攻击
         }
 
         // 开始Fire状态

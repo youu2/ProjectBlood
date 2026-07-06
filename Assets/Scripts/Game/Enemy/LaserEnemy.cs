@@ -10,49 +10,47 @@ namespace ProjectBlood
         private AudioPlayer _loopPlayer;
 
         [Header("=== 激光设置 ===")]
-        public LineRenderer laserLinePrefab;
-        [Range(0.1f, 2f)] public float laserWidth = 0.3f;
-        public Color laserColor = Color.magenta;
-        public float laserDuration = 0.8f;
-        public Material chargeMaterial;
-        public Material fireMaterial;
-        public float laserStartOffset = 0.55f;
-        public float chargeTime = 1.5f;
+        public LineRenderer laserLinePrefab;    // 激光线预制体
+        [Range(0.1f, 2f)] public float laserWidth = 0.3f;   // 激光宽度
+        public Color laserColor = Color.magenta;   // 激光颜色
+        public float laserDuration = 0.8f;   // 激光持续时间
+        public Material chargeMaterial;   // 充能时的预警线材质
+        public Material fireMaterial;   // 攻击光束的材质
+        public float laserStartOffset = 0.55f;   // 激光起始偏移量(控制激光起点)
+        public float chargeTime = 1.5f;   // 充能（预警）时间
 
         [Header("=== 攻击设置 ===")]
-        public float damageFrequency = 5f;
-        public float damagePerHit = 10f;
-        public float rotationSpeed = 180f;
+        public float damageFrequency = 5f;   // 激光攻击频率（每秒的攻击次数）
+        public float damagePerHit = 10f;     // 激光单次伤害
+        public float rotationSpeed = 180f;   // 旋转(锁敌)速度
 
         [Header("=== 多激光设置 ===")]
-        public int laserCount = 1;
+        public int laserCount = 1;   // 激光数量
         [Range(0f, 360f)]
-        public float spreadAngle = 0f;
-        public bool randomSpread = false;
+        public float spreadAngle = 0f;   // 激光散射角度（左右合计）
+        public bool randomSpread = false;   // 是否随机角度
 
         [Header("=== 音效设置 ===")]
-        public AudioClip chargeSound;
-        public AudioClip fireSound;
-        public AudioClip laserLoopSound;
-        public AudioClip attackEndSound;
+        public AudioClip chargeSound;   // 充能时的音效（预警提示音）
+        public AudioClip fireSound;   // 攻击开始音效
+        public AudioClip laserLoopSound;   // 激光循环音效
+        public AudioClip attackEndSound;   // 攻击结束音效
 
         [Header("=== 激光点设置 ===")]
-        public SpriteRenderer fireFlashRenderer;
-        public Sprite[] fireFlashSprites;
-        public int framesPerSprite = 3;
+        public SpriteRenderer fireFlashRenderer;   // 激光点的渲染器
+        public Sprite[] fireFlashSprites;   // 枪口激光点的Sprite数组
+        public int framesPerSprite = 3;   // 每个Sprite的帧数
+        protected int currentSpriteIndex = 0;   // 当前枪口激光点的Sprite索引
+        protected int frameCounter = 0;   // 当前帧计数器
         protected Player player;
-        protected float chargeProgress = 0f;
-        private Coroutine _damageCoroutine;
-        private Coroutine _chargeCoroutine;
-        protected List<List<Vector3>> laserPointsList = new List<List<Vector3>>();
-        protected List<LineRenderer> laserLines = new List<LineRenderer>();
-        protected List<Vector3[]> laserPointArrays = new List<Vector3[]>();
-        private int _wallLayer;
-        private int _playerLayer;
-        // protected float currentWanderTime = 0f;
-        // protected Vector3 wanderDirection;
-        protected int currentSpriteIndex = 0;
-        protected int frameCounter = 0;
+        protected float chargeProgress = 0f;   // 充能进度
+        private Coroutine _damageCoroutine;   // 伤害协程
+        private Coroutine _chargeCoroutine;   // 充能协程
+        protected List<List<Vector3>> laserPointsList = new List<List<Vector3>>();   // 绘制激光节点列表
+        protected List<LineRenderer> laserLines = new List<LineRenderer>();   // 激光线列表
+        protected List<Vector3[]> laserPointArrays = new List<Vector3[]>();   // 激光节点数组列表
+        private int _wallLayer;   // 墙层
+        private int _playerLayer;   // 玩家层
 
         protected override void Awake()
         {
@@ -123,6 +121,16 @@ namespace ProjectBlood
                 laserPointsList.Add(new List<Vector3>(2));
                 laserPointArrays.Add(new Vector3[2]);
             }
+        }
+
+        public override void UpdateRotate(Vector3 direction)
+        {
+            if (direction.x == 0 && direction.y == 0) return;
+
+            float targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            float currentAngle = transform.eulerAngles.z;
+            float newAngle = Mathf.LerpAngle(currentAngle, targetAngle, rotationSpeed * Time.deltaTime / 180f);
+            transform.eulerAngles = new Vector3(0, 0, newAngle);
         }
 
         protected override void StartFire()

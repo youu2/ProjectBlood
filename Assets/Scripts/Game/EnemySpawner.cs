@@ -7,18 +7,14 @@ using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
-	// [SerializeField] private GameObject[] normalEnemies;
 	[SerializeField] private WavesSystem waves;
 	[SerializeField] private Transform player;
 	[SerializeField] private float maxSpawnRadius = 50f;
 	[SerializeField] private float minSpawnRadius = 20f;
 	[SerializeField] private float enemySpawnInterval = 15f;
 	[SerializeField] private int enemyNum; // The number of normal enemies generated once
-	//private int maxCumulativeNum; // limitation of enemy generated in one wave
-	//private int cumulativeNum;  // cumulative number of generated enemies so far
 	private int maxCurrentNum;  // limit the num of active enemies 
-	private int totalNum;	// The total number of enemies generated
-	// private static int currentNum;      // current number of active enemies
+	private int totalNum;   // The total number of enemies generated
 
 	private void Start()
 	{

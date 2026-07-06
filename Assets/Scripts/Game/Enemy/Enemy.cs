@@ -9,11 +9,11 @@ namespace ProjectBlood
 	{
 		[Header("=== 基础敌人设置 ===")]
 		[SerializeField] protected SpriteRenderer body;
-		protected SpriteRenderer spriteRenderer;
-		public float moveSpeed = 2.0f;
+		protected SpriteRenderer spriteRenderer; // 用于朝向控制
+		[SerializeField] public float moveSpeed = 2.0f;
 		public float currentHealth;
 		public float maxHealth = 100.0f; // 敌人总生命值，记录初始血量用于吸血 PB 换算
-		[SerializeField] protected float Damage = 5.0f;
+		[SerializeField] protected float Damage = 5.0f; // 用于直接造成伤害的敌人, 子弹碰撞在子弹脚本中处理
 		protected Vector3 direction;    // 敌人朝向玩家的方向
 		[Tooltip("是否使用翻转来朝向玩家（关闭则直接旋转）")]
 		public bool useFlipSprite = true;
@@ -37,11 +37,6 @@ namespace ProjectBlood
 		{
 			spriteRenderer = GetComponentInChildren<SpriteRenderer>();  // 用于朝向控制
 			currentHealth = maxHealth;
-			// 记录敌人总生命值（仅在第一次初始化时记录，避免被多次实例化重置）
-			// if (maxHealth <= 0f)
-			// {
-			// 	maxHealth = currentHealth;
-			// }
 			if (Player.player1 != null) currentState = State.Chase;
 		}
 
