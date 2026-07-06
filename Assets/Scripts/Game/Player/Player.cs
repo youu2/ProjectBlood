@@ -11,7 +11,6 @@ namespace ProjectBlood
 		public float moveSpeed = 3.5f;
 		public static Player player1;
 		public PlayerBullet playerBullet;
-		// public Transform weaponTransform; // 当前武器的Transform引用，用于控制武器朝向
 		public WeaponBase currentWeapon; // 当前装备的武器
 		private List<WeaponBase> weapons = new List<WeaponBase>(); // 武器列表
 		private List<AudioClip> weaponSwitchSounds = new List<AudioClip>();
@@ -24,12 +23,8 @@ namespace ProjectBlood
 		private const float aimAngle = 35f; // 自动锁敌的角度范围（度）
 		private bool isFacingRight = true; // 角色当前朝向：true=朝右，false=朝左
 
-		// 设置角色水平朝向
 		// faceLeft: true=朝左，false=朝右
-		// 实现原理：
-		// 1. 修改Player根对象localScale.x实现Sprite镜像翻转
-		// 2. NoticeText反向翻转以保持文字正向显示（-1 × -1 = 1）
-		// 3. isFacingRight记录当前朝向状态
+		// 当玩家朝左时，翻转整个玩家对象，包括武器，文字提示单独再翻转一次
 		private void SetFlipX(bool faceLeft)
 		{
 			float scaleX = faceLeft ? -1f : 1f;
@@ -39,9 +34,6 @@ namespace ProjectBlood
 		}
 
 		// 根据瞄准方向更新武器朝向和角色朝向
-		// aimDir: 瞄准方向向量（单位向量）
-		// 核心原理：Player翻转后，子对象的旋转和缩放会被镜像，
-		// 因此朝左时需要对武器进行额外的旋转和缩放补偿
 		private void UpdateWeaponAim(Vector2 aimDir)
 		{
 			float angle = Mathf.Atan2(aimDir.y, aimDir.x) * Mathf.Rad2Deg;
@@ -49,7 +41,7 @@ namespace ProjectBlood
 			if (aimDir.x < 0)
 			{
 				// 朝左：武器X轴翻转 + 旋转180度补偿Player镜像的影响
-				// localScale.x = -1：水平翻转武器Sprite
+				// 玩家对象整体翻转导致武器依旧朝右，所以需要水平翻转武器Sprite
 				SetFlipX(true);
 				Arm.localScale = new Vector3(-1, -1, 1);
 			}
@@ -62,7 +54,7 @@ namespace ProjectBlood
 			Arm.eulerAngles = new Vector3(0, 0, angle);
 		}
 
-		// 显示跟随玩家的提示文本
+		// 显示跟随玩家的提示文本（换弹提示，购买提示）
 		public static void DisplayText(string text)
 		{
 			player1.StartCoroutine(player1.ShowText(text, 2.0f));
@@ -82,8 +74,11 @@ namespace ProjectBlood
 		}
 		private void Awake()
 		{
+			// 设置帧率为60，确保游戏和逻辑稳定运行
 			Application.targetFrameRate = 60;
+			// 依次添加武器到武器列表，后续可能会改成根据游戏进度逐步获取，比如从宝箱中获取
 			player1 = this;
+			// 武器列表暂时硬编码，后期会让玩家在游戏过程中逐步获取
 			weapons.Add(DE);
 			weapons.Add(MP5);
 			weapons.Add(ShotGun);
@@ -99,7 +94,7 @@ namespace ProjectBlood
 				weapon.BloodBank = bloodBank;
 			}
 
-			// 初始化护盾状态
+			// 护盾一直挂载在玩家对象上，初始化护盾状态，捡到道具后才会激活
 			shieldState.Initialize(ShieldSprite, this);
 
 			// 创建临时的 AudioSource 用于播放切换武器时的 shootEnd 音效
@@ -130,15 +125,6 @@ namespace ProjectBlood
 			AudioKitManager.Instance.PlayOneShot(WeaponSwitchSound, volume: 0.3f);
 		}
 
-		void HidePreviousWeapon()
-		{
-			if (weaponToHide != null)
-			{
-				weaponToHide.Hide();
-				weaponToHide = null;
-			}
-		}
-
 		void Start()
 		{
 			Global.currentHP.RegisterWithInitValue(currentHP =>
@@ -150,7 +136,7 @@ namespace ProjectBlood
 			}).UnRegisterWhenGameObjectDestroyed(gameObject);
 		}
 
-		public void TakeDamage(float damage)
+		public void TakeDamage(float damage)    // 玩家受到伤害
 		{
 			// 检查护盾是否抵挡伤害
 			if (shieldState.HandleDamage(transform.Position2D()))
@@ -161,6 +147,7 @@ namespace ProjectBlood
 			FxManager.PlayPlayerHurtFX(transform.Position2D());
 			FxManager.DrawPlayerBlood(transform.Position2D());
 			Global.currentHP.Value -= damage;
+			Player.player1.bloodBank.AddBlood((int)Mathf.Round(damage));
 			if (Global.currentHP.Value < 0) Global.currentHP.Value = 0;
 
 			if (Global.currentHP.Value > 0)
@@ -189,8 +176,7 @@ namespace ProjectBlood
 		void Update()
 		{
 			float horizontal = Input.GetAxis("Horizontal"); // A/D
-			float vertical = Input.GetAxis("Vertical");     // W/S
-															// weaponTransform = currentWeapon.transform;
+			float vertical = Input.GetAxis("Vertical");     // W/S										
 
 			// 设置移动动画状态
 			bool isMoving = horizontal != 0 || vertical != 0;
@@ -215,7 +201,7 @@ namespace ProjectBlood
 				var enemies = Global.currentRoom.GetEnemies();
 
 				// 将 HashSet 转换为 List 并过滤掉已销毁或正在死亡的敌人
-				var enemiesList = enemies.Where(enemy => enemy != null && !enemy.IsDying).ToList();
+				var enemiesList = enemies.Where(enemy => enemy != null).ToList();
 
 				if (enemiesList.Count > 0)
 				{
@@ -234,7 +220,7 @@ namespace ProjectBlood
 					foreach (var enemy in sortedEnemies)
 					{
 						// 再次检查敌人是否还存在且没有在死亡过程中
-						if (enemy == null || enemy.IsDying)
+						if (enemy == null)
 						{
 							continue;
 						}
@@ -348,25 +334,6 @@ namespace ProjectBlood
 			{
 				UseWeapon((weapons.IndexOf(currentWeapon) + 1) % weapons.Count);
 			}
-		}
-
-		// 获取武器当前实际指向的单位向量
-		private Vector2 GetWeaponCurrentAimDir()
-		{
-			if (Arm == null) return Vector2.right; // 兜底：默认朝右
-
-			// 获取武器的原始旋转角度
-			float currentAngle = Arm.eulerAngles.z;
-
-			// 处理朝左时的 180° 补偿（因为朝左时 weaponTransform 做了 scale.x=-1 和 eulerAngles 180 补偿）
-			if (Arm.localScale.x < 0)
-			{
-				currentAngle = (currentAngle + 180) % 360; // 还原真实角度
-			}
-
-			// 将角度转换为 2D 方向向量（单位向量）
-			float radian = currentAngle * Mathf.Deg2Rad;
-			return new Vector2(Mathf.Cos(radian), Mathf.Sin(radian)).normalized;
 		}
 
 		private void OnDestroy()

@@ -15,57 +15,15 @@ MonoBehaviour:
   CurrentTask:
     ShowLog: 0
     Status: 1
-    GameObject: {fileID: 0}
+    GameObject: {fileID: 9221604444027369072, guid: 668183616bb3a82478d6ea6569e198e8, type: 3}
     From: 0
     NameToFullName: []
     BindInfos:
-    - TypeName: CircleCollider2D
-      PathToRoot: HurtBox
-      MemberName: HurtBox
-    - TypeName: TMPro.TextMeshProUGUI
-      PathToRoot: Notice/NoticeText
-      MemberName: NoticeText
     - TypeName: SpriteRenderer
-      PathToRoot: AimMark
-      MemberName: AimMark
-    - TypeName: Animator
-      PathToRoot: PlayerAnimator
-      MemberName: PlayerAnimator
-    - TypeName: Transform
-      PathToRoot: PlayerAnimator/WholeBody/Arm
-      MemberName: Arm
-    - TypeName: UnityEngine.Transform
-      PathToRoot: PlayerAnimator/WholeBody/Arm/Weapon
-      MemberName: Weapon
-    - TypeName: ProjectBlood.DE
-      PathToRoot: PlayerAnimator/WholeBody/Arm/Weapon/DE
-      MemberName: DE
-    - TypeName: ProjectBlood.MP5
-      PathToRoot: PlayerAnimator/WholeBody/Arm/Weapon/MP5
-      MemberName: MP5
-    - TypeName: ProjectBlood.ShotGun
-      PathToRoot: PlayerAnimator/WholeBody/Arm/Weapon/ShotGun
-      MemberName: ShotGun
-    - TypeName: ProjectBlood.AK
-      PathToRoot: PlayerAnimator/WholeBody/Arm/Weapon/AK
-      MemberName: AK
-    - TypeName: ProjectBlood.AWP
-      PathToRoot: PlayerAnimator/WholeBody/Arm/Weapon/AWP
-      MemberName: AWP
-    - TypeName: ProjectBlood.Laser
-      PathToRoot: PlayerAnimator/WholeBody/Arm/Weapon/Laser
-      MemberName: Laser
-    - TypeName: ProjectBlood.DE
-      PathToRoot: PlayerAnimator/WholeBody/Arm/Weapon/Bow
-      MemberName: Bow
-    - TypeName: UnityEngine.SpriteRenderer
-      PathToRoot: PlayerAnimator/WholeBody/Arm/Weapon/FireFlash
-      MemberName: FireFlash
-    - TypeName: SpriteRenderer
-      PathToRoot: PlayerAnimator/WholeBody/Body/ShieldSprite
-      MemberName: ShieldSprite
-    ScriptsFolder: Assets\Scripts\Game\Player
-    ClassName: Player
+      PathToRoot: Sprite
+      MemberName: Sprite
+    ScriptsFolder: Assets\Scripts\Game\Enemy
+    ClassName: MeleeEnemy
     Namespace: ProjectBlood
     MainCode: 
     DesignerCode: 

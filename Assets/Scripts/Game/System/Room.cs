@@ -28,17 +28,6 @@ namespace ProjectBlood
 		public Room WithRoomConfig(RoomConfig roomConfig)
 		{
 			this.roomConfig = roomConfig;
-
-			// // 在设置 roomConfig 后立即初始化敌人波次配置
-			// if (roomConfig.roomType == RoomType.NormalRoom)
-			// {
-			// 	var wavesCount = Random.Range(1, 4);
-			// 	for (int i = 0; i < wavesCount; i++)
-			// 	{
-			// 		enemyWaveConfigList.Add(new EnemyWaveConfig());
-			// 	}
-			// }
-
 			return this;
 		}
 		public Room WithRoomGenerateConfig(MapController.RoomGenerateConfig roomGenerateConfig)
@@ -57,46 +46,25 @@ namespace ProjectBlood
 				.OrderByDescending(pos => (Player.player1.Position2D() - pos.ToVector2()).magnitude)
 				.Take(enemyCount).ToList();
 
-			// 生成并记录所有生成的敌人
+			// 设置所有敌人的位置和房间
 			foreach (GameObject enemy2Gen in waveConfig.Enemy2GenList)
 			{
-				var enemyObj = Instantiate(enemy2Gen);
-				enemyObj.transform.position = pos2Gen.GetAndRemoveRandomItem();
-				var enemy = enemyObj.GetComponent<IDamageable>();
+				enemy2Gen.Show();
+				enemy2Gen.transform.position = pos2Gen.GetAndRemoveRandomItem();
+				var enemy = enemy2Gen.GetComponent<IDamageable>();
 				enemy.Room = this;
 				if (enemy != null)
 				{
 					enemySet.Add(enemy);
 				}
 			}
-
-
-
-			// // 生成并记录所有生成的敌人
-			// for (int i = 0; i < enemyCount; i++)
-			// {
-			// 	var enemyToGen = RandomUtility.Choose(
-			// 		MapController.instance.Enemy1,
-			// 		MapController.instance.Enemy2,
-			// 		MapController.instance.Enemy3,
-			// 		MapController.instance.Enemy4
-			// 		);
-			// 	var enemyObj = Instantiate(enemyToGen);
-			// 	enemyObj.transform.position = pos2Gen[i];
-			// 	var enemy = enemyObj.GetComponent<IDamageable>();
-			// 	enemy.Room = this;
-			// 	if (enemy != null)
-			// 	{
-			// 		enemySet.Add(enemy);
-			// 	}
-			// }
 		}
 
 		private void Update()
 		{
 			if (Time.frameCount % 30 == 0)
 			{
-				enemySet.RemoveWhere(enemy => enemy.IsDying);
+				// enemySet.RemoveWhere(enemy => enemy.IsDying);
 
 				if (enemySet.Count == 0 && roomState == RoomState.Battle)
 				{

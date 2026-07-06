@@ -35,7 +35,7 @@ namespace ProjectBlood
         public GameObject Portal;
         public static MapController instance;
 
-        // 动态门布局网格，存储每个房间的生成配置（房间节点、门方向、网格坐标）
+        // 动态门布局网格，存储要生成的每个房间的生成配置（房间节点、门方向、网格坐标）
         public DynaGrid<RoomGenerateConfig> DynamicDoorLayout { get; private set; }
         // 房间实例网格，存储已生成的房间对象引用
         public DynaGrid<Room> RoomGrid { get; private set; }
@@ -66,6 +66,7 @@ namespace ProjectBlood
         void Start()
         {
             Global.IsGamePaused = false;
+            // 如果打通了所有关卡，打开游戏通关面板
             if (Global.currentDifficulty >= Global.LevelConfigs.Count)
             {
                 UIKit.OpenPanel<UIGamePassPanel>();
@@ -85,26 +86,28 @@ namespace ProjectBlood
 
             var layout = levelConfig.InitRoom;
 
-            GenerateRoomLayoutBFS(layout);
-            GenerateRoomsFromLayout();
-            GenerateCorridors();
+            GenerateRoomLayoutBFS(layout);  // 生成房间布局
+            GenerateRoomsFromLayout();  // 从布局生成房间
+            GenerateCorridors();  // 根据房间布局和门方向生成连接通道
 
             Room.FindRoom();
         }
 
-        // 使用广度优先搜索(BFS)生成房间布局，通过预测权重控制分支方向，避免生成死路 参数：rootRoom - 根房间节点（起始房间）
+        // BFS生成房间布局，通过预测权重控制分支方向，避免生成死路
         private void GenerateRoomLayoutBFS(RoomNode rootRoom)
         {
             int predictWeight = 0;
 
+            // 尝试生成房间布局，直到成功生成
+            // 如果生成失败，增加预测权重，重新尝试
             while (!TryGenerateRoomLayout(rootRoom, predictWeight))
             {
                 predictWeight++;
                 DynamicDoorLayout.Clear();
             }
         }
-
-        // 尝试生成房间布局的核心算法 参数：rootRoom - 根房间节点，predictWeight - 预测权重（越高越倾向选择最优方向） 返回是否成功生成布局
+        // 尝试生成整个地图所有房间布局，返回是否成功生成
+        // 参数：rootRoom - 根房间节点，predictWeight - 预测权重（越高越可能选择最优方向）
         private bool TryGenerateRoomLayout(RoomNode rootRoom, int predictWeight)
         {
             var roomQueue = new Queue<RoomGenerateConfig>();
@@ -124,14 +127,16 @@ namespace ProjectBlood
                 List<Direction> validDirections = LevelGenHelper.GetValidDirections(
                     generateConfig.roomPosX, generateConfig.roomPosY, DynamicDoorLayout);
 
-                if (generateConfig.roomNode.Children.Count > validDirections.Count)
+                if (generateConfig.roomNode.Childrens.Count > validDirections.Count)
                 {
-                    Debug.LogWarning("没有足够的可以延伸的方向");
+                    // Debug.LogWarning("没有足够的可以延伸的方向");
                     return false;
                 }
 
-                foreach (var childRoom in generateConfig.roomNode.Children)
+                // 遍历当前房间的所有子房间, 即广度优先遍历
+                foreach (var childRoom in generateConfig.roomNode.Childrens)
                 {
+                    // 预测当前房间的每一个可选生成方向的下一个房间位置的可选方向数量, 返回一个(方向, 可选方向数量)列表
                     var directionsWithCount = LevelGenHelper.PredictDirectionWithCount(
                         generateConfig.roomPosX, generateConfig.roomPosY, DynamicDoorLayout);
 
@@ -139,10 +144,11 @@ namespace ProjectBlood
 
                     if (directionsWithCount.Count == 0)
                     {
-                        Debug.LogWarning("没有可以延伸的方向");
+                        // Debug.LogWarning("没有可以延伸的方向");
                         return false;
                     }
 
+                    // 基于预测权重选择下一个房间延伸方向，最优方向或随机选择一个方向
                     Direction nextDirection = SelectNextDirection(directionsWithCount, predictWeight);
                     RoomGenerateConfig newRoomConfig = CreateRoomConfig(generateConfig, childRoom, nextDirection);
 
@@ -163,7 +169,7 @@ namespace ProjectBlood
         {
             if (Random.Range(0, 100) < predictWeight)
             {
-                return directionsWithCount.First().Direction;
+                return directionsWithCount.First().Direction;   // 最优方向，生成失败次数越多，越倾向选择最优方向
             }
             else
             {

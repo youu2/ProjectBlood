@@ -41,6 +41,9 @@ namespace ProjectBlood
             public int Count; // 该方向进一步预测可选方向数量
         }
 
+        // 预测当前房间的每一个可选生成方向的下一个房间位置的可选方向数量, 返回一个(方向, 可选方向数量)列表
+        // 这个列表再用于,基于权重选择最优方向或随机选择一个方向
+        // 参数：roomPosX - 当前房间的网格坐标X，roomPosY - 当前房间的网格坐标Y，dynamicDoorLayout - 动态门布局网格
         public static List<DirectionWithCount> PredictDirectionWithCount
         (int roomPosX, int roomPosY, DynaGrid<MapController.RoomGenerateConfig> dynamicDoorLayout)
         {

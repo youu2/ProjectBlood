@@ -1,6 +1,7 @@
 using UnityEngine;
 using QFramework;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 
 namespace ProjectBlood
 {
@@ -15,7 +16,8 @@ namespace ProjectBlood
 		}
 		public static void PlayEnemyHurtFX(Vector2 pos)
 		{
-			Instance.EnemyHurt.Instantiate()
+			var enemyHurt = Instance.EnemyHurt.Instantiate();
+			enemyHurt
 			.Position2D(pos)
 			.Show()
 			.Self(self =>
@@ -24,6 +26,7 @@ namespace ProjectBlood
 				// StartCurrentScene用于在非MonoBehaviour类中启动协程，
 				// QFramework 在场景加载时会自动创建一个隐藏的 SceneCoroutineRunner GameObject，专门用来管理这些协程。
 			}).Play();
+			Destroy(enemyHurt.gameObject, 1f);
 		}
 		public static void PlayPlayerHurtFX(Vector2 pos)
 		{

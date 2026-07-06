@@ -20,7 +20,7 @@ namespace ProjectBlood
     public class RoomNode
     {
         public RoomType roomType = RoomType.InitRoom;
-        public List<RoomNode> Children = new();
+        public List<RoomNode> Childrens = new();
         public RoomNode(RoomType roomType)
         {
             this.roomType = roomType;
@@ -29,7 +29,7 @@ namespace ProjectBlood
         public RoomNode NextRoom(RoomType roomType, Action<RoomNode> branch = null)
         {
             RoomNode roomNode = new(roomType);
-            Children.Add(roomNode);
+            Childrens.Add(roomNode);
             branch?.Invoke(roomNode);
             return roomNode;
         }

@@ -8,8 +8,9 @@ namespace ProjectBlood
 {
     public class Global : Architecture<Global>
     {
-        public static BindableProperty<float> MAX_HP = new BindableProperty<float>(30.0f);
-        public static BindableProperty<float> currentHP = new BindableProperty<float>(30.0f);
+        public static BindableProperty<float> INIT_MAX_HP = new BindableProperty<float>(30.0f);
+        public static BindableProperty<float> INGAME_MAX_HP = new BindableProperty<float>(INIT_MAX_HP.Value);
+        public static BindableProperty<float> currentHP = new BindableProperty<float>(INGAME_MAX_HP.Value);
         public static BindableProperty<int> Exp = new BindableProperty<int>(0);
         public static BindableProperty<int> Coin = new BindableProperty<int>(0);
         public static BindableProperty<int> Level = new BindableProperty<int>(1);
@@ -43,7 +44,8 @@ namespace ProjectBlood
             // Load from PlayerPrefs
             Global.LegacyPoint.Value = PlayerPrefs.GetInt("LegacyPoint", 0);
             Global.CoinDropRate.Value = PlayerPrefs.GetFloat("CoinDropRate", 0.30f);
-            Global.MAX_HP.Value = PlayerPrefs.GetFloat("MAX_HP", 30.0f);
+            Global.INIT_MAX_HP.Value = PlayerPrefs.GetFloat("INIT_MAX_HP", 30.0f);
+
             currentDifficulty = 0;
 
             LevelConfigs.Clear();
@@ -61,9 +63,9 @@ namespace ProjectBlood
                 PlayerPrefs.SetFloat("CoinDropRate", coinDropRate);
             });
 
-            MAX_HP.Register(maxHP =>
+            INIT_MAX_HP.Register(maxHP =>
             {
-                PlayerPrefs.SetFloat("MAX_HP", maxHP);
+                PlayerPrefs.SetFloat("INIT_MAX_HP", maxHP);
             });
         }
 
@@ -104,7 +106,8 @@ namespace ProjectBlood
         // restart game
         public static void ResetLevel()
         {
-            currentHP.Value = MAX_HP.Value;
+            PlayerUpgrade.ResetUpgrade();
+            currentHP.Value = INGAME_MAX_HP.Value;
             Level.Value = 1;
             Exp.Value = 0;
             Time.timeScale = 1;
@@ -221,9 +224,9 @@ namespace ProjectBlood
         public static void AddHP(float amount)
         {
             currentHP.Value += amount;
-            if (currentHP.Value > MAX_HP.Value)
+            if (currentHP.Value > INGAME_MAX_HP.Value)
             {
-                currentHP.Value = MAX_HP.Value;
+                currentHP.Value = INGAME_MAX_HP.Value;
             }
         }
 
