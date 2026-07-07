@@ -299,7 +299,7 @@ namespace ProjectBlood
 					isSpecialReloadTriggered = false;
 					specialReloadCoroutine = null;
 				}
-				currentWeapon.KeepAttacking();
+				currentWeapon.KeepAttacking(smoothAimDir);
 			}
 			if (Input.GetMouseButtonUp(0) && playerBullet != null)
 			{

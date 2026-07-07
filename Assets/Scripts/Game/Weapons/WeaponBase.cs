@@ -66,9 +66,8 @@ namespace ProjectBlood
             WeaponAnimator.SetTrigger(ShootAnimatioTrigger);
         }
 
-        public virtual void KeepAttacking()
+        public virtual void KeepAttacking(Vector2 shootDir)
         {
-            Vector2 shootDir = transform.right;
             if (attackInterval.CanAttack() && gunClip.CanShoot()) // 只有在满足攻击间隔且有弹药时才允许攻击
             {
                 Attack(shootDir);
