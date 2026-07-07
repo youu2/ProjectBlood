@@ -33,8 +33,7 @@ namespace ProjectBlood
         public BloodBank BloodBank { get; set; } // 血液银行引用
         public LifestealFeature Lifesteal { get; set; } = new LifestealFeature(); // 吸血功能
         public bool IsBulletEnhanced { get; protected set; } = true; // 当前弹夹是否被血库强化
-        public virtual void StartAttacking(Vector2 shootDir) { }
-        // public abstract void KeepAttacking(Vector2 shootDir);
+        public virtual void StartAttacking() { }
         public abstract void StopAttacking();
         public virtual void InitGunClip()
         {
@@ -67,8 +66,9 @@ namespace ProjectBlood
             WeaponAnimator.SetTrigger(ShootAnimatioTrigger);
         }
 
-        public virtual void KeepAttacking(Vector2 shootDir)
+        public virtual void KeepAttacking()
         {
+            Vector2 shootDir = transform.right;
             if (attackInterval.CanAttack() && gunClip.CanShoot()) // 只有在满足攻击间隔且有弹药时才允许攻击
             {
                 Attack(shootDir);

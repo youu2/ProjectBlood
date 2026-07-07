@@ -288,7 +288,7 @@ namespace ProjectBlood
 					isSpecialReloadTriggered = false;
 					specialReloadCoroutine = null;
 				}
-				currentWeapon.StartAttacking(smoothAimDir);
+				currentWeapon.StartAttacking();
 			}
 			//限制为固定射速
 			if (Input.GetMouseButton(0) && playerBullet != null && !Global.IsGamePaused)
@@ -299,7 +299,7 @@ namespace ProjectBlood
 					isSpecialReloadTriggered = false;
 					specialReloadCoroutine = null;
 				}
-				currentWeapon.KeepAttacking(smoothAimDir);
+				currentWeapon.KeepAttacking();
 			}
 			if (Input.GetMouseButtonUp(0) && playerBullet != null)
 			{

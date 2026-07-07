@@ -13,7 +13,7 @@ namespace ProjectBlood
         [SerializeField] protected float OnShotVolume = 0.65f;
         [SerializeField] protected float ShootEndVolume = 0.65f;
 
-        public override void StartAttacking(Vector2 shootDir)
+        public override void StartAttacking()
         {
             if (gunClip?.CanShoot() ?? false)
             {
@@ -26,15 +26,15 @@ namespace ProjectBlood
             }
         }
 
-        public override void KeepAttacking(Vector2 shootDir)
+        public override void KeepAttacking()
         {
             // 全程按住左键换弹后，要重新开始播放射击循环音效
             if (newClip && gunClip != null && gunClip.CanShoot())
             {
-                StartAttacking(shootDir);
+                StartAttacking();
                 newClip = false;
             }
-            base.KeepAttacking(shootDir);
+            base.KeepAttacking();
         }
 
         public override void StopAttacking()
