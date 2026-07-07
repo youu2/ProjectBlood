@@ -23,8 +23,7 @@ namespace ProjectBlood
 
         [Tooltip("散布角度(总角度范围, 单位:度)")][Range(0f, 360f)] public float scatterAngle = 45f;
 
-        [Tooltip("是否使用随机散布(false=均匀分布)")]
-        public bool useRandomScatter = false;
+        [Tooltip("是否使用随机散布(false=均匀分布)")] public bool useRandomScatter = false;
 
         [Header("=== 音效相关设置 ===")]
         [Tooltip("射击音效列表(随机播放)")] public List<AudioClip> shootSounds = new List<AudioClip>();
@@ -63,7 +62,7 @@ namespace ProjectBlood
         // 开始Fire状态
         protected override void StartFire()
         {
-            currentState = State.Fire;
+            base.StartFire();
             if (shootCoroutine != null)
                 StopCoroutine(shootCoroutine);
             shootCoroutine = StartCoroutine(ShootSequence());

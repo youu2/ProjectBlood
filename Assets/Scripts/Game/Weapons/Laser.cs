@@ -6,21 +6,12 @@ namespace ProjectBlood
 {
 	public partial class Laser : AutomaticWeapon
 	{
-		public float HitDamage = 14f;
 		[Header("=== 激光攻击设置 ===")]
 		[Tooltip("激光实际攻击宽度")]
+		public float HitDamage = 1f;
 		public float laserWidth = 0.5f;
 		public LineRenderer SelfLineRenderer;
 		public SpriteRenderer LaserPoint;
-		public override void Awake()
-		{
-			BloodRequired = 8;
-			ReloadTime = 2.8f;
-			MaxAmmo = 120;
-			gunClip = new GunClip(MaxAmmo);
-			attackInterval = new AttackIntervalFeature(0.2f);
-			base.Awake();
-		}
 
 		public override void Attack(Vector2 shootDir)
 		{

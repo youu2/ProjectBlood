@@ -6,7 +6,6 @@ namespace ProjectBlood
 {
 	public partial class ShotGun : SemiAutomaticWeapon
 	{
-		public List<AudioClip> ShotGunSounds = new List<AudioClip>();
 		[SerializeField] private int bulletCount = 5; // 每次攻击生成的子弹数量
 		public override void Attack(Vector2 shootDir)
 		{
@@ -36,8 +35,8 @@ namespace ProjectBlood
 				ApplyLifestealToBullet(bullet);
 			}
 			// 播放射击声音，随机选择一个音效
-			int randomIndex = Random.Range(0, ShotGunSounds.Count);
-			AudioKitManager.Instance.PlayOneShot(ShotGunSounds[randomIndex], volume: FireVolume);
+			int randomIndex = Random.Range(0, ShootSounds.Count);
+			AudioKitManager.Instance.PlayOneShot(ShootSounds[randomIndex], volume: FireVolume);
 			fireFlash.Flash(Bullet.transform.position, shootDir); // 显示枪口火焰特效
 			CameraUtils.ShakeMainCamera(0.15f, 7);
 			WeaponAnimator.SetTrigger("SingleShoot");
