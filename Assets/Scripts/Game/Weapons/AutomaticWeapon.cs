@@ -6,13 +6,10 @@ namespace ProjectBlood
 {
     public class AutomaticWeapon : WeaponBase
     {
-        protected bool newClip = true;
-        protected bool hasFired = false;
-        protected bool reloadTextShown = false;
+        protected bool hasFired = false;    // 记录是否真的射击过，避免无弹药时也会播放射击结束音效的问题
         protected AudioPlayer _shootLoopPlayer;
-        // [Range(0, 360)][SerializeField] protected float spreadAngle = 2f;
-        [SerializeField] protected AudioClip OneShotSound;
-        [SerializeField] protected AudioClip ShootEndSound;
+        [SerializeField] protected AudioClip OneShotSound;// 开火时播放一次的音效
+        [SerializeField] protected AudioClip ShootEndSound;// 射击结束时播放一次的音效
         [SerializeField] protected float OnShotVolume = 0.65f;
         [SerializeField] protected float ShootEndVolume = 0.65f;
 
@@ -37,54 +34,18 @@ namespace ProjectBlood
                 StartAttacking(shootDir);
                 newClip = false;
             }
-
-            // 正常射击逻辑
-            if (attackInterval.CanAttack() && gunClip != null && gunClip.CanShoot())
-            {
-                Attack(shootDir);
-                attackInterval.RecordAttackTime();
-                gunClip.Shoot();
-                reloadTextShown = false;
-            }
-            else if (gunClip != null && !gunClip.CanShoot() && !reloadTextShown)
-            {
-                StopAttacking();
-                newClip = true;
-                if (!gunClip.isReloading)
-                {
-                    PlayFirstDryFireClick();
-                    reloadTextShown = true;
-                }
-            }
-            TryPlayDryFireClick();
+            base.KeepAttacking(shootDir);
         }
 
         public override void StopAttacking()
         {
-            if (hasFired)
+            if (hasFired)   // 避免没弹药时松开左键也会播放射击结束音效的问题
             {
                 AudioKitManager.Instance?.PlayOneShot(ShootEndSound, volume: ShootEndVolume);
             }
             AudioKitManager.Instance?.Stop(_shootLoopPlayer);
             _shootLoopPlayer = null;
             hasFired = false;
-        }
-
-        public override void SwitchFromSet()
-        {
-            attackInterval?.Reset();
-            newClip = true;
-            reloadTextShown = false;
-            StopAttacking();
-            StopReload();
-            Player.HideText();
-        }
-
-        public override void SwitchToSet()
-        {
-            InitGunClip();
-            gunClip.UpdateClipUI();
-            newClip = true;
         }
     }
 }

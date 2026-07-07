@@ -57,6 +57,8 @@ namespace ProjectBlood
 
 		public override void KeepAttacking(Vector2 shootDir)
 		{
+			shootDir = transform.right; // 确保激光方向与武器枪口朝向一致, 避免在另一把枪开火导致武器枪口上抬时切枪导致激光方向错误
+
 			// 为了让打空弹夹后继续按住左键同时换弹后能够正确触发循环开火音效
 			if (newClip && gunClip.CanShoot())
 			{

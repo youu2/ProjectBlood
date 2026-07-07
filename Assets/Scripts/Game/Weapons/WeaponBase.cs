@@ -28,11 +28,13 @@ namespace ProjectBlood
         [SerializeField] protected List<AudioClip> ShootSounds = new List<AudioClip>();
         public AudioClip reloadSound;
         [SerializeField] protected int BloodRequired = 5; // 每次换弹需要的血量
+        protected bool reloadTextShown = false; // 标记是否已经显示过 reload 提示文本
+        protected bool newClip = true;  // 标记是否是新换弹,用于处理按住开火键时的换弹逻辑
         public BloodBank BloodBank { get; set; } // 血液银行引用
         public LifestealFeature Lifesteal { get; set; } = new LifestealFeature(); // 吸血功能
         public bool IsBulletEnhanced { get; protected set; } = true; // 当前弹夹是否被血库强化
         public virtual void StartAttacking(Vector2 shootDir) { }
-        public abstract void KeepAttacking(Vector2 shootDir);
+        // public abstract void KeepAttacking(Vector2 shootDir);
         public abstract void StopAttacking();
         public virtual void InitGunClip()
         {
@@ -61,9 +63,30 @@ namespace ProjectBlood
             fireFlash.Flash(bullet.transform.position, shootDir); // 显示枪口火焰特效
 
             //镜头震动
-            // CameraUtils.ShakeMainCamera(0.15f, 7);
             CameraUtils.ShakeMainCamera(CameraShakeIntensity, CameraShakeDuration);
             WeaponAnimator.SetTrigger(ShootAnimatioTrigger);
+        }
+
+        public virtual void KeepAttacking(Vector2 shootDir)
+        {
+            if (attackInterval.CanAttack() && gunClip.CanShoot()) // 只有在满足攻击间隔且有弹药时才允许攻击
+            {
+                Attack(shootDir);
+                attackInterval.RecordAttackTime();
+                gunClip.Shoot(); // 射击时减少弹药量
+                reloadTextShown = false; // 有弹药时重置 reload 文本显示标记
+            }
+            else if (!gunClip.CanShoot() && !reloadTextShown)
+            {
+                StopAttacking();
+                newClip = true;
+                if (!gunClip.isReloading)
+                {
+                    PlayFirstDryFireClick();
+                    reloadTextShown = true; // 标记已经显示过 reload 文本
+                }
+            }
+            TryPlayDryFireClick();
         }
 
         // 全自动武器支持随机散布
@@ -168,8 +191,22 @@ namespace ProjectBlood
             }
         }
 
-        public virtual void SwitchFromSet() { }
-        public virtual void SwitchToSet() { } // 切回武器时的特殊处理逻辑
+        public void SwitchFromSet()
+        {
+            attackInterval?.Reset();
+            newClip = true;
+            reloadTextShown = false;
+            StopAttacking();
+            StopReload();
+            Player.HideText();
+        }
+
+        public void SwitchToSet()
+        {
+            InitGunClip();
+            gunClip.UpdateClipUI();
+            newClip = true;
+        }
         public GunClip GetGunClip() => gunClip;
     }
 }

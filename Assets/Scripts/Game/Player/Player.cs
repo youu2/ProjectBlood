@@ -13,11 +13,9 @@ namespace ProjectBlood
 		public PlayerBullet playerBullet;
 		public WeaponBase currentWeapon; // 当前装备的武器
 		private List<WeaponBase> weapons = new List<WeaponBase>(); // 武器列表
-		private List<AudioClip> weaponSwitchSounds = new List<AudioClip>();
 		public BloodBank bloodBank = new BloodBank(); // 血液银行组件，特殊资源，用于弹药管理和血量管理
 		private ShieldState shieldState = new ShieldState(); // 护盾状态
 		private Vector2 smoothAimDir; // 平滑过渡后的瞄准方向（单位向量）
-
 		private float firstReloadTime; // 首次按下R键的时间
 		private bool isSpecialReloadTriggered; // 是否已经触发了特殊换弹
 		private Coroutine specialReloadCoroutine; // 特殊换弹协程
@@ -89,7 +87,6 @@ namespace ProjectBlood
 			weapons.Add(AK);
 			weapons.Add(AWP);
 			weapons.Add(Laser);
-			weaponSwitchSounds.Add(WeaponSwitchSound);
 			UseWeapon(0); // 默认装备第一把武器
 			NoticeText.Hide();
 			// 为所有武器设置血液银行引用
@@ -118,7 +115,7 @@ namespace ProjectBlood
 			// weaponTransform = currentWeapon.transform;
 			currentWeapon.SwitchToSet();
 			currentWeapon.Show();
-
+			GameUI.UpdateClipText(currentWeapon.GetGunClip());
 			// 立即将新武器对准当前瞄准方向，避免切枪时的一帧延迟
 			if (smoothAimDir != Vector2.zero)
 			{
@@ -381,7 +378,7 @@ namespace ProjectBlood
 
 				AudioKitManager.Instance.PlayOneShot("SpecialReload", volume: SpecialReloadVolume);
 			}
-
+			GameUI.UpdateClipText(currentWeapon.GetGunClip());
 			isSpecialReloadTriggered = false;
 			specialReloadCoroutine = null;
 		}
