@@ -17,9 +17,16 @@ namespace ProjectBlood
 		public BloodBank bloodBank = new BloodBank(); // 血液银行组件，特殊资源，用于弹药管理和血量管理
 		private ShieldState shieldState = new ShieldState(); // 护盾状态
 		private Vector2 smoothAimDir; // 平滑过渡后的瞄准方向（单位向量）
+
+		private float firstReloadTime; // 首次按下R键的时间
+		private bool isSpecialReloadTriggered; // 是否已经触发了特殊换弹
+		private Coroutine specialReloadCoroutine; // 特殊换弹协程
+		private const float specialReloadWindow = 2f; // 双击R的时间窗口（秒）
+		private const float specialReloadDelay = 3f; // 特殊换弹延迟时间（秒）
+		private const int specialReloadBloodCost = 20; // 特殊换弹消耗的血库资源
 		private const float aimSmoothSpeed = 20f; // 瞄准平滑速度，值越大过渡越快
 		private const float aimAngle = 35f; // 自动锁敌的角度范围（度）
-		private bool isFacingRight = true; // 角色当前朝向：true=朝右，false=朝左
+		[SerializeField] private float SpecialReloadVolume = 0.7f;
 
 		// faceLeft: true=朝左，false=朝右
 		// 当玩家朝左时，翻转整个玩家对象，包括武器，文字提示单独再翻转一次
@@ -28,7 +35,6 @@ namespace ProjectBlood
 			float scaleX = faceLeft ? -1f : 1f;
 			transform.localScale = new Vector3(1.2f * scaleX, 1.2f, 1f);
 			NoticeText.transform.localScale = new Vector3(0.0005f * scaleX, 0.0005f, 1f);
-			// isFacingRight = !faceLeft;
 		}
 
 		// 根据瞄准方向更新武器朝向和角色朝向
@@ -279,11 +285,23 @@ namespace ProjectBlood
 			//鼠标左键射击（朝平滑后的瞄准方向）
 			if (Input.GetMouseButtonDown(0) && playerBullet != null && !Global.IsGamePaused)
 			{
+				if (isSpecialReloadTriggered && specialReloadCoroutine != null)
+				{
+					StopCoroutine(specialReloadCoroutine);
+					isSpecialReloadTriggered = false;
+					specialReloadCoroutine = null;
+				}
 				currentWeapon.StartAttacking(smoothAimDir);
 			}
 			//限制为固定射速
 			if (Input.GetMouseButton(0) && playerBullet != null && !Global.IsGamePaused)
 			{
+				if (isSpecialReloadTriggered && specialReloadCoroutine != null)
+				{
+					StopCoroutine(specialReloadCoroutine);
+					isSpecialReloadTriggered = false;
+					specialReloadCoroutine = null;
+				}
 				currentWeapon.KeepAttacking(smoothAimDir);
 			}
 			if (Input.GetMouseButtonUp(0) && playerBullet != null)
@@ -294,7 +312,18 @@ namespace ProjectBlood
 			// 按R键换弹
 			if (Input.GetKeyDown(KeyCode.R) && !Global.IsGamePaused)
 			{
-				currentWeapon.Reload();
+				float currentTime = Time.time;
+				if (currentWeapon.GetGunClip().CanReload())
+				{
+					currentWeapon.Reload();
+					firstReloadTime = currentTime;
+					isSpecialReloadTriggered = false;
+				}
+				else if (currentTime - firstReloadTime <= specialReloadWindow && bloodBank.CurrentBloodAmount >= specialReloadBloodCost)
+				{
+					isSpecialReloadTriggered = true;
+					specialReloadCoroutine = StartCoroutine(SpecialReloadCoroutine());
+				}
 			}
 			GameUI.UpdateBloodText(bloodBank);
 
@@ -334,9 +363,36 @@ namespace ProjectBlood
 			}
 		}
 
+		// 特殊换弹协程, 双击换弹触发，为所有武器补充弹药并播放音效
+		private IEnumerator SpecialReloadCoroutine()
+		{
+			yield return new WaitForSeconds(specialReloadDelay);
+			if (isSpecialReloadTriggered && bloodBank.CurrentBloodAmount >= specialReloadBloodCost)
+			{
+				bloodBank.RemoveBlood(specialReloadBloodCost);
+
+				foreach (var weapon in weapons)
+				{
+					if (weapon != currentWeapon)
+					{
+						weapon.FillClipDirectly();
+					}
+				}
+
+				AudioKitManager.Instance.PlayOneShot("SpecialReload", volume: SpecialReloadVolume);
+			}
+
+			isSpecialReloadTriggered = false;
+			specialReloadCoroutine = null;
+		}
+
 		private void OnDestroy()
 		{
 			player1 = null;
+			if (specialReloadCoroutine != null)
+			{
+				StopCoroutine(specialReloadCoroutine);
+			}
 		}
 	}
 }

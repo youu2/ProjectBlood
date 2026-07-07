@@ -149,6 +149,17 @@ namespace ProjectBlood
             AudioKitManager.Instance?.Stop(_shootClipPlayer);
         }
 
+        public void FillClipDirectly()
+        {
+            StopReload();
+            if (gunClip != null)
+            {
+                gunClip.currentAmmo = gunClip.maxAmmo;
+                gunClip.isReloading = false;
+                gunClip.UpdateClipUI();
+            }
+        }
+
         protected void TryPlayDryFireClick()
         {
             if (Time.frameCount % 50 == 0 && attackInterval.CanAttack() && gunClip != null && !gunClip.isReloading)
@@ -159,5 +170,6 @@ namespace ProjectBlood
 
         public virtual void SwitchFromSet() { }
         public virtual void SwitchToSet() { } // 切回武器时的特殊处理逻辑
+        public GunClip GetGunClip() => gunClip;
     }
 }
