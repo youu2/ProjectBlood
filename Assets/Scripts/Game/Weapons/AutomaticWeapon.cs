@@ -28,13 +28,13 @@ namespace ProjectBlood
 
         public override void KeepAttacking(Vector2 shootDir)
         {
+            base.KeepAttacking(shootDir);
             // 全程按住左键换弹后，要重新开始播放射击循环音效
             if (newClip && gunClip != null && gunClip.CanShoot())
             {
                 StartAttacking();
                 newClip = false;
             }
-            base.KeepAttacking(shootDir);
         }
 
         public override void StopAttacking()

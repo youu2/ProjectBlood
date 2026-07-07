@@ -5,8 +5,7 @@ using System.Collections.Generic;
 
 namespace ProjectBlood
 {
-    [ViewControllerChild]
-    public abstract class WeaponBase : ViewController
+    public abstract class WeaponBase : MonoBehaviour
     {
         private Coroutine _reloadCoroutine;   // 原先的设计放在GunClip,这会依赖MonoBehaviour,违反单一职责原则
         [SerializeField] protected int MaxAmmo = 10;
@@ -54,10 +53,11 @@ namespace ProjectBlood
             Vector2 finalDirection = ApplySpread(shootDir);
             // 计算旋转：根据 shootDir 向量创建对应的 Quaternion 朝向
             Quaternion bulletRotation = Quaternion.FromToRotation(Vector2.right, finalDirection.normalized);
-            var bullet = Instantiate(Bullet, Bullet.transform.position, bulletRotation);
+            var bullet = Instantiate(Bullet, Bullet.transform.position, bulletRotation);  // 挂在枪口位置
             bullet.direction = finalDirection;
             bullet.gameObject.SetActive(true);
-            ApplyLifestealToBullet(bullet);
+
+            ApplyLifestealToBullet(bullet); // 应用吸血功能
 
             fireFlash.Flash(bullet.transform.position, shootDir); // 显示枪口火焰特效
 
@@ -81,11 +81,10 @@ namespace ProjectBlood
                 newClip = true;
                 if (!gunClip.isReloading)
                 {
-                    PlayFirstDryFireClick();
+                    StartCoroutine(PlayFirstDryFireClick());
                     reloadTextShown = true; // 标记已经显示过 reload 文本
                 }
             }
-            TryPlayDryFireClick();
         }
 
         // 全自动武器支持随机散布
@@ -151,11 +150,12 @@ namespace ProjectBlood
             }
         }
 
-        protected void PlayFirstDryFireClick()
+        protected IEnumerator PlayFirstDryFireClick()
         {
             if (gunClip != null)
             {
                 Player.DisplayText("[R] to Reload!");
+                yield return new WaitForSeconds(0.2f);
                 AudioKitManager.Instance?.PlayOneShot("DryFireClick", volume: DryFireClickVolume);
             }
         }
@@ -182,13 +182,6 @@ namespace ProjectBlood
             }
         }
 
-        protected void TryPlayDryFireClick()
-        {
-            if (Time.frameCount % 50 == 0 && attackInterval.CanAttack() && gunClip != null && !gunClip.isReloading)
-            {
-                AudioKitManager.Instance?.PlayOneShot("DryFireClick", volume: DryFireClickVolume);
-            }
-        }
 
         public void SwitchFromSet()
         {

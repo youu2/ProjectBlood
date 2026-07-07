@@ -52,6 +52,9 @@ MonoBehaviour:
     - TypeName: ProjectBlood.SemiAutomaticWeapon
       PathToRoot: PlayerAnimator/Arm/Weapon/AWP
       MemberName: AWP
+    - TypeName: PenetratingBullet
+      PathToRoot: PlayerAnimator/Arm/Weapon/AWP/AWPBullet
+      MemberName: AWPBullet
     - TypeName: ProjectBlood.Laser
       PathToRoot: PlayerAnimator/Arm/Weapon/Laser
       MemberName: Laser

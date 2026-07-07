@@ -21,7 +21,7 @@ namespace ProjectBlood
 		private Coroutine specialReloadCoroutine; // 特殊换弹协程
 		private const float specialReloadWindow = 2f; // 双击R的时间窗口（秒）
 		private const float specialReloadDelay = 3f; // 特殊换弹延迟时间（秒）
-		private const int specialReloadBloodCost = 20; // 特殊换弹消耗的血库资源
+		private int specialReloadBloodCost = 20; // 特殊换弹消耗的血库资源
 		private const float aimSmoothSpeed = 20f; // 瞄准平滑速度，值越大过渡越快
 		private const float aimAngle = 35f; // 自动锁敌的角度范围（度）
 		[SerializeField] private float SpecialReloadVolume = 0.7f;
@@ -89,6 +89,8 @@ namespace ProjectBlood
 			weapons.Add(Laser);
 			UseWeapon(0); // 默认装备第一把武器
 			NoticeText.Hide();
+			specialReloadBloodCost = (weapons.Count - 2) * 4;   // 根据武器数量动态调整特殊换弹消耗的血库资源
+
 			// 为所有武器设置血液银行引用
 			foreach (var weapon in weapons)
 			{
@@ -97,9 +99,6 @@ namespace ProjectBlood
 
 			// 护盾一直挂载在玩家对象上，初始化护盾状态，捡到道具后才会激活
 			shieldState.Initialize(ShieldSprite, this);
-
-			// 创建临时的 AudioSource 用于播放切换武器时的 shootEnd 音效
-			// temporaryAudioSource = gameObject.AddComponent<AudioSource>();
 		}
 
 		void UseWeapon(int index)

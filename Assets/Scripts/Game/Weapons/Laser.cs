@@ -86,12 +86,11 @@ namespace ProjectBlood
 				newClip = true;
 				if (!gunClip.isReloading)
 				{
-					Player.DisplayText("[R] to Reload!");
-					AudioKitManager.Instance.PlayOneShot("DryFireClick", volume: 0.7f);
+					StartCoroutine(PlayFirstDryFireClick());
 					reloadTextShown = true; // 标记已经显示过 reload 文本
 				}
 			}
-			TryPlayDryFireClick();
+			// TryPlayDryFireClick();
 		}
 
 		private void DrawLaser(Vector2 shootDir)

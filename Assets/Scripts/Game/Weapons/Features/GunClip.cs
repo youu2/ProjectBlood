@@ -10,7 +10,7 @@ namespace ProjectBlood
         public int currentAmmo; // 当前弹药量
         public bool isReloading; // 是否正在换弹
         public bool isEmpty => currentAmmo <= 0; // 是否弹药已空
-        
+
         // 使用事件重构弹夹相关逻辑（音效播放，换弹协程）
         public GunClip(int maxAmmo)
         {
@@ -26,7 +26,7 @@ namespace ProjectBlood
                 UpdateClipUI(); // 射击后更新UI显示的弹药信息
             }
         }
-        
+
         public bool CanReload()
         {
             return !isReloading && currentAmmo < maxAmmo;
@@ -51,7 +51,7 @@ namespace ProjectBlood
         {
             isReloading = false;
         }
-        
+
         // 停止换弹流程
         public void StopReload()
         {
@@ -60,7 +60,7 @@ namespace ProjectBlood
                 isReloading = false;
             }
         }
-        
+
         public bool CanShoot()
         {
             return !isReloading && !isEmpty; // 只有在不换弹且有弹药时才允许射击

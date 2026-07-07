@@ -1,4 +1,4 @@
-// Generate Id:63ac94cf-c364-46dc-a29e-a68aeb57ec55
+// Generate Id:8bf73a38-c39a-40e5-acf5-47e537a7684c
 using UnityEngine;
 
 namespace ProjectBlood
@@ -26,6 +26,8 @@ namespace ProjectBlood
 		public ProjectBlood.AutomaticWeapon AK;
 		
 		public ProjectBlood.SemiAutomaticWeapon AWP;
+		
+		public PenetratingBullet AWPBullet;
 		
 		public ProjectBlood.Laser Laser;
 		
