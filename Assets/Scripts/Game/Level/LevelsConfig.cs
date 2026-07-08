@@ -517,7 +517,7 @@ namespace ProjectBlood
         public static LevelsConfig Config = new LevelsConfig()
         .Self(self =>
         {
-            self.LevelName = "1 - X";
+            self.LevelName = "?";
         })
         .Self(self =>
         {
