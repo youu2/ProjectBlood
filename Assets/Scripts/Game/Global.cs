@@ -51,6 +51,13 @@ namespace ProjectBlood
             LevelConfigs.Clear();
             LevelConfigs.Add(Level1_1.Config);
             LevelConfigs.Add(Level1_2.Config);
+            LevelConfigs.Add(Level1_3.Config);
+            LevelConfigs.Add(Level2_1.Config);
+            LevelConfigs.Add(Level2_2.Config);
+            LevelConfigs.Add(Level2_3.Config);
+            LevelConfigs.Add(Level3_1.Config);
+            LevelConfigs.Add(Level3_2.Config);
+            LevelConfigs.Add(Level3_3.Config);
 
             // Register change callbacks
             LegacyPoint.Register(legacy =>
@@ -201,9 +208,9 @@ namespace ProjectBlood
                 return;
             }
             // 只有当血库血量低于30%时才有可能掉落dirtyBlood
-            if (Player.player1 != null && Player.player1.bloodBank != null)
+            if (BloodBank.Instance != null)
             {
-                float bloodPercent = (float)Player.player1.bloodBank.CurrentBloodAmount / Player.player1.bloodBank.MaxBloodAmount;
+                float bloodPercent = (float)BloodBank.Instance.CurrentBloodAmount / BloodBank.Instance.MaxBloodAmount;
                 if (bloodPercent < 0.3f)
                 {
                     rand = Random.Range(0f, 100.0f);

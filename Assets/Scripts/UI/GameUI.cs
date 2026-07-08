@@ -29,11 +29,11 @@ namespace ProjectBlood
                 GUIInstance.ClipText.text = $"Ammo: {gunClip.currentAmmo} / {gunClip.maxAmmo}";
             }
         }
-        public static void UpdateBloodText(BloodBank bloodBank)
+        public static void UpdateBloodText()
         {
             if (GUIInstance != null && GUIInstance.BloodText != null)
             {
-                GUIInstance.BloodText.text = $"Blood: {bloodBank.CurrentBloodAmount} / {bloodBank.MaxBloodAmount}";
+                GUIInstance.BloodText.text = $"Blood: {BloodBank.Instance.CurrentBloodAmount} / {BloodBank.Instance.MaxBloodAmount}";
             }
         }
 

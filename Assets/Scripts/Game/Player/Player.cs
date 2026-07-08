@@ -13,7 +13,8 @@ namespace ProjectBlood
 		public PlayerBullet playerBullet;
 		public WeaponBase currentWeapon; // 当前装备的武器
 		private List<WeaponBase> weapons = new List<WeaponBase>(); // 武器列表
-		public BloodBank bloodBank = new BloodBank(); // 血液银行组件，特殊资源，用于弹药管理和血量管理
+
+		// public BloodBank bloodBank = new BloodBank(); // 血液银行组件，特殊资源，用于弹药管理和血量管理
 		private ShieldState shieldState = new ShieldState(); // 护盾状态
 		private Vector2 smoothAimDir; // 平滑过渡后的瞄准方向（单位向量）
 		private float firstReloadTime; // 首次按下R键的时间
@@ -92,10 +93,10 @@ namespace ProjectBlood
 			specialReloadBloodCost = (weapons.Count - 2) * 4;   // 根据武器数量动态调整特殊换弹消耗的血库资源
 
 			// 为所有武器设置血液银行引用
-			foreach (var weapon in weapons)
-			{
-				weapon.BloodBank = bloodBank;
-			}
+			// foreach (var weapon in weapons)
+			// {
+			// 	weapon.BloodBank = bloodBank;
+			// }
 
 			// 护盾一直挂载在玩家对象上，初始化护盾状态，捡到道具后才会激活
 			shieldState.Initialize(ShieldSprite, this);
@@ -147,7 +148,7 @@ namespace ProjectBlood
 			FxManager.PlayPlayerHurtFX(transform.Position2D());
 			FxManager.DrawPlayerBlood(transform.Position2D());
 			Global.currentHP.Value -= damage;
-			Player.player1.bloodBank.AddBlood((int)Mathf.Round(damage));
+			BloodBank.Instance.AddBlood((int)Mathf.Round(damage));
 			if (Global.currentHP.Value < 0) Global.currentHP.Value = 0;
 
 			if (Global.currentHP.Value > 0)
@@ -315,13 +316,13 @@ namespace ProjectBlood
 					firstReloadTime = currentTime;
 					isSpecialReloadTriggered = false;
 				}
-				else if (currentTime - firstReloadTime <= specialReloadWindow && bloodBank.CurrentBloodAmount >= specialReloadBloodCost)
+				else if (currentTime - firstReloadTime <= specialReloadWindow && BloodBank.Instance.CurrentBloodAmount >= specialReloadBloodCost)
 				{
 					isSpecialReloadTriggered = true;
 					specialReloadCoroutine = StartCoroutine(SpecialReloadCoroutine());
 				}
 			}
-			GameUI.UpdateBloodText(bloodBank);
+			GameUI.UpdateBloodText();
 
 			// 切枪
 			if (Input.GetKeyDown(KeyCode.Alpha1) && !Global.IsGamePaused)
@@ -363,9 +364,9 @@ namespace ProjectBlood
 		private IEnumerator SpecialReloadCoroutine()
 		{
 			yield return new WaitForSeconds(specialReloadDelay);
-			if (isSpecialReloadTriggered && bloodBank.CurrentBloodAmount >= specialReloadBloodCost)
+			if (isSpecialReloadTriggered && BloodBank.Instance.CurrentBloodAmount >= specialReloadBloodCost)
 			{
-				bloodBank.RemoveBlood(specialReloadBloodCost);
+				BloodBank.Instance.RemoveBlood(specialReloadBloodCost);
 
 				foreach (var weapon in weapons)
 				{

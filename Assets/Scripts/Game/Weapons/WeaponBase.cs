@@ -29,7 +29,6 @@ namespace ProjectBlood
         [SerializeField] protected int BloodRequired = 5; // 每次换弹需要的血量
         protected bool reloadTextShown = false; // 标记是否已经显示过 reload 提示文本
         protected bool newClip = true;  // 标记是否是新换弹,用于处理按住开火键时的换弹逻辑
-        public BloodBank BloodBank { get; set; } // 血液银行引用
         public LifestealFeature Lifesteal { get; set; } = new LifestealFeature(); // 吸血功能
         public bool IsBulletEnhanced { get; protected set; } = true; // 当前弹夹是否被血库强化
         public virtual void StartAttacking() { }
@@ -131,12 +130,12 @@ namespace ProjectBlood
             gunClip.FinishReload();
 
             // 根据换弹时血库状态决定当前弹夹是否被强化
-            IsBulletEnhanced = BloodBank != null && BloodBank.CurrentBloodAmount > 0;
+            IsBulletEnhanced = BloodBank.Instance != null && BloodBank.Instance.CurrentBloodAmount > 0;
 
             // 消耗血液（血库为空时也能换弹，只是子弹不会被强化）
             if (IsBulletEnhanced)
             {
-                BloodBank.RemoveBlood(BloodRequired);
+                BloodBank.Instance.RemoveBlood(BloodRequired);
             }
 
             _reloadCoroutine = null;

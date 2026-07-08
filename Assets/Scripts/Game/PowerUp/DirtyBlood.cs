@@ -12,12 +12,12 @@ namespace ProjectBlood
 		}
 		protected override void Collect()
 		{
-			if (Player.player1.bloodBank.CurrentBloodAmount >= Player.player1.bloodBank.MaxBloodAmount)
+			if (BloodBank.Instance.CurrentBloodAmount >= BloodBank.Instance.MaxBloodAmount)
 			{
 				return;
 			}
 			AudioKitManager.Instance.PlayOneShot("DirtyBloodPickup", volume: 0.6f);
-			Player.player1.bloodBank.AddBlood(bloodAmount);
+			BloodBank.Instance.AddBlood(bloodAmount);
 			this.DestroyGameObjGracefully();
 		}
 	}
