@@ -1,11 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Tilemaps;
-using UnityEngine.SceneManagement;
 using System.Linq;
 using QFramework;
 using Unity.Collections;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.Tilemaps;
 
 namespace ProjectBlood
 {
@@ -335,6 +335,9 @@ namespace ProjectBlood
                     HandleTileType(tileType, x, y, roomCenter, roomObj, roomGenerateConfig);
                 }
             }
+            roomObj.LB = new Vector3Int(startPosX, startPosY - roomHeight, 0);
+            roomObj.RT = new Vector3Int(startPosX + roomWidth, startPosY, 0);
+            roomObj.InitPathSearchingGrid();
 
             return roomObj;
         }

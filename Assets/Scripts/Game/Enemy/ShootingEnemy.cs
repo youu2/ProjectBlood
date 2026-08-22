@@ -97,13 +97,13 @@ namespace ProjectBlood
         protected virtual void FireBullet()
         {
             if (enemyBullet == null || player == null) return;
-            UpdateRotate(direction);
+            UpdateRotate(directionToPlayer);
 
             // 发射散射弹丸
             for (int i = 0; i < scatterBulletCount; i++)
             {
                 float angle = CalculateBulletAngle(i);
-                Vector3 bulletDirection = CalculateBulletDirection(direction, angle);
+                Vector3 bulletDirection = CalculateBulletDirection(directionToPlayer, angle);
 
                 EnemyBullet bullet = Instantiate(enemyBullet, transform.position, Quaternion.identity);
                 bullet.direction = bulletDirection;

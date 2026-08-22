@@ -15,21 +15,15 @@ namespace ProjectBlood
 			// 生成5发子弹
 			for (int i = 0; i < bulletCount; i++)
 			{
-				// 在圆锥范围内随机生成一个偏转角度 [-spreadAngle/2, spreadAngle/2]
+				// 在圆锥范围内随机生成一个偏转角度
 				float randomAngle = Random.Range(-spreadAngle / 2f, spreadAngle / 2f);
-
 				// 构造一个旋转，围绕Z轴旋转randomAngle度
 				Quaternion randomRotation = Quaternion.AngleAxis(randomAngle, Vector3.forward);
-
 				// 将基准方向转换为方向向量，并应用旋转，得到最终发射方向
 				Vector2 finalDirection = randomRotation * baseDirection;
 
-				// 计算飞行方向的角度，并生成对应的旋转
-				float angle = Mathf.Atan2(finalDirection.y, finalDirection.x) * Mathf.Rad2Deg;
-				Quaternion bulletRotation = Quaternion.AngleAxis(angle, Vector3.forward);
-
 				// 生成子弹，并设置其飞行方向
-				var bullet = Instantiate(Bullet, Bullet.transform.position, bulletRotation);
+				var bullet = Instantiate(Bullet, Bullet.transform.position, randomRotation);
 				bullet.direction = finalDirection;
 				bullet.gameObject.SetActive(true);
 				ApplyLifestealToBullet(bullet);

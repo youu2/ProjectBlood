@@ -285,7 +285,7 @@ namespace ProjectBlood
                     yield break;
                 }
 
-                UpdateRotate(direction);
+                UpdateRotate(directionToPlayer);
 
                 for (int i = 0; i < laserCount; i++)
                 {

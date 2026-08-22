@@ -19,53 +19,11 @@ MonoBehaviour:
     From: 0
     NameToFullName: []
     BindInfos:
-    - TypeName: CircleCollider2D
-      PathToRoot: HurtBox
-      MemberName: HurtBox
-    - TypeName: TMPro.TextMeshProUGUI
-      PathToRoot: Notice/NoticeText
-      MemberName: NoticeText
     - TypeName: SpriteRenderer
-      PathToRoot: AimMark
-      MemberName: AimMark
-    - TypeName: Animator
-      PathToRoot: PlayerAnimator
-      MemberName: PlayerAnimator
-    - TypeName: Transform
-      PathToRoot: PlayerAnimator/Arm
-      MemberName: Arm
-    - TypeName: UnityEngine.Transform
-      PathToRoot: PlayerAnimator/Arm/Weapon
-      MemberName: Weapon
-    - TypeName: ProjectBlood.SemiAutomaticWeapon
-      PathToRoot: PlayerAnimator/Arm/Weapon/DE
-      MemberName: DE
-    - TypeName: ProjectBlood.AutomaticWeapon
-      PathToRoot: PlayerAnimator/Arm/Weapon/MP5
-      MemberName: MP5
-    - TypeName: ProjectBlood.ShotGun
-      PathToRoot: PlayerAnimator/Arm/Weapon/ShotGun
-      MemberName: ShotGun
-    - TypeName: ProjectBlood.AutomaticWeapon
-      PathToRoot: PlayerAnimator/Arm/Weapon/AK
-      MemberName: AK
-    - TypeName: ProjectBlood.SemiAutomaticWeapon
-      PathToRoot: PlayerAnimator/Arm/Weapon/AWP
-      MemberName: AWP
-    - TypeName: PenetratingBullet
-      PathToRoot: PlayerAnimator/Arm/Weapon/AWP/AWPBullet
-      MemberName: AWPBullet
-    - TypeName: ProjectBlood.Laser
-      PathToRoot: PlayerAnimator/Arm/Weapon/Laser
-      MemberName: Laser
-    - TypeName: UnityEngine.SpriteRenderer
-      PathToRoot: PlayerAnimator/Arm/Weapon/FireFlash
-      MemberName: FireFlash
-    - TypeName: SpriteRenderer
-      PathToRoot: PlayerAnimator/WholeBody/Body/ShieldSprite
-      MemberName: ShieldSprite
-    ScriptsFolder: Assets\Scripts\Game\Player
-    ClassName: Player
+      PathToRoot: Sprite
+      MemberName: Sprite
+    ScriptsFolder: Assets\Scripts\Game\Enemy
+    ClassName: MeleeEnemy
     Namespace: ProjectBlood
     MainCode: 
     DesignerCode: 

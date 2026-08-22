@@ -299,7 +299,6 @@ GameObject:
   - component: {fileID: 220123113487038574}
   - component: {fileID: 1998963291594443156}
   - component: {fileID: 7883401417386688070}
-  - component: {fileID: 5159761165841011455}
   - component: {fileID: 126142792584932995}
   - component: {fileID: 4737079034023530160}
   m_Layer: 7
@@ -370,21 +369,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!114 &5159761165841011455
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9221604444027369072}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 411e729afed24c62a04e2b99d9122e78, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Binds:
-  - MemberName: SelfRigidbody2D
-    Object: {fileID: 7883401417386688070}
 --- !u!58 &126142792584932995
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -419,7 +403,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: -0.016387582}
   serializedVersion: 2
-  m_Radius: 0.41260016
+  m_Radius: 0.42
 --- !u!114 &4737079034023530160
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -448,6 +432,7 @@ MonoBehaviour:
   attackRange: 1.5
   chaseRange: 1
   WanderDuration: 0
+  selfRigidBody: {fileID: 7883401417386688070}
   currentState: 0
   Triangle: {fileID: 0}
   SelfRigidbody2D: {fileID: 0}
