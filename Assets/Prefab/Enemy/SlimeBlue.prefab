@@ -432,8 +432,7 @@ MonoBehaviour:
   attackRange: 1.5
   chaseRange: 1
   WanderDuration: 0
-  selfRigidBody: {fileID: 7883401417386688070}
   currentState: 0
   Triangle: {fileID: 0}
-  SelfRigidbody2D: {fileID: 0}
+  SelfRigidbody2D: {fileID: 7883401417386688070}
   AttackInterval: 3

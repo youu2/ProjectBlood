@@ -1,7 +1,7 @@
-using QFramework;
-using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using QFramework;
+using UnityEngine;
 
 namespace ProjectBlood
 {
@@ -31,6 +31,7 @@ namespace ProjectBlood
         protected bool newClip = true;  // 标记是否是新换弹,用于处理按住开火键时的换弹逻辑
         public LifestealFeature Lifesteal { get; set; } = new LifestealFeature(); // 吸血功能
         public bool IsBulletEnhanced { get; protected set; } = true; // 当前弹夹是否被血库强化
+        public float AdditionalCameraSize = 0.5f;
         public virtual void StartAttacking() { }
         public abstract void StopAttacking();
         public virtual void InitGunClip()

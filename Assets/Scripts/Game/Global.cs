@@ -32,6 +32,7 @@ namespace ProjectBlood
         public static int currentDifficulty;    // 0 - 9 共10个难度等级
         public static List<LevelsConfig> LevelConfigs = new List<LevelsConfig>();
         public static bool IsGamePaused = false;
+        public static float WeaponAdditionalCameraSize = 0.5f;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         public static void Initialize()
@@ -244,5 +245,9 @@ namespace ProjectBlood
             Debug.Log("Annihilation Cores increased by " + amount);
         }
 
+        public static void UpdateCameraSize(float size)
+        {
+            Camera.main.orthographicSize = size;
+        }
     }
 }

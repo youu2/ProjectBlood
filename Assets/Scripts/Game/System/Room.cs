@@ -8,6 +8,8 @@ namespace ProjectBlood
 {
     public partial class Room : ViewController
     {
+        // 定义事件:每次当玩家进入房间时触发
+        public static event Action<Room> OnPlayerEnteredRoom;
         private List<Vector3> enemyPosList = new List<Vector3>();
         private List<Door> doorList = new List<Door>();
         public RoomConfig roomConfig { get; private set; }
@@ -17,6 +19,7 @@ namespace ProjectBlood
         private List<EnemyWaveConfig> enemyWaveConfigList = new List<EnemyWaveConfig>();
         private EnemyWaveConfig currentEnemyWaveConfig = null;
         public DynaGrid<PathSearchingHelper.TileNode> PathSearchingGrid { get; private set; }
+        public int colorIndex = -1;
 
         public Vector3Int roomSize { get; set; }
         public Vector3Int roomPos { get; set; }
@@ -201,6 +204,9 @@ namespace ProjectBlood
             }
 
             FindRoom(); // 非战斗房间也要更新周围房间
+
+            // 触发玩家进入房间事件
+            OnPlayerEnteredRoom?.Invoke(this);
 
             if (roomConfig.roomType == RoomType.NormalRoom)
             {
