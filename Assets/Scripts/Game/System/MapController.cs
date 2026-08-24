@@ -311,8 +311,8 @@ namespace ProjectBlood
         // 生成单个房间的具体实现，根据房间配置绘制墙体、地板和放置游戏对象 参数：startPosX - 起始X坐标，startPosY - 起始Y坐标，roomConfig - 房间配置，roomGenerateConfig - 房间生成配置 返回生成的房间实例
         Room GenerateRoom(int startPosX, int startPosY, RoomConfig roomConfig, RoomGenerateConfig roomGenerateConfig)
         {
-            var roomWidth = roomConfig.roomMap.First().Length;
-            var roomHeight = roomConfig.roomMap.Count;
+            var roomWidth = roomConfig.Width;
+            var roomHeight = roomConfig.Height;
             var roomCenter = new Vector2(0.5f + startPosX + roomWidth / 2, 0.5f + startPosY - roomHeight / 2);
 
             var roomObj = Room.InstantiateWithParent(this)

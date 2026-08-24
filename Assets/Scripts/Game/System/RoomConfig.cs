@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace ProjectBlood
@@ -39,6 +40,8 @@ namespace ProjectBlood
     {
         public RoomType roomType;
         public List<string> roomMap;
+        public int Height => roomMap.Count;
+        public int Width => roomMap.First().Length;
 
         /*
             地图：18x18格，边界为（'1'和‘2’）房门为（'d'）内部地面（' '） 玩家（'P'） 敌人（'e'） 传送门（'#'） 宝箱（'c'）

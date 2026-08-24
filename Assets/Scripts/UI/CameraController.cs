@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using ProjectBlood;
 using QFramework;
 using UnityEngine;
@@ -15,17 +16,17 @@ public class CameraController : MonoBehaviour
     private Color currentBgColor;
     private Color targetBgColor;
     [SerializeField] private float colorLerpSpeed = 2.0f; // 过渡速度
-    private void Awake()
+    void Awake()
     {
         mCamera = GetComponent<Camera>();
         currentBgColor = mCamera.backgroundColor;
     }
-    public void OnEnable()
+    void OnEnable()
     {
         // 订阅玩家进入房间事件
         Room.OnPlayerEnteredRoom += OnPlayerEnteredRoom;
     }
-    void LateUpdate()
+    void Update()
     {
         // 更新相机大小
         UpdateCameraSize();
@@ -37,7 +38,9 @@ public class CameraController : MonoBehaviour
             currentBgColor = Color.Lerp(currentBgColor, targetBgColor, t);
             mCamera.backgroundColor = currentBgColor;
         }
-
+    }
+    void LateUpdate()
+    {
         if (Player.player1 == null)
         {
             return;
@@ -63,6 +66,17 @@ public class CameraController : MonoBehaviour
         targetPosition.z = -10; // 保持摄像机在正确的深度位置
         // 摄像机跟随玩家移动
         transform.position = targetPosition;
+
+        if (Global.currentRoom)
+        {
+            var direction = Player.player1.Direction2DFrom(Global.currentRoom);
+            var width = (float)Global.currentRoom.roomConfig.Width;
+            var height = (float)Global.currentRoom.roomConfig.Height;
+            var originalAngleZ = transform.rotation.eulerAngles.z;
+            float targetAngleZ = Mathf.Lerp(-2.0f, 2.0f, 0.5f + direction.x / (2 * width) + direction.y / (2 * height));
+            if (originalAngleZ >= 2.6f) originalAngleZ -= 360;
+            transform.rotation = Quaternion.Euler(0, 0, Mathf.Lerp(originalAngleZ, targetAngleZ, 1.0f - Mathf.Exp(-5.0f * Time.deltaTime)));
+        }
     }
 
     public void ShakeCamera(float i, float d)
