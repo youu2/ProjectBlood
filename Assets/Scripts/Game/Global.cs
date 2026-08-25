@@ -128,6 +128,8 @@ namespace ProjectBlood
             MAX_EXP.Value = 5;
             Coin.Value = 0;
             currentDifficulty = 0;
+            WeaponDataSystem.weaponDataList.Clear();
+            WeaponDataSystem.weaponDataList.Add(WeaponConfig.DE.NewWeapon()); // 默认武器只有DE
         }
 
         public static void ResetWave()

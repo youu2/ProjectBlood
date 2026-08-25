@@ -126,16 +126,20 @@ namespace ProjectBlood
             // 停止上一把武器的所有状态
             if (previousWeapon != null)
             {
-                previousWeapon.SwitchFromSet();
+                if (WeaponDataSystem.weaponDataList.Count > 1)
+                {
+                    previousWeapon.SwitchFromSet();
+                    previousWeapon.Hide();
+                }
+
                 previousWeapon.SaveWeaponData();
-                previousWeapon.Hide();
             }
 
             // 切换到新武器
             currentWeapon = GetWeaponFromName(weaponData.weaponName);
 
             // weaponTransform = currentWeapon.transform;
-            currentWeapon.SwitchToSet();
+            if (WeaponDataSystem.weaponDataList.Count > 1) currentWeapon.SwitchToSet();
             currentWeapon.Show();
             currentWeapon.LoadWeaponData(weaponData);
             GameUI.UpdateClipText(currentWeapon.GetGunClip());

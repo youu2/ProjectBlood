@@ -75,11 +75,6 @@ namespace ProjectBlood
         public static List<WeaponData> weaponDataList = new()
         {
             WeaponConfig.DE.NewWeapon(),
-            WeaponConfig.MP5.NewWeapon(),
-            WeaponConfig.ShotGun.NewWeapon(),
-            WeaponConfig.AK.NewWeapon(),
-            WeaponConfig.AWP.NewWeapon(),
-            WeaponConfig.Laser.NewWeapon(),
         };
     }
 }
