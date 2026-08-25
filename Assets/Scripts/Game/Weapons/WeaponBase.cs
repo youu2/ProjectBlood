@@ -200,5 +200,21 @@ namespace ProjectBlood
             newClip = true;
         }
         public GunClip GetGunClip() => gunClip;
+        public WeaponData Data { get; private set; }
+
+        public void LoadWeaponData(WeaponData weaponData)
+        {
+            Data = weaponData;
+            gunClip.currentAmmo = weaponData.weaponCurrentAmmo;
+            gunClip.maxAmmo = weaponData.weaponMaxAmmo;
+            gunClip.UpdateClipUI();
+        }
+
+        public void SaveWeaponData()
+        {
+            Data.weaponCurrentAmmo = gunClip.currentAmmo;
+            Data.weaponMaxAmmo = gunClip.maxAmmo;
+            gunClip.UpdateClipUI();
+        }
     }
 }

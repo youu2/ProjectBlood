@@ -12,7 +12,7 @@ namespace ProjectBlood
         public static Player player1;
         public PlayerBullet playerBullet;
         public WeaponBase currentWeapon; // 当前装备的武器
-        private List<WeaponBase> weapons = new List<WeaponBase>(); // 武器列表
+        // private List<WeaponBase> weapons = new List<WeaponBase>(); // 武器列表
 
         // public BloodBank bloodBank = new BloodBank(); // 血液银行组件，特殊资源，用于弹药管理和血量管理
         private ShieldState shieldState = new ShieldState(); // 护盾状态
@@ -81,40 +81,63 @@ namespace ProjectBlood
             Application.targetFrameRate = 60;
             // 依次添加武器到武器列表，后续可能会改成根据游戏进度逐步获取，比如从宝箱中获取
             player1 = this;
-            // 武器列表暂时硬编码，后期会让玩家在游戏过程中逐步获取
-            weapons.Add(DE);
-            weapons.Add(MP5);
-            weapons.Add(ShotGun);
-            weapons.Add(AK);
-            weapons.Add(AWP);
-            weapons.Add(Laser);
             UseWeapon(0); // 默认装备第一把武器
             NoticeText.Hide();
-            specialReloadBloodCost = (weapons.Count - 2) * 4;   // 根据武器数量动态调整特殊换弹消耗的血库资源
-
-            // 为所有武器设置血液银行引用
-            // foreach (var weapon in weapons)
-            // {
-            // 	weapon.BloodBank = bloodBank;
-            // }
-
+            specialReloadBloodCost = (WeaponDataSystem.weaponDataList.Count - 1) * 3;   // 根据武器数量动态调整特殊换弹消耗的血库资源
             // 护盾一直挂载在玩家对象上，初始化护盾状态，捡到道具后才会激活
             shieldState.Initialize(ShieldSprite, this);
         }
 
+        WeaponBase GetWeaponFromName(string weaponName)
+        {
+            if (weaponName == WeaponConfig.DE.weaponName)
+            {
+                return DE;
+            }
+            else if (weaponName == WeaponConfig.MP5.weaponName)
+            {
+                return MP5;
+            }
+            else if (weaponName == WeaponConfig.ShotGun.weaponName)
+            {
+                return ShotGun;
+            }
+            else if (weaponName == WeaponConfig.AK.weaponName)
+            {
+                return AK;
+            }
+            else if (weaponName == WeaponConfig.AWP.weaponName)
+            {
+                return AWP;
+            }
+            else if (weaponName == WeaponConfig.Laser.weaponName)
+            {
+                return Laser;
+            }
+            return null;
+        }
+
         void UseWeapon(int index)
         {
+            var weaponData = WeaponDataSystem.weaponDataList[index];
+
             var previousWeapon = currentWeapon;
 
             // 停止上一把武器的所有状态
-            previousWeapon?.SwitchFromSet();
-            previousWeapon?.Hide();
+            if (previousWeapon != null)
+            {
+                previousWeapon.SwitchFromSet();
+                previousWeapon.SaveWeaponData();
+                previousWeapon.Hide();
+            }
 
             // 切换到新武器
-            currentWeapon = weapons[index];
+            currentWeapon = GetWeaponFromName(weaponData.weaponName);
+
             // weaponTransform = currentWeapon.transform;
             currentWeapon.SwitchToSet();
             currentWeapon.Show();
+            currentWeapon.LoadWeaponData(weaponData);
             GameUI.UpdateClipText(currentWeapon.GetGunClip());
             // 立即将新武器对准当前瞄准方向，避免切枪时的一帧延迟
             if (smoothAimDir != Vector2.zero)
@@ -137,6 +160,12 @@ namespace ProjectBlood
                     Death();
                 }
             }).UnRegisterWhenGameObjectDestroyed(gameObject);
+
+            var weaponData = WeaponDataSystem.weaponDataList[0];
+            if (weaponData.weaponName == WeaponConfig.DE.weaponName)
+            {
+                UseWeapon(0);
+            }
         }
 
         public void TakeDamage(float damage)    // 玩家受到伤害
@@ -318,7 +347,9 @@ namespace ProjectBlood
                     firstReloadTime = currentTime;
                     isSpecialReloadTriggered = false;
                 }
-                else if (currentTime - firstReloadTime <= specialReloadWindow && BloodBank.Instance.CurrentBloodAmount >= specialReloadBloodCost)
+                else if (currentTime - firstReloadTime <= specialReloadWindow &&
+                BloodBank.Instance.CurrentBloodAmount >= specialReloadBloodCost &&
+                WeaponDataSystem.weaponDataList.Count > 2)
                 {
                     isSpecialReloadTriggered = true;
                     specialReloadCoroutine = StartCoroutine(SpecialReloadCoroutine());
@@ -354,11 +385,11 @@ namespace ProjectBlood
             if ((Input.mouseScrollDelta.y > 0 || Input.GetKeyDown(KeyCode.Q)) && !Global.IsGamePaused) // 鼠标滚轮向上滚动切换到上一个武器
             {
                 // 使用模运算实现循环切换武器
-                UseWeapon((weapons.IndexOf(currentWeapon) - 1 + weapons.Count) % weapons.Count);
+                UseWeapon((WeaponDataSystem.weaponDataList.IndexOf(currentWeapon.Data) - 1 + WeaponDataSystem.weaponDataList.Count) % WeaponDataSystem.weaponDataList.Count);
             }
             else if ((Input.mouseScrollDelta.y < 0 || Input.GetKeyDown(KeyCode.E)) && !Global.IsGamePaused) // 鼠标滚轮向下滚动切换到下一个武器
             {
-                UseWeapon((weapons.IndexOf(currentWeapon) + 1) % weapons.Count);
+                UseWeapon((WeaponDataSystem.weaponDataList.IndexOf(currentWeapon.Data) + 1) % WeaponDataSystem.weaponDataList.Count);
             }
         }
 
@@ -370,11 +401,13 @@ namespace ProjectBlood
             {
                 BloodBank.Instance.RemoveBlood(specialReloadBloodCost);
 
-                foreach (var weapon in weapons)
+                foreach (var weaponData in WeaponDataSystem.weaponDataList)
                 {
-                    if (weapon != currentWeapon)
+                    if (weaponData != currentWeapon.Data)
                     {
+                        var weapon = GetWeaponFromName(weaponData.weaponName);
                         weapon.FillClipDirectly();
+                        weapon.SaveWeaponData();
                     }
                 }
 

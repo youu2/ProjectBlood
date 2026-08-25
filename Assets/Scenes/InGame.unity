@@ -711,6 +711,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: f0db78d998d0fd74ba058b4ae3a13306, type: 3}
   reloadSound: {fileID: 8300000, guid: d24022c0527796243a021464a289f580, type: 3}
   BloodRequired: 5
+  AdditionalCameraSize: 1
   OneShotSound: {fileID: 8300000, guid: e651b5dcb10f12241aae693b0ab4f16f, type: 3}
   ShootEndSound: {fileID: 8300000, guid: 6cef13473d097cd4eb3752461dcb73ca, type: 3}
   OnShotVolume: 0.65
@@ -6274,6 +6275,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 593ec271f0b2aba408edc2faed165701, type: 3}
   reloadSound: {fileID: 8300000, guid: 0c5b3a3b3eb27774bbbfe67257ec43c6, type: 3}
   BloodRequired: 5
+  AdditionalCameraSize: -0.5
   OneShotSound: {fileID: 8300000, guid: 887a145e04b956a418ddf79460429e82, type: 3}
   ShootEndSound: {fileID: 8300000, guid: deb4139c552afa7489f1ee232c7d45ca, type: 3}
   OnShotVolume: 0.8
@@ -8057,6 +8059,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8233f308630c8764b8a16a0a9556ff0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Colors:
+  - {r: 0.08206029, g: 0.24705882, b: 0, a: 0}
+  - {r: 0, g: 0.24705882, b: 0.12706226, a: 0}
+  - {r: 0, g: 0.24705882, b: 0.21087022, a: 0}
+  - {r: 0, g: 0.207027, b: 0.24705882, a: 0}
+  - {r: 0, g: 0.13250919, b: 0.24528301, a: 0}
+  - {r: 0, g: 0.08052615, b: 0.24705882, a: 0}
+  - {r: 0, g: 0.015627665, b: 0.24705882, a: 0}
+  - {r: 0.07847914, g: 0, b: 0.24705882, a: 0}
+  - {r: 0.16778837, g: 0, b: 0.24705882, a: 0}
+  - {r: 0.24705882, g: 0, b: 0.20542024, a: 0}
+  - {r: 0.24705882, g: 0, b: 0.11268494, a: 0}
+  - {r: 0.12578613, g: 0.12578613, b: 0.12578613, a: 0}
+  - {r: 0.26415092, g: 0.26415092, b: 0.26415092, a: 0}
+  colorLerpSpeed: 2
 --- !u!1 &519686841
 GameObject:
   m_ObjectHideFlags: 0
@@ -8993,6 +9010,7 @@ MonoBehaviour:
   ArchitectureFullTypeName: 
   ViewControllerFullTypeName: 
   roomState: 0
+  colorIndex: -1
   SelfBoxCollider2D: {fileID: 622954703}
 --- !u!4 &622954702
 Transform:
@@ -9869,7 +9887,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &922034753
 Transform:
   m_ObjectHideFlags: 0
@@ -21351,6 +21369,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 94559e385bf7f3d4fbe119a9dfe3cf53, type: 3}
   reloadSound: {fileID: 8300000, guid: 13915b2da51e1f04c8de684903a5dd6e, type: 3}
   BloodRequired: 5
+  AdditionalCameraSize: 2
 --- !u!114 &1296695881
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22063,6 +22082,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 58837674c0b5a1f4cbc8f0f2a2b9be3e, type: 3}
   reloadSound: {fileID: 8300000, guid: ec74185de013e794a90aa29ce11251b7, type: 3}
   BloodRequired: 5
+  AdditionalCameraSize: 0.5
   bulletCount: 5
 --- !u!114 &1386963015
 MonoBehaviour:
@@ -23823,6 +23843,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 6e15092122a81c845bd2a5f5f8d5027c, type: 3}
   reloadSound: {fileID: 8300000, guid: 5fe03f7af8add814bbcddc42f64f15b8, type: 3}
   BloodRequired: 8
+  AdditionalCameraSize: 1.2
   OneShotSound: {fileID: 8300000, guid: 02585bc195ee29f4f8c9cefb8255e382, type: 3}
   ShootEndSound: {fileID: 8300000, guid: 6e4ea108217a0f0418409fbc29e50671, type: 3}
   OnShotVolume: 0.65
@@ -24199,6 +24220,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 53890c44fa5dd37449aa6675b313de5b, type: 3}
   reloadSound: {fileID: 8300000, guid: dbf267cc0f5721d49b4f991213340bb0, type: 3}
   BloodRequired: 5
+  AdditionalCameraSize: 0
 --- !u!114 &1791874280
 MonoBehaviour:
   m_ObjectHideFlags: 0
