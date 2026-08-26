@@ -702,6 +702,7 @@ MonoBehaviour:
   DryFireClickVolume: 0.7
   FireVolume: 0.6
   ReloadVolume: 0.7
+  ShellVolume: 0.5
   CameraShakeIntensity: 0.08
   CameraShakeDuration: 5
   WeaponAnimator: {fileID: 1511504802}
@@ -6266,6 +6267,7 @@ MonoBehaviour:
   DryFireClickVolume: 0.7
   FireVolume: 0.75
   ReloadVolume: 0.7
+  ShellVolume: 0.5
   CameraShakeIntensity: 0.1
   CameraShakeDuration: 7
   WeaponAnimator: {fileID: 1511504802}
@@ -10982,8 +10984,9 @@ GameObject:
   - component: {fileID: 1057538545}
   - component: {fileID: 1057538544}
   - component: {fileID: 1057538543}
+  - component: {fileID: 1057538547}
   m_Layer: 12
-  m_Name: Cartridge
+  m_Name: Shell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11144,6 +11147,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1057538547
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1057538541}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8423b1c44314fa641860e25d13f0e757, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShellVolume: 0.5
 --- !u!1 &1072352948
 GameObject:
   m_ObjectHideFlags: 0
@@ -21535,6 +21551,7 @@ MonoBehaviour:
   DryFireClickVolume: 0.7
   FireVolume: 0.6
   ReloadVolume: 0.7
+  ShellVolume: 0.5
   CameraShakeIntensity: 0.15
   CameraShakeDuration: 7
   WeaponAnimator: {fileID: 1511504802}
@@ -22248,6 +22265,7 @@ MonoBehaviour:
   DryFireClickVolume: 0.7
   FireVolume: 0.6
   ReloadVolume: 0.7
+  ShellVolume: 0.5
   CameraShakeIntensity: 0.15
   CameraShakeDuration: 7
   WeaponAnimator: {fileID: 1511504802}
@@ -23039,7 +23057,7 @@ MonoBehaviour:
   Exp: {fileID: 748113298}
   Shield: {fileID: 32606525}
   PureBlood: {fileID: 1290254963}
-  Cartridge: {fileID: 1057538545}
+  Shell: {fileID: 0}
 --- !u!4 &1454553319
 Transform:
   m_ObjectHideFlags: 0
@@ -23684,10 +23702,7 @@ MonoBehaviour:
   PrefabFolder: Assets/Art/Prefab
   ArchitectureFullTypeName: 
   ViewControllerFullTypeName: 
-  SlimeBlue: {fileID: 9221604444027369072, guid: 668183616bb3a82478d6ea6569e198e8, type: 3}
-  AG: {fileID: 7437942534239686256, guid: bf6dba040285d734ea9ca723a8115ab0, type: 3}
-  Compiler: {fileID: 523653231985837269, guid: 2ab75b389e1b07c4cbef5a0db8306924, type: 3}
-  DemonI: {fileID: 2075287160621077409, guid: 14efe07e38cfefb41985de89921a87d9, type: 3}
+  enemyList: []
 --- !u!1 &1694350788
 GameObject:
   m_ObjectHideFlags: 0
@@ -24011,6 +24026,7 @@ MonoBehaviour:
   DryFireClickVolume: 0.7
   FireVolume: 0.8
   ReloadVolume: 0.6
+  ShellVolume: 0.5
   CameraShakeIntensity: 0.04
   CameraShakeDuration: 5
   WeaponAnimator: {fileID: 1511504802}
@@ -24388,6 +24404,7 @@ MonoBehaviour:
   DryFireClickVolume: 0.7
   FireVolume: 0.3
   ReloadVolume: 0.7
+  ShellVolume: 0.5
   CameraShakeIntensity: 0.15
   CameraShakeDuration: 3
   WeaponAnimator: {fileID: 1511504802}
@@ -25238,8 +25255,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1650208643
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: a1356079726f4fa4e8fe212d7c6cdba1, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

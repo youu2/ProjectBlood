@@ -34,7 +34,9 @@ namespace ProjectBlood
             fireFlash.Flash(Bullet.transform.position, shootDir); // 显示枪口火焰特效
             CameraUtils.ShakeMainCamera(0.15f, 7);
             WeaponAnimator.SetTrigger("SingleShoot");
-            StartCoroutine(ShellAnimation1(baseDirection));
+            GameObject shellObj = Instantiate(DropManager.Instance.Shell.gameObject, transform.position, transform.rotation);
+            shellObj.SetActive(true);
+            shellObj.GetComponent<ShellManager>().PlayShellAnimation(baseDirection, transform);
         }
     }
 }

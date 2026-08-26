@@ -38,8 +38,8 @@ MonoBehaviour:
       PathToRoot: PureBlood
       MemberName: PureBlood
     - TypeName: Rigidbody2D
-      PathToRoot: Cartridge
-      MemberName: Cartridge
+      PathToRoot: Shell
+      MemberName: Shell
     ScriptsFolder: Assets/Scripts/Game/PowerUp
     ClassName: DropManager
     Namespace: ProjectBlood

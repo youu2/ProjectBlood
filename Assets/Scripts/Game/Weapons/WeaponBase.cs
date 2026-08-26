@@ -65,8 +65,10 @@ namespace ProjectBlood
             //镜头震动
             CameraUtils.ShakeMainCamera(CameraShakeIntensity, CameraShakeDuration);
             WeaponAnimator.SetTrigger(ShootAnimatioTrigger);
-            StartCoroutine(ShellAnimation1(finalDirection));
-            // ShellAnimation2(finalDirection);
+
+            // 播放抛壳动画
+            GameObject shellObj = Instantiate(DropManager.Instance.Shell.gameObject, transform.position, transform.rotation);
+            shellObj.GetComponent<ShellManager>().PlayShellAnimation(finalDirection, transform);
         }
 
         public virtual void KeepAttacking(Vector2 shootDir)
@@ -163,44 +165,11 @@ namespace ProjectBlood
             }
         }
 
-        // 抛壳动画unity原生方案：
-        protected IEnumerator ShellAnimation1(Vector2 finalDirection)
-        {
-            var cartridge = DropManager.Instance.Cartridge.gameObject;
-            // 生成弹壳
-            GameObject shell = Instantiate(cartridge, transform.position + (Vector3)finalDirection * 0.5f, Quaternion.identity);
-            shell.SetActive(true);
-            Rigidbody2D rb = shell.GetComponent<Rigidbody2D>();
-
-            // 初始速度,角速度,重力为1自由落体，持续0.5-1秒
-            Vector2 velocity = -finalDirection * Random.Range(1.6f, 3f) + Vector2.up * Random.Range(3f, 6f);
-            rb.velocity = velocity;
-            rb.angularVelocity = Random.Range(-500f, 500f);
-
-            float delay1 = Random.Range(0.5f, 1f);
-            yield return new WaitForSeconds(delay1);
-
-            // 修改速度,重力为0.1,角速度,持续0.1-0.3秒,模拟弹壳落地弹跳一次
-            rb.velocity = -finalDirection * Random.Range(0.6f, 2f) + Vector2.up * Random.Range(0.35f, 0.6f);
-            rb.gravityScale = 0.15f;
-            System.Random rand = new();
-            int dir = rand.Next(2) == 0 ? 1 : -1;
-            rb.angularVelocity = Random.Range(300f, 720f) * dir;
-            AudioKitManager.Instance?.PlayOneShot($"bullet_shell ({Random.Range(1, 10 + 1)})", volume: ShellVolume);
-
-            float delay2 = Random.Range(0.3f, 0.5f);
-            yield return new WaitForSeconds(delay2);
-            // 停止
-            rb.velocity = Vector2.zero;
-            rb.angularVelocity = 0f;
-            rb.gravityScale = 0f;
-        }
-
         // 使用QF ActionKit 的方案：
         private void ShellAnimation2(Vector2 finalDirection)
         {
-            DropManager.Instance.Cartridge.Instantiate()
-            .Position((Vector2)transform.position + finalDirection * 0.5f)
+            DropManager.Instance.Shell.Instantiate()
+            .Position((Vector2)transform.position)
             .Show()
             .Self(self =>
             {
