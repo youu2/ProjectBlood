@@ -1,4 +1,4 @@
-// Generate Id:8651bc70-3d31-4c6f-9f1c-64e904a23556
+// Generate Id:82b5ef13-73af-4fc7-b107-83c0d37ca7a2
 using UnityEngine;
 
 namespace ProjectBlood
@@ -16,6 +16,8 @@ namespace ProjectBlood
 		public ProjectBlood.Shield Shield;
 		
 		public ProjectBlood.PureBlood PureBlood;
+		
+		public Rigidbody2D Cartridge;
 		
 	}
 }

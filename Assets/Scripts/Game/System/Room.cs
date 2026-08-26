@@ -229,7 +229,7 @@ namespace ProjectBlood
                         while (targetScore > 0)
                         {
                             // 限制可生成敌人的种类
-                            var enemyScore2Gen = Math.Min(UnityEngine.Random.Range(1, difficultyLevel + 1 + 1), targetScore);
+                            var enemyScore2Gen = Math.Min(UnityEngine.Random.Range(1, Mathf.Min(difficultyLevel + 1 + 1, EnemyFactory.Instance.enemyList.Count + 1)), targetScore);
                             targetScore -= enemyScore2Gen;
                             waveConfig.Enemy2GenList.Add(EnemyFactory.EnemyByScore(enemyScore2Gen));
                         }

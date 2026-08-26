@@ -19,11 +19,29 @@ MonoBehaviour:
     From: 0
     NameToFullName: []
     BindInfos:
-    - TypeName: SpriteRenderer
-      PathToRoot: Sprite
-      MemberName: Sprite
-    ScriptsFolder: Assets\Scripts\Game\Enemy
-    ClassName: MeleeEnemy
+    - TypeName: ProjectBlood.Coin
+      PathToRoot: Coin
+      MemberName: Coin
+    - TypeName: ProjectBlood.AnnihilationCore
+      PathToRoot: AnnihilationCore
+      MemberName: AnnihilationCore
+    - TypeName: ProjectBlood.DirtyBlood
+      PathToRoot: DirtyBlood
+      MemberName: DirtyBlood
+    - TypeName: ProjectBlood.Exp
+      PathToRoot: Exp
+      MemberName: Exp
+    - TypeName: ProjectBlood.Shield
+      PathToRoot: Shield
+      MemberName: Shield
+    - TypeName: ProjectBlood.PureBlood
+      PathToRoot: PureBlood
+      MemberName: PureBlood
+    - TypeName: Rigidbody2D
+      PathToRoot: Cartridge
+      MemberName: Cartridge
+    ScriptsFolder: Assets/Scripts/Game/PowerUp
+    ClassName: DropManager
     Namespace: ProjectBlood
     MainCode: 
     DesignerCode: 
