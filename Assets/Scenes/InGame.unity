@@ -7629,6 +7629,7 @@ Transform:
   - {fileID: 747266052}
   - {fileID: 1385697083}
   - {fileID: 2096093624}
+  - {fileID: 619394802}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &505099873
@@ -8576,7 +8577,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &586085904
 Transform:
   m_ObjectHideFlags: 0
@@ -8920,7 +8921,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ComponentVersion: 1
-  m_LightType: 4
+  m_LightType: 3
   m_BlendStyleIndex: 0
   m_FalloffIntensity: 0.5
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -8945,8 +8946,8 @@ MonoBehaviour:
     m_Extent: {x: 0.9985302, y: 0.99853027, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
-  m_PointLightInnerRadius: 0
-  m_PointLightOuterRadius: 1
+  m_PointLightInnerRadius: 5.09
+  m_PointLightOuterRadius: 10.35
   m_ShapeLightParametricSides: 5
   m_ShapeLightParametricAngleOffset: 0
   m_ShapeLightParametricRadius: 1
@@ -8965,12 +8966,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 619394800}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.048333354, y: 0.21916667, z: 0}
+  m_LocalScale: {x: 0.8333333, y: 0.8333333, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 505099872}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &622954699
 GameObject:
@@ -23057,7 +23058,7 @@ MonoBehaviour:
   Exp: {fileID: 748113298}
   Shield: {fileID: 32606525}
   PureBlood: {fileID: 1290254963}
-  Shell: {fileID: 0}
+  Shell: {fileID: 1057538545}
 --- !u!4 &1454553319
 Transform:
   m_ObjectHideFlags: 0
@@ -23702,7 +23703,11 @@ MonoBehaviour:
   PrefabFolder: Assets/Art/Prefab
   ArchitectureFullTypeName: 
   ViewControllerFullTypeName: 
-  enemyList: []
+  enemyList:
+  - {fileID: 9221604444027369072, guid: 668183616bb3a82478d6ea6569e198e8, type: 3}
+  - {fileID: 7437942534239686256, guid: bf6dba040285d734ea9ca723a8115ab0, type: 3}
+  - {fileID: 523653231985837269, guid: 2ab75b389e1b07c4cbef5a0db8306924, type: 3}
+  - {fileID: 2075287160621077409, guid: 14efe07e38cfefb41985de89921a87d9, type: 3}
 --- !u!1 &1694350788
 GameObject:
   m_ObjectHideFlags: 0
@@ -31472,7 +31477,6 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 519420032}
-  - {fileID: 619394802}
   - {fileID: 505099872}
   - {fileID: 1561332269}
   - {fileID: 922034753}
