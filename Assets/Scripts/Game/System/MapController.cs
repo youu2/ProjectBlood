@@ -38,9 +38,6 @@ namespace ProjectBlood
         // 相邻房间之间的走廊长度（格子数），同时决定房间定位步长
         private const int CorridorLength = 12;
 
-        // 房间内掩体('3')的格子坐标，关卡生成后统一用于生成阴影投影
-        private readonly List<Vector2Int> _coverTiles = new List<Vector2Int>();
-
         // 动态门布局网格，存储要生成的每个房间的生成配置（房间节点、门方向、网格坐标）
         public DynaGrid<RoomGenerateConfig> DynamicDoorLayout { get; private set; }
         // 房间实例网格，存储已生成的房间对象引用
@@ -95,8 +92,7 @@ namespace ProjectBlood
             GenerateRoomLayoutBFS(layout);  // 生成房间布局
             GenerateRoomsFromLayout();  // 从布局生成房间
             GenerateCorridors();  // 根据房间布局和门方向生成连接通道
-            ShadowCaster2DGenerator.Generate(_coverTiles, wallTilemap.transform);  // 为掩体生成阴影投影
-            _coverTiles.Clear();
+            ShadowCaster2DGenerator.Generate(wallTilemap);  // 为围墙/掩体/走廊墙生成阴影投影
 
             Room.FindRoom();
         }
@@ -364,8 +360,8 @@ namespace ProjectBlood
                     break;
 
                 case '3':
+                    // 房间内掩体，与墙同砖块渲染，投影由 ShadowCaster2DGenerator 全图扫描统一处理
                     wallTilemap.SetTile(new Vector3Int(x, y, 0), randWall);
-                    _coverTiles.Add(new Vector2Int(x, y));
                     break;
 
                 case '1':

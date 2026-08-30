@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.Tilemaps;
 
 namespace ProjectBlood
 {
-    // 为房间内掩体('3')生成 ShadowCaster2D，围墙('1'/'2')与走廊墙不投影
+    // 为 wallTilemap 上的全部瓦片（围墙'1'/'2'、房间内掩体'3'、走廊墙）生成 ShadowCaster2D
     // 每个合并段对应一个 alpha=0 的 Sprite 四边形，剪影即该矩形的几何轮廓。
     // 每段都是独立的轴对齐凸矩形，不会出现闭合环/孔洞类投影问题。
     public static class ShadowCaster2DGenerator
@@ -20,34 +21,60 @@ namespace ProjectBlood
                 {
                     _unitSprite = Sprite.Create(Texture2D.whiteTexture,
                         new Rect(0, 0, 4, 4), new Vector2(0.5f, 0.5f), 4f);
-                    _unitSprite.name = "CoverShadowUnitSprite";
+                    _unitSprite.name = "TileShadowUnitSprite";
                 }
                 return _unitSprite;
             }
         }
 
-        // 对掩体格子做游程合并：横向连续段(>=2) -> 纵向补剩余段 -> 孤立单格，逐段生成 caster
-        public static void Generate(List<Vector2Int> coverTiles, Transform parent)
+        // 扫描 wallTilemap 全部瓦片后做游程合并：横向连续段(>=2) -> 纵向补剩余段 -> 孤立单格，逐段生成 caster
+        // 真实门格不落墙瓦片，扫描自然跳过（门口透光）；fallback 成实墙的门格正常投影
+        public static void Generate(Tilemap wallTilemap)
         {
-            if (coverTiles == null || coverTiles.Count == 0)
+            var cells = new HashSet<Vector2Int>();
+            foreach (var pos in wallTilemap.cellBounds.allPositionsWithin)
+            {
+                if (wallTilemap.HasTile(pos))
+                {
+                    cells.Add(new Vector2Int(pos.x, pos.y));
+                }
+            }
+
+            if (cells.Count == 0)
             {
                 return;
             }
 
-            var cells = new HashSet<Vector2Int>(coverTiles);
-            var container = new GameObject("CoverShadows");
-            container.transform.SetParent(parent, false);
+            var container = new GameObject("TileShadows");
+            container.transform.SetParent(wallTilemap.transform, false);
 
             int count = 0;
-            count += MergeRuns(cells, horizontal: true, parent);   // 第一遍：横向
-            count += MergeRuns(cells, horizontal: false, parent);  // 第二遍：纵向补剩余
-            foreach (var cell in cells)                            // 第三遍：孤立单格
+            count += MergeRuns(cells, horizontal: true, container.transform);   // 第一遍：横向
+            count += MergeRuns(cells, horizontal: false, container.transform);  // 第二遍：纵向补剩余
+            foreach (var cell in cells)                                         // 第三遍：孤立单格
             {
                 CreateCaster(cell.x, cell.y, 1, 1, container.transform);
                 count++;
             }
 
-            Debug.Log($"[ShadowCaster2DGenerator] 掩体格子 {coverTiles.Count} 个，生成 ShadowCaster2D x{count}");
+            Debug.Log($"[ShadowCaster2DGenerator] 墙瓦片 {cells.Count} 个，生成 ShadowCaster2D x{count}");
+        }
+
+        // 为门格挂一个 1×1 隐形 caster，覆盖整个门格与相邻墙体段无缝衔接
+        // 门激活(关门)时挡光，门隐藏(开门)时随物体失活自动失效，无需额外状态同步
+        public static void AttachCellCaster(Transform parent)
+        {
+            var go = new GameObject("DoorShadow");
+            go.transform.SetParent(parent, false);
+            go.transform.localPosition = Vector3.zero;
+
+            var spriteRenderer = go.AddComponent<SpriteRenderer>();
+            spriteRenderer.sprite = UnitSprite;
+            spriteRenderer.color = new Color(1f, 1f, 1f, 0f); // 透明
+
+            var caster = go.AddComponent<ShadowCaster2D>();
+            caster.useRendererSilhouette = true;
+            caster.selfShadows = true;
         }
 
         // 按行(horizontal=true)或列(horizontal=false)分组扫描连续段，
@@ -72,7 +99,7 @@ namespace ProjectBlood
             {
                 var values = pair.Value;
                 values.Sort();
-                for (int i = 0; i < values.Count; )
+                for (int i = 0; i < values.Count;)
                 {
                     int start = values[i];
                     int j = i;
@@ -110,7 +137,7 @@ namespace ProjectBlood
         // 剪影取 Sprite 几何与颜色无关；renderer 必须保持 enabled（disable 后阴影失效），故用 alpha=0 隐形
         private static void CreateCaster(int x, int y, int width, int height, Transform parent)
         {
-            var go = new GameObject($"CoverShadow_{width}x{height}_{x}_{y}");
+            var go = new GameObject($"TileShadow_{width}x{height}_{x}_{y}");
             go.transform.SetParent(parent, false);
             // 段中心沿用格心约定：起点格中心 (x+0.5, y+0.5) 再加段长的一半
             go.transform.position = new Vector3(x + width * 0.5f, y + height * 0.5f, 0f);
