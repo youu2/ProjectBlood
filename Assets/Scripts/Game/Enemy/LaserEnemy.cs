@@ -143,16 +143,7 @@ namespace ProjectBlood
 
         protected override void UpdateFire(float distanceToPlaye)  // 更新枪口激光点
         {
-            if (fireFlashRenderer == null || fireFlashSprites == null || fireFlashSprites.Length == 0)
-                return;
-
-            frameCounter++;
-            if (frameCounter >= framesPerSprite)
-            {
-                frameCounter = 0;
-                currentSpriteIndex = (currentSpriteIndex + 1) % fireFlashSprites.Length;
-                fireFlashRenderer.sprite = fireFlashSprites[currentSpriteIndex];
-            }
+            UpdateFireFlash();
         }
 
         protected void UpdateFireFlash()  // 更新枪口激光点

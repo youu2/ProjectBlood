@@ -36,7 +36,7 @@ namespace ProjectBlood
         public static MapController instance;
 
         // 相邻房间之间的走廊长度（格子数），同时决定房间定位步长
-        private const int CorridorLength = 12;
+        private const int CorridorLength = 7;
 
         // 动态门布局网格，存储要生成的每个房间的生成配置（房间节点、门方向、网格坐标）
         public DynaGrid<RoomGenerateConfig> DynamicDoorLayout { get; private set; }
