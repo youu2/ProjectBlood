@@ -35,6 +35,9 @@ namespace ProjectBlood
         public GameObject Portal;
         public static MapController instance;
 
+        // 相邻房间之间的走廊长度（格子数），同时决定房间定位步长
+        private const int CorridorLength = 12;
+
         // 房间内掩体('3')的格子坐标，关卡生成后统一用于生成阴影投影
         private readonly List<Vector2Int> _coverTiles = new List<Vector2Int>();
 
@@ -231,8 +234,8 @@ namespace ProjectBlood
         // 根据房间类型创建房间实例 参数：gridX - 网格X坐标，gridY - 网格Y坐标，roomGenerateConfig - 房间生成配置 返回创建的房间实例
         private Room CreateRoomByType(int gridX, int gridY, RoomGenerateConfig roomGenerateConfig)
         {
-            var currentRoomPosX = gridX * (RoomConfig.InitRoom.roomMap.First().Length + 5);
-            var currentRoomPosY = gridY * (RoomConfig.InitRoom.roomMap.Count + 5);
+            var currentRoomPosX = gridX * (RoomConfig.InitRoom.roomMap.First().Length + CorridorLength);
+            var currentRoomPosY = gridY * (RoomConfig.InitRoom.roomMap.Count + CorridorLength);
 
             switch (roomGenerateConfig.roomNode.roomType)
             {
@@ -264,8 +267,8 @@ namespace ProjectBlood
         {
             DynamicDoorLayout.ForEach((x, y, roomGenerateConfig) =>
             {
-                var currentRoomPosX = x * (RoomConfig.InitRoom.roomMap.First().Length + 5);
-                var currentRoomPosY = y * (RoomConfig.InitRoom.roomMap.Count + 5);
+                var currentRoomPosX = x * (RoomConfig.InitRoom.roomMap.First().Length + CorridorLength);
+                var currentRoomPosY = y * (RoomConfig.InitRoom.roomMap.Count + CorridorLength);
                 var roomWidth = RoomConfig.InitRoom.roomMap.First().Length;
                 var roomHeight = RoomConfig.InitRoom.roomMap.Count;
 
@@ -286,7 +289,7 @@ namespace ProjectBlood
         {
             int corridorY = roomPosY - roomHeight / 2;
 
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < CorridorLength; i++)
             {
                 floorTilemap.SetTile(new Vector3Int(roomPosX + roomWidth + i, corridorY, 0), randFloor);
                 floorTilemap.SetTile(new Vector3Int(roomPosX + roomWidth + i, corridorY + 1, 0), randFloor);
@@ -302,7 +305,7 @@ namespace ProjectBlood
         {
             int corridorX = roomPosX + roomWidth / 2;
 
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < CorridorLength; i++)
             {
                 floorTilemap.SetTile(new Vector3Int(corridorX, roomPosY + i + 1, 0), randFloor);
                 floorTilemap.SetTile(new Vector3Int(corridorX + 1, roomPosY + i + 1, 0), randFloor);

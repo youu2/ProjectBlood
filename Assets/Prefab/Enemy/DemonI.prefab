@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 1247706901492828723}
   - component: {fileID: 5150691048810713025}
   - component: {fileID: 4365978342055026328}
+  - component: {fileID: 25982410076261091}
   m_Layer: 7
   m_Name: DemonI
   m_TagString: Enemy
@@ -59,7 +60,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9a40aa099a24b604ea52c44134284a72, type: 2}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -319,6 +320,40 @@ MonoBehaviour:
   CustomComponentName: DemonEye
   CustomComment: 
   mComponentName: ProjectBlood.LaserEnemy
+--- !u!114 &25982410076261091
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2075287160621077409}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7db70e0ea77f5ac47a8f4565a9406397, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ShadowGroup: 0
+  m_ComponentVersion: 1
+  m_HasRenderer: 1
+  m_UseRendererSilhouette: 1
+  m_CastsShadows: 1
+  m_SelfShadows: 0
+  m_ApplyToSortingLayers: 00000000df712757d15d2bb38944af70832f5c62df1f1483038b9099dfb80f04
+  m_ShapePath:
+  - {x: -0.17953457, y: -0.3541715, z: 0}
+  - {x: -0.3956294, y: -0.1089722, z: 0.00000008195639}
+  - {x: -0.39382428, y: 0.14375046, z: 0.00000008195639}
+  - {x: -0.13667335, y: 0.37205264, z: 0}
+  - {x: 0.16794725, y: 0.3731016, z: 0}
+  - {x: 0.38961598, y: 0.1455557, z: 0.00000008195639}
+  - {x: 0.37336954, y: -0.19200955, z: 0.00000008195639}
+  - {x: 0.19673298, y: -0.3555871, z: 0}
+  m_ShapePathHash: 1876961491
+  m_Mesh: {fileID: 0}
+  m_InstanceId: 41500
+  m_LocalBounds:
+    m_Center: {x: -0.0030066967, y: 0.008757263, z: 0}
+    m_Extent: {x: 0.3926227, y: 0.36434436, z: 0}
 --- !u!1 &2244528097359160779
 GameObject:
   m_ObjectHideFlags: 0

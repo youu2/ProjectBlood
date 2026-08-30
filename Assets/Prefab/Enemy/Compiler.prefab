@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 516641897196705424}
   - component: {fileID: 8757881171746506057}
   - component: {fileID: 2280877268880937592}
+  - component: {fileID: 3692512467316924497}
   m_Layer: 7
   m_Name: Compiler
   m_TagString: Enemy
@@ -239,17 +240,17 @@ MonoBehaviour:
   maxHealth: 100
   Damage: 1
   useFlipSprite: 1
+  attackRange: 12
+  chaseRange: 9
+  WanderDuration: 2
+  currentState: 1
   Triangle: {fileID: 5985269780224226175}
   SelfRigidbody2D: {fileID: 8558031867153965421}
   enemyBullet: {fileID: 5699800754263212299}
-  speed: 1.5
-  chaseRange: 9
-  attackRange: 12
-  wanderDuration: 2
-  shootInterval: 2
-  burstInterval: 0.3
-  shotsPerBurst: 3
   totalBurstCount: 2
+  shootInterval: 2
+  shotsPerBurst: 3
+  burstInterval: 0.3
   scatterBulletCount: 12
   scatterAngle: 360
   useRandomScatter: 0
@@ -257,7 +258,6 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 35355fb181c22c54ba6962ea171bce26, type: 3}
   - {fileID: 8300000, guid: f133518fc7c20d84c9720033c278fdb1, type: 3}
   - {fileID: 8300000, guid: f883bad48e6600a4ebc0310ced707ca0, type: 3}
-  currentState: 1
 --- !u!70 &8757881171746506057
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -309,6 +309,37 @@ MonoBehaviour:
   CustomComponentName: Compiler
   CustomComment: 
   mComponentName: ProjectBlood.ShootingEnemy
+--- !u!114 &3692512467316924497
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 523653231985837269}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7db70e0ea77f5ac47a8f4565a9406397, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ShadowGroup: 0
+  m_ComponentVersion: 1
+  m_HasRenderer: 1
+  m_UseRendererSilhouette: 1
+  m_CastsShadows: 1
+  m_SelfShadows: 0
+  m_ApplyToSortingLayers: 00000000df712757d15d2bb38944af70832f5c62df1f1483038b9099dfb80f04
+  m_ShapePath:
+  - {x: -0.2031004, y: -0.43138337, z: 0}
+  - {x: -0.31790152, y: 0.19465552, z: 0}
+  - {x: -0.026501557, y: 0.4897076, z: 0}
+  - {x: 0.3376953, y: 0.25821507, z: 0}
+  - {x: 0.19253322, y: -0.43374434, z: -0.00000008195639}
+  m_ShapePathHash: -1882853810
+  m_Mesh: {fileID: 0}
+  m_InstanceId: -76365520
+  m_LocalBounds:
+    m_Center: {x: 0.009896904, y: 0.02798161, z: 0}
+    m_Extent: {x: 0.32779843, y: 0.46172595, z: 0}
 --- !u!1 &806646724268311869
 GameObject:
   m_ObjectHideFlags: 0

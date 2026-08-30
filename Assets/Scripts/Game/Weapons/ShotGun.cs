@@ -37,6 +37,7 @@ namespace ProjectBlood
             GameObject shellObj = Instantiate(DropManager.Instance.Shell.gameObject, transform.position, transform.rotation);
             shellObj.SetActive(true);
             shellObj.GetComponent<ShellManager>().PlayShellAnimation(baseDirection, transform);
+            TriggerWeaponFired(); // 触发父类武器射击事件
         }
     }
 }

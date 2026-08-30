@@ -301,6 +301,7 @@ GameObject:
   - component: {fileID: 7883401417386688070}
   - component: {fileID: 126142792584932995}
   - component: {fileID: 4737079034023530160}
+  - component: {fileID: 3970465933581660315}
   m_Layer: 7
   m_Name: SlimeBlue
   m_TagString: Enemy
@@ -436,3 +437,35 @@ MonoBehaviour:
   Triangle: {fileID: 0}
   SelfRigidbody2D: {fileID: 7883401417386688070}
   AttackInterval: 3
+--- !u!114 &3970465933581660315
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9221604444027369072}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7db70e0ea77f5ac47a8f4565a9406397, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ShadowGroup: 0
+  m_ComponentVersion: 1
+  m_HasRenderer: 0
+  m_UseRendererSilhouette: 1
+  m_CastsShadows: 1
+  m_SelfShadows: 0
+  m_ApplyToSortingLayers: 00000000df712757d15d2bb38944af70832f5c62df1f1483038b9099dfb80f04
+  m_ShapePath:
+  - {x: 0.45842436, y: 0.21095562, z: 0}
+  - {x: 0.14067137, y: 0.4210217, z: 0.00000008195639}
+  - {x: -0.30020702, y: 0.30832148, z: 0}
+  - {x: -0.5165385, y: -0.24430203, z: 0.00000008195639}
+  - {x: -0.32454818, y: -0.40162826, z: 0}
+  - {x: 0.45436755, y: -0.40974212, z: 0}
+  m_ShapePathHash: -1448283393
+  m_Mesh: {fileID: 0}
+  m_InstanceId: 69606
+  m_LocalBounds:
+    m_Center: {x: -0.029057086, y: 0.0056397915, z: 0}
+    m_Extent: {x: 0.48748142, y: 0.4153819, z: 0}

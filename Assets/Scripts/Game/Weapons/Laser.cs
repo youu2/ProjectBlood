@@ -12,8 +12,8 @@ namespace ProjectBlood
         public float laserWidth = 0.5f;
         public LineRenderer SelfLineRenderer;
         public SpriteRenderer LaserPoint;
-
-
+        public static event System.Action OnLaserActivate;
+        public static event System.Action OnLaserDeactivate;
 
         public override void Attack(Vector2 shootDir)
         {
@@ -55,6 +55,7 @@ namespace ProjectBlood
                 }
             }
             CameraUtils.ShakeMainCamera(0.04f, 5);
+            OnLaserActivate?.Invoke();
         }
 
         public override void KeepAttacking(Vector2 shootDir)
@@ -124,6 +125,7 @@ namespace ProjectBlood
             }
             base.StopAttacking();
             WeaponAnimator.SetBool("isLaserShooting", false);
+            OnLaserDeactivate?.Invoke();
         }
 
     }

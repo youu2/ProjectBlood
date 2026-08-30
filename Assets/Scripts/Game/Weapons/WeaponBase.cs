@@ -7,6 +7,7 @@ namespace ProjectBlood
 {
     public abstract class WeaponBase : MonoBehaviour
     {
+        public static event System.Action<WeaponBase> OnWeaponFired;
         private Coroutine _reloadCoroutine;   // 原先的设计放在GunClip,这会依赖MonoBehaviour,违反单一职责原则
         [SerializeField] protected int MaxAmmo = 10;
         protected GunClip gunClip;
@@ -69,6 +70,8 @@ namespace ProjectBlood
             // 播放抛壳动画
             GameObject shellObj = Instantiate(DropManager.Instance.Shell.gameObject, transform.position, transform.rotation);
             shellObj.GetComponent<ShellManager>().PlayShellAnimation(finalDirection, transform);
+
+            OnWeaponFired?.Invoke(this);
         }
 
         public virtual void KeepAttacking(Vector2 shootDir)
@@ -252,6 +255,10 @@ namespace ProjectBlood
             Data.weaponCurrentAmmo = gunClip.currentAmmo;
             Data.weaponMaxAmmo = gunClip.maxAmmo;
             gunClip.UpdateClipUI();
+        }
+        protected void TriggerWeaponFired()
+        {
+            OnWeaponFired?.Invoke(this);
         }
     }
 }
