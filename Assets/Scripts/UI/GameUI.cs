@@ -1,13 +1,15 @@
+using System.Collections;
 using QFramework;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using System.Collections;
 
 namespace ProjectBlood
 {
     public partial class GameUI : ViewController
     {
         public static GameUI GUIInstance;
+        public static event System.Action OnLoadingComplete;
+
         private void Awake()
         {
             // 每次进入场景都会新建一个GameUI实例，自动销毁避免重复实例
@@ -142,6 +144,7 @@ namespace ProjectBlood
             }
             Global.IsGamePaused = false;
             onLoadingComplete?.Invoke();
+            OnLoadingComplete?.Invoke(); // 场景真正激活完成后触发外部事件（对象池预热等）
         }
 
         // 由于我同时使用（练习）了UnityEngine的GameUI和QF的UIGamePanel，

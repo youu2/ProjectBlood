@@ -16,6 +16,7 @@ namespace ProjectBlood
         {
             instance = this;
             shellPool = new ObjectPool<GameObject>(CreateShell, GetShell, ReleaseShell, DestroyShell, true, 50, 200);
+            DontDestroyOnLoad(gameObject); // 跨场景保留
         }
         public ObjectPool<GameObject> shellPool;
         public GameObject CreateShell()

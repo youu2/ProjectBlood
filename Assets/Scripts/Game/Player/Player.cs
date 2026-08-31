@@ -88,7 +88,7 @@ namespace ProjectBlood
             shieldState.Initialize(ShieldSprite, this);
         }
 
-        WeaponBase GetWeaponFromName(string weaponName)
+        public WeaponBase GetWeaponFromName(string weaponName)
         {
             if (weaponName == WeaponConfig.DE.weaponName)
             {

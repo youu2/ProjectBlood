@@ -11,7 +11,8 @@ namespace ProjectBlood
         private Coroutine _reloadCoroutine;   // 原先的设计放在GunClip,这会依赖MonoBehaviour,违反单一职责原则
         [SerializeField] protected int MaxAmmo = 10;
         protected GunClip gunClip;
-        public PlayerBullet Bullet = new PlayerBullet();
+        public GameObject BulletPrefab;
+        public Transform BulletSpawnPoint;
         protected AttackIntervalFeature attackInterval;
         [SerializeField] protected float AttackInterval = 1.0f;
         private AudioPlayer _shootClipPlayer;
@@ -55,21 +56,21 @@ namespace ProjectBlood
             Vector2 finalDirection = ApplySpread(shootDir);
             // 计算旋转：根据 shootDir 向量创建对应的 Quaternion 朝向
             Quaternion bulletRotation = Quaternion.FromToRotation(Vector2.right, finalDirection.normalized);
-            var bullet = Instantiate(Bullet, Bullet.transform.position, bulletRotation);  // 挂在枪口位置
-            bullet.direction = finalDirection;
-            bullet.gameObject.SetActive(true);
+            // var bullet = Instantiate(BulletPrefab, BulletPrefab.transform.position, bulletRotation);  // 挂在枪口位置
+            var bullet = PlayerBulletPool.Instance.Get(BulletPrefab);
+            bullet.transform.SetPositionAndRotation(BulletSpawnPoint.position, bulletRotation);
+            bullet.GetComponent<PlayerBullet>().direction = finalDirection;
+            bullet.SetActive(true);
 
-            ApplyLifestealToBullet(bullet); // 应用吸血功能
+            ApplyLifestealToBullet(bullet.GetComponent<PlayerBullet>()); // 应用吸血功能
 
-            fireFlash.Flash(bullet.transform.position, shootDir); // 显示枪口火焰特效
+            fireFlash.Flash(BulletSpawnPoint.position, shootDir); // 显示枪口火焰特效
 
             //镜头震动
             CameraUtils.ShakeMainCamera(CameraShakeIntensity, CameraShakeDuration);
             WeaponAnimator.SetTrigger(ShootAnimatioTrigger);
 
             // 播放抛壳动画
-            // GameObject shellObj = Instantiate(DropManager.Instance.Shell.gameObject, transform.position, transform.rotation);
-            // shellObj.GetComponent<ShellManager>().PlayShellAnimation(finalDirection, transform);
             CreateShell(finalDirection);
 
             OnWeaponFired?.Invoke(this);

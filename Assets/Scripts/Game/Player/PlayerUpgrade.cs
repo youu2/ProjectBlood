@@ -1,8 +1,8 @@
-using UnityEngine;
-using QFramework;
-using System.Collections.Generic;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using QFramework;
+using UnityEngine;
 
 namespace ProjectBlood
 {
@@ -13,7 +13,7 @@ namespace ProjectBlood
 
         public static void UpgradeDamage()
         {
-            DamageRatio += 1.5f;
+            DamageRatio += 0.1f;
         }
         public static void UpgradeAttackSpeed()
         {

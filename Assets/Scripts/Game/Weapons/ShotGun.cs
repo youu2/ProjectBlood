@@ -24,15 +24,17 @@ namespace ProjectBlood
                 Vector2 finalDirection = randomRotation * baseDirection;
 
                 // 生成子弹，并设置其飞行方向
-                var bullet = Instantiate(Bullet, Bullet.transform.position, randomRotation);
-                bullet.direction = finalDirection;
-                bullet.gameObject.SetActive(true);
-                ApplyLifestealToBullet(bullet);
+                // var bullet = Instantiate(BulletPrefab, BulletSpawnPoint.position, randomRotation);
+                var bullet = PlayerBulletPool.Instance.Get(BulletPrefab);
+                bullet.transform.SetPositionAndRotation(BulletSpawnPoint.position, randomRotation);
+                bullet.GetComponent<PlayerBullet>().direction = finalDirection;
+                bullet.SetActive(true);
+                ApplyLifestealToBullet(bullet.GetComponent<PlayerBullet>());
             }
             // 播放射击声音，随机选择一个音效
             int randomIndex = Random.Range(0, ShootSounds.Count);
             AudioKitManager.Instance.PlayOneShot(ShootSounds[randomIndex], volume: FireVolume);
-            fireFlash.Flash(Bullet.transform.position, shootDir); // 显示枪口火焰特效
+            fireFlash.Flash(BulletSpawnPoint.position, shootDir); // 显示枪口火焰特效
             CameraUtils.ShakeMainCamera(0.15f, 7);
             WeaponAnimator.SetTrigger("SingleShoot");
             CreateShell(baseDirection);
