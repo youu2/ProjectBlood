@@ -28,6 +28,7 @@ namespace ProjectBlood
                 {
 
                     WeaponDataSystem.weaponDataList.Add(weaponDataList[currentWeaponIndex]);
+                    Player.player1.UpdateSpecialReloadCost();
                     currentWeaponIndex++;
 
                 }

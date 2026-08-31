@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using QFramework;
 using UnityEngine;
+using UnityEngine.Pool;
 
 namespace ProjectBlood
 {
@@ -34,10 +35,16 @@ namespace ProjectBlood
             fireFlash.Flash(Bullet.transform.position, shootDir); // 显示枪口火焰特效
             CameraUtils.ShakeMainCamera(0.15f, 7);
             WeaponAnimator.SetTrigger("SingleShoot");
-            GameObject shellObj = Instantiate(DropManager.Instance.Shell.gameObject, transform.position, transform.rotation);
-            shellObj.SetActive(true);
-            shellObj.GetComponent<ShellManager>().PlayShellAnimation(baseDirection, transform);
+            CreateShell(baseDirection);
             TriggerWeaponFired(); // 触发父类武器射击事件
+        }
+
+        private void CreateShell(Vector2 baseDirection)
+        {
+            if (ShellPool.instance == null) return;
+            GameObject shellObj = ShellPool.instance.shellPool.Get();
+            shellObj.transform.SetPositionAndRotation(transform.position, transform.rotation);
+            shellObj.GetComponent<ShellManager>().PlayShellAnimation(baseDirection, transform);
         }
     }
 }

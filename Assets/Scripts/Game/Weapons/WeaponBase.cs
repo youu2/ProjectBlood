@@ -68,8 +68,9 @@ namespace ProjectBlood
             WeaponAnimator.SetTrigger(ShootAnimatioTrigger);
 
             // 播放抛壳动画
-            GameObject shellObj = Instantiate(DropManager.Instance.Shell.gameObject, transform.position, transform.rotation);
-            shellObj.GetComponent<ShellManager>().PlayShellAnimation(finalDirection, transform);
+            // GameObject shellObj = Instantiate(DropManager.Instance.Shell.gameObject, transform.position, transform.rotation);
+            // shellObj.GetComponent<ShellManager>().PlayShellAnimation(finalDirection, transform);
+            CreateShell(finalDirection);
 
             OnWeaponFired?.Invoke(this);
         }
@@ -93,6 +94,17 @@ namespace ProjectBlood
                     reloadTextShown = true; // 标记已经显示过 reload 文本
                 }
             }
+        }
+
+        private void CreateShell(Vector2 finalDirection)
+        {
+            if (ShellPool.instance == null)
+            {
+                return;
+            }
+            GameObject shellObj = ShellPool.instance.shellPool.Get();
+            shellObj.transform.SetPositionAndRotation(transform.position, transform.rotation);
+            shellObj.GetComponent<ShellManager>().PlayShellAnimation(finalDirection, transform);
         }
 
         // 全自动武器支持随机散布
@@ -146,7 +158,7 @@ namespace ProjectBlood
             {
                 BloodBank.Instance.RemoveBlood(BloodRequired);
             }
-
+            SaveWeaponData();
             _reloadCoroutine = null;
         }
         protected void ApplyLifestealToBullet(PlayerBullet bullet)

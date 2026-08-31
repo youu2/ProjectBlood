@@ -9,6 +9,7 @@ namespace ProjectBlood
     public class ShellManager : MonoBehaviour
     {
         public float ShellVolume = 0.5f;
+        public float delay2Release = 10f;
         public void PlayShellAnimation(Vector2 finalDirection, Transform weaponTransform)
         {
             gameObject.SetActive(true);
@@ -27,6 +28,7 @@ namespace ProjectBlood
             Rigidbody2D rb = GetComponent<Rigidbody2D>();
 
             // 初始速度,角速度,重力为1自由落体，持续0.5-1秒
+            rb.gravityScale = 1f;
             Vector2 velocity = -finalDirection * Random.Range(1.6f, 3f) + Vector2.up * Random.Range(3f, 6f);
             rb.velocity = velocity;
             rb.angularVelocity = Random.Range(-500f, 500f);
@@ -48,6 +50,10 @@ namespace ProjectBlood
             rb.velocity = Vector2.zero;
             rb.angularVelocity = 0f;
             rb.gravityScale = 0f;
+
+            // 延迟20秒后释放弹壳回池子
+            yield return new WaitForSeconds(delay2Release);
+            ShellPool.instance.shellPool.Release(gameObject);
         }
 
         // 使用QF ActionKit 的抛壳方案：

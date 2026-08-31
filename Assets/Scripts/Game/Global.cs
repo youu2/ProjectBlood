@@ -130,6 +130,7 @@ namespace ProjectBlood
             currentDifficulty = 0;
             WeaponDataSystem.weaponDataList.Clear();
             WeaponDataSystem.weaponDataList.Add(WeaponConfig.DE.NewWeapon()); // 默认武器只有DE
+            Player.player1.UpdateSpecialReloadCost();
         }
 
         public static void ResetWave()

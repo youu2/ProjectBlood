@@ -422,6 +422,11 @@ namespace ProjectBlood
             specialReloadCoroutine = null;
         }
 
+        public void UpdateSpecialReloadCost()
+        {
+            specialReloadBloodCost = (WeaponDataSystem.weaponDataList.Count - 1) * 3;
+        }
+
         private void OnDestroy()
         {
             player1 = null;
