@@ -1,4 +1,4 @@
-// Generate Id:c6b2055c-ecc8-45c6-82ff-1f5934bb27cc
+// Generate Id:6942897e-5c4d-4581-85ea-a40f96f1265e
 using UnityEngine;
 
 namespace ProjectBlood
@@ -6,6 +6,8 @@ namespace ProjectBlood
 	public partial class FxManager
 	{
 		public ParticleSystem EnemyHurt;
+		
+		public ParticleSystem RollDust;
 		
 		public ParticleSystem PlayerHurt;
 		

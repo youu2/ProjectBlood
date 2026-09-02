@@ -19,53 +19,38 @@ MonoBehaviour:
     From: 0
     NameToFullName: []
     BindInfos:
-    - TypeName: UnityEngine.GameObject
-      PathToRoot: CollisionBox
-      MemberName: CollisionBox
-    - TypeName: CircleCollider2D
-      PathToRoot: HurtBox
-      MemberName: HurtBox
-    - TypeName: TMPro.TextMeshProUGUI
-      PathToRoot: Notice/NoticeText
-      MemberName: NoticeText
+    - TypeName: ParticleSystem
+      PathToRoot: EnemyHurt
+      MemberName: EnemyHurt
+    - TypeName: ParticleSystem
+      PathToRoot: RollDust
+      MemberName: RollDust
+    - TypeName: ParticleSystem
+      PathToRoot: PlayerHurt
+      MemberName: PlayerHurt
+    - TypeName: ParticleSystem
+      PathToRoot: ShieldBlock
+      MemberName: ShieldBlock
     - TypeName: SpriteRenderer
-      PathToRoot: AimMark
-      MemberName: AimMark
-    - TypeName: Animator
-      PathToRoot: PlayerAnimator
-      MemberName: PlayerAnimator
-    - TypeName: Transform
-      PathToRoot: PlayerAnimator/Arm
-      MemberName: Arm
-    - TypeName: UnityEngine.Transform
-      PathToRoot: PlayerAnimator/Arm/Weapon
-      MemberName: Weapon
-    - TypeName: ProjectBlood.SemiAutomaticWeapon
-      PathToRoot: PlayerAnimator/Arm/Weapon/DE
-      MemberName: DE
-    - TypeName: ProjectBlood.AutomaticWeapon
-      PathToRoot: PlayerAnimator/Arm/Weapon/MP5
-      MemberName: MP5
-    - TypeName: ProjectBlood.ShotGun
-      PathToRoot: PlayerAnimator/Arm/Weapon/ShotGun
-      MemberName: ShotGun
-    - TypeName: ProjectBlood.AutomaticWeapon
-      PathToRoot: PlayerAnimator/Arm/Weapon/AK
-      MemberName: AK
-    - TypeName: ProjectBlood.SemiAutomaticWeapon
-      PathToRoot: PlayerAnimator/Arm/Weapon/AWP
-      MemberName: AWP
-    - TypeName: ProjectBlood.Laser
-      PathToRoot: PlayerAnimator/Arm/Weapon/Laser
-      MemberName: Laser
-    - TypeName: UnityEngine.SpriteRenderer
-      PathToRoot: PlayerAnimator/Arm/Weapon/FireFlash
-      MemberName: FireFlash
+      PathToRoot: EnemyBlood
+      MemberName: EnemyBlood
     - TypeName: SpriteRenderer
-      PathToRoot: ShieldSprite
-      MemberName: ShieldSprite
-    ScriptsFolder: Assets\Scripts\Game\Player
-    ClassName: Player
+      PathToRoot: PlayerBlood
+      MemberName: PlayerBlood
+    - TypeName: SpriteRenderer
+      PathToRoot: Enemy1Body
+      MemberName: Enemy1Body
+    - TypeName: SpriteRenderer
+      PathToRoot: Enemy2Body
+      MemberName: Enemy2Body
+    - TypeName: SpriteRenderer
+      PathToRoot: Enemy3Body
+      MemberName: Enemy3Body
+    - TypeName: SpriteRenderer
+      PathToRoot: Enemy4Body
+      MemberName: Enemy4Body
+    ScriptsFolder: Assets/Scripts/Game
+    ClassName: FxManager
     Namespace: ProjectBlood
     MainCode: 
     DesignerCode: 

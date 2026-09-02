@@ -21,7 +21,10 @@ public class SpawnVFXEffect : SkillEffect
             return;
         }
 
-        GameObject vfxInstance = Instantiate(vfxPrefab, context.caster.transform.position, Quaternion.identity);
+        GameObject vfxInstance;
+        float angle = Mathf.Atan2(context.direction.y, context.direction.x) * Mathf.Rad2Deg;
+
+        vfxInstance = Instantiate(vfxPrefab, context.caster.transform.position, Quaternion.Euler(0, 0, angle));
 
         if (parentToCaster)
         {
