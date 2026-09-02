@@ -156,16 +156,15 @@ public class SkillManager : MonoBehaviour
     private void UpdateFacingDirection()
     {
         float horizontal = Input.GetAxisRaw("Horizontal");
-        if (Mathf.Abs(horizontal) > 0.01f)
-        {
-            facingDirection = horizontal > 0 ? Vector2.right : Vector2.left;
-        }
-
-        // 垂直方向可选（用于上下翻滚）
         float vertical = Input.GetAxisRaw("Vertical");
-        if (Mathf.Abs(vertical) > 0.01f && Mathf.Abs(horizontal) <= 0.01f)
+
+        // 如果有任意输入，直接组合成方向向量，不做归一化到四方向
+        Vector2 inputDirection = new Vector2(horizontal, vertical);
+
+        if (inputDirection.magnitude > 0.01f)
         {
-            facingDirection = vertical > 0 ? Vector2.up : Vector2.down;
+            // 归一化，确保斜向移动速度不会比正向快
+            facingDirection = inputDirection.normalized;
         }
     }
 

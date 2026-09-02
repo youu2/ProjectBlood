@@ -39,6 +39,7 @@ namespace QFramework
 
         internal override void SoundFinish(string soundName)
         {
+            if (string.IsNullOrEmpty(soundName)) return;
             mSoundFrameCountForName.Remove(soundName);
         }
     }

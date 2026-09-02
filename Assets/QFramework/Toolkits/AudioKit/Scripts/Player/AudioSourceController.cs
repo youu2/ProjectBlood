@@ -85,6 +85,18 @@ namespace QFramework
                 .StartGlobal();
         }
 
+        // 停止/回收时清理尚未触发的结束监听 Action，避免玩家被复用后旧的监听误触发 OnPlayFinished
+        internal void ClearFinishAction()
+        {
+            if (mAction != null)
+            {
+                mAction.Deinit();
+                mAction = null;
+            }
+
+            mOnSoundPlayFinish = null;
+        }
+
         internal void ApplyParameters()
         {
             SetClip(AudioClip);

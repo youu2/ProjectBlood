@@ -47,7 +47,9 @@ namespace QFramework
         
         internal void ClearDataAndStop()
         {
+            AudioSourceProxy.ClearFinishAction();
             AudioName = null;
+            mPlayedAudio = false;
             AudioSourceProxy.StopAndClearClip();
             PrepareModeController.PrepareMode.UnPrepareClip();
         }

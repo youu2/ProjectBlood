@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a20ae6ffd7f21b4f823112c7af1f2e8, type: 3}
   m_Name: Invincible
   m_EditorClassIdentifier: 
-  duration: 10
+  invincibleLayerName: Invincible

@@ -39,7 +39,7 @@ namespace ProjectBlood
         {
             // Initialize AudioKit, ResKit, UIKit
             // Set AudioKit to ignore same sound played in the same frame
-            AudioKit.PlaySoundMode = AudioKit.PlaySoundModes.IgnoreSameSoundInSoundFrames;
+            AudioKit.PlaySoundMode = AudioKit.PlaySoundModes.IgnoreSameSoundInGlobalFrames;
             ResKit.Init();
             UIKit.Root.SetResolution(1920, 1080, 1.0f);
             // Load from PlayerPrefs

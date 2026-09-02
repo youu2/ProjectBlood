@@ -13,27 +13,36 @@ MonoBehaviour:
   m_Name: Move
   m_EditorClassIdentifier: 
   speed: 15
-  distance: 3.5
+  distance: 5
   speedCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: -0.023860212
-      value: 1.3654279
-      inSlope: 0.002379362
-      outSlope: 0.002379362
-      tangentMode: 0
+      time: 0.00008392334
+      value: 1.0001602
+      inSlope: -0.14209974
+      outSlope: -0.14209974
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.61548537
+      outWeight: 0.33333334
     - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
+      time: 0.073765635
+      value: 0.98969007
+      inSlope: -0.5606483
+      outSlope: -0.5606483
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0
+      inWeight: 0.33333334
+      outWeight: 0.062493097
+    - serializedVersion: 3
+      time: 0.55173194
+      value: 0.42004502
+      inSlope: -0.11693057
+      outSlope: -0.11693057
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.12915817
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
