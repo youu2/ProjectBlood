@@ -16,7 +16,7 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 1dfc12586edbe1748b557ff60f6463ae, type: 3}
   description: "\u7FFB\u6EDA\uFF0C\u671F\u95F4\u65E0\u654C"
   skillType: 0
-  cooldown: 1
+  cooldown: 1.5
   duration: 0.5
   effects:
   - {fileID: 11400000, guid: 3bca9c5f41f27b041ab75fed71cf6a5c, type: 2}
