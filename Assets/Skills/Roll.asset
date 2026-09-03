@@ -23,6 +23,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d058a0d89ff8ce74bb4ff3add51ba333, type: 2}
   - {fileID: 11400000, guid: ba9fd3a2c928edd4ebe6da501f959106, type: 2}
   - {fileID: 11400000, guid: 0946ce54fce0e20419ae0694e6f8b87c, type: 2}
+  - {fileID: 11400000, guid: 990167baeddd36247a188d5d2b512ed6, type: 2}
   executionMode: 1
   startSFX: {fileID: 0}
   endSFX: {fileID: 0}

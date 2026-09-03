@@ -26,11 +26,33 @@ namespace ProjectBlood
         private const float aimSmoothSpeed = 20f; // 瞄准平滑速度，值越大过渡越快
         private const float aimAngle = 35f; // 自动锁敌的角度范围（度）
         [SerializeField] private float SpecialReloadVolume = 0.7f;
+        private bool recorded = false;
+        Vector2 lastMoveDir;
 
         // faceLeft: true=朝左，false=朝右
         // 当玩家朝左时，翻转整个玩家对象，包括武器，文字提示单独再翻转一次
         private void SetFlipX(bool faceLeft)
         {
+            if (SelfPlayerState.GetState() == PlayerState.State.Rolling && !recorded)
+            {
+                recorded = true;
+                lastMoveDir = SelfSkillManager.GetFacingDirection();
+            }
+            if (SelfPlayerState.GetState() != PlayerState.State.Rolling && recorded)
+            {
+                recorded = false;
+                // transform.localRotation = Quaternion.Euler(0, 0, 0);
+            }
+
+            if (recorded && lastMoveDir.x > 0 && faceLeft ||
+                recorded && lastMoveDir.x < 0 && !faceLeft)
+            {
+                transform.localRotation = Quaternion.Euler(0, 180, 0);
+            }
+            else if (!recorded && SelfPlayerState.GetState() != PlayerState.State.Rolling)
+            {
+                transform.localRotation = Quaternion.Euler(0, 0, 0);
+            }
             float scaleX = faceLeft ? -1f : 1f;
             transform.localScale = new Vector3(1.2f * scaleX, 1.2f, 1f);
             NoticeText.transform.localScale = new Vector3(0.0005f * scaleX, 0.0005f, 1f);
@@ -213,7 +235,6 @@ namespace ProjectBlood
         {
             float horizontal = Input.GetAxis("Horizontal"); // A/D
             float vertical = Input.GetAxis("Vertical");     // W/S										
-
             // 设置移动动画状态
             bool isMoving = horizontal != 0 || vertical != 0;
             PlayerAnimator.SetBool("isMoving", isMoving);
@@ -425,6 +446,20 @@ namespace ProjectBlood
         public void UpdateSpecialReloadCost()
         {
             specialReloadBloodCost = (WeaponDataSystem.weaponDataList.Count - 1) * 3;
+        }
+
+        public void UpdateRollAnimationDirection()
+        {
+            if (SelfPlayerState.GetState() == PlayerState.State.Rolling)
+            {
+                var facingDirection = SelfSkillManager.GetFacingDirection();
+                float angle = Mathf.Atan2(facingDirection.y, facingDirection.x) * Mathf.Rad2Deg;
+                transform.rotation = Quaternion.Euler(0, 0, angle);
+            }
+            else
+            {
+                transform.rotation = Quaternion.identity;
+            }
         }
 
         private void OnDestroy()

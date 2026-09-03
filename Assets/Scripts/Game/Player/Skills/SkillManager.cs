@@ -211,4 +211,9 @@ public class SkillManager : MonoBehaviour
     {
         return skills;
     }
+
+    public Vector2 GetFacingDirection()
+    {
+        return facingDirection;
+    }
 }

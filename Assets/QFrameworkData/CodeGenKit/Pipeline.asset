@@ -19,38 +19,26 @@ MonoBehaviour:
     From: 0
     NameToFullName: []
     BindInfos:
-    - TypeName: ParticleSystem
-      PathToRoot: EnemyHurt
-      MemberName: EnemyHurt
-    - TypeName: ParticleSystem
-      PathToRoot: RollDust
-      MemberName: RollDust
-    - TypeName: ParticleSystem
-      PathToRoot: PlayerHurt
-      MemberName: PlayerHurt
-    - TypeName: ParticleSystem
-      PathToRoot: ShieldBlock
-      MemberName: ShieldBlock
-    - TypeName: SpriteRenderer
-      PathToRoot: EnemyBlood
-      MemberName: EnemyBlood
-    - TypeName: SpriteRenderer
-      PathToRoot: PlayerBlood
-      MemberName: PlayerBlood
-    - TypeName: SpriteRenderer
-      PathToRoot: Enemy1Body
-      MemberName: Enemy1Body
-    - TypeName: SpriteRenderer
-      PathToRoot: Enemy2Body
-      MemberName: Enemy2Body
-    - TypeName: SpriteRenderer
-      PathToRoot: Enemy3Body
-      MemberName: Enemy3Body
-    - TypeName: SpriteRenderer
-      PathToRoot: Enemy4Body
-      MemberName: Enemy4Body
-    ScriptsFolder: Assets/Scripts/Game
-    ClassName: FxManager
+    - TypeName: UnityEngine.UI.Text
+      PathToRoot: ClipText
+      MemberName: ClipText
+    - TypeName: UnityEngine.UI.Text
+      PathToRoot: BloodText
+      MemberName: BloodText
+    - TypeName: ProjectBlood.UIMap
+      PathToRoot: UIMap
+      MemberName: UIMap
+    - TypeName: TMPro.TextMeshProUGUI
+      PathToRoot: LevelText
+      MemberName: LevelText
+    - TypeName: UnityEngine.UI.Image
+      PathToRoot: LoadingPage
+      MemberName: LoadingPage
+    - TypeName: TMPro.TextMeshProUGUI
+      PathToRoot: LoadingPage/LoadingText
+      MemberName: LoadingText
+    ScriptsFolder: Assets\Scripts\UI
+    ClassName: GameUI
     Namespace: ProjectBlood
     MainCode: 
     DesignerCode: 

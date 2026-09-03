@@ -1,4 +1,4 @@
-// Generate Id:31662174-dc7d-49a3-9897-350256f335be
+// Generate Id:4077bb64-0019-4526-828e-0c04178dcf61
 using UnityEngine;
 
 namespace ProjectBlood
@@ -40,6 +40,10 @@ namespace ProjectBlood
 		public UnityEngine.AudioClip WeaponSwitchSound;
 		
 		public UnityEngine.AudioSource SelfAudioSource;
+		
+		public SkillManager SelfSkillManager;
+		
+		public PlayerState SelfPlayerState;
 		
 	}
 }

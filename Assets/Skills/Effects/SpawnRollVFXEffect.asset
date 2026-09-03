@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afd2a7c1d9469ca44885a4a46f9c1e95, type: 3}
   m_Name: SpawnRollVFXEffect
   m_EditorClassIdentifier: 
-  vfxPrefab: {fileID: 0}
+  vfxPrefab: {fileID: 6282163350078889864, guid: f526194e66e1e3e438d4695b78153899, type: 3}
   lifetime: 1
   parentToCaster: 0

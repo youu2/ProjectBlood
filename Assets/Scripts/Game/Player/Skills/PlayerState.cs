@@ -65,4 +65,9 @@ public class PlayerState : MonoBehaviour
     {
         SetState(State.Normal);
     }
+
+    public State GetState()
+    {
+        return currentState;
+    }
 }

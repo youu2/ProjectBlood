@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af80074256371b548a9d3c2ae538113d, type: 3}
   m_Name: Move
   m_EditorClassIdentifier: 
-  speed: 15
+  speed: 20
   distance: 5
   speedCurve:
     serializedVersion: 2
