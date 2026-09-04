@@ -75,6 +75,10 @@ namespace ProjectBlood
                     }
                     break;
 
+                case UpgradeEffectType.WeaponAmmo:
+                    PlayerUpgradeState.ApplyWeaponAmmo(effect.ammoWeaponType, effect.ammoBonusPerStack);
+                    break;
+
                 case UpgradeEffectType.Passive:
                     PlayerUpgradeState.UnlockPassive(effect.passiveType);
                     break;

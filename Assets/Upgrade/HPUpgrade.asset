@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3ff1d3210bed334f988b4b6e20bb4ea, type: 3}
+  m_Name: HPUpgrade
+  m_EditorClassIdentifier: 
+  upgradeName: "\u751F\u547D\u503C\u4E0A\u9650+5"
+  description: "\u65E0\u9700\u89E3\u91CA"
+  icon: {fileID: 21300000, guid: 87a7c4321fd50514c8e41d6779a071da, type: 3}
+  isInPool: 1
+  effect:
+    effectType: 0
+    statType: 0
+    statValue: 5
+    weaponType: 1
+    damageBonusPerStack: 0.1
+    passiveType: 0

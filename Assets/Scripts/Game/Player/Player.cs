@@ -103,6 +103,7 @@ namespace ProjectBlood
             Application.targetFrameRate = 60;
             // 依次添加武器到武器列表，后续可能会改成根据游戏进度逐步获取，比如从宝箱中获取
             player1 = this;
+            PlayerUpgradeState.OnPlayerSpawned(); // 补回累计移速加成（Player 不跨场景，强化加成存在静态状态中）
             UseWeapon(0); // 默认装备第一把武器
             NoticeText.Hide();
             specialReloadBloodCost = (WeaponDataSystem.weaponDataList.Count - 1) * 3;   // 根据武器数量动态调整特殊换弹消耗的血库资源
