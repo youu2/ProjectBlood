@@ -1,4 +1,4 @@
-// Generate Id:b6a358fd-a399-402b-8fec-57bc8b6ede2c
+// Generate Id:ac47617e-b223-458e-91fd-851164e9a44f
 using UnityEngine;
 
 namespace ProjectBlood
@@ -16,6 +16,8 @@ namespace ProjectBlood
 		public UnityEngine.UI.Image LoadingPage;
 		
 		public TMPro.TextMeshProUGUI LoadingText;
+		
+		public UnityEngine.UI.Image SkillIcon;
 		
 	}
 }

@@ -24,11 +24,8 @@ namespace ProjectBlood
 		public TMPro.TextMeshProUGUI TimeText;
 		[SerializeField]
 		public RectTransform UpgradeRoot;
-		[SerializeField]
-		public UnityEngine.UI.Button BtnUpgradeDamage;
-		[SerializeField]
-		public UnityEngine.UI.Button BtnUpgradeHP;
-		
+		// 升级选项按钮已改为 UIGamePanel.optionCards（3 张动态填充卡片），旧的硬编码按钮字段移除
+
 		private UIGamePanelData mPrivateData = null;
 		
 		protected override void ClearUIComponents()
@@ -40,9 +37,7 @@ namespace ProjectBlood
 			LevelText = null;
 			TimeText = null;
 			UpgradeRoot = null;
-			BtnUpgradeDamage = null;
-			BtnUpgradeHP = null;
-			
+
 			mData = null;
 		}
 		

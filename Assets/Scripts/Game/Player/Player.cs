@@ -112,31 +112,22 @@ namespace ProjectBlood
 
         public WeaponBase GetWeaponFromName(string weaponName)
         {
-            if (weaponName == WeaponConfig.DE.weaponName)
+            return GetWeapon(WeaponTypeExtensions.FromName(weaponName));
+        }
+
+        // 按武器类型枚举获取武器实例（强化系统/武器进化使用）
+        public WeaponBase GetWeapon(WeaponType type)
+        {
+            switch (type)
             {
-                return DE;
+                case WeaponType.DE: return DE;
+                case WeaponType.MP5: return MP5;
+                case WeaponType.ShotGun: return ShotGun;
+                case WeaponType.AK: return AK;
+                case WeaponType.AWP: return AWP;
+                case WeaponType.Laser: return Laser;
+                default: return null;
             }
-            else if (weaponName == WeaponConfig.MP5.weaponName)
-            {
-                return MP5;
-            }
-            else if (weaponName == WeaponConfig.ShotGun.weaponName)
-            {
-                return ShotGun;
-            }
-            else if (weaponName == WeaponConfig.AK.weaponName)
-            {
-                return AK;
-            }
-            else if (weaponName == WeaponConfig.AWP.weaponName)
-            {
-                return AWP;
-            }
-            else if (weaponName == WeaponConfig.Laser.weaponName)
-            {
-                return Laser;
-            }
-            return null;
         }
 
         void UseWeapon(int index)
@@ -175,6 +166,9 @@ namespace ProjectBlood
             AudioKitManager.Instance.PlayOneShot(WeaponSwitchSound, volume: 0.3f);
             // 更新相机大小
             Global.WeaponAdditionalCameraSize = currentWeapon.AdditionalCameraSize;
+
+            // 强化系统：切枪钩子（重置单武器持续叠加、尝试激活切枪增益被动）
+            PlayerUpgradeState.OnWeaponSwitched(currentWeapon.WeaponType);
         }
 
         void Start()
@@ -416,6 +410,9 @@ namespace ProjectBlood
             {
                 UseWeapon((WeaponDataSystem.weaponDataList.IndexOf(currentWeapon.Data) + 1) % WeaponDataSystem.weaponDataList.Count);
             }
+
+            // 强化系统：被动增益计时（暂停时 deltaTime 为 0，不会误走时）
+            PlayerUpgradeState.TickPassives(Time.deltaTime);
         }
 
         // 特殊换弹协程, 双击换弹触发，为所有武器补充弹药并播放音效

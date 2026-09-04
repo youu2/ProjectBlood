@@ -42,6 +42,8 @@ namespace ProjectBlood
             AudioKit.PlaySoundMode = AudioKit.PlaySoundModes.IgnoreSameSoundInGlobalFrames;
             ResKit.Init();
             UIKit.Root.SetResolution(1920, 1080, 1.0f);
+            // 初始化强化系统（订阅武器开火事件，用于单武器持续输出叠加被动）
+            PlayerUpgradeState.Initialize();
             // Load from PlayerPrefs
             Global.LegacyPoint.Value = PlayerPrefs.GetInt("LegacyPoint", 0);
             Global.CoinDropRate.Value = PlayerPrefs.GetFloat("CoinDropRate", 0.30f);
@@ -114,7 +116,8 @@ namespace ProjectBlood
         // restart game
         public static void ResetLevel()
         {
-            PlayerUpgrade.ResetUpgrade();
+            PlayerUpgradeState.Reset();
+            INGAME_MAX_HP.Value = INIT_MAX_HP.Value; // 最大生命值随强化系统重置（旧 PlayerUpgrade.ResetUpgrade 的职责）
             currentHP.Value = INGAME_MAX_HP.Value;
             Level.Value = 1;
             Exp.Value = 0;

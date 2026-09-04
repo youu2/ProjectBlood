@@ -60,6 +60,7 @@ namespace ProjectBlood
             var bullet = PlayerBulletPool.Instance.Get(BulletPrefab);
             bullet.transform.SetPositionAndRotation(BulletSpawnPoint.position, bulletRotation);
             bullet.GetComponent<PlayerBullet>().direction = finalDirection;
+            bullet.GetComponent<PlayerBullet>().weaponType = WeaponType; // 标记子弹来源武器，供强化伤害计算
             bullet.SetActive(true);
 
             ApplyLifestealToBullet(bullet.GetComponent<PlayerBullet>()); // 应用吸血功能
@@ -254,6 +255,9 @@ namespace ProjectBlood
         }
         public GunClip GetGunClip() => gunClip;
         public WeaponData Data { get; private set; }
+
+        // 强化系统使用的武器类型枚举；Data 加载前（如 Awake 阶段）回退到物体名
+        public WeaponType WeaponType => WeaponTypeExtensions.FromName(Data != null ? Data.weaponName : gameObject.name);
 
         public void LoadWeaponData(WeaponData weaponData)
         {

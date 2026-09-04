@@ -37,6 +37,9 @@ MonoBehaviour:
     - TypeName: TMPro.TextMeshProUGUI
       PathToRoot: LoadingPage/LoadingText
       MemberName: LoadingText
+    - TypeName: UnityEngine.UI.Image
+      PathToRoot: SkillIcon
+      MemberName: SkillIcon
     ScriptsFolder: Assets\Scripts\UI
     ClassName: GameUI
     Namespace: ProjectBlood

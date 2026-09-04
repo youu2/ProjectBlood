@@ -11,6 +11,7 @@ public class PlayerBullet : MonoBehaviour
     public float damage = 20.0f;
     public float lifestealPercent = 0f; // 吸血比例(%)
     public bool isEnhanced = true; // 当前子弹是否被血库强化
+    public WeaponType weaponType = WeaponType.DE; // 发射该子弹的武器类型，由武器开火时设置，用于强化伤害计算
     public GameObject BulletPrefab;
 
 
@@ -29,8 +30,8 @@ public class PlayerBullet : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            // 根据子弹是否被强化计算伤害
-            float damageMultiplier = (isEnhanced ? 1.0f : 0.7f) * PlayerUpgrade.DamageRatio; // 未强化时伤害降低到70%
+            // 根据子弹是否被强化以及强化系统加成计算伤害（未强化时伤害降低到70%）
+            float damageMultiplier = (isEnhanced ? 1.0f : 0.7f) * PlayerUpgradeState.GetFinalDamageRatio(weaponType);
             float finalDamage = damage * damageMultiplier;
 
             // 计算玩家到敌人的方向

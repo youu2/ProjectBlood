@@ -35,8 +35,8 @@ namespace ProjectBlood
                     // 计算击退方向：从玩家到敌人的方向
                     Vector2 playerToEnemyDir = (damageHit.collider.transform.position - Player.player1.transform.position).normalized;
 
-                    // 根据子弹是否被强化计算伤害
-                    float damageMultiplier = IsBulletEnhanced ? 1.0f : 0.8f; // 未强化时伤害降低到80%
+                    // 根据是否被血库强化以及强化系统加成计算伤害（未强化时伤害降低到80%）
+                    float damageMultiplier = (IsBulletEnhanced ? 1.0f : 0.8f) * PlayerUpgradeState.GetFinalDamageRatio(WeaponType);
                     float finalDamage = HitDamage * damageMultiplier;
 
                     // 判断本击是否致命
@@ -56,6 +56,7 @@ namespace ProjectBlood
             }
             CameraUtils.ShakeMainCamera(0.04f, 5);
             OnLaserActivate?.Invoke();
+            TriggerWeaponFired(); // 触发开火事件，供强化系统单武器持续叠加等逻辑使用
         }
 
         public override void KeepAttacking(Vector2 shootDir)

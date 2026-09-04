@@ -28,6 +28,7 @@ namespace ProjectBlood
                 var bullet = PlayerBulletPool.Instance.Get(BulletPrefab);
                 bullet.transform.SetPositionAndRotation(BulletSpawnPoint.position, randomRotation);
                 bullet.GetComponent<PlayerBullet>().direction = finalDirection;
+                bullet.GetComponent<PlayerBullet>().weaponType = WeaponType; // 标记子弹来源武器，供强化伤害计算
                 bullet.SetActive(true);
                 ApplyLifestealToBullet(bullet.GetComponent<PlayerBullet>());
             }

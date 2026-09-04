@@ -155,6 +155,7 @@ namespace ProjectBlood
             GUIInstance.ClipText.Hide();
             GUIInstance.BloodText.Hide();
             GUIInstance.UIMap.Hide();
+            GUIInstance.SkillIcon.Hide();
         }
 
         public static void ShowGameUI()
@@ -163,6 +164,7 @@ namespace ProjectBlood
             GUIInstance.ClipText.Show();
             GUIInstance.BloodText.Show();
             GUIInstance.UIMap.Show();
+            GUIInstance.SkillIcon.Show();
         }
     }
 }

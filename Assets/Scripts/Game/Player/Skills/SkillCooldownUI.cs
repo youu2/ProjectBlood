@@ -38,7 +38,16 @@ public class SkillCooldownUI : MonoBehaviour
 
     private void Update()
     {
-        if (skillManager == null) return;
+        // GameUI 是 DontDestroyOnLoad，场景重载后旧 Player 被销毁，引用失效时需重新查找
+        if (skillManager == null)
+        {
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null)
+            {
+                skillManager = player.GetComponent<SkillManager>();
+            }
+            if (skillManager == null) return;
+        }
 
         // 获取剩余冷却比例（0表示冷却完毕，1表示刚使用）
         float cooldownPercent = skillManager.GetCooldownPercent(skillName);
