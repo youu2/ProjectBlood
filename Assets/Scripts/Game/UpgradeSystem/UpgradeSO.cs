@@ -5,7 +5,7 @@ namespace ProjectBlood
     // 强化项配置资产（数据驱动）。
     // 在 Project 窗口通过 Create > ProjectBlood > Upgrade > Upgrade Config 创建，
     // 配置好名称/描述/图标/是否入池/效果后，拖入 UpgradeManager 的升级池列表。
-    [CreateAssetMenu(fileName = "Upgrade_", menuName = "ProjectBlood/Upgrade/Upgrade Config", order = 0)]
+    [CreateAssetMenu(fileName = "Upgrade_", menuName = "强化系统/强化项配置", order = 0)]
     public class UpgradeSO : ScriptableObject
     {
         [Header("显示信息")]

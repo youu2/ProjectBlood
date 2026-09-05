@@ -12,14 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3ff1d3210bed334f988b4b6e20bb4ea, type: 3}
   m_Name: SpeedUpgrade
   m_EditorClassIdentifier: 
-  upgradeName: 
+  upgradeName: "\u79FB\u52A8\u901F\u5EA6\u219110%"
   description: 
   icon: {fileID: 0}
   isInPool: 1
   effect:
     effectType: 0
-    statType: 0
-    statValue: 10
+    statType: 1
+    statValue: 0.6
     weaponType: 1
     damageBonusPerStack: 0.1
+    ammoWeaponType: 1
+    ammoBonusPerStack: 2
     passiveType: 0

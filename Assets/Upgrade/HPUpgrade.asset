@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3ff1d3210bed334f988b4b6e20bb4ea, type: 3}
   m_Name: HPUpgrade
   m_EditorClassIdentifier: 
-  upgradeName: "\u751F\u547D\u503C\u4E0A\u9650+5"
-  description: "\u65E0\u9700\u89E3\u91CA"
+  upgradeName: "\u751F\u547D\u503C\u4E0A\u9650\u21915"
+  description: 
   icon: {fileID: 21300000, guid: 87a7c4321fd50514c8e41d6779a071da, type: 3}
   isInPool: 1
   effect:
@@ -22,4 +22,6 @@ MonoBehaviour:
     statValue: 5
     weaponType: 1
     damageBonusPerStack: 0.1
+    ammoWeaponType: 1
+    ammoBonusPerStack: 2
     passiveType: 0

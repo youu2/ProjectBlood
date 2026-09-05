@@ -10,17 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c3ff1d3210bed334f988b4b6e20bb4ea, type: 3}
-  m_Name: BloodBankCapacityUpgrade
+  m_Name: AKDmgUpgrade
   m_EditorClassIdentifier: 
-  upgradeName: "\u8840\u5E93\u5BB9\u91CF\u219110"
+  upgradeName: "AK\u4F24\u5BB3\u219110%"
   description: 
   icon: {fileID: 0}
   isInPool: 1
   effect:
-    effectType: 0
-    statType: 2
-    statValue: 20
-    weaponType: 1
+    effectType: 1
+    statType: 0
+    statValue: 10
+    weaponType: 4
     damageBonusPerStack: 0.1
     ammoWeaponType: 1
     ammoBonusPerStack: 2

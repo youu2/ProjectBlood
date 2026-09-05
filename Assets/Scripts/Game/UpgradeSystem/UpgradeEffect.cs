@@ -39,7 +39,7 @@ namespace ProjectBlood
 
         [Header("基础属性加成参数 (BaseStat)")]
         public StatType statType = StatType.MaxHP;
-        [Tooltip("每次强化增加的固定数值：MaxHP/MoveSpeed 为浮点值，BloodBankCapacity 四舍五入为整数且至少 +1")]
+        [Tooltip("每次强化增加的固定数值：MaxHP/MoveSpeed 为浮点值, BloodBankCapacity 四舍五入为整数且至少 +1")]
         public float statValue = 10f;
 
         [Header("武器伤害升级参数 (WeaponDamage)")]
@@ -50,7 +50,7 @@ namespace ProjectBlood
         [Header("武器弹夹容量升级参数 (WeaponAmmo)")]
         [Tooltip("弹夹升级的目标武器类型（与上方 weaponType 分离，避免资产配置混淆）")]
         public WeaponType ammoWeaponType = WeaponType.DE;
-        [Tooltip("每次强化增加的弹夹容量（发，整数，至少 +1）")]
+        [Tooltip("每次强化增加的弹夹容量(整数，至少 +1)")]
         public int ammoBonusPerStack = 2;
 
         [Header("被动解锁参数 (Passive)")]
