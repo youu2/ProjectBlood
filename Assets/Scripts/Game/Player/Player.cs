@@ -100,7 +100,7 @@ namespace ProjectBlood
         private void Awake()
         {
             // 设置帧率为60，确保游戏和逻辑稳定运行
-            Application.targetFrameRate = 60;
+            Application.targetFrameRate = 300;
             // 依次添加武器到武器列表，后续可能会改成根据游戏进度逐步获取，比如从宝箱中获取
             player1 = this;
             PlayerUpgradeState.OnPlayerSpawned(); // 补回累计移速加成（Player 不跨场景，强化加成存在静态状态中）

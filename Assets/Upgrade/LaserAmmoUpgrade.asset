@@ -12,16 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3ff1d3210bed334f988b4b6e20bb4ea, type: 3}
   m_Name: LaserAmmoUpgrade
   m_EditorClassIdentifier: 
-  upgradeName: "\u6FC0\u5149\u67AA\u5F39\u5939\u5BB9\u91CF\u219110%"
+  upgradeName: "\u6FC0\u5149\u67AA\u5F39\u5939\u5BB9\u91CF\u219112"
   description: 
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: b15adb05a897e144cb75d290d61885c8, type: 3}
   isInPool: 1
   effect:
-    effectType: 2
-    statType: 0
-    statValue: 10
-    weaponType: 6
-    damageBonusPerStack: 0.1
-    ammoWeaponType: 6
-    ammoBonusPerStack: 12
-    passiveType: 0
+    stats: []
+    weaponDamages: []
+    weaponAmmos:
+    - weapons: 32
+      ammoBonusPerStack: 12
+    passives: 

@@ -56,7 +56,7 @@ namespace ProjectBlood
             }
             CameraUtils.ShakeMainCamera(0.04f, 5);
             OnLaserActivate?.Invoke();
-            TriggerWeaponFired(); // 触发开火事件，供强化系统单武器持续叠加等逻辑使用
+            // TriggerWeaponFired(); // 触发开火事件，供强化系统单武器持续叠加等逻辑使用
         }
 
         public override void KeepAttacking(Vector2 shootDir)

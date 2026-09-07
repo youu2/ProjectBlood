@@ -14,14 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   upgradeName: "\u8840\u5E93\u5BB9\u91CF\u219110"
   description: 
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 73cfba1ebdc12dc4bb0be7b154ecd933, type: 3}
   isInPool: 1
   effect:
-    effectType: 0
-    statType: 2
-    statValue: 20
-    weaponType: 1
-    damageBonusPerStack: 0.1
-    ammoWeaponType: 1
-    ammoBonusPerStack: 2
-    passiveType: 0
+    stats:
+    - statType: 2
+      value: 20
+    weaponDamages: []
+    weaponAmmos: []
+    passives: 

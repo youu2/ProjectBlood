@@ -246,17 +246,17 @@ ScriptedImporter:
   asepriteLayers:
   - layerIndex: 0
     uuid:
-      value0: 4287466681
+      value0: 1319740748
       value1: 0
       value2: 0
       value3: 0
     guid: 0
-    name: Layer 6
+    name: rightleg
     layerFlags: 3
     layerType: 0
     blendMode: 0
     cells:
-    - name: Layer 6
+    - name: rightleg
       frameIndex: 0
       additiveSortOrder: 0
       cellRect:
@@ -264,22 +264,22 @@ ScriptedImporter:
         y: 0
         width: 4
         height: 3
-      spriteId: ed45e73ac75578348bae9b7dbd5c5daa
+      spriteId: de1e3c64cd2b99f42a833b894aee8111
     linkedCells: []
     parentIndex: -1
   - layerIndex: 1
     uuid:
-      value0: 4287466677
+      value0: 3383613474
       value1: 0
       value2: 0
       value3: 0
     guid: 0
-    name: Layer 2
+    name: body
     layerFlags: 3
     layerType: 0
     blendMode: 0
     cells:
-    - name: Layer 2
+    - name: body
       frameIndex: 0
       additiveSortOrder: 0
       cellRect:
@@ -287,22 +287,22 @@ ScriptedImporter:
         y: 5
         width: 9
         height: 11
-      spriteId: c849235f72633e947b4eb0197fb11a16
+      spriteId: 052c169e01f64ab40ab9e259aa5d3112
     linkedCells: []
     parentIndex: -1
   - layerIndex: 2
     uuid:
-      value0: 4287466678
+      value0: 1381012441
       value1: 0
       value2: 0
       value3: 0
     guid: 0
-    name: Layer 3
+    name: leftLeg
     layerFlags: 3
     layerType: 0
     blendMode: 0
     cells:
-    - name: Layer 3
+    - name: leftLeg
       frameIndex: 0
       additiveSortOrder: 0
       cellRect:
@@ -310,22 +310,22 @@ ScriptedImporter:
         y: 0
         width: 4
         height: 3
-      spriteId: 95ee4c0e90f22064fa39f4e714b0fafe
+      spriteId: 2e66d6d763492194f9453e4977f318ce
     linkedCells: []
     parentIndex: -1
   - layerIndex: 3
     uuid:
-      value0: 4287466684
+      value0: 2328218693
       value1: 0
       value2: 0
       value3: 0
     guid: 0
-    name: Layer 5
+    name: face
     layerFlags: 3
     layerType: 0
     blendMode: 0
     cells:
-    - name: Layer 5
+    - name: face
       frameIndex: 0
       additiveSortOrder: 0
       cellRect:
@@ -333,22 +333,22 @@ ScriptedImporter:
         y: 0
         width: 6
         height: 4
-      spriteId: 7b2befd198cfb4048a09c55640efe815
+      spriteId: 3e4248ce54507ad4186fb64a7d80c4fe
     linkedCells: []
     parentIndex: -1
   - layerIndex: 4
     uuid:
-      value0: 4287466683
+      value0: 696029460
       value1: 0
       value2: 0
       value3: 0
     guid: 0
-    name: Layer 4
+    name: bag
     layerFlags: 3
     layerType: 0
     blendMode: 0
     cells:
-    - name: Layer 4
+    - name: bag
       frameIndex: 0
       additiveSortOrder: 0
       cellRect:
@@ -356,7 +356,7 @@ ScriptedImporter:
         y: 7
         width: 2
         height: 8
-      spriteId: 5ac02db69f050914abe5995b939ea159
+      spriteId: 09deff0f842f6754290d9a54ae458a8e
     linkedCells: []
     parentIndex: -1
   platformSettings:
