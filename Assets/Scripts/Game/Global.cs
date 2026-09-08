@@ -89,7 +89,7 @@ namespace ProjectBlood
                 AudioKitManager.Instance.PlayOneShot("LevelUp", volume: 0.5f);
                 Level.Value++;
                 Exp.Value -= MAX_EXP.Value;
-                MAX_EXP.Value = Mathf.CeilToInt(MAX_EXP.Value * 1.1f);
+                MAX_EXP.Value = 5 + (Level.Value - 1) / 3;
                 //Debug.Log("Level Up! current LV: " + Level.Value);
             }
         }

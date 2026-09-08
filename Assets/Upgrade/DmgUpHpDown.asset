@@ -10,19 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c3ff1d3210bed334f988b4b6e20bb4ea, type: 3}
-  m_Name: UpgradeTest
+  m_Name: DmgUpHpDown
   m_EditorClassIdentifier: 
-  upgradeName: 
+  upgradeName: "\u751F\u547D\u503C\u4E0A\u9650\u21915"
   description: 
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 8bf5d512cd78c4e44868e2287d5ac265, type: 3}
   isInPool: 1
   effect:
-    MaxUpgradeCount: 5
+    MaxUpgradeCount: 10
     stats:
     - statType: 0
-      value: 0
-    weaponDamages:
-    - weapons: 0
-      damageBonusPerStack: 0
+      value: 5
+    weaponDamages: []
     weaponAmmos: []
     passives: 

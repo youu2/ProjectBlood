@@ -27,8 +27,9 @@ namespace ProjectBlood
         }
 
         // 从池中随机抽取 count 个可用强化。
-        // 过滤条件：非空、isInPool 为 true、配置校验通过(无效/冲突配置不进入池)、效果当前可用
-        //(组合效果全有或全无：任一条目不可用即整体排除,如武器未拥有/已满级、属性已满 5 次、被动已解锁)。
+        // 过滤条件：非空、isInPool 为 true、配置校验通过(无效/冲突配置不进入池)、本卡被选择次数未满 MaxUpgradeCount、
+        // 效果条目当前可用(组合效果全有或全无：任一条目不可用即整体排除,如武器未拥有、被动已解锁)。
+        // 注:MaxUpgradeCount 按卡牌独立计数,多张影响同一属性/武器的卡互不影响。
         // 可用项不足 count 时返回全部可用项；一个都没有时返回空列表(UI 层据此直接恢复游戏)。
         public List<UpgradeSO> GetRandomUpgrades(int count)
         {
@@ -43,6 +44,10 @@ namespace ProjectBlood
                     Debug.LogWarning($"[UpgradeManager] 强化资产 {upgrade.name} 配置无效,已从池中排除：{string.Join("；", errors)}", upgrade);
                     continue;
                 }
+
+                // 本卡被选择次数已达 MaxUpgradeCount -> 退场(按卡独立计数)
+                if (PlayerUpgradeState.GetUpgradeUsageCount(upgrade) >= upgrade.effect.MaxUpgradeCount) continue;
+
                 if (!upgrade.effect.IsAvailable()) continue;
                 available.Add(upgrade);
             }
@@ -79,6 +84,9 @@ namespace ProjectBlood
                 Debug.LogError($"[UpgradeManager] 强化 {upgrade.name} 配置无效,拒绝应用：{string.Join("；", errors)}", upgrade);
                 return;
             }
+
+            // 记录本卡被选择一次(按卡独立计数,达到 MaxUpgradeCount 后本卡从池中移除)
+            PlayerUpgradeState.RecordUpgradeUsage(upgrade);
 
             foreach (var stat in effect.stats)
             {

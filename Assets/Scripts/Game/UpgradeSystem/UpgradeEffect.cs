@@ -55,7 +55,16 @@ namespace ProjectBlood
     [Serializable]
     public class UpgradeEffect
     {
-        public const int MaxStackCount = 5; // 所有可叠加属性(含武器伤害/弹夹)的最大强化次数
+        // 系统满级标准(固定):武器伤害"全局累计"5 级触发进化(IWeaponEvolution),IsXxxMaxed 查询也以此为准
+        public const int MaxStackCount = 5;
+
+        // 本卡可被选择次数上限(可配置):按卡牌独立计数,本卡被选择达到该次数后自动从随机池移除。
+        // 计数维度是"这张卡",不是属性/武器:多张影响同一属性/武器的卡互不影响
+        // (例如两张 MaxUpgradeCount=5 的生命卡,生命值最多可被修改 10 次)。
+        // 与 MaxStackCount 解耦:武器全局等级满 5 级正常进化,之后只要本卡还有次数就继续出现叠加。
+        [Tooltip("本强化卡最多可被选择的次数(按卡独立计数,多张卡互不影响),达到后自动从随机抽取池移除(范围 1-99,默认 5)")]
+        [Range(1, 99)]
+        public int MaxUpgradeCount = MaxStackCount;
 
         [Tooltip("基础属性加成/降低(可多条,同一属性不可重复配置)")]
         public List<StatEffect> stats = new List<StatEffect>();
@@ -73,31 +82,27 @@ namespace ProjectBlood
         public bool IsEmpty
             => stats.Count == 0 && weaponDamages.Count == 0 && weaponAmmos.Count == 0 && passives.Count == 0;
 
-        // 当前是否可被抽取：所有条目均满足各自条件才返回 true
-        // BaseStat      -> 该属性叠加次数未满 5 次
-        // WeaponDamage  -> 掩码中每把武器均已拥有且伤害升级未满 5 次
-        // WeaponAmmo    -> 掩码中每把武器均已拥有且弹夹升级未满 5 次
+        // 条目级可用性(与卡牌身份无关):所有条目均满足才返回 true
+        // BaseStat      -> 无运行时限制(属性总能被改,选择次数上限由 UpgradeManager 按 MaxUpgradeCount 控制)
+        // WeaponDamage  -> 掩码中每把武器均已拥有
+        // WeaponAmmo    -> 掩码中每把武器均已拥有
         // Passive       -> 该被动尚未解锁
+        // 注:各属性/武器的全局累计次数不在此判断;每张卡"能被选几次"由 UpgradeManager 查
+        //     PlayerUpgradeState.GetUpgradeUsageCount(本卡) 与 MaxUpgradeCount 比较得出,故多张卡互不影响。
         public bool IsAvailable()
         {
-            foreach (var stat in stats)
-            {
-                if (PlayerUpgradeState.GetStatStacks(stat.statType) >= MaxStackCount) return false;
-            }
             foreach (var damage in weaponDamages)
             {
                 foreach (var weaponType in damage.weapons.ToWeaponTypes())
                 {
-                    if (!PlayerUpgradeState.IsWeaponOwned(weaponType)
-                        || PlayerUpgradeState.GetWeaponDamageLevel(weaponType) >= MaxStackCount) return false;
+                    if (!PlayerUpgradeState.IsWeaponOwned(weaponType)) return false;
                 }
             }
             foreach (var ammo in weaponAmmos)
             {
                 foreach (var weaponType in ammo.weapons.ToWeaponTypes())
                 {
-                    if (!PlayerUpgradeState.IsWeaponOwned(weaponType)
-                        || PlayerUpgradeState.GetWeaponAmmoLevel(weaponType) >= MaxStackCount) return false;
+                    if (!PlayerUpgradeState.IsWeaponOwned(weaponType)) return false;
                 }
             }
             foreach (var passive in passives)
@@ -112,6 +117,7 @@ namespace ProjectBlood
         public bool Validate(List<string> errors)
         {
             if (IsEmpty) errors.Add("未配置任何效果");
+            if (MaxUpgradeCount < 1) errors.Add("MaxUpgradeCount 必须 >= 1(当前为 " + MaxUpgradeCount + ")");
 
             var statTypes = new HashSet<StatType>();
             foreach (var stat in stats)
@@ -144,6 +150,13 @@ namespace ProjectBlood
 
             if (passives.Count != passives.Distinct().Count()) errors.Add("同一被动重复配置");
             return errors.Count == 0;
+        }
+
+        // 编辑期兜底修正：[Range] 特性只约束 Inspector 拖滑条，直接改序列化文件或旧数据可能越界，
+        // 这里强制夹到合法区间，保证不会出现 0/负数导致强化永不退场逻辑异常
+        public void ClampValid()
+        {
+            MaxUpgradeCount = Mathf.Clamp(MaxUpgradeCount, 1, 99);
         }
 
         // 整数量化：四舍五入且幅度至少 1,保留符号(血库/弹夹容量应用逻辑共用)

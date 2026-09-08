@@ -17,6 +17,7 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 8bf5d512cd78c4e44868e2287d5ac265, type: 3}
   isInPool: 1
   effect:
+    MaxUpgradeCount: 10
     stats:
     - statType: 0
       value: 5

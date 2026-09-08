@@ -9,20 +9,20 @@ namespace ProjectBlood
     // 生命周期：单局有效,Global.ResetLevel() 时调用 Reset() 清空。
     public static class PlayerUpgradeState
     {
-        public const int MaxStackCount = UpgradeEffect.MaxStackCount; // 所有可叠加属性最多强化 5 次
+        // 系统满级标准(固定 5 次):武器伤害达此等级触发进化,IsXxxMaxed 满级查询也以此为准。
+        // 单张强化卡的可选择次数上限走 UpgradeEffect.MaxUpgradeCount(可配置,池过滤用),两者互不影响。
+        public const int MaxStackCount = UpgradeEffect.MaxStackCount;
 
-        // ---- 基础属性叠加次数 ----
-        private static readonly Dictionary<StatType, int> statStacks = new Dictionary<StatType, int>();
-        // ---- 武器伤害强化等级(0 = 未强化,5 = 满级)----
+        // ---- 武器伤害强化等级(0 = 未强化,5 = 满级):武器进化触发线,ApplyWeaponDamage 返回值据此判断是否触发 IWeaponEvolution ----
         private static readonly Dictionary<WeaponType, int> weaponDamageLevels = new Dictionary<WeaponType, int>();
         // ---- 武器伤害系数(1.0 = 100%,每次强化累加 bonusPerStack)----
         private static readonly Dictionary<WeaponType, float> weaponDamageRatios = new Dictionary<WeaponType, float>();
-        // ---- 武器弹夹容量强化等级(0 = 未强化,5 = 满级)----
-        private static readonly Dictionary<WeaponType, int> weaponAmmoLevels = new Dictionary<WeaponType, int>();
-        // ---- 武器弹夹容量累计加成(发；与 WeaponData 中的 weaponMaxAmmo 保持同步,用于重置时计数清零)----
-        private static readonly Dictionary<WeaponType, int> weaponAmmoBonus = new Dictionary<WeaponType, int>();
         // ---- 已解锁的全局被动 ----
         private static readonly HashSet<PassiveType> unlockedPassives = new HashSet<PassiveType>();
+        // ---- 每张强化卡(UpgradeSO 资产)的累计被选择次数 ----
+        // 按卡牌维度独立计数:MaxUpgradeCount 限制的是"这张卡能被选几次",
+        // 多张影响同一属性/武器的卡互不影响(例如两张 MaxUpgradeCount=5 的生命卡,生命值最多可被改 10 次)
+        private static readonly Dictionary<UpgradeSO, int> upgradeUsageCounts = new Dictionary<UpgradeSO, int>();
 
         // ---- 基础属性基线(首次强化对应属性时捕获,供单局重置还原；-1 表示未记录)----
         // Player 与 BloodBank 是跨场景持久的单例/Prefab 实例,强化后需手动回退
@@ -97,32 +97,19 @@ namespace ProjectBlood
 
         // ============================== 查询 ==============================
 
-        public static int GetStatStacks(StatType type)
-            => statStacks.TryGetValue(type, out int v) ? v : 0;
-
-        public static bool IsStatMaxed(StatType type)
-            => GetStatStacks(type) >= MaxStackCount;
-
+        // 武器伤害全局累计等级:ApplyWeaponDamage 内部使用,计算进化触发(返回 level >= MaxStackCount)
         public static int GetWeaponDamageLevel(WeaponType type)
             => weaponDamageLevels.TryGetValue(type, out int v) ? v : 0;
-
-        public static bool IsWeaponDamageMaxed(WeaponType type)
-            => GetWeaponDamageLevel(type) >= MaxStackCount;
-
-        public static int GetWeaponAmmoLevel(WeaponType type)
-            => weaponAmmoLevels.TryGetValue(type, out int v) ? v : 0;
-
-        public static bool IsWeaponAmmoMaxed(WeaponType type)
-            => GetWeaponAmmoLevel(type) >= MaxStackCount;
-
-        public static int GetWeaponAmmoBonus(WeaponType type)
-            => weaponAmmoBonus.TryGetValue(type, out int v) ? v : 0;
 
         public static float GetWeaponDamageRatio(WeaponType type)
             => weaponDamageRatios.TryGetValue(type, out float v) ? v : 1f;
 
         public static bool IsPassiveUnlocked(PassiveType type)
             => unlockedPassives.Contains(type);
+
+        // 某张强化卡累计被选择的次数(MaxUpgradeCount 池过滤依据,按卡牌独立计数)
+        public static int GetUpgradeUsageCount(UpgradeSO upgrade)
+            => upgrade != null && upgradeUsageCounts.TryGetValue(upgrade, out int v) ? v : 0;
 
         // 在 WeaponDataSystem 中查找武器数据(未拥有时返回 null)
         private static WeaponData FindWeaponData(WeaponType type)
@@ -158,10 +145,9 @@ namespace ProjectBlood
 
         // ============================== 应用强化 ==============================
 
-        // 基础属性强化：叠加次数 +1,并应用具体属性效果
+        // 基础属性强化:每次调用直接应用效果(属性无全局等级跟踪,池过滤由每卡 MaxUpgradeCount 独立控制)
         public static void ApplyStat(StatType type, float valuePerStack)
         {
-            statStacks[type] = GetStatStacks(type) + 1;
             ApplyStatEffect(type, valuePerStack);
         }
 
@@ -216,24 +202,20 @@ namespace ProjectBlood
             return level >= MaxStackCount;
         }
 
-        // 武器弹夹容量强化：等级 +1,并同步更新 WeaponData(静态持久)与已实例化武器的 GunClip。
-        // bonusPerStack 可为负(代价型),容量下限 1 发；容量变化同步到当前弹药,并夹到 [0, 新上限]。
-        // 如果升级的是当前装备武器,立即刷新弹药 UI；返回 true 表示本次达到满级。
-        public static bool ApplyWeaponAmmo(WeaponType type, int bonusPerStack)
+        // 武器弹夹容量强化:同步更新 WeaponData(静态持久)与已实例化武器的 GunClip。
+        // bonusPerStack 可为负(代价型),容量下限 1 发;容量变化同步到当前弹药,并夹到 [0, 新上限]。
+        // 如果升级的是当前装备武器,立即刷新弹药 UI。
+        // 注:弹夹容量不追踪全局等级,池过滤由每卡 MaxUpgradeCount 独立控制,也不参与武器进化线。
+        public static void ApplyWeaponAmmo(WeaponType type, int bonusPerStack)
         {
             int delta = UpgradeEffect.GetSignedInt(bonusPerStack); // 幅度至少 1,保留符号
 
             WeaponData weaponData = FindWeaponData(type);
             if (weaponData == null)
             {
-                // 池过滤保证武器已拥有,此处为防御性兜底：不记录等级,避免出现无效果的有效等级
                 Debug.LogWarning($"[PlayerUpgradeState] 弹夹强化目标武器 {type} 未拥有,已跳过");
-                return false;
+                return;
             }
-
-            int level = GetWeaponAmmoLevel(type) + 1;
-            weaponAmmoLevels[type] = level;
-            weaponAmmoBonus[type] = GetWeaponAmmoBonus(type) + delta;
 
             // 静态 WeaponData 持久化(切枪时通过 LoadWeaponData 读入,场景切换不销毁)
             int oldMax = weaponData.weaponMaxAmmo;
@@ -259,13 +241,20 @@ namespace ProjectBlood
                     }
                 }
             }
-            return level >= MaxStackCount;
         }
 
         // 被动解锁：不可重复,重复解锁由池过滤保证
         public static void UnlockPassive(PassiveType type)
         {
             unlockedPassives.Add(type);
+        }
+
+        // 记录一张强化卡被选择一次(由 UpgradeManager.ApplyUpgrade 在应用前调用)。
+        // 计数按 UpgradeSO 资产引用独立累加,与属性/武器的全局效果计数互不影响。
+        public static void RecordUpgradeUsage(UpgradeSO upgrade)
+        {
+            if (upgrade == null) return;
+            upgradeUsageCounts[upgrade] = GetUpgradeUsageCount(upgrade) + 1;
         }
 
         // Player 重建时补回累计移速加成(Player.Awake 中调用；Player 不跨场景,静态加成需手动重新应用)
@@ -280,12 +269,10 @@ namespace ProjectBlood
         // 单局重置(Global.ResetLevel 调用)
         public static void Reset()
         {
-            statStacks.Clear();
             weaponDamageLevels.Clear();
-            weaponAmmoLevels.Clear();
-            weaponAmmoBonus.Clear();
             weaponDamageRatios.Clear();
             unlockedPassives.Clear();
+            upgradeUsageCounts.Clear();
             GlobalDamageRatio = 1f;
             switchBuffTimer = 0f;
             singleWeaponRamp = 0f;

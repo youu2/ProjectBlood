@@ -23,11 +23,15 @@ namespace ProjectBlood
         public UpgradeEffect effect = new UpgradeEffect();
 
 #if UNITY_EDITOR
-        // 编辑期配置校验：Inspector 修改时立即提示无效/冲突配置(空配置、0 值、重复子类型等)
+        // 编辑期配置校验：先强制修正可安全兜底的越界值(如 MaxUpgradeCount 被序列化/旧数据写成 0 或负数),
+        // 再提示其余无效/冲突配置(空配置、0 值、重复子类型等)
         private void OnValidate()
         {
+            if (effect == null) return;
+            effect.ClampValid();
+
             var errors = new List<string>();
-            if (effect != null && !effect.Validate(errors))
+            if (!effect.Validate(errors))
             {
                 Debug.LogWarning($"[UpgradeSO] {name} 配置问题：\n- " + string.Join("\n- ", errors), this);
             }
