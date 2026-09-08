@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3ff1d3210bed334f988b4b6e20bb4ea, type: 3}
   m_Name: DmgUpHpDown
   m_EditorClassIdentifier: 
-  upgradeName: "\u751F\u547D\u503C\u4E0A\u9650\u21915"
+  upgradeName: "\u5168\u6B66\u5668\u4F24\u5BB3\u219110%     \u751F\u547D\u503C\u4E0A\u9650\u21935"
   description: 
-  icon: {fileID: 21300000, guid: 8bf5d512cd78c4e44868e2287d5ac265, type: 3}
+  icon: {fileID: 21300000, guid: fe692813db4122b468dc96e70460ed07, type: 3}
   isInPool: 1
   effect:
-    MaxUpgradeCount: 10
+    MaxUpgradeCount: 3
     stats:
     - statType: 0
-      value: 5
-    weaponDamages: []
+      value: -5
+    weaponDamages:
+    - weapons: -1
+      damageBonusPerStack: 0.1
     weaponAmmos: []
     passives: 

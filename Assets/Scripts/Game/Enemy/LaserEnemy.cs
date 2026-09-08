@@ -52,6 +52,14 @@ namespace ProjectBlood
         private int _wallLayer;   // 墙层
         private int _playerLayer;   // 玩家层
 
+        [Header("=== 视线检测设置 ===")]
+        [Tooltip("射线检测间隔时间(秒), 越小越精确但性能开销越大")] public float sightCheckInterval = 0.5f;
+        [Tooltip("遮挡视线的Layer mask(默认0=自动使用Wall层, 只被墙体遮挡, 穿透粒子/掉落物)")] public LayerMask sightBlockingMask = 0;
+
+        // 射线检测缓存(每sightCheckInterval秒刷新一次, 攻击状态期间不刷新)
+        private float sightCheckTimer = 0f;
+        private bool cachedLineOfSight = false;
+
         protected override void Awake()
         {
             base.Awake();
@@ -67,6 +75,35 @@ namespace ProjectBlood
                 currentState = State.Chase;
         }
 
+        protected override void Update()
+        {
+            // 仅在追踪/游走状态启用射线检测, 攻击状态(充能+激光协程)不执行
+            if (currentState == State.Chase || currentState == State.Wander)
+            {
+                sightCheckTimer -= Time.deltaTime;
+                if (sightCheckTimer <= 0f)
+                {
+                    sightCheckTimer = sightCheckInterval;
+                    cachedLineOfSight = PerformLineOfSightCheck();
+                }
+            }
+
+            base.Update();
+        }
+
+        // 返回缓存的视线检测结果(由基类UpdateChase状态切换条件引用)
+        protected override bool HasLineOfSightToPlayer() => cachedLineOfSight;
+
+        /// <summary>从敌人位置到玩家位置进行射线检测, 仅被墙体遮挡</summary>
+        protected virtual bool PerformLineOfSightCheck()
+        {
+            if (player == null) return false;
+            Vector2 origin = transform.position;
+            Vector2 target = player.transform.position;
+            RaycastHit2D hit = Physics2D.Linecast(origin, target, sightBlockingMask);
+            return hit.collider == null; // 没有命中墙体 = 视线无遮挡
+        }
+
         void InitializeComponents()
         {
             if (spriteRenderer == null)
@@ -74,6 +111,10 @@ namespace ProjectBlood
 
             _wallLayer = LayerMask.GetMask("Wall");
             _playerLayer = LayerMask.GetMask("Player");
+
+            // 视线遮挡Layer未配置时自动使用Wall层
+            if (sightBlockingMask == 0)
+                sightBlockingMask = _wallLayer;
 
             CreateLaserLines();
 
@@ -180,6 +221,7 @@ namespace ProjectBlood
                 {
                     HideLaser();
                     currentState = State.Chase;
+                    sightCheckTimer = 0f; // 回到追踪状态后立即重新检测视线
                     yield break;
                 }
 
@@ -245,6 +287,7 @@ namespace ProjectBlood
             foreach (var points in laserPointsList)
                 points.Clear();
             currentState = State.Chase; // 激光敌人攻击距离很远，所以攻击完之后直接进入追击状态，这样就能用追击距离控制交火距离
+            sightCheckTimer = 0f; // 攻击协程结束, 下一帧立即检测视线, 用于决定是否再次进入攻击
         }
 
         void ShowFireFlash()

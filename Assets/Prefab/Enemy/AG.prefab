@@ -219,6 +219,10 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 35355fb181c22c54ba6962ea171bce26, type: 3}
   - {fileID: 8300000, guid: f133518fc7c20d84c9720033c278fdb1, type: 3}
   - {fileID: 8300000, guid: f883bad48e6600a4ebc0310ced707ca0, type: 3}
+  sightCheckInterval: 0.5
+  sightBlockingMask:
+    serializedVersion: 2
+    m_Bits: 1024
 --- !u!58 &4571616546380118342
 CircleCollider2D:
   m_ObjectHideFlags: 0

@@ -146,6 +146,10 @@ MonoBehaviour:
   - {fileID: 21300000, guid: e9f561d7837ba48488559bcb39a19d49, type: 3}
   - {fileID: 21300000, guid: 8003f969da5dc494ba1a16846623bc8d, type: 3}
   framesPerSprite: 3
+  sightCheckInterval: 0.5
+  sightBlockingMask:
+    serializedVersion: 2
+    m_Bits: 1024
 --- !u!58 &380176598445208031
 CircleCollider2D:
   m_ObjectHideFlags: 0

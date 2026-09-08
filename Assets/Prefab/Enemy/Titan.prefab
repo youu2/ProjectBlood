@@ -438,17 +438,17 @@ MonoBehaviour:
   maxHealth: 100
   Damage: 2
   useFlipSprite: 1
+  attackRange: 12
+  chaseRange: 9
+  WanderDuration: 2
+  currentState: 1
   Triangle: {fileID: 8477095676006957355}
   SelfRigidbody2D: {fileID: 476387974063803895}
   enemyBullet: {fileID: 0}
-  speed: 2
-  chaseRange: 9
-  attackRange: 12
-  wanderDuration: 2
-  shootInterval: 2
-  burstInterval: 0.25
-  shotsPerBurst: 3
   totalBurstCount: 2
+  shootInterval: 2
+  shotsPerBurst: 3
+  burstInterval: 0.25
   scatterBulletCount: 15
   scatterAngle: 360
   useRandomScatter: 0
@@ -456,7 +456,10 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 35355fb181c22c54ba6962ea171bce26, type: 3}
   - {fileID: 8300000, guid: f133518fc7c20d84c9720033c278fdb1, type: 3}
   - {fileID: 8300000, guid: f883bad48e6600a4ebc0310ced707ca0, type: 3}
-  currentState: 1
+  sightCheckInterval: 0.5
+  sightBlockingMask:
+    serializedVersion: 2
+    m_Bits: 1024
 --- !u!114 &8936430166404869496
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -77,6 +77,9 @@ namespace ProjectBlood
         // 目标点"到达阈值"：单位格子中心到边缘距离约0.5，取0.4确保进入格子即可通过
         private const float PathNodeArrivalThreshold = 0.4f;
 
+        /// <summary>是否对玩家有直接视线(可被墙体遮挡)。默认true, 子类(如ShootingEnemy)重写以实现射线检测</summary>
+        protected virtual bool HasLineOfSightToPlayer() => true;
+
         protected virtual void UpdateChase(float distanceToPlayer)
         {
             // ===== 每帧动态刷新寻路路径 =====
@@ -114,10 +117,10 @@ namespace ProjectBlood
 
             transform.position += moveDir * moveSpeed * Time.deltaTime;
 
-            if (distanceToPlayer <= chaseRange)
+            if (distanceToPlayer <= chaseRange && HasLineOfSightToPlayer())
             {
-                currentState = State.Wander;
-                StartWander();
+                currentState = State.Fire;
+                StartFire();
             }
         }
 
@@ -159,7 +162,7 @@ namespace ProjectBlood
             {
                 StartFire();
             }
-            if (distanceToPlayer > attackRange)
+            if (distanceToPlayer > attackRange || !HasLineOfSightToPlayer())
             {
                 currentState = State.Chase;
             }

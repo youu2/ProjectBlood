@@ -12,15 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3ff1d3210bed334f988b4b6e20bb4ea, type: 3}
   m_Name: DEDMGUpgrade
   m_EditorClassIdentifier: 
-  upgradeName: "DE\u4F24\u5BB3\u219120%      \u5F39\u5939\u5BB9\u91CF\u21931"
+  upgradeName: "DE\u4F24\u5BB3\u219133%      \u5F39\u5939\u5BB9\u91CF\u21931"
   description: 
   icon: {fileID: 21300000, guid: e871289b0309b8147b2c919bf1b3410e, type: 3}
   isInPool: 1
   effect:
+    MaxUpgradeCount: 3
     stats: []
     weaponDamages:
     - weapons: 1
-      damageBonusPerStack: 0.2
+      damageBonusPerStack: 0.34
     weaponAmmos:
     - weapons: 1
       ammoBonusPerStack: -1
