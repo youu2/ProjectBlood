@@ -205,9 +205,6 @@ namespace ProjectBlood
 
             FindRoom(); // 非战斗房间也要更新周围房间
 
-            // 触发玩家进入房间事件
-            OnPlayerEnteredRoom?.Invoke(this);
-
             if (roomConfig.roomType == RoomType.NormalRoom)
             {
                 if (roomState == RoomState.Init)
@@ -253,6 +250,9 @@ namespace ProjectBlood
             {
                 roomState = RoomState.Idle;
             }
+
+            // 触发玩家进入房间事件（放在房间状态更新之后，保证订阅者拿到最终状态）
+            OnPlayerEnteredRoom?.Invoke(this);
         }
 
         public void AddDoor(Door door)

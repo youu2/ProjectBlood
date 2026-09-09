@@ -10,8 +10,11 @@ namespace ProjectBlood
         protected SpriteRenderer fireFlashRenderer;
         [SerializeField] protected Light2D laserLight1;
         [SerializeField] protected Light2D laserLight2;
-        protected int frameCounter = 0;
-        protected int framesPerSprite = 10;
+
+        // 帧率无关重构：用时间累加替代帧计数
+        // 原 framesPerSprite=10 在 60fps 下周期为 10/60≈0.167s，此处显式表达同一周期
+        public float toggleInterval = 10f / 60f;
+        protected float toggleTimer = 0f;
         protected bool bigger = false;
         public float biggerScale = 0.65f;
         public float smallerScale = 0.55f;
@@ -47,10 +50,12 @@ namespace ProjectBlood
 
         protected void UpdateFireFlash()  // 更新枪口激光点
         {
-            frameCounter++;
-            if (frameCounter >= framesPerSprite)
+            // 帧率无关：用 Time.deltaTime 累加时间，达到 toggleInterval 后切换状态
+            // 这样在 30/60/120 fps 下切换周期均为 toggleInterval 秒，视觉节奏一致
+            toggleTimer += Time.deltaTime;
+            if (toggleTimer >= toggleInterval)
             {
-                frameCounter = 0;
+                toggleTimer -= toggleInterval;
                 bigger = !bigger;
             }
             float scale = bigger ? biggerScale : smallerScale;
