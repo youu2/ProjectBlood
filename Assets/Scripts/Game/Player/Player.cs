@@ -14,23 +14,23 @@ namespace ProjectBlood
         public WeaponBase currentWeapon; // 当前装备的武器
         // private List<WeaponBase> weapons = new List<WeaponBase>(); // 武器列表
 
-        // public BloodBank bloodBank = new BloodBank(); // 血液银行组件，特殊资源，用于弹药管理和血量管理
+        // public BloodBank bloodBank = new BloodBank(); // 血液银行组件,特殊资源,用于弹药管理和血量管理
         private ShieldState shieldState = new ShieldState(); // 护盾状态
-        private Vector2 smoothAimDir; // 平滑过渡后的瞄准方向（单位向量）
+        private Vector2 smoothAimDir; // 平滑过渡后的瞄准方向(单位向量)
         private float firstReloadTime; // 首次按下R键的时间
         private bool isSpecialReloadTriggered; // 是否已经触发了特殊换弹
         private Coroutine specialReloadCoroutine; // 特殊换弹协程
-        private const float specialReloadWindow = 2f; // 双击R的时间窗口（秒）
-        private const float specialReloadDelay = 3f; // 特殊换弹延迟时间（秒）
+        private const float specialReloadWindow = 2f; // 双击R的时间窗口(秒)
+        private const float specialReloadDelay = 3f; // 特殊换弹延迟时间(秒)
         private int specialReloadBloodCost = 20; // 特殊换弹消耗的血库资源
-        private const float aimSmoothSpeed = 20f; // 瞄准平滑速度，值越大过渡越快
-        private const float aimAngle = 35f; // 自动锁敌的角度范围（度）
+        private const float aimSmoothSpeed = 20f; // 瞄准平滑速度,值越大过渡越快
+        private const float aimAngle = 35f; // 自动锁敌的角度范围(度)
         [SerializeField] private float SpecialReloadVolume = 0.7f;
         private bool recorded = false;
         Vector2 lastMoveDir;
 
-        // faceLeft: true=朝左，false=朝右
-        // 当玩家朝左时，翻转整个玩家对象，包括武器，文字提示单独再翻转一次
+        // faceLeft: true=朝左,false=朝右
+        // 当玩家朝左时,翻转整个玩家对象,包括武器,文字提示单独再翻转一次
         private void SetFlipX(bool faceLeft)
         {
             if (SelfPlayerState.GetState() == PlayerState.State.Rolling && !recorded)
@@ -65,21 +65,21 @@ namespace ProjectBlood
 
             if (aimDir.x < 0)
             {
-                // 朝左：武器X轴翻转 + 旋转180度补偿Player镜像的影响
-                // 玩家对象整体翻转导致武器依旧朝右，所以需要水平翻转武器Sprite
+                // 朝左:武器X轴翻转 + 旋转180度补偿Player镜像的影响
+                // 玩家对象整体翻转导致武器依旧朝右,所以需要水平翻转武器Sprite
                 SetFlipX(true);
                 Arm.localScale = new Vector3(-1, -1, 1);
             }
             else
             {
-                // 朝右：武器保持默认朝向
+                // 朝右:武器保持默认朝向
                 Arm.localScale = new Vector3(1, 1, 1);
                 SetFlipX(false);
             }
             Arm.eulerAngles = new Vector3(0, 0, angle);
         }
 
-        // 显示跟随玩家的提示文本（换弹提示，购买提示）
+        // 显示跟随玩家的提示文本(换弹提示,购买提示)
         public static void DisplayText(string text)
         {
             player1.StartCoroutine(player1.ShowText(text, 2.0f));
@@ -99,15 +99,36 @@ namespace ProjectBlood
         }
         private void Awake()
         {
-            // 设置帧率为60，确保游戏和逻辑稳定运行
+            // 设置帧率为60,确保游戏和逻辑稳定运行
             Application.targetFrameRate = 300;
-            // 依次添加武器到武器列表，后续可能会改成根据游戏进度逐步获取，比如从宝箱中获取
+            // 依次添加武器到武器列表,后续可能会改成根据游戏进度逐步获取,比如从宝箱中获取
             player1 = this;
-            PlayerUpgradeState.OnPlayerSpawned(); // 补回累计移速加成（Player 不跨场景，强化加成存在静态状态中）
+            PlayerUpgradeState.OnPlayerSpawned(); // 补回累计移速加成(Player 不跨场景,强化加成存在静态状态中)
             UseWeapon(0); // 默认装备第一把武器
+            // 场景重载后武器实例全部重建,但静态 WeaponData 跨场景存活。
+            // 立即为其余已拥有武器静默补加载数据(含尚未激活、Awake 未执行的隐藏武器),
+            // 恢复“所有已拥有武器 Data 齐备”不变量,供特殊换弹等遍历全部武器的逻辑使用
+            foreach (var weaponData in WeaponDataSystem.weaponDataList)
+            {
+                if (weaponData == null)
+                {
+                    continue;
+                }
+                var weapon = GetWeaponFromName(weaponData.weaponName);
+                if (weapon == null)
+                {
+                    Debug.LogWarning($"场景加载:找不到武器 {weaponData.weaponName} 的实例,跳过其数据加载");
+                    continue;
+                }
+                if (weapon == currentWeapon)
+                {
+                    continue; // 当前武器已由 UseWeapon(0) 加载并刷新过 UI
+                }
+                weapon.LoadWeaponData(weaponData, updateUI: false);
+            }
             NoticeText.Hide();
             specialReloadBloodCost = (WeaponDataSystem.weaponDataList.Count - 1) * 3;   // 根据武器数量动态调整特殊换弹消耗的血库资源
-            // 护盾一直挂载在玩家对象上，初始化护盾状态，捡到道具后才会激活
+            // 护盾一直挂载在玩家对象上,初始化护盾状态,捡到道具后才会激活
             shieldState.Initialize(ShieldSprite, this);
         }
 
@@ -116,7 +137,7 @@ namespace ProjectBlood
             return GetWeapon(WeaponTypeExtensions.FromName(weaponName));
         }
 
-        // 按武器类型枚举获取武器实例（强化系统/武器进化使用）
+        // 按武器类型枚举获取武器实例(强化系统/武器进化使用)
         public WeaponBase GetWeapon(WeaponType type)
         {
             switch (type)
@@ -157,18 +178,18 @@ namespace ProjectBlood
             currentWeapon.Show();
             currentWeapon.LoadWeaponData(weaponData);
             GameUI.UpdateClipText(currentWeapon.GetGunClip());
-            // 立即将新武器对准当前瞄准方向，避免切枪时的一帧延迟
+            // 立即将新武器对准当前瞄准方向,避免切枪时的一帧延迟
             if (smoothAimDir != Vector2.zero)
             {
                 UpdateWeaponAim(smoothAimDir);
             }
 
-            // 播放切换音效（独立播放，不需要等待）
+            // 播放切换音效(独立播放,不需要等待)
             AudioKitManager.Instance.PlayOneShot(WeaponSwitchSound, volume: 0.3f);
             // 更新相机大小
             Global.WeaponAdditionalCameraSize = currentWeapon.AdditionalCameraSize;
 
-            // 强化系统：切枪钩子（重置单武器持续叠加、尝试激活切枪增益被动）
+            // 强化系统:切枪钩子(重置单武器持续叠加、尝试激活切枪增益被动)
             PlayerUpgradeState.OnWeaponSwitched(currentWeapon.WeaponType);
         }
 
@@ -240,7 +261,7 @@ namespace ProjectBlood
 
             // 获取鼠标在屏幕上的位置
             Vector3 mouseScreenPos = Input.mousePosition;
-            // 转成世界坐标，Z 要设成 0（2D 游戏）
+            // 转成世界坐标,Z 要设成 0(2D 游戏)
             mouseScreenPos.z = 0;
             Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
 
@@ -268,7 +289,7 @@ namespace ProjectBlood
                     // 标记是否找到了可瞄准的敌人
                     bool foundTarget = false;
 
-                    // 遍历排序后的敌人，找到第一个没有障碍物的
+                    // 遍历排序后的敌人,找到第一个没有障碍物的
                     foreach (var enemy in sortedEnemies)
                     {
                         // 再次检查敌人是否还存在且没有在死亡过程中
@@ -289,7 +310,7 @@ namespace ProjectBlood
                             continue;
                         }
 
-                        // 使用射线检测，只检测 Wall 层的物体
+                        // 使用射线检测,只检测 Wall 层的物体
                         RaycastHit2D hit = Physics2D.Linecast(playerPos, enemyPos, wallLayer);
 
                         // 如果没有碰到墙壁
@@ -304,7 +325,7 @@ namespace ProjectBlood
                         }
                     }
 
-                    // 如果没有找到可瞄准的敌人，隐藏瞄准标记
+                    // 如果没有找到可瞄准的敌人,隐藏瞄准标记
                     if (!foundTarget)
                     {
                         AimMark.Hide();
@@ -312,25 +333,25 @@ namespace ProjectBlood
                 }
                 else
                 {
-                    // 如果过滤后没有敌人，隐藏瞄准标记（保持瞄准鼠标方向）
+                    // 如果过滤后没有敌人,隐藏瞄准标记(保持瞄准鼠标方向)
                     AimMark.Hide();
                 }
             }
             else
             {
-                // 如果没有敌人，隐藏瞄准标记
+                // 如果没有敌人,隐藏瞄准标记
                 AimMark.Hide();
             }
 
             // 平滑过渡瞄准方向
-            // 使用线性插值使武器旋转更自然，避免方向突变
-            // 速度由aimSmoothSpeed控制插值速度，值越大过渡越快
+            // 使用线性插值使武器旋转更自然,避免方向突变
+            // 速度由aimSmoothSpeed控制插值速度,值越大过渡越快
             smoothAimDir = Vector2.Lerp(smoothAimDir, shootDir, Time.deltaTime * aimSmoothSpeed);
             smoothAimDir.Normalize();
             // 更新武器朝向和角色朝向
             UpdateWeaponAim(smoothAimDir);
 
-            //鼠标左键射击（朝平滑后的瞄准方向）
+            //鼠标左键射击(朝平滑后的瞄准方向)
             if (Input.GetMouseButtonDown(0) && playerBullet != null && !Global.IsGamePaused)
             {
                 if (isSpecialReloadTriggered && specialReloadCoroutine != null)
@@ -372,6 +393,11 @@ namespace ProjectBlood
                 WeaponDataSystem.weaponDataList.Count > 2)
                 {
                     isSpecialReloadTriggered = true;
+                    // 快速连按可能重复触发,先停止上一个等待中的特殊换弹协程,避免重复扣血/补弹
+                    if (specialReloadCoroutine != null)
+                    {
+                        StopCoroutine(specialReloadCoroutine);
+                    }
                     specialReloadCoroutine = StartCoroutine(SpecialReloadCoroutine());
                 }
             }
@@ -412,26 +438,51 @@ namespace ProjectBlood
                 UseWeapon((WeaponDataSystem.weaponDataList.IndexOf(currentWeapon.Data) + 1) % WeaponDataSystem.weaponDataList.Count);
             }
 
-            // 强化系统：被动增益计时（暂停时 deltaTime 为 0，不会误走时）
+            // 强化系统:被动增益计时(暂停时 deltaTime 为 0,不会误走时)
             PlayerUpgradeState.TickPassives(Time.deltaTime);
         }
 
-        // 特殊换弹协程, 双击换弹触发，为所有武器补充弹药并播放音效
+        // 特殊换弹协程, 双击换弹触发,为所有武器补充弹药并播放音效
         private IEnumerator SpecialReloadCoroutine()
         {
             yield return new WaitForSeconds(specialReloadDelay);
+
+            // 3 秒等待期间可能发生关卡切换等销毁流程,等待结束后重新校验关键引用
+            if (currentWeapon == null || BloodBank.Instance == null)
+            {
+                isSpecialReloadTriggered = false;
+                specialReloadCoroutine = null;
+                yield break;
+            }
+
             if (isSpecialReloadTriggered && BloodBank.Instance.CurrentBloodAmount >= specialReloadBloodCost)
             {
                 BloodBank.Instance.RemoveBlood(specialReloadBloodCost);
 
                 foreach (var weaponData in WeaponDataSystem.weaponDataList)
                 {
-                    if (weaponData != currentWeapon.Data)
+                    if (weaponData == null || weaponData == currentWeapon.Data)
                     {
-                        var weapon = GetWeaponFromName(weaponData.weaponName);
-                        weapon.FillClipDirectly();
-                        weapon.SaveWeaponData();
+                        continue;
                     }
+
+                    var weapon = GetWeaponFromName(weaponData.weaponName);
+                    if (weapon == null)
+                    {
+                        // 武器数据存在但场景中找不到对应武器实例(如未在 Inspector 赋值),跳过而不是中断整个补弹流程
+                        Debug.LogWarning($"特殊换弹:找不到武器 {weaponData.weaponName} 的实例,已跳过");
+                        continue;
+                    }
+
+                    // 场景重载后未切换过的武器尚未执行 LoadWeaponData(Data 为空),
+                    // 先补加载,否则 SaveWeaponData 无法持久化,之后切枪时补弹结果也会被旧数据覆盖
+                    if (weapon.Data == null)
+                    {
+                        weapon.LoadWeaponData(weaponData);
+                    }
+
+                    weapon.FillClipDirectly();
+                    weapon.SaveWeaponData();
                 }
 
                 AudioKitManager.Instance.PlayOneShot("SpecialReload", volume: SpecialReloadVolume);

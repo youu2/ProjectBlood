@@ -54,13 +54,13 @@ namespace ProjectBlood
         public virtual void Attack(Vector2 shootDir)
         {
             Vector2 finalDirection = ApplySpread(shootDir);
-            // 计算旋转：根据 shootDir 向量创建对应的 Quaternion 朝向
+            // 计算旋转:根据 shootDir 向量创建对应的 Quaternion 朝向
             Quaternion bulletRotation = Quaternion.FromToRotation(Vector2.right, finalDirection.normalized);
             // var bullet = Instantiate(BulletPrefab, BulletPrefab.transform.position, bulletRotation);  // 挂在枪口位置
             var bullet = PlayerBulletPool.Instance.Get(BulletPrefab);
             bullet.transform.SetPositionAndRotation(BulletSpawnPoint.position, bulletRotation);
             bullet.GetComponent<PlayerBullet>().direction = finalDirection;
-            bullet.GetComponent<PlayerBullet>().weaponType = WeaponType; // 标记子弹来源武器，供强化伤害计算
+            bullet.GetComponent<PlayerBullet>().weaponType = WeaponType; // 标记子弹来源武器,供强化伤害计算
             bullet.SetActive(true);
 
             ApplyLifestealToBullet(bullet.GetComponent<PlayerBullet>()); // 应用吸血功能
@@ -155,7 +155,7 @@ namespace ProjectBlood
             // 根据换弹时血库状态决定当前弹夹是否被强化
             IsBulletEnhanced = BloodBank.Instance != null && BloodBank.Instance.CurrentBloodAmount > 0;
 
-            // 消耗血液（血库为空时也能换弹，只是子弹不会被强化）
+            // 消耗血液(血库为空时也能换弹,只是子弹不会被强化)
             if (IsBulletEnhanced)
             {
                 BloodBank.Instance.RemoveBlood(BloodRequired);
@@ -182,7 +182,7 @@ namespace ProjectBlood
             }
         }
 
-        // 使用QF ActionKit 的方案：
+        // 使用QF ActionKit 的方案:
         private void ShellAnimation2(Vector2 finalDirection)
         {
             DropManager.Instance.Shell.Instantiate()
@@ -256,19 +256,45 @@ namespace ProjectBlood
         public GunClip GetGunClip() => gunClip;
         public WeaponData Data { get; private set; }
 
-        // 强化系统使用的武器类型枚举；Data 加载前（如 Awake 阶段）回退到物体名
+        // 强化系统使用的武器类型枚举；Data 加载前(如 Awake 阶段)回退到物体名
         public WeaponType WeaponType => WeaponTypeExtensions.FromName(Data != null ? Data.weaponName : gameObject.name);
 
-        public void LoadWeaponData(WeaponData weaponData)
+        // updateUI=false 用于场景加载时为未激活的隐藏武器静默灌数据,避免反复刷新共享弹药 HUD
+        public void LoadWeaponData(WeaponData weaponData, bool updateUI = true)
         {
+            if (weaponData == null)
+            {
+                Debug.LogWarning($"{name}: LoadWeaponData 收到空的 WeaponData,已忽略");
+                return;
+            }
             Data = weaponData;
+            // 武器物体可能尚未激活(Awake 未执行),直接创建弹夹；不走 InitGunClip,因其会无条件刷新 UI
+            if (gunClip == null)
+            {
+                gunClip = new GunClip(MaxAmmo);
+            }
             gunClip.currentAmmo = weaponData.weaponCurrentAmmo;
             gunClip.maxAmmo = weaponData.weaponMaxAmmo;
-            gunClip.UpdateClipUI();
+            if (updateUI)
+            {
+                gunClip.UpdateClipUI();
+            }
         }
 
         public void SaveWeaponData()
         {
+            // Data 仅在 UseWeapon→LoadWeaponData(或特殊换弹补加载)后存在；
+            // 场景重载后未切换过的武器 Data 为空,此时没有可持久化的数据,直接跳过
+            if (Data == null)
+            {
+                Debug.LogWarning($"{name}: 尚未加载 WeaponData,跳过 SaveWeaponData");
+                return;
+            }
+            if (gunClip == null)
+            {
+                Debug.LogWarning($"{name}: gunClip 未初始化,跳过 SaveWeaponData");
+                return;
+            }
             Data.weaponCurrentAmmo = gunClip.currentAmmo;
             Data.weaponMaxAmmo = gunClip.maxAmmo;
             gunClip.UpdateClipUI();
