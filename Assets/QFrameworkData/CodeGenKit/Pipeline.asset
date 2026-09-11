@@ -20,23 +20,44 @@ MonoBehaviour:
     NameToFullName: []
     BindInfos:
     - TypeName: UnityEngine.UI.Text
-      PathToRoot: ClipText
-      MemberName: ClipText
+      PathToRoot: ClipText1
+      MemberName: ClipText1
     - TypeName: UnityEngine.UI.Text
-      PathToRoot: BloodText
-      MemberName: BloodText
-    - TypeName: ProjectBlood.UIMap
-      PathToRoot: UIMap
-      MemberName: UIMap
+      PathToRoot: BloodText1
+      MemberName: BloodText1
     - TypeName: TMPro.TextMeshProUGUI
       PathToRoot: LevelText
       MemberName: LevelText
+    - TypeName: TMPro.TextMeshProUGUI
+      PathToRoot: ClipText
+      MemberName: ClipText
+    - TypeName: TMPro.TextMeshProUGUI
+      PathToRoot: BloodText
+      MemberName: BloodText
+    - TypeName: TMPro.TextMeshProUGUI
+      PathToRoot: HPText
+      MemberName: HPText
+    - TypeName: TMPro.TextMeshProUGUI
+      PathToRoot: PlayerLevelText
+      MemberName: PlayerLevelText
+    - TypeName: TMPro.TextMeshProUGUI
+      PathToRoot: ExpText
+      MemberName: ExpText
+    - TypeName: TMPro.TextMeshProUGUI
+      PathToRoot: CoinText
+      MemberName: CoinText
+    - TypeName: ProjectBlood.UIMap
+      PathToRoot: UIMap
+      MemberName: UIMap
     - TypeName: UnityEngine.UI.Image
       PathToRoot: LoadingPage
       MemberName: LoadingPage
     - TypeName: TMPro.TextMeshProUGUI
       PathToRoot: LoadingPage/LoadingText
       MemberName: LoadingText
+    - TypeName: UnityEngine.UI.Image
+      PathToRoot: CoinIcon
+      MemberName: CoinIcon
     - TypeName: UnityEngine.UI.Image
       PathToRoot: SkillIcon
       MemberName: SkillIcon

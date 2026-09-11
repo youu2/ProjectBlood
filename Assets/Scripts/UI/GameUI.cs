@@ -24,6 +24,35 @@ namespace ProjectBlood
             DontDestroyOnLoad(gameObject);
         }
 
+        private void Start()
+        {
+            // bind to Global properties
+            // update UI when properties change
+            Global.currentHP.RegisterWithInitValue(currentHP =>
+            {
+                HPText.text = "HP: " + Mathf.FloorToInt(currentHP) + "/" + Mathf.FloorToInt(Global.INGAME_MAX_HP.Value);
+            }).UnRegisterWhenGameObjectDestroyed(gameObject);
+
+            Global.INGAME_MAX_HP.RegisterWithInitValue(maxHP =>
+            {
+                HPText.text = "HP: " + Mathf.FloorToInt(Global.currentHP.Value) + "/" + Mathf.FloorToInt(maxHP);
+            }).UnRegisterWhenGameObjectDestroyed(gameObject);
+
+            Global.Exp.RegisterWithInitValue(Exp =>
+            {
+                ExpText.text = "Exp: " + Exp + "/" + Global.MAX_EXP;
+            }).UnRegisterWhenGameObjectDestroyed(gameObject);
+
+            Global.Level.RegisterWithInitValue(Level =>
+            {
+                PlayerLevelText.text = "Level: " + Level;
+            }).UnRegisterWhenGameObjectDestroyed(gameObject);
+
+            Global.Coin.RegisterWithInitValue(Coin =>
+            {
+                CoinText.text = Coin.ToString();
+            }).UnRegisterWhenGameObjectDestroyed(gameObject);
+        }
         public static void UpdateClipText(GunClip gunClip)
         {
             if (GUIInstance != null && GUIInstance.ClipText != null)
@@ -156,6 +185,7 @@ namespace ProjectBlood
             GUIInstance.BloodText.Hide();
             GUIInstance.UIMap.Hide();
             GUIInstance.SkillIcon.Hide();
+            GUIInstance.CoinIcon.Hide();
         }
 
         public static void ShowGameUI()
@@ -165,6 +195,7 @@ namespace ProjectBlood
             GUIInstance.BloodText.Show();
             GUIInstance.UIMap.Show();
             GUIInstance.SkillIcon.Show();
+            GUIInstance.CoinIcon.Show();
         }
     }
 }

@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!612988286 &1
+SpriteAtlasAsset:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  serializedVersion: 2
+  m_MasterAtlas: {fileID: 0}
+  m_ImporterData:
+    packables:
+    - {fileID: -8328923581568760697, guid: d736ae2aac942b34db143f7c9a6cfb76, type: 3}
+    - {fileID: 2800000, guid: 0e5b5c8a71d236a45be0c32d04727a11, type: 3}
+    - {fileID: 2800000, guid: 75c3f901ae26d5b46b3832d9e27e57fb, type: 3}
+    - {fileID: 2800000, guid: dd310dfe61ae0ca4a85fba9c4e0fa581, type: 3}
+    - {fileID: 2800000, guid: 129cb502bbd254f47b6e7f83852aa82b, type: 3}
+    - {fileID: 2800000, guid: 9d19fe208aef8594ea3e8b6974d0d89b, type: 3}
+    - {fileID: 2800000, guid: 70c364465c0cfa94bb2e900dc251d86f, type: 3}
+    - {fileID: 2800000, guid: 91b23d27abf9bc84b9540fde450de6c1, type: 3}
+    - {fileID: 2800000, guid: eb503018742722846b79bce8c9faff12, type: 3}
+    - {fileID: 2800000, guid: e9f561d7837ba48488559bcb39a19d49, type: 3}
+    - {fileID: 2800000, guid: 8003f969da5dc494ba1a16846623bc8d, type: 3}
+    - {fileID: 2800000, guid: be64628e74a7a4b45acc20a1ea985d15, type: 3}
+    - {fileID: 2800000, guid: f5282808c7c19954982cc725f6fc164f, type: 3}
+    - {fileID: 2800000, guid: 19df3b14b1e03bf4f8a6312afbb8efbe, type: 3}
+    - {fileID: 2800000, guid: 1a69bc4c1205b724baa189f49a5748c3, type: 3}
+    - {fileID: 2800000, guid: 3c2a2809cd0de1f47bdf5e60c8f7cba9, type: 3}
+    - {fileID: 2800000, guid: 286e655af4d78c44f91ebc320f1f2587, type: 3}
+    - {fileID: 2800000, guid: 876d2a0cd0fbe3844906c2d412ffb753, type: 3}
+    - {fileID: 2800000, guid: 85e29033e4ef8a14493c6cefdb3bfcbb, type: 3}
+    - {fileID: 2800000, guid: e5d38e9908249be4989f8be4be6bee78, type: 3}
+    - {fileID: 2800000, guid: ff5bf280d27c1444e89a6a14c7d4540d, type: 3}
+    - {fileID: 2800000, guid: c496ae429ed828f48b27f40cab7accde, type: 3}
+    - {fileID: 2800000, guid: c6680c65ecf4c044395ebd4b4d675bb1, type: 3}
+  m_IsVariant: 0

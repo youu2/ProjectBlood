@@ -1,13 +1,11 @@
-// Generate Id:adb886fe-52b1-403e-872e-f2e9659acf88
+// Generate Id:f9e8a41c-ffe7-4a7e-8480-1e130ba96c03
 using UnityEngine;
 
 namespace ProjectBlood
 {
-	public partial class UIMap
-	{
-		public RectTransform MapRoot;
-		
-		public ProjectBlood.MapItem MapItem;
-		
-	}
+    public partial class UIMap
+    {
+        public RectTransform MapRoot;
+        public ProjectBlood.MapItem MapItem;
+    }
 }

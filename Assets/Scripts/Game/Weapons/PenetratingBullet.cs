@@ -6,8 +6,18 @@ public class PenetratingBullet : PlayerBullet
     public int maxPenetrationCount = 3; // 最大穿透数量
     private int currentPenetrationCount = 0; // 当前穿透数量
 
+    // 池复用时必须重置穿透计数，否则第二次借出会沿用上一颗子弹的计数
+    protected override void ResetPooledState()
+    {
+        base.ResetPooledState();
+        currentPenetrationCount = 0;
+    }
+
     public override void OnCollisionEnter2D(Collision2D collision)
     {
+        // 同一物理帧的多个碰撞回调可能已在之前的回调中回收本子弹
+        if (isRecycled) return;
+
         if (collision.gameObject.CompareTag("Enemy"))
         {
             // 计算击退方向：从玩家到敌人的方向
@@ -40,12 +50,12 @@ public class PenetratingBullet : PlayerBullet
             currentPenetrationCount++;
             if (currentPenetrationCount >= maxPenetrationCount)
             {
-                Destroy(gameObject);
+                Recycle();
             }
         }
         else
         {
-            Destroy(gameObject);
+            Recycle();
         }
     }
 }

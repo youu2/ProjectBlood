@@ -14,6 +14,24 @@ public class PlayerBullet : MonoBehaviour
     public WeaponType weaponType = WeaponType.DE; // 发射该子弹的武器类型，由武器开火时设置，用于强化伤害计算
     public GameObject BulletPrefab;
 
+    // 回收状态跟踪：同一物理帧内子弹可能同时接触多个碰撞体，
+    // Unity 会把多个 OnCollisionEnter2D 回调排在同一帧派发，
+    // 该标记保证一次借出生命周期内只归还对象池一次
+    protected bool isRecycled;
+
+    /// <summary>
+    /// 每次从池中取出（actionOnGet -> SetActive(true)）时重置运行时状态，
+    /// 子类可重写以追加自己的状态重置
+    /// </summary>
+    protected virtual void ResetPooledState()
+    {
+        isRecycled = false;
+    }
+
+    protected virtual void OnEnable()
+    {
+        ResetPooledState();
+    }
 
     void Update()
     {
@@ -28,6 +46,9 @@ public class PlayerBullet : MonoBehaviour
 
     public virtual void OnCollisionEnter2D(Collision2D collision)
     {
+        // 同一物理帧的多个碰撞回调可能已在之前的回调中回收本子弹
+        if (isRecycled) return;
+
         if (collision.gameObject.CompareTag("Enemy"))
         {
             // 根据子弹是否被强化以及强化系统加成计算伤害（未强化时伤害降低到70%）
@@ -40,14 +61,15 @@ public class PlayerBullet : MonoBehaviour
             var damageable = collision.gameObject.GetComponent<IDamageable>();
             if (damageable == null)
             {
-                Destroy(gameObject);
+                // 无可伤害组件也必须走池回收，直接 Destroy 会破坏池的状态跟踪
+                Recycle();
                 return;
             }
 
             // 防止多弹丸同时命中时重复触发吸血）
             if (damageable.CurrentHealth <= 0f)
             {
-                Destroy(gameObject);
+                Recycle();
                 return;
             }
 
@@ -68,12 +90,31 @@ public class PlayerBullet : MonoBehaviour
                 Global.GeneratePureBlood(collision.gameObject, totalLifesteal);
             }
 
-            // Destroy(gameObject);
+            Recycle();
+        }
+        else
+        {
+            Recycle();
+        }
+    }
+
+    /// <summary>
+    /// 幂等回收：同一子弹在同一物理帧内产生多个碰撞回调时，只有第一次会真正归还对象池。
+    /// 所有销毁路径（命中敌人/撞墙/无可伤害组件）都应经过此方法，禁止再直接 Destroy 池对象。
+    /// </summary>
+    public void Recycle()
+    {
+        if (isRecycled) return;
+        isRecycled = true;
+
+        if (PlayerBulletPool.Instance != null)
+        {
             PlayerBulletPool.Instance.Release(gameObject, BulletPrefab);
         }
         else
         {
-            PlayerBulletPool.Instance.Release(gameObject, BulletPrefab);
+            // 池不存在（如应用退出阶段单例已被销毁）时兜底销毁，避免悬空对象
+            Destroy(gameObject);
         }
     }
 }
