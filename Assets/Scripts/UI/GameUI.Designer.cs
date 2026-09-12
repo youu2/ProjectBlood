@@ -1,37 +1,33 @@
-// Generate Id:755df92c-a170-44be-848f-938b43fc1918
+// Generate Id:8a7cde46-714d-438f-aaa8-ab01d5c45dcb
 using UnityEngine;
 
 namespace ProjectBlood
 {
 	public partial class GameUI
 	{
-		public UnityEngine.UI.Text ClipText1;
-		
-		public UnityEngine.UI.Text BloodText1;
-		
 		public TMPro.TextMeshProUGUI LevelText;
 		
 		public TMPro.TextMeshProUGUI ClipText;
 		
 		public TMPro.TextMeshProUGUI BloodText;
 		
-		public TMPro.TextMeshProUGUI HPText;
-		
-		public TMPro.TextMeshProUGUI PlayerLevelText;
+		public TMPro.TextMeshProUGUI CoinText;
 		
 		public TMPro.TextMeshProUGUI ExpText;
 		
-		public TMPro.TextMeshProUGUI CoinText;
+		public TMPro.TextMeshProUGUI PlayerLevelText;
+		
+		public TMPro.TextMeshProUGUI HPText;
 		
 		public ProjectBlood.UIMap UIMap;
+		
+		public UnityEngine.UI.Image SkillIcon;
 		
 		public UnityEngine.UI.Image LoadingPage;
 		
 		public TMPro.TextMeshProUGUI LoadingText;
 		
 		public UnityEngine.UI.Image CoinIcon;
-		
-		public UnityEngine.UI.Image SkillIcon;
 		
 	}
 }
