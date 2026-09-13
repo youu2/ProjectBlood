@@ -4,6 +4,7 @@ using System.Linq;
 using ProjectBlood;
 using QFramework;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CameraController : MonoBehaviour
 {
@@ -28,16 +29,21 @@ public class CameraController : MonoBehaviour
     [SerializeField] private float mouseOffsetLerpSpeed = 6.0f;
     // 当前实际生效的鼠标偏移（经缓动平滑后）
     private Vector3 currentMouseOffset = Vector3.zero;
+    // 场景重载后，Player 在 MapController.Start 中才被传送到新关出生点，
+    // 标记后在首个能取到 Player 的 LateUpdate 直接吸附，避免从上一关位置长距离缓动
+    private bool pendingSnapToPlayer = false;
 
     void Awake()
     {
         mCamera = GetComponent<Camera>();
         currentBgColor = mCamera.backgroundColor;
+        targetBgColor = currentBgColor;
     }
     void OnEnable()
     {
         // 订阅玩家进入房间事件
         Room.OnPlayerEnteredRoom += OnPlayerEnteredRoom;
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
     void Update()
     {
@@ -57,6 +63,13 @@ public class CameraController : MonoBehaviour
         if (Player.player1 == null)
         {
             return;
+        }
+        // 新场景第一帧（Player 已在 MapController.Start 传送到出生点）直接吸附
+        if (pendingSnapToPlayer)
+        {
+            var spawnPos = Player.player1.transform.position;
+            transform.position = new Vector3(spawnPos.x, spawnPos.y, -10);
+            pendingSnapToPlayer = false;
         }
         // 先更新鼠标动态偏移（双摇杆射击：镜头向鼠标瞄准方向小幅偏移）
         UpdateMouseOffset();
@@ -143,6 +156,19 @@ public class CameraController : MonoBehaviour
         .Lerp(mCamera.orthographicSize, Global.WeaponAdditionalCameraSize + 7);
     }
 
+    // 相机常驻跨场景：新场景加载后复位临时状态，等待首帧吸附到新 Player
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        isShaking = false;
+        intensity = 0;
+        duration = 0;
+        currentMouseOffset = Vector3.zero;
+        currentBgColor = mCamera.backgroundColor;
+        targetBgColor = currentBgColor;
+        transform.rotation = Quaternion.identity;
+        pendingSnapToPlayer = true;
+    }
+
     public void OnPlayerEnteredRoom(Room room)
     {
         if (room.colorIndex == -1)
@@ -154,5 +180,6 @@ public class CameraController : MonoBehaviour
     private void OnDisable()
     {
         Room.OnPlayerEnteredRoom -= OnPlayerEnteredRoom;
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 }

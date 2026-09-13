@@ -42,6 +42,8 @@ namespace ProjectBlood
             AudioKit.PlaySoundMode = AudioKit.PlaySoundModes.IgnoreSameSoundInGlobalFrames;
             ResKit.Init();
             UIKit.Root.SetResolution(1920, 1080, 1.0f);
+            // 相机为跨场景常驻预制体(Assets/Resources/MainCamera.prefab)，场景中不再自带相机
+            EnsurePersistentCamera();
             // 初始化强化系统（订阅武器开火事件，用于单武器持续输出叠加被动）
             PlayerUpgradeState.Initialize();
             // Load from PlayerPrefs
@@ -77,6 +79,25 @@ namespace ProjectBlood
             {
                 PlayerPrefs.SetFloat("INIT_MAX_HP", maxHP);
             });
+        }
+
+        // 实例化跨场景常驻主相机：首个场景加载前创建一次并 DontDestroyOnLoad，
+        // 使 Screen Space - Camera 的 Canvas（GameUI）在场景重载后引用不再失效
+        private static void EnsurePersistentCamera()
+        {
+            if (Camera.main != null)
+            {
+                return;
+            }
+            var cameraPrefab = Resources.Load<GameObject>("MainCamera");
+            if (cameraPrefab == null)
+            {
+                Debug.LogError("Resources/MainCamera 预制体缺失，常驻主相机初始化失败");
+                return;
+            }
+            var cameraObject = UnityEngine.Object.Instantiate(cameraPrefab);
+            cameraObject.name = "Main Camera";
+            UnityEngine.Object.DontDestroyOnLoad(cameraObject);
         }
 
         // level up after getting 5 exp, then increase the required exp by 10%
