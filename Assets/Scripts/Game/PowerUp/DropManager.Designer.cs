@@ -1,4 +1,4 @@
-// Generate Id:3de82adf-a509-48a4-8b8f-74e1ac888910
+// Generate Id:7a13df5b-5f8a-4a49-af3e-831edfe06cb9
 using UnityEngine;
 
 namespace ProjectBlood
@@ -6,6 +6,8 @@ namespace ProjectBlood
 	public partial class DropManager
 	{
 		public ProjectBlood.Coin Coin;
+		
+		public ProjectBlood.MP5Unlock MP5Unlock;
 		
 		public ProjectBlood.AnnihilationCore AnnihilationCore;
 		

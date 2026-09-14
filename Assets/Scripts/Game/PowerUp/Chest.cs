@@ -8,26 +8,43 @@ namespace ProjectBlood
     {
         bool isCollected;
         static int currentWeaponIndex = 0;
+        [SerializeField] private List<DropItem> weaponUnlockList;
         void Start()
         {
             isCollected = false;
         }
 
-        private void OnTriggerEnter2D(Collider2D collider)
+        private void Update()
         {
-            // Check if the collider belongs to the player
-            if (collider.GetComponent<CollectBox>() != null && !isCollected)
+            if (!Tips.gameObject.activeSelf)
+            {
+                return;
+            }
+
+            if (!Input.GetKeyDown(KeyCode.F))
+            {
+                return;
+            }
+
+            if (!isCollected)
             {
                 AudioKitManager.Instance.PlayOneShot("RareLootSFX", volume: 1.0f);
                 SelfSpriteRenderer.enabled = false;  // 禁用未开启状态宝箱的渲染器
                 ChestOpenSprite.Show();
                 isCollected = true;
+                Tips.Hide();
 
-
-                if (currentWeaponIndex < weaponDataList.Count)
+                if (currentWeaponIndex < weaponUnlockList.Count)
                 {
+                    var weaponToGenerate = weaponUnlockList[currentWeaponIndex];
+                    ActionKit.DelayFrame(45, () =>
+                    {
+                        weaponToGenerate.Instantiate()
+                        .Position(this.transform.position + new Vector3(0, 1.3f, 0))  // slight offset for better visibility
+                        .Show();
+                    }).Start(this);
 
-                    WeaponDataSystem.weaponDataList.Add(weaponDataList[currentWeaponIndex]);
+                    // WeaponDataSystem.weaponDataList.Add(weaponDataList[currentWeaponIndex]);
                     Player.player1.UpdateSpecialReloadCost();
                     currentWeaponIndex++;
 
@@ -44,12 +61,26 @@ namespace ProjectBlood
                 }
             }
         }
-        private readonly List<WeaponData> weaponDataList = new(){
-            WeaponConfig.MP5.NewWeapon(),
-            WeaponConfig.ShotGun.NewWeapon(),
-            WeaponConfig.AK.NewWeapon(),
-            WeaponConfig.AWP.NewWeapon(),
-            WeaponConfig.Laser.NewWeapon(),
-        };
+
+        // private readonly List<DropItem> weaponUnlockList = new()
+        // {
+        //     DropManager.Instance.MP5Unlock,
+        // };
+
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            if (other.CompareTag("Player") && !isCollected)
+            {
+                Tips.Show();
+            }
+        }
+
+        private void OnTriggerExit2D(Collider2D other)
+        {
+            if (other.CompareTag("Player"))
+            {
+                Tips.Hide();
+            }
+        }
     }
 }

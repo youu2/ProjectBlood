@@ -1,13 +1,13 @@
-// Generate Id:23aa2573-609d-4f1c-9547-ab7c2c02a4a1
+// Generate Id:a9349d8b-e82f-48e6-9633-1542009998bb
 using UnityEngine;
 
 namespace ProjectBlood
 {
-	public partial class Chest
-	{
-		public SpriteRenderer ChestOpenSprite;
-		
-		public UnityEngine.SpriteRenderer SelfSpriteRenderer;
-		
-	}
+    public partial class Chest
+    {
+        public SpriteRenderer ChestOpenSprite;
+        public TMPro.TextMeshProUGUI Tips;
+        public UnityEngine.SpriteRenderer SelfSpriteRenderer;
+
+    }
 }
