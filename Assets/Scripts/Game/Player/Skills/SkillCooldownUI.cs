@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// 绑定技能图标和冷却遮罩，根据技能管理器更新冷却显示
+/// 绑定技能图标和冷却遮罩,根据技能管理器更新冷却显示
 /// </summary>
 public class SkillCooldownUI : MonoBehaviour
 {
@@ -30,7 +30,7 @@ public class SkillCooldownUI : MonoBehaviour
     private void Start()
     {
         // 查找玩家身上的技能管理器
-        // 如果你的玩家对象名称不同，请相应调整
+        // 如果你的玩家对象名称不同,请相应调整
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)
         {
@@ -38,13 +38,13 @@ public class SkillCooldownUI : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("未找到标签为 Player 的对象，请为玩家设置标签或手动赋值 skillManager");
+            Debug.LogWarning("未找到标签为 Player 的对象,请为玩家设置标签或手动赋值 skillManager");
         }
     }
 
     private void Update()
     {
-        // GameUI 是 DontDestroyOnLoad，场景重载后旧 Player 被销毁，引用失效时需重新查找
+        // GameUI 是 DontDestroyOnLoad,场景重载后旧 Player 被销毁,引用失效时需重新查找
         if (skillManager == null)
         {
             GameObject player = GameObject.FindGameObjectWithTag("Player");
@@ -55,7 +55,7 @@ public class SkillCooldownUI : MonoBehaviour
             if (skillManager == null) return;
         }
 
-        // 获取下一次充能进度（0=刚开始充能，1=已就绪/满充能）
+        // 获取下一次充能进度(0=刚开始充能,1=已就绪/满充能)
         float chargeProgress = skillManager.GetCooldownPercent(skillName);
 
 
