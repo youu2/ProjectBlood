@@ -1,4 +1,4 @@
-// Generate Id:8a7cde46-714d-438f-aaa8-ab01d5c45dcb
+// Generate Id:e7dd1297-3bcd-49d2-aa02-0fd3d43f323b
 using UnityEngine;
 
 namespace ProjectBlood
@@ -28,6 +28,8 @@ namespace ProjectBlood
 		public TMPro.TextMeshProUGUI LoadingText;
 		
 		public UnityEngine.UI.Image CoinIcon;
+		
+		public UnityEngine.UI.Image FaceFrame;
 		
 	}
 }

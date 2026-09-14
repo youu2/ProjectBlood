@@ -250,7 +250,13 @@ namespace ProjectBlood
         void Update()
         {
             float horizontal = Input.GetAxis("Horizontal"); // A/D
-            float vertical = Input.GetAxis("Vertical");     // W/S										
+            float vertical = Input.GetAxis("Vertical");     // W/S
+            // 暂停(加载进入下一关/结算等)期间冻结玩家移动输入
+            if (Global.IsGamePaused)
+            {
+                horizontal = 0f;
+                vertical = 0f;
+            }
             // 设置移动动画状态
             bool isMoving = horizontal != 0 || vertical != 0;
             PlayerAnimator.SetBool("isMoving", isMoving);

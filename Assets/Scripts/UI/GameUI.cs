@@ -193,6 +193,8 @@ namespace ProjectBlood
             GUIInstance.UIMap.Hide();
             GUIInstance.SkillIcon.Hide();
             GUIInstance.CoinIcon.Hide();
+            GUIInstance.FaceFrame.Hide();
+            Player.player1.ShieldSprite.Hide();
         }
 
         public static void ShowGameUI()
@@ -203,6 +205,8 @@ namespace ProjectBlood
             GUIInstance.UIMap.Show();
             GUIInstance.SkillIcon.Show();
             GUIInstance.CoinIcon.Show();
+            GUIInstance.FaceFrame.Show();
+            Player.player1.ShieldSprite.Show();
         }
     }
 }
