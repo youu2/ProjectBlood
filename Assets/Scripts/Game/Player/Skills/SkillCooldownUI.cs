@@ -1,3 +1,4 @@
+using QFramework;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,6 +11,8 @@ public class SkillCooldownUI : MonoBehaviour
     [Header("UI 引用")]
     [Tooltip("冷却遮罩 Image(Fill 类型)")]
     public Image cooldownOverlay;
+    public Image chargeCDOverlay;
+    public Image chargeCircle;
 
     [Tooltip("可选：显示冷却数字的 Text")]
     public TextMeshProUGUI cooldownText;
@@ -55,42 +58,38 @@ public class SkillCooldownUI : MonoBehaviour
         // 获取下一次充能进度（0=刚开始充能，1=已就绪/满充能）
         float chargeProgress = skillManager.GetCooldownPercent(skillName);
 
-        // 更新遮罩填充量：充能中时填充量从1递减到0
-        if (cooldownOverlay != null)
-        {
-            cooldownOverlay.fillAmount = 1f - chargeProgress;
-        }
+
 
         // 更新充能层数与数字
         int currentCharges = skillManager.GetCurrentCharges(skillName);
         int maxCharges = skillManager.GetMaxCharges(skillName);
 
-        if (chargeText != null)
+        // 层数小于1时更新遮罩填充量：充能中时填充量从1递减到0,提示玩家当前无法使用技能
+        if (cooldownOverlay != null && currentCharges < 1)
         {
-            if (maxCharges > 1)
-            {
-                // 多层充能：显示 "当前/最大"
-                chargeText.text = $"{currentCharges}/{maxCharges}";
-            }
-            else
-            {
-                chargeText.text = "";
-                // 单层（等同传统CD）：显示下一次充能剩余秒数；就绪时清空
-
-            }
-            // float remaining = skillManager.GetRemainingCooldown(skillName);
-            // if (remaining > 0f)
-            // {
-            //     cooldownText.text = remaining.ToString("F1");
-            // }
-            // else
-            // {
-            //     cooldownText.text = "";
-            // }
+            cooldownOverlay.fillAmount = 1f - chargeProgress;
         }
+
+
+        if (maxCharges > 1)
+        {
+            // 多层充能：显示 "当前/最大"
+            if (chargeText != null) chargeText.text = $"{currentCharges}";
+            if (chargeCircle != null) chargeCircle.Show();
+            if (chargeCDOverlay != null) chargeCDOverlay.fillAmount = chargeProgress;
+        }
+        else
+        {
+            // 等效无充能层数CD制
+            if (chargeText != null) chargeText.text = "";
+            if (chargeCircle != null) chargeCircle.Hide();
+            if (chargeCDOverlay != null) chargeCDOverlay.Hide();
+        }
+
         if (cooldownText != null)
         {
             float remaining = skillManager.GetRemainingCooldown(skillName);
+            // 有层数时不显示cd
             if (remaining > 0f && currentCharges < 1)
             {
                 cooldownText.text = remaining.ToString("F1");
