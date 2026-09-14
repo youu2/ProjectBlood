@@ -14,6 +14,9 @@ public class SkillCooldownUI : MonoBehaviour
     [Tooltip("可选：显示冷却数字的 Text")]
     public TextMeshProUGUI cooldownText;
 
+    [Tooltip("可选：显示充能层数的 Text")]
+    public TextMeshProUGUI chargeText;
+
     [Header("技能设置")]
     [Tooltip("要显示冷却的技能名称")]
     public string skillName = "翻滚";
@@ -49,20 +52,46 @@ public class SkillCooldownUI : MonoBehaviour
             if (skillManager == null) return;
         }
 
-        // 获取剩余冷却比例（0表示冷却完毕，1表示刚使用）
-        float cooldownPercent = skillManager.GetCooldownPercent(skillName);
+        // 获取下一次充能进度（0=刚开始充能，1=已就绪/满充能）
+        float chargeProgress = skillManager.GetCooldownPercent(skillName);
 
-        // 更新遮罩填充量：冷却中时填充量从1递减到0
+        // 更新遮罩填充量：充能中时填充量从1递减到0
         if (cooldownOverlay != null)
         {
-            cooldownOverlay.fillAmount = 1f - cooldownPercent; // 冷却完成度越高，遮罩越小
+            cooldownOverlay.fillAmount = 1f - chargeProgress;
         }
 
-        // 更新冷却数字（可选）
+        // 更新充能层数与数字
+        int currentCharges = skillManager.GetCurrentCharges(skillName);
+        int maxCharges = skillManager.GetMaxCharges(skillName);
+
+        if (chargeText != null)
+        {
+            if (maxCharges > 1)
+            {
+                // 多层充能：显示 "当前/最大"
+                chargeText.text = $"{currentCharges}/{maxCharges}";
+            }
+            else
+            {
+                chargeText.text = "";
+                // 单层（等同传统CD）：显示下一次充能剩余秒数；就绪时清空
+
+            }
+            // float remaining = skillManager.GetRemainingCooldown(skillName);
+            // if (remaining > 0f)
+            // {
+            //     cooldownText.text = remaining.ToString("F1");
+            // }
+            // else
+            // {
+            //     cooldownText.text = "";
+            // }
+        }
         if (cooldownText != null)
         {
             float remaining = skillManager.GetRemainingCooldown(skillName);
-            if (remaining > 0f)
+            if (remaining > 0f && currentCharges < 1)
             {
                 cooldownText.text = remaining.ToString("F1");
             }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 // 效果执行策略
 public enum EffectExecutionMode
@@ -28,9 +29,18 @@ public class SkillData : ScriptableObject
     [Tooltip("技能类型，用于分类和显示")]
     public SkillType skillType = SkillType.Other;  // 技能类型，用于分类和显示
 
-    [Header("冷却与持续时间")]
-    public float cooldown = 1f;                  // 冷却时间（秒）
-    public float duration = 0.5f;               // 技能总持续时间（0为瞬间），效果可在此时间内运行
+    [Header("充能机制")]
+    [Tooltip("充能间隔时间（秒）。每隔该时长自动获得 1 层充能，持续进行、不受使用影响。")]
+    [FormerlySerializedAs("cooldown")]
+    public float chargeInterval = 1f;
+    [Tooltip("最大充能层数。=1 时行为完全等同于传统单次冷却；>1 时可连续释放多次。")]
+    public int maxCharges = 1;
+    [Tooltip("初始拥有的充能层数（通常等于 maxCharges）。进入新关卡/复活时按此初始化。")]
+    public int initialCharges = 1;
+
+    [Header("持续时间")]
+    [Tooltip("技能总持续时间（0为瞬间），效果可在此时间内运行")]
+    public float duration = 0.5f;
 
     [Header("效果组合")]
     [Tooltip("将你想要的效果资源拖入此列表，它们将按照列表顺序或并行执行。")]

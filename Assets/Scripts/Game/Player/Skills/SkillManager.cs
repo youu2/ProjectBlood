@@ -36,13 +36,10 @@ public class SkillManager : MonoBehaviour
 
     private void Update()
     {
-        // 1. 更新所有技能的冷却
+        // 1. 充能累计：每帧为所有未满层的技能推进充能计时（持续进行，不受使用影响）
         foreach (var skill in skills)
         {
-            if (!skill.IsCooldownReady)
-            {
-                skill.RemainingCooldown -= Time.deltaTime;
-            }
+            skill.TickCharge(Time.deltaTime);
         }
 
         // 2. 更新所有正在运行的技能
@@ -110,24 +107,21 @@ public class SkillManager : MonoBehaviour
     /// </summary>
     private bool TryUseSkill(SkillBase skill)
     {
-        // 检查冷却
+        // 检查充能：至少 1 层充能才能释放
         if (!skill.IsCooldownReady)
         {
-            Debug.Log($"技能 {skill.Data.skillName} 冷却中，剩余 {skill.RemainingCooldown:F1} 秒");
             return false;
         }
 
         // 检查是否已在运行
         if (skill.IsRunning)
         {
-            Debug.Log($"技能 {skill.Data.skillName} 已在运行中");
             return false;
         }
 
         // 检查角色状态
         if (playerState != null && !playerState.CanUseSkill(skill.Data.skillType))
         {
-            Debug.Log($"当前状态不允许使用技能 {skill.Data.skillName}");
             return false;
         }
 
@@ -140,13 +134,9 @@ public class SkillManager : MonoBehaviour
         // 开始技能
         skill.OnSkillStart();
 
-        // 设置冷却
-        skill.RemainingCooldown = skill.Data.cooldown;
+        // 消耗 1 层充能（充能过程持续进行，不重置计时器）
+        skill.ConsumeCharge();
 
-        // 如果技能是瞬时的（持续时间为 0），下一帧就会自行结束
-        // 对于持续技能，OnSkillUpdate 会驱动它直到完成
-
-        Debug.Log($"使用技能：{skill.Data.skillName}");
         return true;
     }
 
@@ -169,28 +159,84 @@ public class SkillManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 获取技能冷却进度（0~1），供 UI 使用
+    /// 获取下一次充能进度（0~1），供 UI 冷却遮罩使用。
+    /// 满充能时返回 1，充能中时返回计时器进度。
     /// </summary>
     public float GetCooldownPercent(string skillName)
     {
         if (skillDict.TryGetValue(skillName, out var skill))
         {
-            if (skill.Data.cooldown <= 0f) return 1f;
-            return Mathf.Clamp01(1f - (skill.RemainingCooldown / skill.Data.cooldown));
+            return skill.NextChargeProgress;
         }
         return 1f;
     }
 
     /// <summary>
-    /// 获取技能剩余冷却时间（秒）
+    /// 获取距离下一次充能的剩余秒数（UI 数字显示用）
     /// </summary>
     public float GetRemainingCooldown(string skillName)
     {
         if (skillDict.TryGetValue(skillName, out var skill))
         {
-            return Mathf.Max(0f, skill.RemainingCooldown);
+            return skill.RemainingTimeToNextCharge;
         }
         return 0f;
+    }
+
+    /// <summary>
+    /// 获取当前充能层数
+    /// </summary>
+    public int GetCurrentCharges(string skillName)
+    {
+        if (skillDict.TryGetValue(skillName, out var skill))
+        {
+            return skill.CurrentCharges;
+        }
+        return 0;
+    }
+
+    /// <summary>
+    /// 获取最大充能层数
+    /// </summary>
+    public int GetMaxCharges(string skillName)
+    {
+        if (skillDict.TryGetValue(skillName, out var skill))
+        {
+            return skill.MaxCharges;
+        }
+        return 1;
+    }
+
+    /// <summary>
+    /// 重置所有技能的充能状态（用于进入下一关、角色死亡/复活、技能参数变更等场景）。
+    /// 充能层数恢复为 SkillData.initialCharges，计时器归零。
+    /// </summary>
+    public void ResetAllCharges()
+    {
+        foreach (var skill in skills)
+        {
+            skill.ResetCharges();
+        }
+    }
+
+    /// <summary>
+    /// 立即为指定技能补充一层充能（上限受 maxCharges 限制）。
+    /// 可用于技能升级、奖励道具等场景。
+    /// </summary>
+    public void AddCharge(string skillName)
+    {
+        if (skillDict.TryGetValue(skillName, out var skill))
+        {
+            if (skill.CurrentCharges < skill.MaxCharges)
+            {
+                // 直接调用 TickCharge 消耗 chargeInterval 秒（若计时未启动）或直接加层
+                // 简化处理：通过设置一个极小的计时器让下一帧 tick 时立即获得充能
+                // 这里采用直接操作：若已满则忽略
+                // 为避免破坏封装，用反射不安全；改为走已有的 public 路径：
+                // 由于 ConsumeCharge 只减不加，这里提供一个内部路径：
+                skill.TickCharge(skill.Data != null ? skill.Data.chargeInterval : 0f);
+            }
+        }
     }
 
     /// <summary>
