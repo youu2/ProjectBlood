@@ -112,6 +112,15 @@ namespace ProjectBlood
                 }
             }
 
+            foreach (var skillCD in effect.skillCooldowns)
+            {
+                if (skillCD.skillNames == null) continue;
+                foreach (var skillName in skillCD.skillNames)
+                {
+                    PlayerUpgradeState.ApplySkillCooldownReduction(skillName, skillCD.cooldownReductionPerStack);
+                }
+            }
+
             foreach (var passive in effect.passives)
             {
                 PlayerUpgradeState.UnlockPassive(passive);

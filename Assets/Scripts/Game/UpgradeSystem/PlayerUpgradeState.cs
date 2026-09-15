@@ -17,6 +17,9 @@ namespace ProjectBlood
         private static readonly Dictionary<WeaponType, int> weaponDamageLevels = new Dictionary<WeaponType, int>();
         // ---- 武器伤害系数(1.0 = 100%,每次强化累加 bonusPerStack)----
         private static readonly Dictionary<WeaponType, float> weaponDamageRatios = new Dictionary<WeaponType, float>();
+        // ---- 技能充能(CD)累计减免比例:按技能名(SkillData.skillName)独立累加 ----
+        // 0.1 = 充能间隔缩短 10%,可为负(-0.1 = 增加 10%);有效间隔 = 基础间隔 × (1 - 减免)
+        private static readonly Dictionary<string, float> skillCooldownReductions = new Dictionary<string, float>();
         // ---- 已解锁的全局被动 ----
         private static readonly HashSet<PassiveType> unlockedPassives = new HashSet<PassiveType>();
         // ---- 每张强化卡(UpgradeSO 资产)的累计被选择次数 ----
@@ -37,6 +40,7 @@ namespace ProjectBlood
         private const int MinBloodBankMax = 1;            // 血库容量下限(Global.ReduceHP 有按容量的除法,必须 >= 1)
         private const float MinWeaponDamageRatio = 0.05f; // 单武器伤害系数下限(5%)
         private const int MinWeaponMaxAmmo = 1;           // 弹夹容量下限(至少 1 发)
+        private const float MinSkillChargeInterval = 0.1f; // 技能充能间隔下限(秒),防止高减免叠加导致除零/瞬发
 
         // 全局伤害倍率(迁移自旧 PlayerUpgrade.DamageRatio,默认 1.0 不影响原有伤害)
         public static float GlobalDamageRatio { get; private set; } = 1f;
@@ -126,6 +130,53 @@ namespace ProjectBlood
         // 已拥有武器以 WeaponDataSystem.weaponDataList(宝箱解锁)为准
         public static bool IsWeaponOwned(WeaponType type)
             => FindWeaponData(type) != null;
+
+        // ---- 技能充能(CD)减免 ----
+
+        // 查找当前玩家身上的 SkillManager(技能随 Player 每场景重建;不存在返回 null)
+        private static SkillManager FindSkillManager()
+        {
+            return Player.player1 != null ? Player.player1.GetComponent<SkillManager>() : null;
+        }
+
+        // 技能是否已在当前玩家的 SkillManager 中加载(技能侧的"已拥有"判断,供池过滤使用)
+        public static bool IsSkillAvailable(string skillName)
+        {
+            if (string.IsNullOrEmpty(skillName)) return false;
+            var skillManager = FindSkillManager();
+            return skillManager != null && skillManager.GetSkillByName(skillName) != null;
+        }
+
+        // 某技能的累计充能减免比例(0.1 = 缩短 10%,可为负;未强化为 0)
+        public static float GetSkillCooldownReduction(string skillName)
+            => !string.IsNullOrEmpty(skillName) && skillCooldownReductions.TryGetValue(skillName, out float v) ? v : 0f;
+
+        // 应用减免后的有效充能间隔 = 基础间隔 × (1 - 累计减免),夹到下限防止叠加至 0 造成除零/瞬发。
+        // SkillBase 的所有充能计时都走此入口,保证减免与负数惩罚(增加冷却)统一生效。
+        public static float GetAdjustedSkillChargeInterval(string skillName, float baseInterval)
+        {
+            return Mathf.Max(MinSkillChargeInterval, baseInterval * (1f - GetSkillCooldownReduction(skillName)));
+        }
+
+        // 应用一次技能 CD 减免(reduction 可为负表示增加冷却):累加比例并按比例缩放进行中的充能倒计时,
+        // 使减免对当前正在充能的层立即生效,避免 UI 进度/等待时间跳变
+        public static void ApplySkillCooldownReduction(string skillName, float reduction)
+        {
+            if (string.IsNullOrEmpty(skillName)) return;
+
+            var skillManager = FindSkillManager();
+            SkillBase skill = skillManager != null ? skillManager.GetSkillByName(skillName) : null;
+            float baseInterval = skill != null && skill.Data != null ? skill.Data.chargeInterval : 1f;
+            float oldInterval = GetAdjustedSkillChargeInterval(skillName, baseInterval);
+
+            skillCooldownReductions[skillName] = GetSkillCooldownReduction(skillName) + reduction;
+
+            float newInterval = GetAdjustedSkillChargeInterval(skillName, baseInterval);
+            if (skill != null && oldInterval > 0f)
+            {
+                skill.ScaleChargeTimer(newInterval / oldInterval, newInterval);
+            }
+        }
 
         // 伤害计算统一入口(PlayerBullet / Laser 命中时调用)：
         // 最终倍率 = 全局倍率 × 该武器独立系数 × 切枪增益 × 单武器持续叠加
@@ -271,6 +322,7 @@ namespace ProjectBlood
         {
             weaponDamageLevels.Clear();
             weaponDamageRatios.Clear();
+            skillCooldownReductions.Clear();
             unlockedPassives.Clear();
             upgradeUsageCounts.Clear();
             GlobalDamageRatio = 1f;

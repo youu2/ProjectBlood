@@ -194,6 +194,12 @@ namespace ProjectBlood
             GUIInstance.SkillIcon.Hide();
             GUIInstance.CoinIcon.Hide();
             GUIInstance.FaceFrame.Hide();
+            GUIInstance.LevelText.Hide();
+            GUIInstance.CoinText.Hide();
+            GUIInstance.ExpText.Hide();
+            GUIInstance.HPText.Hide();
+            GUIInstance.SkillText.Hide();
+            GUIInstance.PlayerLevelText.Hide();
             Player.player1.ShieldSprite.Hide();
         }
 
@@ -206,6 +212,12 @@ namespace ProjectBlood
             GUIInstance.SkillIcon.Show();
             GUIInstance.CoinIcon.Show();
             GUIInstance.FaceFrame.Show();
+            GUIInstance.LevelText.Show();
+            GUIInstance.CoinText.Show();
+            GUIInstance.ExpText.Show();
+            GUIInstance.HPText.Show();
+            GUIInstance.SkillText.Show();
+            GUIInstance.PlayerLevelText.Show();
             Player.player1.ShieldSprite.Show();
         }
     }

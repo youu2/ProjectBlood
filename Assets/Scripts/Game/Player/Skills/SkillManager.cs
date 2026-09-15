@@ -89,7 +89,15 @@ public class SkillManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 根据技能名称尝试使用技能
+    /// 根据名称获取运行时技能实例(强化系统等外部模块使用),不存在返回 null
+    /// </summary>
+    public SkillBase GetSkillByName(string skillName)
+    {
+        return skillDict.TryGetValue(skillName, out var skill) ? skill : null;
+    }
+
+    /// <summary>
+    /// 根据名称尝试使用技能
     /// </summary>
     public bool TryUseSkillByName(string skillName)
     {
@@ -229,12 +237,9 @@ public class SkillManager : MonoBehaviour
         {
             if (skill.CurrentCharges < skill.MaxCharges)
             {
-                // 直接调用 TickCharge 消耗 chargeInterval 秒(若计时未启动)或直接加层
-                // 简化处理：通过设置一个极小的计时器让下一帧 tick 时立即获得充能
-                // 这里采用直接操作：若已满则忽略
-                // 为避免破坏封装,用反射不安全;改为走已有的 public 路径：
-                // 由于 ConsumeCharge 只减不加,这里提供一个内部路径：
-                skill.TickCharge(skill.Data != null ? skill.Data.chargeInterval : 0f);
+                // 直接调用 TickCharge 消耗一个有效充能间隔秒数(与强化减免后的计时口径一致),
+                // 让下一帧 tick 时立即获得一层充能；若已满则忽略
+                skill.TickCharge(skill.EffectiveChargeInterval);
             }
         }
     }

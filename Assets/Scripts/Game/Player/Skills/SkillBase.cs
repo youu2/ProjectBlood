@@ -1,4 +1,5 @@
 using System.Collections;
+using ProjectBlood;
 using UnityEngine;
 
 /// <summary>
@@ -17,6 +18,13 @@ public abstract class SkillBase
     // 最大层数(从 data 读取,但缓存运行时以便升级时重新夹取)
     public int MaxCharges => data != null ? Mathf.Max(1, data.maxCharges) : 1;
 
+    // 应用强化系统充能减免/惩罚后的实际充能间隔(秒)。
+    // 所有充能计时统一走此属性:0.1 减免 => 基础间隔 × 0.9;负数减免 => 间隔变长。
+    public float EffectiveChargeInterval
+        => data != null
+            ? ProjectBlood.PlayerUpgradeState.GetAdjustedSkillChargeInterval(data.skillName, data.chargeInterval)
+            : 1f;
+
     // 可使用判定：有至少 1 层充能即可释放
     public bool IsCooldownReady => CurrentCharges > 0;
 
@@ -25,9 +33,10 @@ public abstract class SkillBase
     {
         get
         {
-            if (data == null || data.chargeInterval <= 0f) return 1f;
+            float interval = EffectiveChargeInterval;
+            if (data == null || interval <= 0f) return 1f;
             if (CurrentCharges >= MaxCharges) return 1f; // 已满充能,进度显示为满
-            return Mathf.Clamp01(1f - chargeTimer / data.chargeInterval);
+            return Mathf.Clamp01(1f - chargeTimer / interval);
         }
     }
 
@@ -93,7 +102,7 @@ public abstract class SkillBase
         // 若计时器还没启动(此前是满充能),则启动一次充能计时
         if (chargeTimer <= 0f && CurrentCharges < MaxCharges)
         {
-            chargeTimer = data != null ? data.chargeInterval : 1f;
+            chargeTimer = EffectiveChargeInterval;
         }
         return true;
     }
@@ -119,16 +128,31 @@ public abstract class SkillBase
         }
 
         chargeTimer -= deltaTime;
+        float interval = EffectiveChargeInterval;
         // 支持一次 deltaTime 跨多段充能间隔(例如卡顿后补回)
         while (chargeTimer <= 0f && CurrentCharges < MaxCharges)
         {
             CurrentCharges++;
-            if (data.chargeInterval > 0f)
-                chargeTimer += data.chargeInterval;
+            if (interval > 0f)
+                chargeTimer += interval;
             else
                 chargeTimer = 0f;
         }
         if (CurrentCharges >= MaxCharges) chargeTimer = 0f;
+    }
+
+    /// <summary>
+    /// 按比例缩放当前充能倒计时。由强化系统在充能间隔减免/惩罚生效时调用,
+    /// 使进行中的充能层立即按新间隔重新估算剩余时间,避免 UI 进度或等待时长跳变。
+    /// </summary>
+    /// <param name="ratio">新间隔 / 旧间隔(缩小=加快充能)</param>
+    /// <param name="maxInterval">新的有效间隔,作为缩放后上限</param>
+    public void ScaleChargeTimer(float ratio, float maxInterval)
+    {
+        if (CurrentCharges < MaxCharges && chargeTimer > 0f)
+        {
+            chargeTimer = Mathf.Clamp(chargeTimer * ratio, 0f, Mathf.Max(0f, maxInterval));
+        }
     }
 
     /// <summary>
@@ -141,7 +165,7 @@ public abstract class SkillBase
         // 播放开始音效(如果有)
         if (data != null && data.startSFX != null)
         {
-            AudioSource.PlayClipAtPoint(data.startSFX, ownerTransform.position);
+            AudioKitManager.Instance.PlayOneShot(data.startSFX, data.startSfxVolume);
         }
     }
 
@@ -160,7 +184,7 @@ public abstract class SkillBase
         // 播放结束音效(如果有)
         if (data != null && data.endSFX != null)
         {
-            AudioSource.PlayClipAtPoint(data.endSFX, ownerTransform.position);
+            AudioKitManager.Instance.PlayOneShot(data.endSFX, data.endSfxVolume);
         }
     }
 

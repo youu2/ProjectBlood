@@ -49,8 +49,22 @@ namespace ProjectBlood
         public int ammoBonusPerStack = 2;
     }
 
+    // 单条技能充能(CD)减免效果。
+    // 技能系统是数据驱动的(SkillData 资产),身份标识为 SkillData.skillName 字符串而非固定枚举,
+    // 因此多目标通过 skillNames 列表配置:填入与 SkillData.skillName 完全一致的名字即可勾选多个技能。
+    // cooldownReductionPerStack 为每次选择的充能间隔减免比例,0.1 = 充能时间缩短 10%;
+    // 允许负数,-0.1 = 充能时间增加 10%(代价型)。有效间隔 = 基础间隔 × (1 - 累计减免)。
+    [Serializable]
+    public class SkillCooldownEffect
+    {
+        [Tooltip("目标技能名(与 SkillData.skillName 完全一致,如\"翻滚\";可添加多个实现多目标)")]
+        public List<string> skillNames = new List<string> { "翻滚" };
+        [Tooltip("每次选择的充能时间减免比例,可为负(0.1 = 缩短 10%,-0.1 = 增加 10%)")]
+        public float cooldownReductionPerStack = 0.1f;
+    }
+
     // 组合强化效果：一个 UpgradeSO 内可同时配置多条不同大类、多个子类型的效果,
-    // 数值可正可负；应用时按 stats -> weaponDamages -> weaponAmmos -> passives 顺序逐条生效。
+    // 数值可正可负；应用时按 stats -> weaponDamages -> weaponAmmos -> skillCooldowns -> passives 顺序逐条生效。
     // 可用性判定为"全部条目都可用才可抽取"(全有或全无),避免出现半生效的组合强化。
     [Serializable]
     public class UpgradeEffect
@@ -75,19 +89,24 @@ namespace ProjectBlood
         [Tooltip("武器弹夹容量升级(可多条,同一武器不可在多条中重复出现)")]
         public List<WeaponAmmoEffect> weaponAmmos = new List<WeaponAmmoEffect>();
 
+        [Tooltip("技能充能(CD)减免(可多条,同一技能不可在多条中重复出现;数值可负表示增加冷却)")]
+        public List<SkillCooldownEffect> skillCooldowns = new List<SkillCooldownEffect>();
+
         [Tooltip("解锁的全局被动(同一被动不可重复)(后续可能放进宝箱)")]
         public List<PassiveType> passives = new List<PassiveType>();
 
         // 是否一条效果都没配置(无效配置)
         public bool IsEmpty
-            => stats.Count == 0 && weaponDamages.Count == 0 && weaponAmmos.Count == 0 && passives.Count == 0;
+            => stats.Count == 0 && weaponDamages.Count == 0 && weaponAmmos.Count == 0
+            && skillCooldowns.Count == 0 && passives.Count == 0;
 
         // 条目级可用性(与卡牌身份无关):所有条目均满足才返回 true
-        // BaseStat      -> 无运行时限制(属性总能被改,选择次数上限由 UpgradeManager 按 MaxUpgradeCount 控制)
-        // WeaponDamage  -> 掩码中每把武器均已拥有
-        // WeaponAmmo    -> 掩码中每把武器均已拥有
-        // Passive       -> 该被动尚未解锁
-        // 注:各属性/武器的全局累计次数不在此判断;每张卡"能被选几次"由 UpgradeManager 查
+        // BaseStat       -> 无运行时限制(属性总能被改,选择次数上限由 UpgradeManager 按 MaxUpgradeCount 控制)
+        // WeaponDamage   -> 掩码中每把武器均已拥有
+        // WeaponAmmo     -> 掩码中每把武器均已拥有
+        // SkillCooldown  -> 列表中每个技能均已在当前玩家的 SkillManager 中加载
+        // Passive        -> 该被动尚未解锁
+        // 注:各属性/武器/技能的全局累计次数不在此判断;每张卡"能被选几次"由 UpgradeManager 查
         //     PlayerUpgradeState.GetUpgradeUsageCount(本卡) 与 MaxUpgradeCount 比较得出,故多张卡互不影响。
         public bool IsAvailable()
         {
@@ -103,6 +122,14 @@ namespace ProjectBlood
                 foreach (var weaponType in ammo.weapons.ToWeaponTypes())
                 {
                     if (!PlayerUpgradeState.IsWeaponOwned(weaponType)) return false;
+                }
+            }
+            foreach (var skillCD in skillCooldowns)
+            {
+                if (skillCD.skillNames == null) return false;
+                foreach (var skillName in skillCD.skillNames)
+                {
+                    if (!PlayerUpgradeState.IsSkillAvailable(skillName)) return false;
                 }
             }
             foreach (var passive in passives)
@@ -145,6 +172,29 @@ namespace ProjectBlood
                 foreach (var weaponType in ammo.weapons.ToWeaponTypes())
                 {
                     if (!ammoWeapons.Add(weaponType)) errors.Add($"武器 {weaponType} 在多条弹夹条目中重复");
+                }
+            }
+
+            var skillNamesSeen = new HashSet<string>();
+            foreach (var skillCD in skillCooldowns)
+            {
+                if (skillCD.skillNames == null || skillCD.skillNames.Count == 0)
+                {
+                    errors.Add("技能冷却条目未选择任何技能");
+                    continue;
+                }
+                if (Mathf.Approximately(skillCD.cooldownReductionPerStack, 0f))
+                    errors.Add("技能冷却条目数值为 0(无效果)");
+                foreach (var skillName in skillCD.skillNames)
+                {
+                    if (string.IsNullOrWhiteSpace(skillName))
+                    {
+                        errors.Add("技能冷却条目存在空技能名");
+                    }
+                    else if (!skillNamesSeen.Add(skillName))
+                    {
+                        errors.Add($"技能 {skillName} 在多条冷却条目中重复");
+                    }
                 }
             }
 

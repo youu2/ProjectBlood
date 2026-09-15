@@ -53,4 +53,6 @@ public class SkillData : ScriptableObject
     public AudioClip startSFX;                  // 开始音效(可选)
     [Tooltip("结束音效(可选)技能持续时间结束后或被中断时播放")]
     public AudioClip endSFX;                    // 结束音效(可选)
+    public float startSfxVolume = 1.0f;
+    public float endSfxVolume = 1.0f;
 }
