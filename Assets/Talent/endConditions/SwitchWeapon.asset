@@ -9,12 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: de205604085bb8f4d9d87fe7812986c6, type: 3}
-  m_Name: Outcome_FixedDmgeMultiplier
+  m_Script: {fileID: 11500000, guid: 189594751a35a694dbf8af78f990ee04, type: 3}
+  m_Name: SwitchWeapon
   m_EditorClassIdentifier: 
-  outcomeKey: 
-  stackMode: 0
-  amount: 0.3
-  perFireAdd: 0.02
-  cap: 0.3
-  targetWeapons: -1
+  endConditionType: 2
+  duration: 1
