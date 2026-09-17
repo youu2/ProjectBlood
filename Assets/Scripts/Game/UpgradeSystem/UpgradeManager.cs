@@ -120,11 +120,6 @@ namespace ProjectBlood
                     PlayerUpgradeState.ApplySkillCooldownReduction(skillName, skillCD.cooldownReductionPerStack);
                 }
             }
-
-            foreach (var passive in effect.passives)
-            {
-                PlayerUpgradeState.UnlockPassive(passive);
-            }
         }
 
         // 查找目标武器上是否实现了 IWeaponEvolution,有则触发进化

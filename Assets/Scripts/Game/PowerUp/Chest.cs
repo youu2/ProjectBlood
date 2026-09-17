@@ -51,12 +51,27 @@ namespace ProjectBlood
                 }
                 else
                 {
-                    // 延迟 45 帧后生成战利品
+                    // 延迟 45 帧后生成战利品：优先掉落随机血印，池空时回落为 DirtyBlood
                     ActionKit.DelayFrame(45, () =>
                     {
-                        DropManager.Instance.DirtyBlood.Instantiate()
-                        .Position(this.transform.position + new Vector3(0, 1.3f, 0))  // slight offset for better visibility
-                        .Show();
+                        var spawnPos = this.transform.position + new Vector3(0, 1.3f, 0);
+                        BloodSigilSO sigil = BloodSigilManager.Instance != null
+                            ? BloodSigilManager.Instance.GetRandomSigil()
+                            : null;
+
+                        if (sigil != null && DropManager.Instance.BloodSigilDrop != null)
+                        {
+                            var drop = DropManager.Instance.BloodSigilDrop.Instantiate()
+                                .Position(spawnPos);
+                            drop.Initialize(sigil);
+                            drop.Show();
+                        }
+                        else
+                        {
+                            DropManager.Instance.DirtyBlood.Instantiate()
+                            .Position(spawnPos)  // slight offset for better visibility
+                            .Show();
+                        }
                     }).Start(this);
                 }
             }

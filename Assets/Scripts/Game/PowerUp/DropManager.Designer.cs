@@ -1,4 +1,4 @@
-// Generate Id:7a13df5b-5f8a-4a49-af3e-831edfe06cb9
+// Generate Id:fd43f46d-1822-4703-9bdf-b3180d2fad91
 using UnityEngine;
 
 namespace ProjectBlood
@@ -8,6 +8,14 @@ namespace ProjectBlood
 		public ProjectBlood.Coin Coin;
 		
 		public ProjectBlood.MP5Unlock MP5Unlock;
+		
+		public CircleCollider2D ShotGunUnlock;
+		
+		public CircleCollider2D AKUnlock;
+		
+		public CircleCollider2D AWPUnlock;
+		
+		public CircleCollider2D LaserUnlock;
 		
 		public ProjectBlood.AnnihilationCore AnnihilationCore;
 		
@@ -20,6 +28,8 @@ namespace ProjectBlood
 		public ProjectBlood.PureBlood PureBlood;
 		
 		public Rigidbody2D Shell;
+		
+		public ProjectBlood.BloodSigilDrop BloodSigilDrop;
 		
 	}
 }

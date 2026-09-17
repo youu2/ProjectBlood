@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,6 +7,9 @@ using UnityEngine;
 /// </summary>
 public class SkillManager : MonoBehaviour
 {
+    // 技能施放成功事件（供血印系统等外部模块订阅），参数为 SkillData.skillName
+    public static event Action<string> OnSkillCasted;
+
     [Header("技能配置")]
     [Tooltip("将你创建好的技能数据资源拖入此列表,运行时将自动生成对应的技能实例")]
     [SerializeField] private List<SkillData> skillDataList = new List<SkillData>();
@@ -144,6 +148,9 @@ public class SkillManager : MonoBehaviour
 
         // 消耗 1 层充能(充能过程持续进行,不重置计时器)
         skill.ConsumeCharge();
+
+        // 通知血印系统等外部模块：技能已成功施放
+        if (skill.Data != null) OnSkillCasted?.Invoke(skill.Data.skillName);
 
         return true;
     }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace ProjectBlood
@@ -11,13 +10,6 @@ namespace ProjectBlood
         MaxHP,              // 最大生命值
         MoveSpeed,          // 移动速度
         BloodBankCapacity,  // 血库容量上限
-    }
-
-    // 全局被动类型
-    public enum PassiveType
-    {
-        SwitchWeaponBuff,   // 切换武器后短暂强化全武器伤害
-        SingleWeaponRamp,   // 单武器持续输出时逐步增加伤害(上限30%,切枪重置)
     }
 
     // 单条基础属性效果,value 可为负(代价型强化)
@@ -64,8 +56,9 @@ namespace ProjectBlood
     }
 
     // 组合强化效果：一个 UpgradeSO 内可同时配置多条不同大类、多个子类型的效果,
-    // 数值可正可负；应用时按 stats -> weaponDamages -> weaponAmmos -> skillCooldowns -> passives 顺序逐条生效。
+    // 数值可正可负；应用时按 stats -> weaponDamages -> weaponAmmos -> skillCooldowns 顺序逐条生效。
     // 可用性判定为"全部条目都可用才可抽取"(全有或全无),避免出现半生效的组合强化。
+    // 被动增伤类效果已迁移至血印系统(BloodSigil)，不再在此配置。
     [Serializable]
     public class UpgradeEffect
     {
@@ -92,20 +85,16 @@ namespace ProjectBlood
         [Tooltip("技能充能(CD)减免(可多条,同一技能不可在多条中重复出现;数值可负表示增加冷却)")]
         public List<SkillCooldownEffect> skillCooldowns = new List<SkillCooldownEffect>();
 
-        [Tooltip("解锁的全局被动(同一被动不可重复)(后续可能放进宝箱)")]
-        public List<PassiveType> passives = new List<PassiveType>();
-
         // 是否一条效果都没配置(无效配置)
         public bool IsEmpty
             => stats.Count == 0 && weaponDamages.Count == 0 && weaponAmmos.Count == 0
-            && skillCooldowns.Count == 0 && passives.Count == 0;
+            && skillCooldowns.Count == 0;
 
         // 条目级可用性(与卡牌身份无关):所有条目均满足才返回 true
         // BaseStat       -> 无运行时限制(属性总能被改,选择次数上限由 UpgradeManager 按 MaxUpgradeCount 控制)
         // WeaponDamage   -> 掩码中每把武器均已拥有
         // WeaponAmmo     -> 掩码中每把武器均已拥有
         // SkillCooldown  -> 列表中每个技能均已在当前玩家的 SkillManager 中加载
-        // Passive        -> 该被动尚未解锁
         // 注:各属性/武器/技能的全局累计次数不在此判断;每张卡"能被选几次"由 UpgradeManager 查
         //     PlayerUpgradeState.GetUpgradeUsageCount(本卡) 与 MaxUpgradeCount 比较得出,故多张卡互不影响。
         public bool IsAvailable()
@@ -131,10 +120,6 @@ namespace ProjectBlood
                 {
                     if (!PlayerUpgradeState.IsSkillAvailable(skillName)) return false;
                 }
-            }
-            foreach (var passive in passives)
-            {
-                if (PlayerUpgradeState.IsPassiveUnlocked(passive)) return false;
             }
             return true;
         }
@@ -198,7 +183,6 @@ namespace ProjectBlood
                 }
             }
 
-            if (passives.Count != passives.Distinct().Count()) errors.Add("同一被动重复配置");
             return errors.Count == 0;
         }
 

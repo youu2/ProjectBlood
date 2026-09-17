@@ -233,6 +233,8 @@ namespace ProjectBlood
         protected virtual void Death(Vector2 HitDir)
         {
             AudioKitManager.Instance.PlayOneShot("KillSFX", volume: 0.6f);
+            // 血印系统：击杀单位事件（敌人伤害均来自玩家武器）
+            BloodSigilState.NotifyUnitKilled();
             Global.GenerateDrops(this.gameObject);
             if (Room != null)
             {

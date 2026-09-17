@@ -46,6 +46,8 @@ namespace ProjectBlood
             EnsurePersistentCamera();
             // 初始化强化系统（订阅武器开火事件，用于单武器持续输出叠加被动）
             PlayerUpgradeState.Initialize();
+            // 初始化血印系统（订阅武器开火事件等游戏事件）
+            BloodSigilState.Initialize();
             // Load from PlayerPrefs
             Global.LegacyPoint.Value = PlayerPrefs.GetInt("LegacyPoint", 0);
             Global.CoinDropRate.Value = PlayerPrefs.GetFloat("CoinDropRate", 0.30f);
@@ -138,6 +140,7 @@ namespace ProjectBlood
         public static void ResetLevel()
         {
             PlayerUpgradeState.Reset();
+            BloodSigilState.Reset();
             INGAME_MAX_HP.Value = INIT_MAX_HP.Value; // 最大生命值随强化系统重置（旧 PlayerUpgrade.ResetUpgrade 的职责）
             currentHP.Value = INGAME_MAX_HP.Value;
             Level.Value = 1;

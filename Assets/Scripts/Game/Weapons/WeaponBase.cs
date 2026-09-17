@@ -8,6 +8,8 @@ namespace ProjectBlood
     public abstract class WeaponBase : MonoBehaviour
     {
         public static event System.Action<WeaponBase> OnWeaponFired;
+        // 换弹实际开始（CanReload 通过、协程启动）时触发，供血印系统作为结束条件事件
+        public static event System.Action<WeaponBase> OnWeaponReloadStarted;
         private Coroutine _reloadCoroutine;   // 原先的设计放在GunClip,这会依赖MonoBehaviour,违反单一职责原则
         [SerializeField] protected int MaxAmmo = 10;
         protected GunClip gunClip;
@@ -130,6 +132,7 @@ namespace ProjectBlood
                     StopCoroutine(_reloadCoroutine);
                 }
 
+                OnWeaponReloadStarted?.Invoke(this);
                 _reloadCoroutine = StartCoroutine(ReloadCoroutine());
             }
         }

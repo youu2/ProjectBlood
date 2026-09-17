@@ -189,8 +189,9 @@ namespace ProjectBlood
             // 更新相机大小
             Global.WeaponAdditionalCameraSize = currentWeapon.AdditionalCameraSize;
 
-            // 强化系统:切枪钩子(重置单武器持续叠加、尝试激活切枪增益被动)
-            PlayerUpgradeState.OnWeaponSwitched(currentWeapon.WeaponType);
+            // 强化系统:切枪钩子(武器进化等)(被动增伤已迁移至血印系统)
+            // 血印系统:切枪钩子(限时增伤/连射重置等效果)
+            BloodSigilState.NotifyWeaponSwitched(currentWeapon.WeaponType);
         }
 
         void Start()
@@ -218,11 +219,29 @@ namespace ProjectBlood
                 return;
             }
 
+            // 血印：优先消耗"免疫下一次伤害"充能（由伤害免疫类结算效果预先充入）
+            if (BloodSigilState.ConsumeNextDamageImmunity())
+            {
+                // 本次伤害完全免疫：不扣血、不死亡
+                return;
+            }
+
+            // 血印致命拦截：若本次伤害将导致死亡，询问血印模块是否处理
+            // （触发模块的结算如"免疫本次伤害 + 获得护盾"在 Fire 中立即生效）
+            if (Global.currentHP.Value - damage <= 0f
+                && BloodSigilState.TryHandleLethalDamage(damage))
+            {
+                return;
+            }
+
             FxManager.PlayPlayerHurtFX(transform.Position2D());
             FxManager.DrawPlayerBlood(transform.Position2D());
             Global.currentHP.Value -= damage;
             BloodBank.Instance.AddBlood((int)Mathf.Round(damage));
             if (Global.currentHP.Value < 0) Global.currentHP.Value = 0;
+
+            // 血印：实际受伤事件（在扣血后通知，供受伤触发类模块结算）
+            BloodSigilState.NotifyDamageTaken(damage);
 
             if (Global.currentHP.Value > 0)
             {
@@ -444,8 +463,8 @@ namespace ProjectBlood
                 UseWeapon((WeaponDataSystem.weaponDataList.IndexOf(currentWeapon.Data) + 1) % WeaponDataSystem.weaponDataList.Count);
             }
 
-            // 强化系统:被动增益计时(暂停时 deltaTime 为 0,不会误走时)
-            PlayerUpgradeState.TickPassives(Time.deltaTime);
+            // 血印系统:每帧驱动限时效果计时（被动计时已迁移至血印系统）
+            BloodSigilState.Tick(Time.deltaTime);
         }
 
         // 特殊换弹协程, 双击换弹触发,为所有武器补充弹药并播放音效

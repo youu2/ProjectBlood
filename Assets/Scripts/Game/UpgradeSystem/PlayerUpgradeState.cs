@@ -4,8 +4,9 @@ using UnityEngine;
 namespace ProjectBlood
 {
     // 玩家强化状态(静态,与旧 PlayerUpgrade 的访问方式保持一致)。
-    // 职责：记录基础属性叠加次数、各武器等级与伤害系数、已拥有武器、已解锁被动；
+    // 职责：记录基础属性叠加次数、各武器等级与伤害系数、已拥有武器；
     //       所有强化效果的应用(Apply*)与伤害计算查询(GetFinalDamageRatio)都统一走这里。
+    // 被动增伤（切枪增益、连射递增等）已迁移至血印系统 BloodSigilState。
     // 生命周期：单局有效,Global.ResetLevel() 时调用 Reset() 清空。
     public static class PlayerUpgradeState
     {
@@ -20,8 +21,6 @@ namespace ProjectBlood
         // ---- 技能充能(CD)累计减免比例:按技能名(SkillData.skillName)独立累加 ----
         // 0.1 = 充能间隔缩短 10%,可为负(-0.1 = 增加 10%);有效间隔 = 基础间隔 × (1 - 减免)
         private static readonly Dictionary<string, float> skillCooldownReductions = new Dictionary<string, float>();
-        // ---- 已解锁的全局被动 ----
-        private static readonly HashSet<PassiveType> unlockedPassives = new HashSet<PassiveType>();
         // ---- 每张强化卡(UpgradeSO 资产)的累计被选择次数 ----
         // 按卡牌维度独立计数:MaxUpgradeCount 限制的是"这张卡能被选几次",
         // 多张影响同一属性/武器的卡互不影响(例如两张 MaxUpgradeCount=5 的生命卡,生命值最多可被改 10 次)
@@ -45,58 +44,12 @@ namespace ProjectBlood
         // 全局伤害倍率(迁移自旧 PlayerUpgrade.DamageRatio,默认 1.0 不影响原有伤害)
         public static float GlobalDamageRatio { get; private set; } = 1f;
 
-        // ============ 被动运行时状态(数值为占位默认值,后续平衡阶段调整)============
-
-        // 切枪增益：切换武器后短时间内全武器伤害提升
-        private const float SwitchBuffDuration = 3f;       // TODO: 切枪增益持续时间(秒)
-        private const float SwitchBuffMultiplier = 1.5f;   // TODO: 切枪增益伤害倍率
-        private static float switchBuffTimer;
-
-        // 单武器持续输出叠加：连续使用同一把武器射击时伤害逐步提升,上限 30%,切枪重置
-        private const float RampPerShot = 0.02f;           // TODO: 每开一枪增加的伤害比例
-        private const float RampMax = 0.30f;               // 上限 30%
-        private static float singleWeaponRamp;
-        private static WeaponType currentWeaponType = WeaponType.None;
-
         private static bool initialized;
 
         // 订阅武器开火事件(由 Global.Initialize 在启动时调用一次)
         public static void Initialize()
         {
-            if (initialized) return;
             initialized = true;
-            WeaponBase.OnWeaponFired += OnWeaponFired;
-        }
-
-        // 武器开火回调：单武器持续输出叠加的累加入口
-        private static void OnWeaponFired(WeaponBase weapon)
-        {
-            if (IsPassiveUnlocked(PassiveType.SingleWeaponRamp)
-                && Player.player1 != null
-                && weapon == Player.player1.currentWeapon)
-            {
-                singleWeaponRamp = Mathf.Min(RampMax, singleWeaponRamp + RampPerShot);
-            }
-        }
-
-        // 被动计时,由 Player.Update 驱动(暂停时 Time.deltaTime 为 0,不会误走时)
-        public static void TickPassives(float deltaTime)
-        {
-            if (switchBuffTimer > 0f)
-            {
-                switchBuffTimer = Mathf.Max(0f, switchBuffTimer - deltaTime);
-            }
-        }
-
-        // 切枪钩子,由 Player.UseWeapon 调用：重置单武器叠加,并尝试激活切枪增益
-        public static void OnWeaponSwitched(WeaponType weaponType)
-        {
-            currentWeaponType = weaponType;
-            singleWeaponRamp = 0f; // 切枪后重置单武器伤害叠加
-            if (IsPassiveUnlocked(PassiveType.SwitchWeaponBuff))
-            {
-                switchBuffTimer = SwitchBuffDuration;
-            }
         }
 
         // ============================== 查询 ==============================
@@ -107,9 +60,6 @@ namespace ProjectBlood
 
         public static float GetWeaponDamageRatio(WeaponType type)
             => weaponDamageRatios.TryGetValue(type, out float v) ? v : 1f;
-
-        public static bool IsPassiveUnlocked(PassiveType type)
-            => unlockedPassives.Contains(type);
 
         // 某张强化卡累计被选择的次数(MaxUpgradeCount 池过滤依据,按卡牌独立计数)
         public static int GetUpgradeUsageCount(UpgradeSO upgrade)
@@ -179,18 +129,13 @@ namespace ProjectBlood
         }
 
         // 伤害计算统一入口(PlayerBullet / Laser 命中时调用)：
-        // 最终倍率 = 全局倍率 × 该武器独立系数 × 切枪增益 × 单武器持续叠加
+        // 最终倍率 = 全局倍率 × 该武器独立系数 × 血印系统系数
+        // 切枪增益、连射递增等动态增伤已迁移至血印系统（DamageMultiplierOutcome 组合模块）
         public static float GetFinalDamageRatio(WeaponType weaponType)
         {
             float ratio = GlobalDamageRatio * GetWeaponDamageRatio(weaponType);
-            if (switchBuffTimer > 0f)
-            {
-                ratio *= SwitchBuffMultiplier;
-            }
-            if (IsPassiveUnlocked(PassiveType.SingleWeaponRamp))
-            {
-                ratio *= (1f + singleWeaponRamp);
-            }
+            // 血印系统提供的伤害乘区（限时增伤/连射递增/永久增伤等统一在此聚合）
+            ratio *= BloodSigilState.GetOutgoingDamageMultiplier(weaponType);
             return ratio;
         }
 
@@ -294,12 +239,6 @@ namespace ProjectBlood
             }
         }
 
-        // 被动解锁：不可重复,重复解锁由池过滤保证
-        public static void UnlockPassive(PassiveType type)
-        {
-            unlockedPassives.Add(type);
-        }
-
         // 记录一张强化卡被选择一次(由 UpgradeManager.ApplyUpgrade 在应用前调用)。
         // 计数按 UpgradeSO 资产引用独立累加,与属性/武器的全局效果计数互不影响。
         public static void RecordUpgradeUsage(UpgradeSO upgrade)
@@ -323,12 +262,8 @@ namespace ProjectBlood
             weaponDamageLevels.Clear();
             weaponDamageRatios.Clear();
             skillCooldownReductions.Clear();
-            unlockedPassives.Clear();
             upgradeUsageCounts.Clear();
             GlobalDamageRatio = 1f;
-            switchBuffTimer = 0f;
-            singleWeaponRamp = 0f;
-            currentWeaponType = WeaponType.None;
 
             // 还原基础属性基线(MaxHP 上限由 Global.ResetLevel 重置,无需在此处理)
             // 血库为静态单例、跨局持久,必须回退；Player 若已被销毁则场景重载后由 Prefab 默认值还原
