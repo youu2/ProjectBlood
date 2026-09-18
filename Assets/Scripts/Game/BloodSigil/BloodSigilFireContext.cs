@@ -15,5 +15,8 @@ namespace ProjectBlood
 
         // DamageTaken / LethalDamage：伤害值
         public float Damage;
+
+        // HealthThreshold：变化后的当前血量百分比（0~1）
+        public float HealthPercent;
     }
 }

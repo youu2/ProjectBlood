@@ -2,7 +2,10 @@ using UnityEngine;
 
 namespace ProjectBlood
 {
-    // 血印结束条件配置（四要素之一）。枚举驱动，duration 仅在 Duration 类型下生效。
+    // 血印结束条件配置（四要素之一）。枚举驱动：
+    //   duration        仅 Duration 类型生效；
+    //   healthCompare / healthThreshold 仅 HealthThreshold 类型生效，
+    //   比较运算符与判定逻辑与触发条件共用 BloodSigilHealthThreshold。
     // 一个模块可挂多个结束条件，由模块上的 EndMatchMode 决定"满足其一(Any)"还是"全部满足(All)"。
     [CreateAssetMenu(fileName = "SigilEnd_", menuName = "血印系统/结束条件", order = 11)]
     public class BloodSigilEndConditionSO : ScriptableObject
@@ -12,6 +15,12 @@ namespace ProjectBlood
 
         [Tooltip("持续秒数（仅 Duration 类型生效）")]
         [Min(0f)] public float duration = 1f;
+
+        [Tooltip("血量比较运算符（仅 HealthThreshold 类型生效）")]
+        public BloodSigilHealthCompare healthCompare = BloodSigilHealthCompare.LessThan;
+
+        [Tooltip("血量百分比阈值（仅 HealthThreshold 类型生效，0~1，0.3=30%，1=满血）")]
+        [Range(0f, 1f)] public float healthThreshold = 0.3f;
     }
 
     // 多结束条件的匹配模式

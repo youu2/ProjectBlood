@@ -19,6 +19,10 @@ namespace ProjectBlood
         // 持续型效果是否激活中
         public bool Active { get; set; }
 
+        // 边沿触发类条件（血量阈值）上次评估结果：true=当前已满足（停留在区间内），
+        // 仅在条件由 false→true 的跨越瞬间允许 Fire；离开区间自动复位以支持反复跨越
+        public bool TriggerLatched { get; set; }
+
         // 结束条件运行时状态（与 Module.endConditions 按索引一一对应；null 表示该条件无需计时）
         public float[] EndRemaining { get; }
         public bool[] EndLatched { get; }
@@ -81,8 +85,22 @@ namespace ProjectBlood
             }
         }
 
-        // 按匹配模式判断结束条件是否满足（由引擎在 Tick / 事件后调用）
-        public bool IsEndSatisfied(BloodSigilEndMatchMode mode)
+        // 是否包含指定类型的结束条件（引擎据此只在相关事件中评估对应模块，避免无谓遍历）
+        public bool HasEndType(BloodSigilEndConditionType type)
+        {
+            var ends = Module.endConditions;
+            if (ends == null) return false;
+            for (int i = 0; i < ends.Count; i++)
+            {
+                if (ends[i] != null && ends[i].endConditionType == type) return true;
+            }
+            return false;
+        }
+
+        // 按匹配模式判断结束条件是否满足（由引擎在 Tick / 事件后调用）。
+        // healthPercent：本次评估携带的当前血量百分比（0~1）；传负数表示本次评估不涉及血量
+        // （如 Tick 推进时），HealthThreshold 条件一律按未满足处理，它只在血量变化事件中评估。
+        public bool IsEndSatisfied(BloodSigilEndMatchMode mode, float healthPercent = -1f)
         {
             var ends = Module.endConditions;
             if (ends == null || ends.Count == 0) return false; // 无条件 = 永不主动结束
@@ -91,14 +109,14 @@ namespace ProjectBlood
             bool all = true;
             for (int i = 0; i < ends.Count; i++)
             {
-                bool satisfied = EvaluateSingle(i);
+                bool satisfied = EvaluateSingle(i, healthPercent);
                 any |= satisfied;
                 all &= satisfied;
             }
             return mode == BloodSigilEndMatchMode.Any ? any : all;
         }
 
-        private bool EvaluateSingle(int index)
+        private bool EvaluateSingle(int index, float healthPercent)
         {
             var end = Module.endConditions[index];
             if (end == null) return false;
@@ -111,6 +129,11 @@ namespace ProjectBlood
                 case BloodSigilEndConditionType.WeaponSwitched:
                 case BloodSigilEndConditionType.Reload:
                     return EndLatched[index];
+                case BloodSigilEndConditionType.HealthThreshold:
+                    // 电平判定：仅在携带血量的评估（血量变化事件/解锁初评）中生效
+                    if (healthPercent < 0f) return false;
+                    return BloodSigilHealthThreshold.Evaluate(
+                        healthPercent, end.healthCompare, end.healthThreshold);
                 default:
                     return false;
             }

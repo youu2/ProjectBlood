@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84aa3cdbb44024740a13a3d5f462c185, type: 3}
   m_Name: BloodFeed
   m_EditorClassIdentifier: 
-  trigger: {fileID: 11400000, guid: dc4ebbda9c093194c91d1e3dcb91eaf6, type: 2}
+  trigger: {fileID: 11400000, guid: 6ebb2ce47ab099942b6d16d590149357, type: 2}
   outcomes:
   - {fileID: 11400000, guid: c88c1bd45ab5112459b1c51e9c2ff990, type: 2}
   endConditions:

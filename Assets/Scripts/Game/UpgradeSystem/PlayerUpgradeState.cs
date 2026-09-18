@@ -157,6 +157,8 @@ namespace ProjectBlood
                     //(上限本身的单局重置由 Global.ResetLevel 中 INGAME_MAX_HP = INIT_MAX_HP 处理)
                     Global.INGAME_MAX_HP.Value = Mathf.Max(MinPlayerMaxHP, Global.INGAME_MAX_HP.Value + value);
                     Global.currentHP.Value = Mathf.Clamp(Global.currentHP.Value + value, 1f, Global.INGAME_MAX_HP.Value);
+                    // 血印：上限/当前血量同步变化后通知（百分比可能跨越阈值）
+                    BloodSigilState.NotifyHealthChanged();
                     break;
 
                 case StatType.MoveSpeed:

@@ -18,5 +18,7 @@ namespace ProjectBlood
         SkillCast = 5,
         // 切换武器时触发
         WeaponSwitched = 6,
+        // 当前血量百分比跨越配置阈值时触发（大于/等于/小于，边沿触发：仅在条件由假变真瞬间 Fire）
+        HealthThreshold = 7,
     }
 }

@@ -114,6 +114,43 @@ namespace ProjectBlood
                 TriggerType = BloodSigilTriggerType.UnitKilled,
             });
 
+        // 玩家血量发生变化（实际扣血/治疗结算后调用）：
+        //   1) 先评估含 HealthThreshold 结束条件的激活模块（电平语义，满足即结束，与切枪事件同序）；
+        //   2) 再分发血量阈值触发事件（边沿语义，仅条件由假变真瞬间 Fire）。
+        // 百分比取变化后的当前值；边沿锁存保证停留在阈值区间内时不会因后续伤害/治疗重复触发，
+        // 血量离开区间（锁存复位）后再次跨越可重新触发。
+        public static void NotifyHealthChanged()
+        {
+            float percent = GetCurrentHealthPercent();
+            EvaluateHealthEnds(percent);
+            DispatchEvent(new BloodSigilFireContext
+            {
+                TriggerType = BloodSigilTriggerType.HealthThreshold,
+                HealthPercent = percent,
+            });
+        }
+
+        // 当前血量百分比（0~1）
+        private static float GetCurrentHealthPercent()
+        {
+            float max = Global.INGAME_MAX_HP.Value;
+            return max > 0f ? Mathf.Clamp01(Global.currentHP.Value / max) : 0f;
+        }
+
+        // 血量阈值结束条件评估：仅遍历含该类条件的激活模块，满足匹配模式即结束（事件驱动，不轮询）
+        private static void EvaluateHealthEnds(float percent)
+        {
+            for (int i = activeModules.Count - 1; i >= 0; i--)
+            {
+                var rt = activeModules[i];
+                if (!rt.HasEndType(BloodSigilEndConditionType.HealthThreshold)) continue;
+                if (rt.IsEndSatisfied(rt.Module.endMatchMode, percent))
+                {
+                    EndModule(rt);
+                }
+            }
+        }
+
         // 致命伤害拦截：在 Player.TakeDamage 判定本次伤害将致命时调用。
         // 找到第一个"触发条件=致命伤害且次数未满"的模块并 Fire（其结算可能抵消本次伤害/给予护盾），
         // 返回 true 表示本次伤害已被处理（玩家不死亡）。
@@ -200,6 +237,13 @@ namespace ProjectBlood
                 }
             }
 
+            // 解锁即激活的常驻模块：若其 HealthThreshold 结束条件在获得时就已满足
+            // （如低血时获得"血量低于30%即结束"的增益），按电平语义立即结束
+            if (runtimes.ContainsKey(so))
+            {
+                EvaluateHealthEnds(GetCurrentHealthPercent());
+            }
+
             SigilUnlocked?.Invoke(so);
             return true;
         }
@@ -258,6 +302,15 @@ namespace ProjectBlood
         public static void AddDamageImmunityCharges(int charges)
         {
             if (charges > 0) damageImmunityCharges += charges;
+        }
+
+        // 扣减"免疫下一次伤害"充能（模块结束时结算效果做对称撤销）。
+        // 充能池在多来源间共享、消耗时无法区分归属，因此夹到 [0, 当前余量]：
+        // 已在持续期间被消耗的次数无法也不应恢复，剩余部分由结束模块撤下，不会扣成负数。
+        public static void RemoveDamageImmunityCharges(int charges)
+        {
+            if (charges <= 0) return;
+            damageImmunityCharges = Mathf.Max(0, damageImmunityCharges - charges);
         }
 
         // ============================== 查询 ==============================
@@ -362,14 +415,31 @@ namespace ProjectBlood
                 {
                     var rt = runtime.Modules[i];
                     var trigger = rt.Module.trigger;
-                    if (trigger != null
-                        && trigger.Matches(ctx)
-                        && rt.CanFire(rt.Module.maxStacks))
+                    if (trigger == null) continue;
+
+                    bool met = trigger.Matches(ctx);
+
+                    // 边沿触发（血量阈值）：仅在条件由假变真的跨越瞬间 Fire；
+                    // 每次评估都刷新锁存，离开区间后再次跨越可重新触发
+                    if (trigger.IsEdgeTrigger)
                     {
-                        FireModule(rt, ctx);
-                        // 结算中若血印被消耗（献祭），停止处理该血印剩余模块
-                        if (!runtimes.ContainsKey(sigil)) break;
+                        if (!met)
+                        {
+                            rt.TriggerLatched = false;
+                            continue;
+                        }
+                        if (rt.TriggerLatched) continue;
+                        rt.TriggerLatched = true;
+                        if (!rt.CanFire(rt.Module.maxStacks)) continue;
                     }
+                    else if (!met || !rt.CanFire(rt.Module.maxStacks))
+                    {
+                        continue;
+                    }
+
+                    FireModule(rt, ctx);
+                    // 结算中若血印被消耗（献祭），停止处理该血印剩余模块
+                    if (!runtimes.ContainsKey(sigil)) break;
                 }
             }
         }

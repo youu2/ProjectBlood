@@ -12,5 +12,8 @@ namespace ProjectBlood
         WeaponSwitched = 2,
         // 换弹（开始换弹）时结束
         Reload = 3,
+        // 当前血量百分比满足阈值条件（大于/等于/小于，比较参数复用触发条件）时结束；
+        // 电平语义：条件持续满足即结束，由每次血量变化事件驱动评估（非边沿）
+        HealthThreshold = 4,
     }
 }

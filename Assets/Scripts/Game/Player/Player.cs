@@ -242,6 +242,8 @@ namespace ProjectBlood
 
             // 血印：实际受伤事件（在扣血后通知，供受伤触发类模块结算）
             BloodSigilState.NotifyDamageTaken(damage);
+            // 血印：血量变化事件（驱动血量阈值类触发，边沿锁存避免区间内重复触发）
+            BloodSigilState.NotifyHealthChanged();
 
             if (Global.currentHP.Value > 0)
             {
