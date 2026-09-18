@@ -7,8 +7,6 @@ namespace ProjectBlood
 	{
 		public SpriteRenderer Icon;
 		
-		public TMPro.TextMeshProUGUI Tips;
-		
 		public TMPro.TextMeshProUGUI PriceText;
 		
 	}

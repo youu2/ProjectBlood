@@ -6,7 +6,6 @@ namespace ProjectBlood
     public partial class Chest
     {
         public SpriteRenderer ChestOpenSprite;
-        public TMPro.TextMeshProUGUI Tips;
         public UnityEngine.SpriteRenderer SelfSpriteRenderer;
 
     }

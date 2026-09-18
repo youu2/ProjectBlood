@@ -19,47 +19,14 @@ MonoBehaviour:
     From: 0
     NameToFullName: []
     BindInfos:
-    - TypeName: ProjectBlood.Coin
-      PathToRoot: Coin
-      MemberName: Coin
-    - TypeName: ProjectBlood.MP5Unlock
-      PathToRoot: MP5Unlock
-      MemberName: MP5Unlock
-    - TypeName: CircleCollider2D
-      PathToRoot: ShotGunUnlock
-      MemberName: ShotGunUnlock
-    - TypeName: CircleCollider2D
-      PathToRoot: AKUnlock
-      MemberName: AKUnlock
-    - TypeName: CircleCollider2D
-      PathToRoot: AWPUnlock
-      MemberName: AWPUnlock
-    - TypeName: CircleCollider2D
-      PathToRoot: LaserUnlock
-      MemberName: LaserUnlock
-    - TypeName: ProjectBlood.AnnihilationCore
-      PathToRoot: AnnihilationCore
-      MemberName: AnnihilationCore
-    - TypeName: ProjectBlood.DirtyBlood
-      PathToRoot: DirtyBlood
-      MemberName: DirtyBlood
-    - TypeName: ProjectBlood.Exp
-      PathToRoot: Exp
-      MemberName: Exp
-    - TypeName: ProjectBlood.Shield
-      PathToRoot: Shield
-      MemberName: Shield
-    - TypeName: ProjectBlood.PureBlood
-      PathToRoot: PureBlood
-      MemberName: PureBlood
-    - TypeName: Rigidbody2D
-      PathToRoot: Shell
-      MemberName: Shell
-    - TypeName: ProjectBlood.BloodSigilDrop
-      PathToRoot: BloodSigilDrop
-      MemberName: BloodSigilDrop
-    ScriptsFolder: Assets/Scripts/Game/PowerUp
-    ClassName: DropManager
+    - TypeName: TMPro.TextMeshProUGUI
+      PathToRoot: Canvas/Tips
+      MemberName: Tips
+    - TypeName: TMPro.TextMeshProUGUI
+      PathToRoot: Canvas/Name
+      MemberName: Name
+    ScriptsFolder: Assets\Scripts\Game\BloodSigil
+    ClassName: BloodSigilDrop
     Namespace: ProjectBlood
     MainCode: 
     DesignerCode: 

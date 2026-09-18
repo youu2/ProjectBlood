@@ -4,14 +4,15 @@ using System.Collections.Generic;
 
 namespace ProjectBlood
 {
-	public partial class ShopItem : ViewController
+	public partial class ShopItem : InteractableBase
 	{
 		[Header("商品池")]
 		public List<DropItem> goodsPool = new List<DropItem>();
 
 		protected DropItem goods;
 		protected int price;
-		private bool saleOut = false;
+
+		public override bool CanInteract => !isCollected && goods != null;
 
 		public ShopItem(DropItem goods, int price)
 		{
@@ -65,18 +66,8 @@ namespace ProjectBlood
 			}
 		}
 
-		private void Update()
+		protected override void DoInteract()
 		{
-			if (!Tips.gameObject.activeSelf)
-			{
-				return;
-			}
-
-			if (!Input.GetKeyDown(KeyCode.F))
-			{
-				return;
-			}
-
 			if (goods == null)
 			{
 				return;
@@ -88,33 +79,17 @@ namespace ProjectBlood
 				goods.Instantiate()
 					.Position(transform.Position2D() + new Vector2(0, 0.2f))
 					.Show();
-				
+
 				Icon.Hide();
 				PriceText.Hide();
 				Tips.Hide();
-				saleOut = true;
-				
+				isCollected = true;
+
 				AudioKitManager.Instance.PlayOneShot("BuySound", volume: 0.8f);
 			}
 			else
 			{
 				Player.DisplayText("Too expensive...");
-			}
-		}
-
-		private void OnTriggerEnter2D(Collider2D other)
-		{
-			if (other.CompareTag("Player") && !saleOut && goods != null)
-			{
-				Tips.Show();
-			}
-		}
-
-		private void OnTriggerExit2D(Collider2D other)
-		{
-			if (other.CompareTag("Player"))
-			{
-				Tips.Hide();
 			}
 		}
 	}

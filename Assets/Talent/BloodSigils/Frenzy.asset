@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Frenzy
   m_EditorClassIdentifier: 
   sigilName: "\u72C2\u70ED"
-  description: 
+  description: "\u6301\u7EED\u653B\u51FB\u4F1A\u9010\u6E10\u7ED9\u4E88\u5F53\u524D\u6B66\u5668\u589E\u4F24,
+    \u6700\u592730%\n\u6362\u5F39\u548C\u5207\u6362\u6B66\u5668\u4F1A\u91CD\u7F6E\u589E\u4F24\n[F]\u523B\u5370"
   icon: {fileID: 21300000, guid: 2f8a211158b8a9e4694ba17055ceb44e, type: 3}
   isInPool: 1
   rarity: 0
