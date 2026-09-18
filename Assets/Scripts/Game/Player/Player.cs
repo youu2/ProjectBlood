@@ -33,6 +33,24 @@ namespace ProjectBlood
         // 当玩家朝左时,翻转整个玩家对象,包括武器,文字提示单独再翻转一次
         private void SetFlipX(bool faceLeft)
         {
+            float scaleX = faceLeft ? -1f : 1f;
+
+            if (IsRollOpposite(faceLeft))
+            {
+                scaleX = -scaleX;
+            }
+            else
+            {
+                scaleX = faceLeft ? -1f : 1f;
+            }
+
+            transform.localScale = new Vector3(1.2f * scaleX, 1.2f, 1f);
+            NoticeText.transform.localScale = new Vector3(0.0005f * scaleX, 0.0005f, 1f);
+        }
+
+        // 判断玩家是否在朝瞄准的反方向翻滚
+        public bool IsRollOpposite(bool faceLeft)
+        {
             if (SelfPlayerState.GetState() == PlayerState.State.Rolling && !recorded)
             {
                 recorded = true;
@@ -41,21 +59,18 @@ namespace ProjectBlood
             if (SelfPlayerState.GetState() != PlayerState.State.Rolling && recorded)
             {
                 recorded = false;
-                // transform.localRotation = Quaternion.Euler(0, 0, 0);
             }
 
             if (recorded && lastMoveDir.x > 0 && faceLeft ||
                 recorded && lastMoveDir.x < 0 && !faceLeft)
             {
-                transform.localRotation = Quaternion.Euler(0, 180, 0);
+                return true;
             }
             else if (!recorded && SelfPlayerState.GetState() != PlayerState.State.Rolling)
             {
-                transform.localRotation = Quaternion.Euler(0, 0, 0);
+                return false;
             }
-            float scaleX = faceLeft ? -1f : 1f;
-            transform.localScale = new Vector3(1.2f * scaleX, 1.2f, 1f);
-            NoticeText.transform.localScale = new Vector3(0.0005f * scaleX, 0.0005f, 1f);
+            return false;
         }
 
         // 根据瞄准方向更新武器朝向和角色朝向
@@ -67,13 +82,29 @@ namespace ProjectBlood
             {
                 // 朝左:武器X轴翻转 + 旋转180度补偿Player镜像的影响
                 // 玩家对象整体翻转导致武器依旧朝右,所以需要水平翻转武器Sprite
+                // 反向翻滚时，玩家会水平翻转，所以只需要再竖直翻转一次
                 SetFlipX(true);
-                Arm.localScale = new Vector3(-1, -1, 1);
+                if (!IsRollOpposite(true))
+                {
+                    Arm.localScale = new Vector3(-1, -1, 1);
+                }
+                else
+                {
+                    Arm.localScale = new Vector3(1, -1, 1);
+                }
             }
             else
             {
                 // 朝右:武器保持默认朝向
-                Arm.localScale = new Vector3(1, 1, 1);
+                // 反向翻滚时，玩家会水平翻转，所以需要再水平翻转一次抵消翻滚的影响
+                if (!IsRollOpposite(false))
+                {
+                    Arm.localScale = new Vector3(1, 1, 1);
+                }
+                else
+                {
+                    Arm.localScale = new Vector3(-1, 1, 1);
+                }
                 SetFlipX(false);
             }
             Arm.eulerAngles = new Vector3(0, 0, angle);
