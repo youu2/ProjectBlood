@@ -228,15 +228,15 @@ namespace ProjectBlood
         public static void GenerateDrops(GameObject enemy)
         {
             GenerateExp(enemy);
-            var rand = Random.Range(0f, 100.0f);
+            var rand = Random.Range(0f, 100f);
             if (rand < CoinDropRate.Value * 100)
             {
                 GenerateCoin(enemy);
                 return;
             }
             // 掉落Shield, 5%概率
-            rand = Random.Range(0f, 100.0f);
-            if (rand < 70f) // 测试 ///////////////////////////////////////   
+            rand = Random.Range(0f, 100f);
+            if (rand < 5f) // 测试 ///////////////////////////////////////   
             {
                 GenerateShield(enemy);
                 return;
@@ -244,16 +244,16 @@ namespace ProjectBlood
             // 只有当血库血量低于30%时才有可能掉落dirtyBlood
             if (BloodBank.Instance != null)
             {
-                float bloodPercent = (float)BloodBank.Instance.CurrentBloodAmount / BloodBank.Instance.MaxBloodAmount;
-                if (bloodPercent < 0.3f)
+                // float bloodPercent = (float)BloodBank.Instance.CurrentBloodAmount / BloodBank.Instance.MaxBloodAmount;
+                // if (bloodPercent < 0.3f)
+                // {
+                rand = Random.Range(0f, 100f);
+                if (rand < 5f)
                 {
-                    rand = Random.Range(0f, 100.0f);
-                    if (rand < 0.5 * 100)
-                    {
-                        GenerateDirtyBlood(enemy);
-                        return;
-                    }
+                    GenerateDirtyBlood(enemy);
+                    return;
                 }
+                // }
             }
         }
 

@@ -200,7 +200,7 @@ namespace ProjectBlood
             GUIInstance.HPText.Hide();
             GUIInstance.SkillText.Hide();
             GUIInstance.PlayerLevelText.Hide();
-            Player.player1.ShieldSprite.Hide();
+            if (Player.player1 != null) Player.player1.ShieldSprite.Hide();
         }
 
         public static void ShowGameUI()
@@ -218,7 +218,7 @@ namespace ProjectBlood
             GUIInstance.HPText.Show();
             GUIInstance.SkillText.Show();
             GUIInstance.PlayerLevelText.Show();
-            Player.player1.ShieldSprite.Show();
+            if (Player.player1 != null) Player.player1.ShieldSprite.Show();
         }
     }
 }
