@@ -293,7 +293,7 @@ namespace ProjectBlood
 
         private void Death()
         {
-            Global.SettleLegacyPoints();
+            LegacyUpgradeState.SettleFromRun(Global.Level.Value);
             AudioKitManager.Instance.PlayOneShot("WilhelmScream");
             this.DestroyGameObjGracefully();
             UIKit.OpenPanel<UIGameOverPanel>();

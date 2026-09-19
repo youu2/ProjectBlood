@@ -8,6 +8,7 @@ namespace ProjectBlood
 {
     public class Global : Architecture<Global>
     {
+        // 局外养成运行时属性：由 LegacyUpgradeState.ApplyEffect 按养成等级写入，勿在此直接持久化
         public static BindableProperty<float> INIT_MAX_HP = new BindableProperty<float>(30.0f);
         public static BindableProperty<float> INGAME_MAX_HP = new BindableProperty<float>(INIT_MAX_HP.Value);
         public static BindableProperty<float> currentHP = new BindableProperty<float>(INGAME_MAX_HP.Value);
@@ -15,8 +16,6 @@ namespace ProjectBlood
         public static BindableProperty<int> Coin = new BindableProperty<int>(0);
         public static BindableProperty<int> Level = new BindableProperty<int>(1);
 
-        // The player's level will be converted into Legacy points upon death, which can be used for Metaprogression System.
-        public static BindableProperty<int> LegacyPoint = new BindableProperty<int>(0);
         public static BindableProperty<float> BlazingCircleDamage = new BindableProperty<float>(35.0f);
         public static BindableProperty<float> RemainingTime = new BindableProperty<float>(180);
         public static BindableProperty<int> currentNum = new BindableProperty<int>(0);    // current number of active enemies
@@ -26,7 +25,7 @@ namespace ProjectBlood
         public static BindableProperty<int> maxWavesNum = new BindableProperty<int>(5);  // The total number of enemy waves generated
         public static BindableProperty<float> BCAttackInterval = new BindableProperty<float>(1.5f); // attack interval of Blazing Circle
         public static BindableProperty<int> MAX_EXP = new BindableProperty<int>(5);
-        public static BindableProperty<float> CoinDropRate = new BindableProperty<float>(0.30f); // 30% chance to drop coins
+        public static BindableProperty<float> CoinDropRate = new BindableProperty<float>(0.30f); // 30% chance to drop coins（由 LegacyUpgradeState.ApplyEffect 写入）
         public static Room currentRoom;
         public static BindableProperty<bool> FireEnabled = new BindableProperty<bool>(true);
         public static int currentDifficulty;    // 0 - 9 共10个难度等级
@@ -48,10 +47,8 @@ namespace ProjectBlood
             PlayerUpgradeState.Initialize();
             // 初始化血印系统（订阅武器开火事件等游戏事件）
             BloodSigilState.Initialize();
-            // Load from PlayerPrefs
-            Global.LegacyPoint.Value = PlayerPrefs.GetInt("LegacyPoint", 0);
-            Global.CoinDropRate.Value = PlayerPrefs.GetFloat("CoinDropRate", 0.30f);
-            Global.INIT_MAX_HP.Value = PlayerPrefs.GetFloat("INIT_MAX_HP", 30.0f);
+            // 初始化局外养成系统（加载配置与存档，并按等级写入养成属性）
+            LegacyUpgradeState.Initialize();
 
             currentDifficulty = 0;
 
@@ -65,22 +62,6 @@ namespace ProjectBlood
             LevelConfigs.Add(Level3_1.Config);
             LevelConfigs.Add(Level3_2.Config);
             LevelConfigs.Add(Level3_3.Config);
-
-            // Register change callbacks
-            LegacyPoint.Register(legacy =>
-            {
-                PlayerPrefs.SetInt("LegacyPoint", legacy);
-            });
-
-            CoinDropRate.Register(coinDropRate =>
-            {
-                PlayerPrefs.SetFloat("CoinDropRate", coinDropRate);
-            });
-
-            INIT_MAX_HP.Register(maxHP =>
-            {
-                PlayerPrefs.SetFloat("INIT_MAX_HP", maxHP);
-            });
         }
 
         // 实例化跨场景常驻主相机：首个场景加载前创建一次并 DontDestroyOnLoad，
@@ -126,14 +107,6 @@ namespace ProjectBlood
         public static void SpendCoin(int amount)
         {
             Coin.Value -= amount;
-        }
-
-        public static void SettleLegacyPoints()
-        {
-            int legacyPointsGained = Level.Value - 1; // Gain Legacy points equal to the number of upgrades upon death
-            LegacyPoint.Value += legacyPointsGained;
-            Debug.Log("You have gained " + legacyPointsGained + " Legacy Points!");
-            Debug.Log("Your current legacy points: " + LegacyPoint.Value);
         }
 
         // restart game

@@ -92,12 +92,6 @@ namespace ProjectBlood
 
             UpgradeRoot.Hide();
 
-            // display Legacy Point
-            // Global.LegacyPoint.RegisterWithInitValue(legacy =>
-            // {
-            //     LegacyText.text = "Lagacy: " + legacy;
-            // }).UnRegisterWhenGameObjectDestroyed(gameObject);
-
         }
 
         // 从升级池随机抽取并填充 3 张卡片
