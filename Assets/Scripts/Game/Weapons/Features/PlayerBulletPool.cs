@@ -25,7 +25,7 @@ namespace ProjectBlood
         {
             if (Instance != null && Instance != this)
             {
-                Destroy(gameObject);
+                Destroy(this); // 单例已存在，只移除重复组件，保留宿主 Weapon 物体
                 return;
             }
             Instance = this;

@@ -14,6 +14,11 @@ namespace ProjectBlood
 
         private void Awake()
         {
+            if (instance != null && instance != this)
+            {
+                Destroy(this); // 单例已存在，只移除重复组件，保留宿主 Weapon 物体
+                return;
+            }
             instance = this;
             shellPool = new ObjectPool<GameObject>(CreateShell, GetShell, ReleaseShell, DestroyShell, true, 50, 200);
             DontDestroyOnLoad(gameObject); // 跨场景保留

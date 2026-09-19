@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace ProjectBlood
 {
-    public class LevelsConfig : ViewController
+    public class LevelsConfig
     {
         public RoomNode InitRoom = new(RoomType.InitRoom);
         public string LevelName;
