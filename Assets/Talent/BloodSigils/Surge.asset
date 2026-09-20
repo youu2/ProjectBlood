@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Surge
   m_EditorClassIdentifier: 
   sigilName: "\u7FFB\u6D8C"
-  description: "[\u7FFB\u6EDA]\u4F1A\u88C5\u586B\u5F53\u524D\u6B66\u566810%\u7684\u5F39\u5939\n[F]\u523B\u5370"
+  description: "[\u7FFB\u6EDA]\u4F1A\u88C5\u586B\u5F53\u524D\u6B66\u566810%\u7684\u5F39\u5939"
   icon: {fileID: 21300000, guid: 0166b0a091b7b4f41b30ff454ea77ef3, type: 3}
   isInPool: 1
   rarity: 0

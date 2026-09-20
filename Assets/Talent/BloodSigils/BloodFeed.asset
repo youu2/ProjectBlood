@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: BloodFeed
   m_EditorClassIdentifier: 
   sigilName: "\u8840\u9972"
-  description: "\u51FB\u6740\u654C\u4EBA\u4F1A\u88C5\u586B\u5F53\u524D\u6B66\u566810%\u5F39\u5939\n[F]\u523B\u5370"
+  description: "\u51FB\u6740\u654C\u4EBA\u4F1A\u88C5\u586B\u5F53\u524D\u6B66\u566810%\u5F39\u5939"
   icon: {fileID: 21300000, guid: 73015e55bc01baa4da0c3668794f6d92, type: 3}
   isInPool: 1
   rarity: 0

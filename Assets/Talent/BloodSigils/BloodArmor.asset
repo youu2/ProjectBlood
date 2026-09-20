@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2487fe209676f554e8ac93dcfc2f236a, type: 3}
   m_Name: BloodArmor
   m_EditorClassIdentifier: 
-  sigilName: "\u8840\u94E0"
+  sigilName: "\u8840\u7532"
   description: "\u53D7\u5230\u4F24\u5BB3\u540E\u77ED\u65F6\u95F4\u5185\u514D\u75AB\u4F24\u5BB3"
   icon: {fileID: 21300000, guid: 5c040942fe348954fbbc516c6de90a19, type: 3}
   isInPool: 1

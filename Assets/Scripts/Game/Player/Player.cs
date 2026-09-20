@@ -498,6 +498,12 @@ namespace ProjectBlood
 
             // 血印系统:每帧驱动限时效果计时（被动计时已迁移至血印系统）
             BloodSigilState.Tick(Time.deltaTime);
+
+            // 通关耗时累计：暂停（加载/升级/暂停页）期间不计入
+            if (!Global.IsGamePaused)
+            {
+                Global.RunElapsedSeconds += Time.deltaTime;
+            }
         }
 
         // 特殊换弹协程, 双击换弹触发,为所有武器补充弹药并播放音效

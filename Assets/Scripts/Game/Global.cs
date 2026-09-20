@@ -33,6 +33,9 @@ namespace ProjectBlood
         public static bool IsGamePaused = false;
         public static float WeaponAdditionalCameraSize = 0.5f;
 
+        // 通关耗时（秒）：仅游戏未暂停时累加，重开新局时在 ResetLevel 清零
+        public static float RunElapsedSeconds;
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         public static void Initialize()
         {
@@ -147,6 +150,7 @@ namespace ProjectBlood
             MAX_EXP.Value = 5;
             Coin.Value = 0;
             currentDifficulty = 0;
+            RunElapsedSeconds = 0f;
             WeaponDataSystem.weaponDataList.Clear();
             WeaponDataSystem.weaponDataList.Add(WeaponConfig.DE.NewWeapon()); // 默认武器只有DE
             PlayerUpgradeState.ApplyGlobalWeaponUnlocks(); // 局外养成额外解锁武器（按宝箱掉落顺序）
