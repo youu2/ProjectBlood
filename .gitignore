@@ -118,3 +118,4 @@ InitTestScene*.unity*
 # Keep FMOD Editor images and gizmos
 !/[Aa]ssets/Gizmos/FMOD/*
 !/[Aa]ssets/Editor Default Resources/FMOD/*
+.trae/documents/*

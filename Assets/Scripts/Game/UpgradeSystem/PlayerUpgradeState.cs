@@ -44,6 +44,87 @@ namespace ProjectBlood
         // 全局伤害倍率(迁移自旧 PlayerUpgrade.DamageRatio,默认 1.0 不影响原有伤害)
         public static float GlobalDamageRatio { get; private set; } = 1f;
 
+        // 全局技能 CD 减免率（局外养成提供，跨局保留，不随 Reset 清空）。
+        // 0.05 = 所有技能充能间隔缩短 5%，与单技能减免独立累加：
+        // 有效间隔 = 基础间隔 × (1 - 单技能减免 - 全局减免)
+        public static float GlobalSkillCooldownReduction { get; private set; }
+
+        // 设置全局技能 CD 减免率（供 LegacyUpgradeState.ApplyEffect 调用）
+        public static void SetGlobalSkillCooldownReduction(float value)
+        {
+            GlobalSkillCooldownReduction = Mathf.Clamp01(value);
+        }
+
+        // 全局移动速度加成（局外养成提供，跨局保留，不随 Reset 清空）。
+        // Player 不跨场景，OnPlayerSpawned 时叠加；升级时若 Player 在场则补差额立即生效。
+        public static float GlobalMoveSpeedBonus { get; private set; }
+
+        // 设置全局移动速度加成（供 LegacyUpgradeState.ApplyEffect 调用，绝对值）
+        public static void SetGlobalMoveSpeedBonus(float bonus)
+        {
+            float delta = bonus - GlobalMoveSpeedBonus;
+            GlobalMoveSpeedBonus = bonus;
+            if (delta != 0f && Player.player1 != null)
+            {
+                Player.player1.moveSpeed = Mathf.Max(MinMoveSpeed, Player.player1.moveSpeed + delta);
+            }
+        }
+
+        // 全局血库容量加成（局外养成提供，跨局保留，不随 Reset 清空）。
+        // BloodBank 是跨局持久单例，设置时直接补差额；Reset 还原局内基线时保留此全局加成。
+        public static int GlobalBloodBankCapacityBonus { get; private set; }
+
+        // 设置全局血库容量加成（供 LegacyUpgradeState.ApplyEffect 调用，绝对值）
+        public static void SetGlobalBloodBankCapacityBonus(int bonus)
+        {
+            int delta = bonus - GlobalBloodBankCapacityBonus;
+            GlobalBloodBankCapacityBonus = bonus;
+            if (delta != 0)
+            {
+                BloodBank.Instance.MaxBloodAmount = Mathf.Max(MinBloodBankMax, BloodBank.Instance.MaxBloodAmount + delta);
+                BloodBank.Instance.CurrentBloodAmount = Mathf.Clamp(BloodBank.Instance.CurrentBloodAmount, 0, BloodBank.Instance.MaxBloodAmount);
+            }
+        }
+
+        // 全局武器解锁数量（局外养成提供，跨局保留，不随 Reset 清空）。
+        // 游戏开始时（ResetLevel 后）按宝箱掉落顺序额外解锁对应数量的武器。
+        public static int GlobalWeaponUnlockCount { get; private set; }
+
+        // 设置全局武器解锁数量（供 LegacyUpgradeState.ApplyEffect 调用）
+        public static void SetGlobalWeaponUnlockCount(int count)
+        {
+            GlobalWeaponUnlockCount = Mathf.Max(0, count);
+        }
+
+        // 按 GlobalWeaponUnlockCount 在游戏开始时（ResetLevel 后）解锁武器。
+        // 解锁顺序遵循宝箱掉落顺序（WeaponType 枚举值递增，排除 None 和 DE）：MP5 → ShotGun → AK → AWP → Laser。
+        // 已在 weaponDataList 中的武器跳过，防重复添加。
+        public static void ApplyGlobalWeaponUnlocks()
+        {
+            if (GlobalWeaponUnlockCount <= 0) return;
+
+            // 宝箱掉落顺序：MP5 → ShotGun → AK → AWP → Laser
+            WeaponConfig[] order = { WeaponConfig.MP5, WeaponConfig.ShotGun, WeaponConfig.AK, WeaponConfig.AWP, WeaponConfig.Laser };
+            int toUnlock = Mathf.Min(GlobalWeaponUnlockCount, order.Length);
+            for (int i = 0; i < toUnlock; i++)
+            {
+                var newData = order[i].NewWeapon();
+                bool exists = false;
+                for (int j = 0; j < WeaponDataSystem.weaponDataList.Count; j++)
+                {
+                    if (WeaponDataSystem.weaponDataList[j].weaponName == newData.weaponName)
+                    {
+                        exists = true;
+                        break;
+                    }
+                }
+                if (!exists)
+                {
+                    WeaponDataSystem.weaponDataList.Add(newData);
+                }
+            }
+        }
+
         private static bool initialized;
 
         // 订阅武器开火事件(由 Global.Initialize 在启动时调用一次)
@@ -101,11 +182,13 @@ namespace ProjectBlood
         public static float GetSkillCooldownReduction(string skillName)
             => !string.IsNullOrEmpty(skillName) && skillCooldownReductions.TryGetValue(skillName, out float v) ? v : 0f;
 
-        // 应用减免后的有效充能间隔 = 基础间隔 × (1 - 累计减免),夹到下限防止叠加至 0 造成除零/瞬发。
-        // SkillBase 的所有充能计时都走此入口,保证减免与负数惩罚(增加冷却)统一生效。
+        // 应用减免后的有效充能间隔 = 基础间隔 × (1 - 单技能累计减免 - 全局减免),
+        // 夹到下限防止叠加至 0 造成除零/瞬发。全局减免来自局外养成，单技能减免来自局内强化。
+        // SkillBase 的所有充能计时都走此入口,保证两类减免统一生效。
         public static float GetAdjustedSkillChargeInterval(string skillName, float baseInterval)
         {
-            return Mathf.Max(MinSkillChargeInterval, baseInterval * (1f - GetSkillCooldownReduction(skillName)));
+            float totalReduction = GetSkillCooldownReduction(skillName) + GlobalSkillCooldownReduction;
+            return Mathf.Max(MinSkillChargeInterval, baseInterval * (1f - totalReduction));
         }
 
         // 应用一次技能 CD 减免(reduction 可为负表示增加冷却):累加比例并按比例缩放进行中的充能倒计时,
@@ -255,6 +338,11 @@ namespace ProjectBlood
             if (moveSpeedBonus != 0f && Player.player1 != null)
             {
                 Player.player1.moveSpeed += moveSpeedBonus;
+            }
+            // 局外养成全局移速加成（跨局保留，Player 重建时用默认值，需叠加）
+            if (GlobalMoveSpeedBonus != 0f && Player.player1 != null)
+            {
+                Player.player1.moveSpeed = Mathf.Max(MinMoveSpeed, Player.player1.moveSpeed + GlobalMoveSpeedBonus);
             }
         }
 

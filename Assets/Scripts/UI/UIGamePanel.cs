@@ -50,32 +50,6 @@ namespace ProjectBlood
             GameUI.ShowGameUI();
 
             mData = uiData as UIGamePanelData ?? new UIGamePanelData();
-            // bind to Global properties
-            // update UI when properties change
-            // Global.currentHP.RegisterWithInitValue(currentHP =>
-            // {
-            //     HPText.text = "HP: " + Mathf.FloorToInt(currentHP) + "/" + Mathf.FloorToInt(Global.INGAME_MAX_HP.Value);
-            // }).UnRegisterWhenGameObjectDestroyed(gameObject);
-
-            // Global.INGAME_MAX_HP.RegisterWithInitValue(maxHP =>
-            // {
-            //     HPText.text = "HP: " + Mathf.FloorToInt(Global.currentHP.Value) + "/" + Mathf.FloorToInt(maxHP);
-            // }).UnRegisterWhenGameObjectDestroyed(gameObject);
-
-            // Global.Exp.RegisterWithInitValue(Exp =>
-            // {
-            //     ExpText.text = "Exp: " + Exp + "/" + Global.MAX_EXP;
-            // }).UnRegisterWhenGameObjectDestroyed(gameObject);
-
-            // Global.Level.RegisterWithInitValue(Level =>
-            // {
-            //     LevelText.text = "Level: " + Level;
-            // }).UnRegisterWhenGameObjectDestroyed(gameObject);
-
-            // Global.Coin.RegisterWithInitValue(Coin =>
-            // {
-            //     CoinText.text = Coin.ToString();
-            // }).UnRegisterWhenGameObjectDestroyed(gameObject);
 
             // 升级时暂停游戏，弹出随机强化选项
             Global.Level.Register(Level =>
@@ -85,13 +59,7 @@ namespace ProjectBlood
                 ShowUpgradeOptions();
             }).UnRegisterWhenGameObjectDestroyed(gameObject);
 
-            // Global.RemainingTime.RegisterWithInitValue(Second =>
-            // {
-            //     TimeText.text = "Wave in: " + Second + "s";
-            // }).UnRegisterWhenGameObjectDestroyed(gameObject);
-
             UpgradeRoot.Hide();
-
         }
 
         // 从升级池随机抽取并填充 3 张卡片
@@ -140,7 +108,10 @@ namespace ProjectBlood
         // 点击卡片：应用强化并关闭面板恢复游戏
         private void OnUpgradeSelected(UpgradeSO upgrade)
         {
-            UpgradeManager.Instance?.ApplyUpgrade(upgrade);
+            if (UpgradeManager.Instance != null)
+            {
+                UpgradeManager.Instance.ApplyUpgrade(upgrade);
+            }
             ResumeGame();
         }
 

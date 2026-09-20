@@ -12,7 +12,7 @@ using UnityEngine.UI;
 namespace QFramework
 {
     [MonoSingletonPath("UIRoot")]
-    public class UIRoot : MonoBehaviour,ISingleton
+    public class UIRoot : MonoBehaviour, ISingleton
     {
         public Camera UICamera;
         public Canvas Canvas;
@@ -23,7 +23,7 @@ namespace QFramework
         public RectTransform Common;
         public RectTransform PopUI;
         public RectTransform CanvasPanel;
-        
+
         private static UIRoot mInstance;
 
         public static UIRoot Instance
@@ -113,7 +113,7 @@ namespace QFramework
 
         public void OnSingletonInit()
         {
-            
+
         }
     }
 }

@@ -43,6 +43,9 @@ namespace ProjectBlood
             UIKit.Root.SetResolution(1920, 1080, 1.0f);
             // 相机为跨场景常驻预制体(Assets/Resources/MainCamera.prefab)，场景中不再自带相机
             EnsurePersistentCamera();
+            // UIRoot 的 Canvas 为 Screen Space - Camera 模式；主相机是运行时实例化的常驻对象，
+            // 预制体中无法序列化对它的引用，因此在两者都就绪后统一绑定 UICamera 字段与渲染相机
+            BindUIRootCamera();
             // 初始化强化系统（订阅武器开火事件，用于单武器持续输出叠加被动）
             PlayerUpgradeState.Initialize();
             // 初始化血印系统（订阅武器开火事件等游戏事件）
@@ -81,6 +84,22 @@ namespace ProjectBlood
             var cameraObject = UnityEngine.Object.Instantiate(cameraPrefab);
             cameraObject.name = "Main Camera";
             UnityEngine.Object.DontDestroyOnLoad(cameraObject);
+        }
+
+        // 把 QFramework UIRoot 的 UICamera 字段和 Canvas(Screen Space - Camera) 的
+        // Render Camera 都绑定到常驻主相机，保证 UIKit 面板由主相机渲染
+        private static void BindUIRootCamera()
+        {
+            var mainCamera = Camera.main;
+            if (mainCamera == null)
+            {
+                Debug.LogError("常驻主相机缺失，UIRoot Canvas 渲染相机绑定失败");
+                return;
+            }
+            var uiRoot = UIKit.Root;
+            uiRoot.UICamera = mainCamera;
+            uiRoot.Canvas.renderMode = UnityEngine.RenderMode.ScreenSpaceCamera;
+            uiRoot.Canvas.worldCamera = mainCamera;
         }
 
         // level up after getting 5 exp, then increase the required exp by 10%
@@ -130,6 +149,7 @@ namespace ProjectBlood
             currentDifficulty = 0;
             WeaponDataSystem.weaponDataList.Clear();
             WeaponDataSystem.weaponDataList.Add(WeaponConfig.DE.NewWeapon()); // 默认武器只有DE
+            PlayerUpgradeState.ApplyGlobalWeaponUnlocks(); // 局外养成额外解锁武器（按宝箱掉落顺序）
             if (Player.player1 != null)
             {
                 Player.player1.UpdateSpecialReloadCost();   // 更新玩家的特殊装弹成本

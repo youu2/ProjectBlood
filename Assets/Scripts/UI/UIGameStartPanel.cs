@@ -17,8 +17,9 @@ namespace ProjectBlood
             mData = uiData as UIGameStartPanelData ?? new UIGameStartPanelData();
             Time.timeScale = 0;
             Global.IsGamePaused = true;
+            GameUI.GUIInstance.Hide();
 
-            // 遗泽点显示与条目刷新（加载/持久化统一由 LegacyUpgradeState 负责）
+            // 遗产点显示与条目刷新（加载/持久化统一由 LegacyUpgradeState 负责）
             LegacyUpgradeState.LegacyPoint.RegisterWithInitValue(legacy =>
             {
                 LegacyHeldText.text = "Lagacy: " + legacy;
@@ -30,6 +31,7 @@ namespace ProjectBlood
 
             BtnStartGame.onClick.AddListener(() =>
             {
+                GameUI.GUIInstance.Show();
                 this.CloseSelf();
                 Global.ResetLevel();
                 Time.timeScale = 1.0f;
@@ -41,6 +43,7 @@ namespace ProjectBlood
                 BuildUpgradeEntries();
                 RefreshEntries();
                 LegacyUpgradePanel.gameObject.SetActive(true);
+                ScrollUpgradeListToTop();
                 TittleText.Hide();
             });
             BtnCloseUpgradePage.onClick.AddListener(() =>
@@ -53,11 +56,13 @@ namespace ProjectBlood
         // 按配置动态生成养成条目（模板克隆，新增 SO 资产即自动出现）
         private void BuildUpgradeEntries()
         {
-            // 清空旧条目（保留模板）
+            // 清空旧条目（保留模板）；先 SetActive(false) 立即排除出布局，
+            // 避免 Destroy 延迟到帧末导致同帧布局高度计算包含旧条目
             for (int i = UpgradeEntryContainer.childCount - 1; i >= 0; i--)
             {
                 var child = UpgradeEntryContainer.GetChild(i);
                 if (child == (Transform)UpgradeEntryTemplate) continue;
+                child.gameObject.SetActive(false);
                 Destroy(child.gameObject);
             }
             entryViews.Clear();
@@ -84,6 +89,20 @@ namespace ProjectBlood
                 int cost = isMax ? 0 : view.Current.GetCostAt(level);
                 view.Refresh(level, cost, isMax, LegacyUpgradeState.LegacyPoint.Value >= cost);
             }
+        }
+
+        // 滚动列表回顶部：UGUI 布局（VerticalLayoutGroup/ContentSizeFitter）在帧末才重算，
+        // 须先用 ForceUpdateCanvases 强制完成布局与文本排版，再设置归一化位置才不会因 Content 高度未更新而失效
+        private void ScrollUpgradeListToTop()
+        {
+            var scrollRect = UpgradeEntryContainer != null
+                ? UpgradeEntryContainer.GetComponentInParent<ScrollRect>()
+                : null;
+            if (scrollRect == null) return;
+
+            Canvas.ForceUpdateCanvases();          // 完成条目实例化/文本变化引发的布局重算
+            scrollRect.verticalNormalizedPosition = 1f;   // 1 = 顶部
+            Canvas.ForceUpdateCanvases();          // 应用滚动位置
         }
 
         protected override void OnOpen(IUIData uiData = null)

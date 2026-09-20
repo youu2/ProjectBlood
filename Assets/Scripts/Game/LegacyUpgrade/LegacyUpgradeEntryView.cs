@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace ProjectBlood
 {
-    // 遗泽升级条目视图：挂在模板条目上（Inspector 拖引用），克隆时子引用自动重映射
+    // 遗产升级条目视图：挂在模板条目上（Inspector 拖引用），克隆时子引用自动重映射
     public class LegacyUpgradeEntryView : MonoBehaviour
     {
         public Button upgradeButton;

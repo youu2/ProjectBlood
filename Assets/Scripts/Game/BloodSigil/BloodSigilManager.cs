@@ -22,6 +22,9 @@ namespace ProjectBlood
                 return;
             }
             Instance = this;
+
+            // 局外养成：游戏开始时按养成等级解锁随机不重复血印（代次防护保证每局只应用一次）
+            BloodSigilState.ApplyGlobalRandomSigils();
         }
 
         private void OnDestroy()

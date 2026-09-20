@@ -36,6 +36,13 @@ namespace ProjectBlood
         // "免疫下一次伤害"充能总数（由伤害免疫类结算效果充入）
         private static int damageImmunityCharges;
 
+        // 局外养成：游戏开始时额外解锁的随机血印数量（跨局保留，不随 Reset 清空）
+        public static int GlobalRandomSigilUnlockCount { get; private set; }
+
+        // 重置代次防护：Reset 后允许应用一次，防止同局重复解锁
+        private static int resetGeneration;
+        private static int appliedGeneration = -1;
+
         public static event Action<BloodSigilSO> SigilUnlocked;
 
         private static bool initialized;
@@ -63,6 +70,36 @@ namespace ProjectBlood
             snapshotBuffer.Clear();
             permanentDamageBonus = 0f;
             damageImmunityCharges = 0;
+            resetGeneration++;   // 允许新一局应用一次全局随机血印
+        }
+
+        // 设置全局随机血印解锁数量（供 LegacyUpgradeState.ApplyEffect 调用，绝对值）
+        public static void SetGlobalRandomSigilUnlockCount(int count)
+        {
+            GlobalRandomSigilUnlockCount = Mathf.Max(0, count);
+        }
+
+        // 游戏开始时（BloodSigilManager.Awake 调用）按数量解锁随机不重复血印。
+        // GetRandomSigil 已过滤已解锁血印，天然不重复；池抽空时返回 null 提前结束。
+        public static void ApplyGlobalRandomSigils()
+        {
+            if (appliedGeneration == resetGeneration) return;
+            appliedGeneration = resetGeneration;
+            if (GlobalRandomSigilUnlockCount <= 0) return;
+
+            var manager = BloodSigilManager.Instance;
+            if (manager == null)
+            {
+                Debug.LogWarning("[BloodSigilState] BloodSigilManager 未就绪，跳过全局随机血印解锁");
+                return;
+            }
+
+            for (int i = 0; i < GlobalRandomSigilUnlockCount; i++)
+            {
+                var sigil = manager.GetRandomSigil();
+                if (sigil == null) break;   // 池中已无未解锁血印
+                Unlock(sigil);
+            }
         }
 
         // ============================== 游戏事件入口 ==============================

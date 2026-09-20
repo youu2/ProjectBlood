@@ -96,7 +96,7 @@ namespace ProjectBlood
             int cost = so.GetCostAt(level);
             if (LegacyPoint.Value < cost)
             {
-                error = "遗泽点不足";
+                error = "遗产点不足";
                 return false;
             }
 
@@ -108,12 +108,12 @@ namespace ProjectBlood
             return true;
         }
 
-        // 关卡结算：局内玩家等级折算为遗泽点（原 Global.SettleLegacyPoints 职责）
+        // 关卡结算：局内玩家等级折算为遗产点（原 Global.SettleLegacyPoints 职责）
         public static void SettleFromRun(int playerLevel)
         {
             int gained = Mathf.Max(0, playerLevel - 1);
             LegacyPoint.Value += gained;
-            Debug.Log($"[LegacyUpgradeState] 结算获得 {gained} 遗泽点，当前 {LegacyPoint.Value}");
+            Debug.Log($"[LegacyUpgradeState] 结算获得 {gained} 遗产点，当前 {LegacyPoint.Value}");
         }
 
         // 启动时按存档等级应用全部养成效果
@@ -142,6 +142,27 @@ namespace ProjectBlood
                     Global.INIT_MAX_HP.Value = value;
                     // INGAME_MAX_HP 静态初始化是快照，需同步保证首局血量正确
                     Global.INGAME_MAX_HP.Value = value;
+                    break;
+                case LegacyStatType.SkillCooldown:
+                    // 全局减免率跨局保留（PlayerUpgradeState.Reset 不清空此字段），
+                    // 游戏启动时 ApplyEffects 设置一次即可永久生效，所有技能（含未来新技能）自动享受
+                    PlayerUpgradeState.SetGlobalSkillCooldownReduction(level * so.reductionPerLevel);
+                    break;
+                case LegacyStatType.MoveSpeed:
+                    // 全局移速加成跨局保留；Player 不跨场景，OnPlayerSpawned 时叠加，升级时补差额立即生效
+                    PlayerUpgradeState.SetGlobalMoveSpeedBonus(so.valuePerLevel * level);
+                    break;
+                case LegacyStatType.BloodBankCapacity:
+                    // 血库是跨局持久单例，设置时直接补差额；Reset 还原局内基线时保留全局加成
+                    PlayerUpgradeState.SetGlobalBloodBankCapacityBonus(Mathf.RoundToInt(so.valuePerLevel * level));
+                    break;
+                case LegacyStatType.WeaponUnlock:
+                    // 跨局保留解锁数量，游戏开始时由 ResetLevel 调 ApplyGlobalWeaponUnlocks 实际解锁
+                    PlayerUpgradeState.SetGlobalWeaponUnlockCount(level);
+                    break;
+                case LegacyStatType.RandomSigilUnlock:
+                    // 跨局保留解锁数量；场景级 BloodSigilManager.Awake 时调 ApplyGlobalRandomSigils 实际解锁
+                    BloodSigilState.SetGlobalRandomSigilUnlockCount(level);
                     break;
             }
         }

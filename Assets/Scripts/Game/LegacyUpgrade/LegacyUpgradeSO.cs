@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace ProjectBlood
@@ -7,6 +8,11 @@ namespace ProjectBlood
     {
         CoinDropRate,
         InitMaxHp,
+        SkillCooldown,       // 全局技能 CD 缩减：对所有技能（含未来新技能）生效
+        MoveSpeed,           // 移动速度永久加成
+        BloodBankCapacity,   // 血库容量永久加成
+        WeaponUnlock,        // 游戏开始时额外解锁武器（按宝箱掉落顺序）
+        RandomSigilUnlock,   // 游戏开始时额外解锁随机不重复血印
     }
 
     // 局外养成项配置（纯数据）。
@@ -32,6 +38,10 @@ namespace ProjectBlood
         public float baseValue;              // 0 级基准值（如 CoinDropRate=0.30 / MaxHP=30）
         public float valuePerLevel;          // 每级增量（如 0.05 / 5）
 
+        [Header("技能 CD 缩减（仅 statType=SkillCooldown 时生效）")]
+        [Tooltip("每级累加的全局充能时间减免比例（0.05 = 每级缩短 5%）")]
+        [Range(0f, 0.5f)] public float reductionPerLevel = 0.05f;
+
         // 从当前等级升到下一级的价格
         public int GetCostAt(int level)
         {
@@ -49,6 +59,16 @@ namespace ProjectBlood
                     return $"金币掉率 +{valuePerLevel * 100f:F0}%/级（当前 {current * 100f:F0}%）";
                 case LegacyStatType.InitMaxHp:
                     return $"最大生命 +{valuePerLevel:F0}/级（当前 {current:F0}）";
+                case LegacyStatType.SkillCooldown:
+                    return $"全技能CD -{reductionPerLevel * 100f:F0}%/级（当前 -{level * reductionPerLevel * 100f:F0}%）";
+                case LegacyStatType.MoveSpeed:
+                    return $"移速 +{valuePerLevel:F1}/级（当前 {current:F1}）";
+                case LegacyStatType.BloodBankCapacity:
+                    return $"血库容量 +{valuePerLevel:F0}/级（当前 {current:F0}）";
+                case LegacyStatType.WeaponUnlock:
+                    return $"游戏开始时额外解锁MP5";
+                case LegacyStatType.RandomSigilUnlock:
+                    return $"游戏开始时获得随机血印（当前{level}个）";
                 default:
                     return string.Empty;
             }
