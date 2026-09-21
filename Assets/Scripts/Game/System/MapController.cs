@@ -35,8 +35,16 @@ namespace ProjectBlood
         public GameObject Portal;
         public static MapController instance;
 
-        // 相邻房间之间的走廊长度（格子数），同时决定房间定位步长
-        private const int CorridorLength = 7;
+        // 相邻标准房间之间的走廊长度（格子数），同时决定房间定位步长
+        private const int CorridorLength = 10;
+        // 相邻房间之间走廊的最小长度（格子数），由此推导房间模板尺寸上限：最大边长 = 标准边长 + CorridorLength - MinCorridorLength
+        private const int MinCorridorLength = 2;
+        // 标准房间尺寸（以 InitRoom 模板为准），所有房间中心固定在槽位中心，非标准尺寸通过左上角偏移吸收
+        private static int StandardRoomWidth => RoomConfig.InitRoom.Width;
+        private static int StandardRoomHeight => RoomConfig.InitRoom.Height;
+        // 布局槽位步长（标准房间占位 + 一条走廊）
+        private static int SlotStepX => StandardRoomWidth + CorridorLength;
+        private static int SlotStepY => StandardRoomHeight + CorridorLength;
 
         // 动态门布局网格，存储要生成的每个房间的生成配置（房间节点、门方向、网格坐标）
         public DynaGrid<RoomGenerateConfig> DynamicDoorLayout { get; private set; }
@@ -49,6 +57,8 @@ namespace ProjectBlood
             public HashSet<Direction> doorDirections { get; set; }
             public int roomPosX { get; set; }
             public int roomPosY { get; set; }
+            // 该房间实际选用的房间配置（决定实际尺寸，用于中心对齐定位与过道自适应长度）
+            public RoomConfig roomConfig { get; set; }
         }
 
         public enum Direction
@@ -227,88 +237,115 @@ namespace ProjectBlood
             });
         }
 
-        // 根据房间类型创建房间实例 参数：gridX - 网格X坐标，gridY - 网格Y坐标，roomGenerateConfig - 房间生成配置 返回创建的房间实例
+        // 根据房间类型创建房间实例（房间中心固定在槽位中心，尺寸差异通过左上角偏移吸收，保证门和过道对齐） 参数：gridX - 网格X坐标，gridY - 网格Y坐标，roomGenerateConfig - 房间生成配置 返回创建的房间实例
         private Room CreateRoomByType(int gridX, int gridY, RoomGenerateConfig roomGenerateConfig)
         {
-            var currentRoomPosX = gridX * (RoomConfig.InitRoom.roomMap.First().Length + CorridorLength);
-            var currentRoomPosY = gridY * (RoomConfig.InitRoom.roomMap.Count + CorridorLength);
-
-            switch (roomGenerateConfig.roomNode.roomType)
+            var roomConfig = roomGenerateConfig.roomNode.roomType switch
             {
-                case RoomType.InitRoom:
-                    var initRoom = GenerateRoom(currentRoomPosX, currentRoomPosY, RoomConfig.InitRoom, roomGenerateConfig);
-                    Global.currentRoom = initRoom;
-                    initRoom.roomState = Room.RoomState.Finished;
-                    return initRoom;
+                RoomType.InitRoom => RoomConfig.InitRoom,
+                RoomType.NormalRoom => RoomConfig.normalRoomConfigList.GetRandomItem(),
+                RoomType.ChestRoom => RoomConfig.ChestRoom,
+                RoomType.ShopRoom => RoomConfig.ShopRoom,
+                RoomType.BossRoom => RoomConfig.BossRoom,
+                _ => null,
+            };
 
-                case RoomType.NormalRoom:
-                    return GenerateRoom(currentRoomPosX, currentRoomPosY, RoomConfig.normalRoomConfigList.GetRandomItem(), roomGenerateConfig);
-
-                case RoomType.ChestRoom:
-                    return GenerateRoom(currentRoomPosX, currentRoomPosY, RoomConfig.ChestRoom, roomGenerateConfig);
-
-                case RoomType.ShopRoom:
-                    return GenerateRoom(currentRoomPosX, currentRoomPosY, RoomConfig.ShopRoom, roomGenerateConfig);
-
-                case RoomType.BossRoom:
-                    return GenerateRoom(currentRoomPosX, currentRoomPosY, RoomConfig.BossRoom, roomGenerateConfig);
-
-                default:
-                    return null;
+            if (roomConfig == null)
+            {
+                return null;
             }
+
+            roomGenerateConfig.roomConfig = roomConfig;
+
+            // 房间从左上角开始向下绘制：宽了左移、高了上移（y 增大），中心才保持不变
+            var currentRoomPosX = RoomStartPosX(roomGenerateConfig);
+            var currentRoomPosY = RoomStartPosY(roomGenerateConfig);
+
+            if (roomGenerateConfig.roomNode.roomType == RoomType.InitRoom)
+            {
+                var initRoom = GenerateRoom(currentRoomPosX, currentRoomPosY, roomConfig, roomGenerateConfig);
+                Global.currentRoom = initRoom;
+                initRoom.roomState = Room.RoomState.Finished;
+                return initRoom;
+            }
+
+            return GenerateRoom(currentRoomPosX, currentRoomPosY, roomConfig, roomGenerateConfig);
         }
 
-        // 生成房间之间的连接通道
+        // 生成房间之间的连接通道（长度由两端房间实际尺寸自适应，两端中心不变因此门和过道永远对齐）
         private void GenerateCorridors()
         {
             DynamicDoorLayout.ForEach((x, y, roomGenerateConfig) =>
             {
-                var currentRoomPosX = x * (RoomConfig.InitRoom.roomMap.First().Length + CorridorLength);
-                var currentRoomPosY = y * (RoomConfig.InitRoom.roomMap.Count + CorridorLength);
-                var roomWidth = RoomConfig.InitRoom.roomMap.First().Length;
-                var roomHeight = RoomConfig.InitRoom.roomMap.Count;
-
                 if (roomGenerateConfig.doorDirections.Contains(Direction.Right))
                 {
-                    DrawHorizontalCorridor(currentRoomPosX, currentRoomPosY, roomWidth, roomHeight);
+                    DrawHorizontalCorridor(roomGenerateConfig, DynamicDoorLayout[x + 1, y]);
                 }
 
                 if (roomGenerateConfig.doorDirections.Contains(Direction.Up))
                 {
-                    DrawVerticalCorridor(currentRoomPosX, currentRoomPosY, roomWidth, roomHeight);
+                    DrawVerticalCorridor(roomGenerateConfig, DynamicDoorLayout[x, y + 1]);
                 }
             });
         }
 
-        // 绘制水平通道（向右延伸） 参数：roomPosX - 房间X坐标，roomPosY - 房间Y坐标，roomWidth - 房间宽度，roomHeight - 房间高度
-        private void DrawHorizontalCorridor(int roomPosX, int roomPosY, int roomWidth, int roomHeight)
+        // 房间左上角格坐标：槽位原点加上中心对齐偏移（大房间向左/上偏移，小房间相反）
+        private int RoomStartPosX(RoomGenerateConfig config) => config.roomPosX * SlotStepX - (config.roomConfig.Width - StandardRoomWidth) / 2;
+        private int RoomStartPosY(RoomGenerateConfig config) => config.roomPosY * SlotStepY + (config.roomConfig.Height - StandardRoomHeight) / 2;
+
+        // 房间中心所在行/列（与房间尺寸无关，恒等于槽位中心）
+        private int RoomCenterPosX(RoomGenerateConfig config) => RoomStartPosX(config) + (config.roomConfig.Width - 1) / 2;
+        private int RoomCenterPosY(RoomGenerateConfig config) => RoomStartPosY(config) - (config.roomConfig.Height - 1) / 2;
+
+        // 绘制水平通道（向右延伸）：从当前房间右墙外一格画到右侧房间左墙前一格，长度由两端房间实际尺寸决定
+        private void DrawHorizontalCorridor(RoomGenerateConfig current, RoomGenerateConfig next)
         {
-            int corridorY = roomPosY - roomHeight / 2;
+            int startX = RoomStartPosX(current) + current.roomConfig.Width;
+            int length = RoomStartPosX(next) - startX;
+            int corridorY = RoomCenterPosY(current);
 
-            for (int i = 0; i < CorridorLength; i++)
+            if (length < MinCorridorLength)
             {
-                floorTilemap.SetTile(new Vector3Int(roomPosX + roomWidth + i, corridorY, 0), randFloor);
-                floorTilemap.SetTile(new Vector3Int(roomPosX + roomWidth + i, corridorY + 1, 0), randFloor);
-                floorTilemap.SetTile(new Vector3Int(roomPosX + roomWidth + i, corridorY - 1, 0), randFloor);
+                Debug.LogError($"水平过道长度 {length} 低于最小值 {MinCorridorLength}，房间模板尺寸过大，" +
+                               $"最大边长不能超过 {StandardRoomWidth + CorridorLength - MinCorridorLength}");
+            }
 
-                wallTilemap.SetTile(new Vector3Int(roomPosX + roomWidth + i, corridorY + 2, 0), randWall);
-                wallTilemap.SetTile(new Vector3Int(roomPosX + roomWidth + i, corridorY - 2, 0), randWall);
+            if (length <= 0) return;
+
+            for (int i = 0; i < length; i++)
+            {
+                floorTilemap.SetTile(new Vector3Int(startX + i, corridorY + 1, 0), randFloor);
+                floorTilemap.SetTile(new Vector3Int(startX + i, corridorY, 0), randFloor);
+                floorTilemap.SetTile(new Vector3Int(startX + i, corridorY - 1, 0), randFloor);
+
+                wallTilemap.SetTile(new Vector3Int(startX + i, corridorY + 2, 0), randWall);
+                wallTilemap.SetTile(new Vector3Int(startX + i, corridorY - 2, 0), randWall);
             }
         }
 
-        // 绘制垂直通道（向上延伸） 参数：roomPosX - 房间X坐标，roomPosY - 房间Y坐标，roomWidth - 房间宽度，roomHeight - 房间高度
-        private void DrawVerticalCorridor(int roomPosX, int roomPosY, int roomWidth, int roomHeight)
+        // 绘制垂直通道（向上延伸）：从当前房间上墙外一行画到上方房间下墙前一格，长度由两端房间实际尺寸决定
+        private void DrawVerticalCorridor(RoomGenerateConfig current, RoomGenerateConfig next)
         {
-            int corridorX = roomPosX + roomWidth / 2;
+            int startY = RoomStartPosY(current) + 1;
+            int length = RoomStartPosY(next) - next.roomConfig.Height - startY + 1;
+            int corridorX = RoomCenterPosX(current);
 
-            for (int i = 0; i < CorridorLength; i++)
+            if (length < MinCorridorLength)
             {
-                floorTilemap.SetTile(new Vector3Int(corridorX, roomPosY + i + 1, 0), randFloor);
-                floorTilemap.SetTile(new Vector3Int(corridorX + 1, roomPosY + i + 1, 0), randFloor);
-                floorTilemap.SetTile(new Vector3Int(corridorX - 1, roomPosY + i + 1, 0), randFloor);
+                Debug.LogError($"垂直过道长度 {length} 低于最小值 {MinCorridorLength}，房间模板尺寸过大，" +
+                               $"最大边长不能超过 {StandardRoomHeight + CorridorLength - MinCorridorLength}");
+            }
 
-                wallTilemap.SetTile(new Vector3Int(corridorX + 2, roomPosY + i + 1, 0), randWall);
-                wallTilemap.SetTile(new Vector3Int(corridorX - 2, roomPosY + i + 1, 0), randWall);
+            if (length <= 0) return;
+
+            for (int i = 0; i < length; i++)
+            {
+                floorTilemap.SetTile(new Vector3Int(corridorX + 1, startY + i, 0), randFloor);
+                floorTilemap.SetTile(new Vector3Int(corridorX, startY + i, 0), randFloor);
+                floorTilemap.SetTile(new Vector3Int(corridorX - 1, startY + i, 0), randFloor);
+
+                wallTilemap.SetTile(new Vector3Int(corridorX + 2, startY + i, 0), randWall);
+                wallTilemap.SetTile(new Vector3Int(corridorX - 2, startY + i, 0), randWall);
             }
         }
 

@@ -178,6 +178,12 @@ namespace ProjectBlood
 
         protected virtual void MakeDamage()
         {
+            // 层级检查：玩家处于"Invincible"层级（翻滚无敌期间）时跳过伤害施加
+            if (Player.player1 != null
+                && Player.player1.gameObject.layer == LayerMask.NameToLayer("Invincible"))
+            {
+                return;
+            }
             Player.player1?.TakeDamage(HitDamage);
         }
 
