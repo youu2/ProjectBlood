@@ -1,4 +1,5 @@
-// 基础近战敌人
+// 基础近战敌人：继承 EnemyBase，实现 AI 状态机（追踪/游走/攻击）
+// 血量、受击、死亡、朝向、寻路等通用逻辑在 EnemyBase 中
 using System.Collections;
 using System.Collections.Generic;
 using QFramework;
@@ -6,25 +7,15 @@ using UnityEngine;
 
 namespace ProjectBlood
 {
-    public partial class Enemy : ViewController, IDamageable
+    public partial class Enemy : EnemyBase
     {
-        [Header("=== 基础敌人设置 ===")]
-        [SerializeField] protected SpriteRenderer body;
-        protected SpriteRenderer spriteRenderer; // 用于朝向控制
-        [SerializeField] public float moveSpeed = 2.0f;
-        public float currentHealth;
-        public float maxHealth = 100.0f; // 敌人总生命值，记录初始血量用于吸血 PB 换算
-        [SerializeField] protected float Damage = 5.0f; // 用于直接造成伤害的敌人, 子弹碰撞在子弹脚本中处理
-        protected Vector3 directionToPlayer;    // 敌人朝向玩家的方向
-        [Tooltip("是否使用翻转来朝向玩家（关闭则直接旋转）")]
-        public bool useFlipSprite = true;
+        [Header("=== 基础敌人 AI 设置 ===")]
         [Tooltip("攻击距离通常要比追击距离远一点, 避免Wander期间敌人自己走出攻击范围")]
         [SerializeField] protected float attackRange = 12f;  // 攻击范围:超出这个距离回到Chase状态
         [SerializeField] protected float chaseRange = 10f;    // 追击范围:进入这个距离切换到Wander状态
         [SerializeField] protected float WanderDuration = 2.0f;
         protected float currentWanderTime = 0.0f;
         protected Vector3 wanderDirection = Vector3.right;
-        public List<PathSearchingHelper.NodeBase<Vector3Int>> movePath = new();
 
         public enum State
         {
@@ -35,15 +26,16 @@ namespace ProjectBlood
         }
         public State currentState = State.Idle;
 
-        protected virtual void Awake()
+        // 目标点"到达阈值"：单位格子中心到边缘距离约0.5，取0.4确保进入格子即可通过
+        private const float PathNodeArrivalThreshold = 0.4f;
+
+        protected override void Awake()
         {
-            spriteRenderer = GetComponentInChildren<SpriteRenderer>();  // 用于朝向控制
-            currentHealth = maxHealth;
+            base.Awake();
             if (Player.player1 != null) currentState = State.Chase;
-            movePath.Clear();
         }
 
-        protected virtual void Update()
+        protected override void Update()
         {
             if (Player.player1 == null)
             {
@@ -68,17 +60,6 @@ namespace ProjectBlood
                     break;
             }
         }
-
-        protected float GetDistanceToPlayer()
-        {
-            return Vector3.Distance(transform.position, Player.player1.transform.position);
-        }
-
-        // 目标点"到达阈值"：单位格子中心到边缘距离约0.5，取0.4确保进入格子即可通过
-        private const float PathNodeArrivalThreshold = 0.4f;
-
-        /// <summary>是否对玩家有直接视线(可被墙体遮挡)。默认true, 子类(如ShootingEnemy)重写以实现射线检测</summary>
-        protected virtual bool HasLineOfSightToPlayer() => true;
 
         protected virtual void UpdateChase(float distanceToPlayer)
         {
@@ -122,31 +103,6 @@ namespace ProjectBlood
                 currentState = State.Fire;
                 StartFire();
             }
-        }
-
-        /// <summary>每帧调用：以当前敌人/玩家位置重新计算一次 A* 路径，写入 movePath（失败时为空）。
-        /// 改为 protected 以便 Boss 等子类复用寻路移动逻辑。</summary>
-        protected void RecomputePath()
-        {
-            if (Room == null || Room.PathSearchingGrid == null) return;
-            if (MapController.instance == null || MapController.instance.wallTilemap == null
-                || MapController.instance.wallTilemap.layoutGrid == null) return;
-            if (Player.player1 == null) return;
-
-            var grid = MapController.instance.wallTilemap.layoutGrid;
-            var selfCell = grid.WorldToCell(transform.position);
-            var playerCell = grid.WorldToCell(Player.player1.transform.position);
-
-            var startNode = Room.PathSearchingGrid[selfCell.x, selfCell.y];
-            var endNode = Room.PathSearchingGrid[playerCell.x, playerCell.y];
-
-            if (startNode == null || endNode == null)
-            {
-                movePath.Clear();
-                return;
-            }
-
-            PathSearchingHelper.SearchPath(startNode, endNode, movePath);
         }
 
         protected virtual void StartWander()
@@ -194,77 +150,6 @@ namespace ProjectBlood
             if (distanceToPlayer > attackRange)
             {
                 currentState = State.Chase;
-            }
-        }
-
-        protected Vector3 GetDirectionToPlayer()
-        {
-            if (Player.player1 == null)
-                return transform.right;
-            return (Player.player1.transform.position - transform.position).normalized;
-        }
-
-        // 更新朝向面向玩家
-        public virtual void UpdateRotate(Vector3 dirToPlayer)
-        {
-            if (dirToPlayer.x == 0 && dirToPlayer.y == 0) return;
-            if (spriteRenderer != null)
-            {
-                if (useFlipSprite)
-                {
-                    spriteRenderer.flipX = dirToPlayer.x < 0;
-                }
-                else
-                {
-                    float targetAngle = Mathf.Atan2(dirToPlayer.y, dirToPlayer.x) * Mathf.Rad2Deg;
-                    float currentAngle = transform.eulerAngles.z;
-                    float newAngle = Mathf.LerpAngle(currentAngle, targetAngle, 180f * Time.deltaTime / 180f);
-                    transform.eulerAngles = new Vector3(0, 0, newAngle);
-                }
-            }
-        }
-
-        // 敌人受伤（virtual，子类如 Boss 可重写以加入阶段切换等逻辑）
-        public virtual void TakeDamage(float damage, Vector2 HitDir)
-        {
-            AudioKitManager.Instance.PlayOneShot("Torch Impact 2", volume: 0.5f);
-            FxManager.PlayEnemyHurtFX(transform.Position2D());
-            FxManager.DrawEnemyBlood(transform.Position2D());
-            currentHealth -= damage;
-            if (currentHealth <= 0f)
-            {
-                Death(HitDir);
-            }
-        }
-
-        protected virtual void Death(Vector2 HitDir)
-        {
-            AudioKitManager.Instance.PlayOneShot("KillSFX", volume: 0.6f);
-            // 血印系统：击杀单位事件（敌人伤害均来自玩家武器）
-            BloodSigilState.NotifyUnitKilled();
-            Global.GenerateDrops(this.gameObject);
-            if (Room != null)
-            {
-                Room.GetEnemies().Remove(this);
-            }
-            moveSpeed = 0f;
-
-            FxManager.SpawnEnemyBody(body, transform.Position2D(), HitDir);
-
-            Global.currentNum.Value -= 1;
-            this.DestroyGameObjGracefully();
-        }
-
-        public float HitDamage { get => Damage; }
-        public GameObject GameObject { get => gameObject; }
-        public Room Room { get; set; }
-        public float CurrentHealth { get => currentHealth; }
-        public float MaxHealth { get => maxHealth; }
-        public virtual void OnDestroy()
-        {
-            if (Room != null)
-            {
-                Room.GetEnemies().Remove(this);
             }
         }
     }

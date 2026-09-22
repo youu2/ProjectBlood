@@ -42,7 +42,6 @@ namespace ProjectBlood
         public int framesPerSprite = 3;   // 每个Sprite的帧数
         protected int currentSpriteIndex = 0;   // 当前枪口激光点的Sprite索引
         protected int frameCounter = 0;   // 当前帧计数器
-        protected Player player;
         protected float chargeProgress = 0f;   // 充能进度
         private Coroutine _damageCoroutine;   // 伤害协程
         private Coroutine _chargeCoroutine;   // 充能协程
@@ -52,13 +51,8 @@ namespace ProjectBlood
         private int _wallLayer;   // 墙层
         private int _playerLayer;   // 玩家层
 
-        [Header("=== 视线检测设置 ===")]
-        [Tooltip("射线检测间隔时间(秒), 越小越精确但性能开销越大")] public float sightCheckInterval = 0.5f;
-        [Tooltip("遮挡视线的Layer mask(默认0=自动使用Wall层, 只被墙体遮挡, 穿透粒子/掉落物)")] public LayerMask sightBlockingMask = 0;
-
-        // 射线检测缓存(每sightCheckInterval秒刷新一次, 攻击状态期间不刷新)
-        private float sightCheckTimer = 0f;
-        private bool cachedLineOfSight = false;
+        // 视线检测字段(player/sightCheckInterval/sightBlockingMask/sightCheckTimer/cachedLineOfSight)
+        // 和 PerformLineOfSightCheck 方法已上移到 EnemyBase，此处直接复用
 
         protected override void Awake()
         {
@@ -66,8 +60,10 @@ namespace ProjectBlood
             useFlipSprite = false;
         }
 
-        void Start()
+        // Start：基类已初始化 spriteRenderer/player/sightBlockingMask，这里只做激光专属初始化
+        protected override void Start()
         {
+            base.Start();
             InitializeComponents();
             ValidateParameters();
 
@@ -94,35 +90,15 @@ namespace ProjectBlood
         // 返回缓存的视线检测结果(由基类UpdateChase状态切换条件引用)
         protected override bool HasLineOfSightToPlayer() => cachedLineOfSight;
 
-        /// <summary>从敌人位置到玩家位置进行射线检测, 仅被墙体遮挡</summary>
-        protected virtual bool PerformLineOfSightCheck()
-        {
-            if (player == null) return false;
-            Vector2 origin = transform.position;
-            Vector2 target = player.transform.position;
-            RaycastHit2D hit = Physics2D.Linecast(origin, target, sightBlockingMask);
-            return hit.collider == null; // 没有命中墙体 = 视线无遮挡
-        }
-
         void InitializeComponents()
         {
-            if (spriteRenderer == null)
-                spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-
             _wallLayer = LayerMask.GetMask("Wall");
             _playerLayer = LayerMask.GetMask("Player");
-
-            // 视线遮挡Layer未配置时自动使用Wall层
-            if (sightBlockingMask == 0)
-                sightBlockingMask = _wallLayer;
 
             CreateLaserLines();
 
             if (fireFlashRenderer != null)
                 fireFlashRenderer.enabled = false;
-
-            if (player == null)
-                player = Player.player1;
         }
 
         void ValidateParameters()

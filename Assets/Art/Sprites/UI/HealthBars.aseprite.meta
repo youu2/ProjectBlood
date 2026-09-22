@@ -98,7 +98,7 @@ ScriptedImporter:
     addSortingGroup: 1
     addShadowCasters: 0
   importFileNodeState: 1
-  platformSettingsDirtyTick: 639248360701620136
+  platformSettingsDirtyTick: 639257140760089975
   textureAssetName: 
   singleSpriteImportData:
   - name: 
@@ -151,7 +151,7 @@ ScriptedImporter:
     rect:
       serializedVersion: 2
       x: 2
-      y: 2
+      y: 18
       width: 48
       height: 7
     spriteID: 2ad830687b9918d458c31981207467dd
@@ -170,8 +170,8 @@ ScriptedImporter:
     border: {x: 0, y: 3, z: 1, w: 0}
     rect:
       serializedVersion: 2
-      x: 2
-      y: 31
+      x: 52
+      y: 29
       width: 46
       height: 5
     spriteID: 7fd95960a7e0cbe4bb69b8cbdbd9d4a2
@@ -191,7 +191,7 @@ ScriptedImporter:
     rect:
       serializedVersion: 2
       x: 2
-      y: 22
+      y: 29
       width: 46
       height: 5
     spriteID: 963670a9cfdb0de4b90f70a0c5f43247
@@ -210,8 +210,8 @@ ScriptedImporter:
     border: {x: 1, y: 2, z: 1, w: 1}
     rect:
       serializedVersion: 2
-      x: 2
-      y: 13
+      x: 54
+      y: 18
       width: 48
       height: 5
     spriteID: 7d6feb4535a76ff44bfae46c8f37201a
@@ -231,7 +231,7 @@ ScriptedImporter:
     rect:
       serializedVersion: 2
       x: 2
-      y: 40
+      y: 38
       width: 46
       height: 3
     spriteID: b8b431a622e3cc1478a2659f2beb2c7b
@@ -250,8 +250,8 @@ ScriptedImporter:
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
       serializedVersion: 2
-      x: 2
-      y: 47
+      x: 52
+      y: 38
       width: 46
       height: 3
     spriteID: db9e29ec1d6e34d4bb204b771f2bd2c3
@@ -263,77 +263,68 @@ ScriptedImporter:
     edges: []
     tessellationDetail: 0
     uvTransform: {x: 0, y: 0}
+  - name: HealthBar_LongFrame
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 1, y: 1, z: 1, w: 1}
+    rect:
+      serializedVersion: 2
+      x: 2
+      y: 10
+      width: 106
+      height: 4
+    spriteID: b75745fb8ee4a6c459c64fa031ed9389
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 0, y: 0}
+  - name: HealthBar_LongRed
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 3
+      y: 5
+      width: 104
+      height: 2
+    spriteID: e6f7f88a24032cc40a61a48043e71214
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 0, y: 0}
+  - name: HealthBar_LongWhite
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 3
+      y: 2
+      width: 104
+      height: 2
+    spriteID: 8e55a35f34057894eab57f85759197ca
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 0, y: 0}
   asepriteLayers:
-  - layerIndex: 0
-    uuid:
-      value0: 4287466680
-      value1: 0
-      value2: 0
-      value3: 0
-    guid: 0
-    name: Layer 1
-    layerFlags: 3
-    layerType: 0
-    blendMode: 0
-    cells:
-    - name: Layer 1
-      frameIndex: 0
-      additiveSortOrder: 0
-      cellRect:
-        x: 0
-        y: 36
-        width: 48
-        height: 7
-      spriteId: 94803c25eec174946b4be8bb6795f5ff
-    linkedCells: []
-    parentIndex: -1
-  - layerIndex: 4
-    uuid:
-      value0: 4287466678
-      value1: 0
-      value2: 0
-      value3: 0
-    guid: 0
-    name: Layer 3
-    layerFlags: 3
-    layerType: 0
-    blendMode: 0
-    cells:
-    - name: Layer 3
-      frameIndex: 0
-      additiveSortOrder: 0
-      cellRect:
-        x: 1
-        y: 22
-        width: 46
-        height: 5
-      spriteId: 624aeb5291909ad40b7119526930821b
-    linkedCells: []
-    parentIndex: -1
-  - layerIndex: 5
-    uuid:
-      value0: 4287466677
-      value1: 0
-      value2: 0
-      value3: 0
-    guid: 0
-    name: Layer 2
-    layerFlags: 3
-    layerType: 0
-    blendMode: 0
-    cells:
-    - name: Layer 2
-      frameIndex: 0
-      additiveSortOrder: 0
-      cellRect:
-        x: 1
-        y: 29
-        width: 46
-        height: 5
-      spriteId: 68f5aacbb518bba458f2372ec69679b4
-    linkedCells: []
-    parentIndex: -1
-  - layerIndex: 1
+  - layerIndex: 2
     uuid:
       value0: 4289407846
       value1: 0
@@ -350,13 +341,13 @@ ScriptedImporter:
       additiveSortOrder: 0
       cellRect:
         x: 0
-        y: 14
+        y: 26
         width: 48
         height: 5
       spriteId: 42e11dcde46f97e46b29df20d529d58a
     linkedCells: []
     parentIndex: -1
-  - layerIndex: 2
+  - layerIndex: 3
     uuid:
       value0: 2176502747
       value1: 0
@@ -373,13 +364,13 @@ ScriptedImporter:
       additiveSortOrder: 0
       cellRect:
         x: 1
-        y: 9
+        y: 21
         width: 46
         height: 3
       spriteId: 74995d108f4b87347a847b25baf50ab3
     linkedCells: []
     parentIndex: -1
-  - layerIndex: 3
+  - layerIndex: 4
     uuid:
       value0: 2555260235
       value1: 0
@@ -396,10 +387,102 @@ ScriptedImporter:
       additiveSortOrder: 0
       cellRect:
         x: 1
-        y: 4
+        y: 16
         width: 46
         height: 3
       spriteId: 821efa465c8e1af47825659853d94c78
+    linkedCells: []
+    parentIndex: -1
+  - layerIndex: 0
+    uuid:
+      value0: 3154614793
+      value1: 0
+      value2: 0
+      value3: 0
+    guid: 0
+    name: Frame
+    layerFlags: 3
+    layerType: 0
+    blendMode: 0
+    cells:
+    - name: Frame
+      frameIndex: 0
+      additiveSortOrder: 0
+      cellRect:
+        x: 0
+        y: 48
+        width: 48
+        height: 7
+      spriteId: 817e5961fb277184db8439215435995a
+    linkedCells: []
+    parentIndex: -1
+  - layerIndex: 5
+    uuid:
+      value0: 3021629811
+      value1: 0
+      value2: 0
+      value3: 0
+    guid: 0
+    name: Red
+    layerFlags: 3
+    layerType: 0
+    blendMode: 0
+    cells:
+    - name: Red
+      frameIndex: 0
+      additiveSortOrder: 0
+      cellRect:
+        x: 1
+        y: 34
+        width: 46
+        height: 5
+      spriteId: f113b2d8c313e6248bdd9c95ba7d3985
+    linkedCells: []
+    parentIndex: -1
+  - layerIndex: 6
+    uuid:
+      value0: 3510846499
+      value1: 0
+      value2: 0
+      value3: 0
+    guid: 0
+    name: Green
+    layerFlags: 3
+    layerType: 0
+    blendMode: 0
+    cells:
+    - name: Green
+      frameIndex: 0
+      additiveSortOrder: 0
+      cellRect:
+        x: 1
+        y: 41
+        width: 46
+        height: 5
+      spriteId: aeca119dd6a679949891c7360269d361
+    linkedCells: []
+    parentIndex: -1
+  - layerIndex: 1
+    uuid:
+      value0: 1371423455
+      value1: 0
+      value2: 0
+      value3: 0
+    guid: 0
+    name: LongFrame
+    layerFlags: 3
+    layerType: 0
+    blendMode: 0
+    cells:
+    - name: LongFrame
+      frameIndex: 0
+      additiveSortOrder: 0
+      cellRect:
+        x: 0
+        y: 1
+        width: 106
+        height: 12
+      spriteId: 7e747e28671994043ba2f40b1f0dee2c
     linkedCells: []
     parentIndex: -1
   platformSettings:
@@ -420,7 +503,7 @@ ScriptedImporter:
     ignorePlatformSupport: 0
     maxTextureSize: 16384
     resizeAlgorithm: 0
-    textureFormat: -1
+    textureFormat: 4
     textureCompression: 0
     compressionQuality: 50
     forceMaximumCompressionQuality_BC6H_BC7: 0
@@ -442,5 +525,5 @@ ScriptedImporter:
   generatePhysicsShape: 0
   secondarySpriteTextures: []
   spritePackingTag: 
-  canvasSize: {x: 48, y: 43}
-  previousTextureSize: {x: 64, y: 64}
+  canvasSize: {x: 108, y: 55}
+  previousTextureSize: {x: 128, y: 64}

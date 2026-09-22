@@ -7,8 +7,12 @@ using UnityEngine;
 
 namespace ProjectBlood
 {
-    public abstract class BossBase : ShootingEnemy
+    public abstract class BossBase : EnemyBase
     {
+        [Header("=== Boss 子弹 ===")]
+        [Tooltip("Boss 发射的子弹预制体")]
+        public EnemyBullet enemyBullet;
+
         [Header("=== Boss 通用设置 ===")]
         [Tooltip("传送门引用：Boss 死亡后显示，供玩家进入下一关")]
         public GameObject portal;

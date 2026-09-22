@@ -1,7 +1,7 @@
 // Titan Boss：双管霰弹枪 Boss
 // 阶段1：追踪 → 双发射击 → 换弹
 // 阶段2（半血触发）：追踪 / 爆发推进 / 愤怒双发 / 环形射击
-// 复用 ShootingEnemy 的散射参数（霰弹），环射自己写协程（螺旋弹幕）
+// 散射和环射均自己实现（BossBase 不再继承 ShootingEnemy，避免 Inspector 字段污染）
 using System.Collections;
 using UnityEngine;
 
@@ -55,6 +55,12 @@ namespace ProjectBlood
         [Tooltip("推进速度")] public float dashSpeed = 12f;
         [Tooltip("推进持续时间（秒），距离 = 速度 × 时长")] public float dashDuration = 0.4f;
 
+        [Header("=== 音效设置 ===")]
+        [Tooltip("霰弹射击音效")] public AudioClip shootSound;
+        [Tooltip("爆发推进音效")] public AudioClip dashSound;
+        [Tooltip("转二阶段音效")] public AudioClip phaseTwoSound;
+        [Tooltip("环形射击音效")] public AudioClip ringShotSound;
+
         // 当前 Boss 状态（用独立字段，避免和 Enemy 基类的 currentState 混淆）
         public BossState currentBossState = BossState.Idle;
 
@@ -80,9 +86,8 @@ namespace ProjectBlood
             // 视线检测间隔按设计文档设为 0.3 秒
             sightCheckInterval = 0.3f;
 
-            // 霰弹散射参数复用 ShootingEnemy 的字段
-            scatterBulletCount = shotgunPelletCount;
-            scatterAngle = shotgunSpreadAngle;
+            // 散射参数直接用本类的 shotgunPelletCount / shotgunSpreadAngle，
+            // 不再复用 ShootingEnemy 的字段（BossBase 不再继承 ShootingEnemy）
         }
 
         protected override void Update()
@@ -186,9 +191,11 @@ namespace ProjectBlood
             float interval = angry ? phase2ShootInterval : phase1ShootInterval;
 
             // 双管：快速射两次
+
             for (int i = 0; i < 2; i++)
             {
                 FireShotgun();
+                PlayBossSfx(shootSound);
                 yield return new WaitForSeconds(interval);
             }
 
@@ -196,13 +203,13 @@ namespace ProjectBlood
             StartCoroutine(ReloadSequence(angry));
         }
 
-        // 发射一次霰弹（复用 ShootingEnemy 的散射逻辑）
+        // 发射一次霰弹（散射数学复用 EnemyBase.FireScatterBullets）
         private void FireShotgun()
         {
-            // 确保散射参数是最新的
-            scatterBulletCount = shotgunPelletCount;
-            scatterAngle = shotgunSpreadAngle;
-            FireBullet();
+            if (enemyBullet == null || player == null) return;
+            UpdateRotate(directionToPlayer);
+
+            FireScatterBullets(enemyBullet, directionToPlayer, shotgunPelletCount, shotgunSpreadAngle);
         }
 
         // 换弹：原地停一段时间，结束后根据阶段决定下一步
@@ -243,6 +250,7 @@ namespace ProjectBlood
         {
             currentBossState = BossState.Dash;
             dashCooldownTimer = dashCooldown;
+            PlayBossSfx(dashSound);
 
             // 朝玩家方向冲
             Vector3 dashDir = directionToPlayer.normalized;
@@ -257,6 +265,22 @@ namespace ProjectBlood
 
             // 冲完立刻愤怒双发，打完自动进换弹
             yield return StartCoroutine(AttackSequence(angry: true));
+        }
+
+        // 转二阶段：先播放转阶段音效，再走基类的打断协程 + 变红演出
+        protected override void StartPhaseTwo()
+        {
+            PlayBossSfx(phaseTwoSound);
+            base.StartPhaseTwo();
+        }
+
+        // 播放 Boss 音效（未在 Inspector 配置时静默跳过）
+        private void PlayBossSfx(AudioClip clip)
+        {
+            if (clip != null)
+            {
+                AudioKitManager.Instance.PlayOneShot(clip, volume: 0.5f);
+            }
         }
 
         // 环形射击：360 度射 3 圈，每圈带旋转偏移形成螺旋
@@ -277,6 +301,7 @@ namespace ProjectBlood
             for (int ring = 0; ring < ringCount; ring++)
             {
                 FireRing(ring);
+                PlayBossSfx(ringShotSound);
                 yield return new WaitForSeconds(ringInterval);
             }
 
@@ -290,21 +315,7 @@ namespace ProjectBlood
         private void FireRing(int ringIndex)
         {
             if (enemyBullet == null) return;
-
-            float angleStep = 360f / ringBulletCount;
-            // 每圈转一点角度，三圈错开就有螺旋感
-            float baseOffset = ringIndex * ringSpiralOffset;
-
-            for (int i = 0; i < ringBulletCount; i++)
-            {
-                float angle = i * angleStep + baseOffset;
-                // 把角度转成方向向量
-                Vector3 dir = Quaternion.Euler(0f, 0f, angle) * Vector3.right;
-
-                EnemyBullet bullet = Instantiate(enemyBullet, transform.position, Quaternion.identity);
-                bullet.direction = dir;
-                bullet.gameObject.SetActive(true);
-            }
+            FireScatterBullets(enemyBullet, directionToPlayer, ringBulletCount, 360f);
         }
 
         // 沿寻路路径移动（复用 Enemy 基类的 A* 寻路结果）
