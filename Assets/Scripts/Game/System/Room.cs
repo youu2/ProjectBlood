@@ -17,7 +17,7 @@ namespace ProjectBlood
         public RoomState roomState = RoomState.Unknown;
         public MapController.RoomGenerateConfig roomGenerateConfig { get; private set; }
         private List<EnemyWaveConfig> enemyWaveConfigList = new List<EnemyWaveConfig>();
-        private EnemyWaveConfig currentEnemyWaveConfig = null;
+        // private EnemyWaveConfig currentEnemyWaveConfig = null;
         public DynaGrid<PathSearchingHelper.TileNode> PathSearchingGrid { get; private set; }
         public int colorIndex = -1;
 

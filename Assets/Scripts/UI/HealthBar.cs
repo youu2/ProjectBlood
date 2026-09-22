@@ -1,55 +1,21 @@
-using System.Collections;
+// 玩家血条：数据源 Global.currentHP，双条掉血动画在 HealthBarBase 中
 using QFramework;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace ProjectBlood
 {
-    public partial class HealthBar : ViewController
+    public partial class HealthBar : HealthBarBase
     {
-        private Coroutine mRedBarCoroutine;
-        private float delaySeconds = 1f; // 延迟扣血量显示时间，让玩家看清;
-        private float smoothDuration = 0.3f; // 平滑平滑过渡时长;
+        protected override Image InstantBar => HealthBarGreen;
+        protected override Image DelayedBar => HealthBarRed;
+        protected override BindableProperty<float> HpSource => Global.currentHP;
+        protected override float GetMaxHp() => Global.INGAME_MAX_HP.Value;
 
-        void Start()
+        // 玩家血条保留重构前的整数取整换算（像素刻度感）
+        protected override float CalculateFill(float currentHp)
         {
-            Global.currentHP.RegisterWithInitValue(currentHP =>
-            {
-                float greenFill = Mathf.FloorToInt(currentHP) / Global.INGAME_MAX_HP.Value;
-
-                // 绿色血条：立即更新
-                HealthBarGreen.fillAmount = greenFill;
-
-                // 红色血条：延迟 1 秒后平滑追赶
-                if (mRedBarCoroutine != null) StopCoroutine(mRedBarCoroutine);
-                mRedBarCoroutine = StartCoroutine(DelayAndSmoothRedBar(greenFill, delaySeconds, smoothDuration));
-            }).UnRegisterWhenGameObjectDestroyed(gameObject);
-        }
-
-        /// <summary>
-        /// 延迟后平滑过渡红色血条
-        /// </summary>
-        /// <param name="targetFill">红色血条的目标 fillAmount</param>
-        /// <param name="delaySeconds">延迟秒数（让玩家看清扣血量）</param>
-        /// <param name="smoothDuration">平滑过渡时长</param>
-        private IEnumerator DelayAndSmoothRedBar(float targetFill, float delaySeconds, float smoothDuration)
-        {
-            // 第一阶段：等待，红色条保持原样，露出"刚刚损失的血量"
-            yield return new WaitForSeconds(delaySeconds);
-
-            // 第二阶段：平滑过渡到目标值
-            float startFill = HealthBarRed.fillAmount;
-            float elapsed = 0f;
-
-            while (elapsed < smoothDuration)
-            {
-                elapsed += Time.deltaTime;
-                float t = Mathf.Clamp01(elapsed / smoothDuration);
-                HealthBarRed.fillAmount = Mathf.Lerp(startFill, targetFill, t);
-                yield return null;
-            }
-
-            HealthBarRed.fillAmount = targetFill;
-            mRedBarCoroutine = null;
+            return Mathf.FloorToInt(currentHp) / Global.INGAME_MAX_HP.Value;
         }
     }
 }

@@ -34,6 +34,8 @@ namespace ProjectBlood
         protected bool isPhaseTwo = false;
         // 是否已死亡（防止重复触发死亡逻辑）
         protected bool isDead = false;
+        // Boss 战是否已开始（玩家进入 Boss 房后置 true，防止事件重复触发）
+        private bool bossFightStarted = false;
         // 是否正在播放转阶段演出（期间 Update 不应再触发新的攻击/推进）
         protected bool isInPhaseTransition = false;
 
@@ -49,11 +51,33 @@ namespace ProjectBlood
         {
             base.Awake();
 
-            // 把 Boss 血量同步到 Global，让 UI 血条能拿到数据
+            // 先把 Boss 血量数据同步到 Global（此时 BossActive 仍为 false，血条不显示），
+            // 等玩家进入 Boss 房触发开战后再激活
             Global.BossMaxHp.Value = maxHealth;
             Global.BossCurrentHp.Value = currentHealth;
-            Global.BossActive.Value = true;
             Global.BossPhaseTwo.Value = false;
+
+            Room.OnPlayerEnteredRoom += HandlePlayerEnteredRoom;
+        }
+
+        // 玩家进入房间事件回调：进入本 Boss 所在房间且房间已切到 Battle（关门开战）时激活 Boss 战
+        private void HandlePlayerEnteredRoom(Room enteredRoom)
+        {
+            if (bossFightStarted) return;
+            if (enteredRoom != Room) return;
+            if (enteredRoom.roomConfig.roomType != RoomType.BossRoom) return;
+            if (enteredRoom.roomState != Room.RoomState.Battle) return;
+
+            bossFightStarted = true;
+            Global.BossActive.Value = true;
+            Room.OnPlayerEnteredRoom -= HandlePlayerEnteredRoom;
+        }
+
+        public override void OnDestroy()
+        {
+            // 防止 Boss 未开战就被场景卸载等情况下事件泄漏
+            Room.OnPlayerEnteredRoom -= HandlePlayerEnteredRoom;
+            base.OnDestroy();
         }
 
         // 受伤时更新血条，并检测是否该进入二阶段

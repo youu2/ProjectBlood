@@ -481,7 +481,7 @@ MonoBehaviour:
   body: {fileID: 8621066446499680234}
   moveSpeed: 3
   currentHealth: 0
-  maxHealth: 13000
+  maxHealth: 10000
   Damage: 5
   useFlipSprite: 1
   sightCheckInterval: 0.5

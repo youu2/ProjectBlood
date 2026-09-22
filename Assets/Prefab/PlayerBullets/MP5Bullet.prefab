@@ -133,9 +133,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   direction: {x: 0, y: 0}
   speed: 30
-  damage: 100
+  damage: 12
   lifestealPercent: 0
   isEnhanced: 1
+  weaponType: 1
   BulletPrefab: {fileID: 7571215295603152196}
 --- !u!50 &7592181943921068227
 Rigidbody2D:

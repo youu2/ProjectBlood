@@ -125,12 +125,8 @@ namespace ProjectBlood
             }
         }
 
-        private static bool initialized;
-
-        // 订阅武器开火事件(由 Global.Initialize 在启动时调用一次)
         public static void Initialize()
         {
-            initialized = true;
         }
 
         // ============================== 查询 ==============================

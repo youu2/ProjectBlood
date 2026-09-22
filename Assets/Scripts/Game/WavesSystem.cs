@@ -31,7 +31,7 @@ public class WavesSystem : MonoBehaviour
     [SerializeField] private int wave1TotalNum = 15;
     [SerializeField] private int wave1MaxActive = 8;
     [SerializeField] private int wave1SingleSpawnNum = 3;
-    [SerializeField] private int spawnInterval = 5;
+    // [SerializeField] private int spawnInterval = 5;
 
     // ======= Internal state =======
     private List<EnemyDefinition> sortedAllEnemies;   // total pool sorted by strength
