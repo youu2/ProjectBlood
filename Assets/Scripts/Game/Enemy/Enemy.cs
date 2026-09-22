@@ -124,8 +124,9 @@ namespace ProjectBlood
             }
         }
 
-        /// <summary>每帧调用：以当前敌人/玩家位置重新计算一次 A* 路径，写入 movePath（失败时为空）</summary>
-        private void RecomputePath()
+        /// <summary>每帧调用：以当前敌人/玩家位置重新计算一次 A* 路径，写入 movePath（失败时为空）。
+        /// 改为 protected 以便 Boss 等子类复用寻路移动逻辑。</summary>
+        protected void RecomputePath()
         {
             if (Room == null || Room.PathSearchingGrid == null) return;
             if (MapController.instance == null || MapController.instance.wallTilemap == null
@@ -223,8 +224,8 @@ namespace ProjectBlood
             }
         }
 
-        // 敌人受伤
-        public void TakeDamage(float damage, Vector2 HitDir)
+        // 敌人受伤（virtual，子类如 Boss 可重写以加入阶段切换等逻辑）
+        public virtual void TakeDamage(float damage, Vector2 HitDir)
         {
             AudioKitManager.Instance.PlayOneShot("Torch Impact 2", volume: 0.5f);
             FxManager.PlayEnemyHurtFX(transform.Position2D());

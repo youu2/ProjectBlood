@@ -33,6 +33,16 @@ namespace ProjectBlood
         public static bool IsGamePaused = false;
         public static float WeaponAdditionalCameraSize = 0.5f;
 
+        // ===== Boss 战相关状态（供 UI 血条 / 阶段演出订阅）=====
+        // 当前是否有 Boss 在场（Boss 生成时置 true，死亡时置 false）
+        public static BindableProperty<bool> BossActive = new BindableProperty<bool>(false);
+        // Boss 最大生命值
+        public static BindableProperty<float> BossMaxHp = new BindableProperty<float>(0f);
+        // Boss 当前生命值
+        public static BindableProperty<float> BossCurrentHp = new BindableProperty<float>(0f);
+        // Boss 是否进入二阶段（供 UI 变色 / 演出订阅）
+        public static BindableProperty<bool> BossPhaseTwo = new BindableProperty<bool>(false);
+
         // 通关耗时（秒）：仅游戏未暂停时累加，重开新局时在 ResetLevel 清零
         public static float RunElapsedSeconds;
 
@@ -151,6 +161,11 @@ namespace ProjectBlood
             Coin.Value = 0;
             currentDifficulty = 0;
             RunElapsedSeconds = 0f;
+            // 重置 Boss 战状态，避免上一关的 Boss 血条残留到下一关
+            BossActive.Value = false;
+            BossMaxHp.Value = 0f;
+            BossCurrentHp.Value = 0f;
+            BossPhaseTwo.Value = false;
             WeaponDataSystem.weaponDataList.Clear();
             WeaponDataSystem.weaponDataList.Add(WeaponConfig.DE.NewWeapon()); // 默认武器只有DE
             PlayerUpgradeState.ApplyGlobalWeaponUnlocks(); // 局外养成额外解锁武器（按宝箱掉落顺序）

@@ -246,6 +246,28 @@ namespace ProjectBlood
                     AudioKitManager.Instance.PlayOneShot("DoorClosingSfx");
                 }
             }
+            else if (roomConfig.roomType == RoomType.BossRoom)
+            {
+                // Boss 房：玩家进入后关门开战
+                // Boss 在地图生成时就已经放在房间里并加入 enemySet，
+                // 这里只负责关门 + 切战斗状态，Boss 会自己检测到 Battle 后开始行动
+                if (roomState == RoomState.Init)
+                {
+                    roomState = RoomState.Battle;
+
+                    if (doorList != null)
+                    {
+                        foreach (var door in doorList)
+                        {
+                            if (door != null)
+                            {
+                                door.Show();
+                            }
+                        }
+                    }
+                    AudioKitManager.Instance.PlayOneShot("DoorClosingSfx");
+                }
+            }
             else
             {
                 roomState = RoomState.Idle;

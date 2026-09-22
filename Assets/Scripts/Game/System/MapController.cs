@@ -33,6 +33,11 @@ namespace ProjectBlood
         public Tilemap wallTilemap;
         public Tilemap floorTilemap;
         public GameObject Portal;
+
+        // Boss 预制体列表：按楼层（1-3层）分别配置，X-1/X-2 的 BossRoom 直接出传送门，X-3 才出 Boss
+        // 索引 0 = 第1层(1-3)，1 = 第2层(2-3)，2 = 第3层(3-3)。如果只配了1个，所有楼层都用它。
+        public List<GameObject> BossPrefabs = new List<GameObject>();
+
         public static MapController instance;
 
         // 相邻标准房间之间的走廊长度（格子数），同时决定房间定位步长
@@ -419,8 +424,18 @@ namespace ProjectBlood
                     break;
 
                 case '#':
-                    var portal = Instantiate(Portal);
-                    portal.transform.position = worldPos;
+                    // '#' 是 Boss 房中心挂点：
+                    // X-3 关卡（1-3、2-3、3-3）在这里生成 Boss，传送门先隐藏，Boss 死后才显示
+                    // X-1 / X-2 关卡直接生成传送门（玩家可跳过）
+                    if (Global.currentDifficulty % 3 == 2)
+                    {
+                        SpawnBoss(worldPos, roomObj);
+                    }
+                    else
+                    {
+                        var portal = Instantiate(Portal);
+                        portal.transform.position = worldPos;
+                    }
                     break;
 
                 case 'd':
@@ -441,7 +456,59 @@ namespace ProjectBlood
             }
         }
 
-        // 处理门的放置逻辑，根据房间连接方向决定是否放置门或墙 参数：x - 网格X坐标，y - 网格Y坐标，roomCenter - 房间中心，roomObj - 房间实例，roomGenerateConfig - 房间生成配置
+        // 在 Boss 房中心生成 Boss：生成 Boss 本体 + 一个隐藏的传送门（Boss 死后显示）
+        private void SpawnBoss(Vector3 worldPos, Room roomObj)
+        {
+            // 按楼层选 Boss 预制体：currentDifficulty / 3 得到楼层索引（0/1/2）
+            int floorIndex = Global.currentDifficulty / 3;
+            GameObject bossPrefab = null;
+
+            if (BossPrefabs.Count > 0)
+            {
+                // 如果配了对应楼层的就用，否则用第一个
+                if (floorIndex < BossPrefabs.Count && BossPrefabs[floorIndex] != null)
+                {
+                    bossPrefab = BossPrefabs[floorIndex];
+                }
+                else
+                {
+                    bossPrefab = BossPrefabs[0];
+                }
+            }
+
+            if (bossPrefab == null)
+            {
+                Debug.LogError("BossPrefabs 未配置 Boss 预制体！X-3 关卡将无法生成 Boss。");
+                // 保底：直接出传送门，避免卡死
+                var fallbackPortal = Instantiate(Portal);
+                fallbackPortal.transform.position = worldPos;
+                return;
+            }
+
+            // 生成 Boss
+            var bossObj = Instantiate(bossPrefab);
+            bossObj.transform.position = worldPos;
+
+            var bossComp = bossObj.GetComponent<BossBase>();
+            if (bossComp != null)
+            {
+                // 把 Boss 注册到房间，这样 Boss 死亡后 Room.Update 会自动开门
+                bossComp.Room = roomObj;
+                roomObj.GetEnemies().Add(bossComp);
+
+                // 生成一个隐藏的传送门，Boss 死亡时由 BossBase.Death 负责显示
+                var portal = Instantiate(Portal);
+                portal.transform.position = worldPos;
+                portal.SetActive(false);
+                bossComp.portal = portal;
+            }
+            else
+            {
+                Debug.LogError($"Boss 预制体 {bossPrefab.name} 没有 BossBase 组件！");
+            }
+        }
+
+        // 处理门的放置逻辑，根据房间连接方向决定是否放置门或墙 参数：x - 网格X坐标，y - 网格Y坐标，roomCenter - 房间中心坐标，roomObj - 房间实例，roomGenerateConfig - 房间生成配置
         private void HandleDoorPlacement(int x, int y, Vector2 roomCenter, Room roomObj, RoomGenerateConfig roomGenerateConfig)
         {
             Vector3 worldPos = new Vector3(x + 0.5f, y + 0.5f, 0);

@@ -37,11 +37,13 @@ namespace ProjectBlood
         [Tooltip("遮挡视线的Layer mask(默认0=自动使用Wall层, 只被墙体遮挡, 穿透粒子/掉落物)")] public LayerMask sightBlockingMask = 0;
 
         // 射线检测缓存(每sightCheckInterval秒刷新一次, 攻击状态期间不刷新)
-        private float sightCheckTimer = 0f;
-        private bool cachedLineOfSight = false;
+        // 改为 protected 以便 Boss 子类复用视线检测缓存
+        protected float sightCheckTimer = 0f;
+        protected bool cachedLineOfSight = false;
 
         // Start is called before the first frame update
-        void Start()
+        // 改为 protected virtual，以便 Boss 子类能重写并调用 base.Start() 完成初始化
+        protected virtual void Start()
         {
             // 初始化组件
             if (spriteRenderer == null)
