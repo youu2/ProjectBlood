@@ -24,6 +24,8 @@ namespace ProjectBlood
             if (EnemyBlood != null)
             {
                 _roomBloodManager = new RoomBloodManager(this, BloodTrailEntries, BloodTrailFallback, EnemyBlood, transform);
+                // 池预热：按配置最大上限一次性建池，战斗期零 Instantiate
+                _roomBloodManager.Prewarm();
             }
         }
         public static void PlayEnemyHurtFX(Vector2 pos)

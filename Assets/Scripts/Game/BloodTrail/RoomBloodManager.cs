@@ -17,32 +17,76 @@ namespace ProjectBlood
     }
 
     /// <summary>
-    /// 房间级血迹管理器：维护每个房间的血迹 FIFO 跟踪 + 全局共享对象池。
+    /// 房间级血迹管理器：每个房间一个环形缓冲 FIFO 跟踪 + 全局共享对象池。
     /// 由 FxManager 持有，通过 FxManager.DrawEnemyBlood(pos, room) 接入。
-    /// 设计要点：
-    /// - 池动态扩容：跨房间累计时若 freePool 空，直接 Instantiate 新精灵。
-    /// - 每个 Room 一个 LinkedList<SpriteRenderer> 跟踪 FIFO 顺序。
-    /// - 满额时淘汰最早精灵：启动淡出协程 → 完成后归池。
-    /// - 淡出期间精灵计入 _releasing 集合，不重复淘汰。
+    /// 性能设计(稳态零分配)：
+    /// - 池预热：Prewarm() 按配置最大上限一次性建池，战斗期不再 Instantiate。
+    /// - 环形缓冲替代 LinkedList：FIFO 内建(满时头位即淘汰者)，每次生成零分配。
+    /// - 单一淡出泵：一个常驻协程推进所有淡出，替代每精灵 StartCoroutine，空闲自停。
     /// - 血迹无生命周期：未淘汰前永久保留(直到关卡切换 ClearAll)。
-    /// 配置直接以 List+fallback 形式挂在 FxManager Inspector,无需 SO 资产。
+    /// - 无淡入：满 alpha 直接出现，与原 DrawBlood 行为一致。
     /// </summary>
     public class RoomBloodManager
     {
+        /// <summary>淡出中条目(struct 值类型存 List，泵内回写，零分配)</summary>
+        private struct FadingEntry
+        {
+            public SpriteRenderer Sprite;
+            public float Elapsed;
+            public float Duration;
+            public Color BaseColor;
+        }
+
+        /// <summary>
+        /// 环形缓冲 FIFO：数组预分配，Add 零分配；满时 TakeHead 返回最早元素并腾位，
+        /// "添加即淘汰"内建于数据结构，无需独立淘汰循环。
+        /// </summary>
+        private class BloodRing
+        {
+            public readonly SpriteRenderer[] Items;
+            public int Head; // 最早元素下标
+            public int Count;
+            public int Capacity => Items.Length;
+
+            public BloodRing(int capacity)
+            {
+                Items = new SpriteRenderer[Mathf.Max(1, capacity)];
+            }
+
+            /// <summary>满时取出最早元素(调用方负责送入淡出泵)；未满返回 null</summary>
+            public SpriteRenderer TakeHead()
+            {
+                if (Count < Capacity) return null;
+                var oldest = Items[Head];
+                Items[Head] = null;
+                Head = (Head + 1) % Capacity;
+                Count--;
+                return oldest;
+            }
+
+            public void Add(SpriteRenderer sprite)
+            {
+                Items[(Head + Count) % Capacity] = sprite;
+                Count++;
+            }
+        }
+
         private readonly MonoBehaviour _coroutineRunner;
         private readonly List<RoomTypeBloodConfig> _entries;
         private readonly RoomTypeBloodConfig _fallback;
         private readonly SpriteRenderer _template;
         private readonly Transform _container;
 
-        // 房间 → 该房间内当前所有血迹(FIFO 顺序：First = 最早生成)
-        private readonly Dictionary<Room, LinkedList<SpriteRenderer>> _roomBlood = new();
-        // 正在淡出中的精灵集合，防止同一精灵被重复淘汰
-        private readonly HashSet<SpriteRenderer> _releasing = new();
-        // 池中空闲精灵(已淡出完成或被回收，等待下次复用)
+        // 房间 → 该房间血迹环形缓冲(FIFO 顺序)
+        private readonly Dictionary<Room, BloodRing> _roomBlood = new();
+        // 淡出中列表(单一泵推进)
+        private readonly List<FadingEntry> _fading = new();
+        // 池中空闲精灵(淡出完成，等待复用)
         private readonly Stack<SpriteRenderer> _freePool = new();
-        // 池中所有曾经创建的精灵实例(ClearAll 时统一销毁)
+        // 池中所有精灵实例(ClearAll 时统一销毁)
         private readonly List<SpriteRenderer> _allInstances = new();
+        // 单一淡出泵协程句柄
+        private Coroutine _fadePump;
 
         public RoomBloodManager(MonoBehaviour coroutineRunner,
                                  List<RoomTypeBloodConfig> entries,
@@ -57,33 +101,36 @@ namespace ProjectBlood
             _container = container;
         }
 
+        /// <summary>池预热：按配置中最大上限一次性建池，战斗期零 Instantiate</summary>
+        public void Prewarm()
+        {
+            if (_allInstances.Count > 0 || _template == null) return;
+            int target = Mathf.Max(0, _fallback.maxBloodCount);
+            foreach (var e in _entries)
+                if (e != null && e.maxBloodCount > target) target = e.maxBloodCount;
+            for (int i = 0; i < target; i++)
+            {
+                var sprite = Object.Instantiate(_template, _container);
+                sprite.gameObject.SetActive(false);
+                _allInstances.Add(sprite);
+            }
+        }
+
         /// <summary>产生一条血迹(EnemyBase 受击时调用)</summary>
         public void DrawEnemyBlood(Vector2 pos, Room room)
         {
             if (room == null || room.roomConfig == null) return;
 
             var cfg = GetConfig(room.roomConfig.roomType);
-            var tracker = GetOrCreateTracker(room);
+            var ring = GetOrCreateRing(room, cfg.maxBloodCount);
 
-            // 满额 → 淘汰最早(非释放中)，直到腾出空位
-            while (tracker.Count >= cfg.maxBloodCount)
-            {
-                var oldest = tracker.First;
-                if (oldest == null) break;
-                tracker.RemoveFirst();
-                var oldestSprite = oldest.Value;
-
-                if (!_releasing.Contains(oldestSprite))
-                {
-                    _releasing.Add(oldestSprite);
-                    _coroutineRunner.StartCoroutine(FadeOutAndRelease(oldestSprite, cfg.fadeOutDuration));
-                }
-            }
+            // 环形已满时头位即最早血迹，取出送入淡出泵，腾出的位置正好给新血迹
+            var oldest = ring.TakeHead();
+            if (oldest != null) EnqueueFade(oldest, cfg.fadeOutDuration);
 
             var sprite = Acquire();
             if (sprite == null) return;
-
-            tracker.AddLast(sprite);
+            ring.Add(sprite);
             SetupAndPlay(sprite, pos);
         }
 
@@ -97,7 +144,12 @@ namespace ProjectBlood
             _allInstances.Clear();
             _freePool.Clear();
             _roomBlood.Clear();
-            _releasing.Clear();
+            _fading.Clear();
+            if (_fadePump != null)
+            {
+                _coroutineRunner.StopCoroutine(_fadePump);
+                _fadePump = null;
+            }
         }
 
         private RoomTypeBloodConfig GetConfig(RoomType type)
@@ -107,18 +159,16 @@ namespace ProjectBlood
             return _fallback;
         }
 
-        private LinkedList<SpriteRenderer> GetOrCreateTracker(Room room)
+        private BloodRing GetOrCreateRing(Room room, int capacity)
         {
-            if (!_roomBlood.TryGetValue(room, out var list))
+            if (!_roomBlood.TryGetValue(room, out var ring))
             {
-                list = new LinkedList<SpriteRenderer>();
-                _roomBlood[room] = list;
+                ring = new BloodRing(capacity);
+                _roomBlood[room] = ring;
             }
-            return list;
+            return ring;
         }
 
-        // 从池中获取一个精灵实例(或创建新实例)
-        // 池耗尽时动态扩容(理论上发生在跨房间累计血迹超过单房上限时)
         private SpriteRenderer Acquire()
         {
             SpriteRenderer sprite;
@@ -128,12 +178,65 @@ namespace ProjectBlood
             }
             else
             {
-                // 池耗尽：动态扩容(理论上发生在跨房间累计血迹超过单房上限时)
+                // 预热不足的兜底：极少发生(预热取的是各房间上限最大值)
                 sprite = Object.Instantiate(_template, _container);
                 _allInstances.Add(sprite);
             }
             sprite.gameObject.SetActive(true);
             return sprite;
+        }
+
+        /// <summary>送入淡出泵(零 per-fade 协程分配)，泵空闲时启动</summary>
+        private void EnqueueFade(SpriteRenderer sprite, float duration)
+        {
+            if (sprite == null) return;
+            _fading.Add(new FadingEntry
+            {
+                Sprite = sprite,
+                Elapsed = 0f,
+                Duration = Mathf.Max(0.01f, duration),
+                BaseColor = sprite.color,
+            });
+            if (_fadePump == null)
+            {
+                _fadePump = _coroutineRunner.StartCoroutine(FadePump());
+            }
+        }
+
+        /// <summary>单一淡出泵：每帧推进所有淡出中的精灵，空闲时自停</summary>
+        private IEnumerator FadePump()
+        {
+            while (_fading.Count > 0)
+            {
+                float dt = Time.deltaTime;
+                for (int i = _fading.Count - 1; i >= 0; i--)
+                {
+                    var entry = _fading[i];
+                    // 关卡切换 ClearAll 销毁精灵后，下一帧检测到 null 安全跳过
+                    if (entry.Sprite == null)
+                    {
+                        _fading.RemoveAt(i);
+                        continue;
+                    }
+                    entry.Elapsed += dt;
+                    if (entry.Elapsed >= entry.Duration)
+                    {
+                        entry.Sprite.gameObject.SetActive(false);
+                        // 复位 alpha 供下次复用
+                        entry.Sprite.color = new Color(entry.BaseColor.r, entry.BaseColor.g, entry.BaseColor.b, 1f);
+                        _freePool.Push(entry.Sprite);
+                        _fading.RemoveAt(i);
+                    }
+                    else
+                    {
+                        float t = entry.Elapsed / entry.Duration;
+                        entry.Sprite.color = new Color(entry.BaseColor.r, entry.BaseColor.g, entry.BaseColor.b, 1f - t);
+                        _fading[i] = entry; // struct 副本需回写
+                    }
+                }
+                yield return null;
+            }
+            _fadePump = null;
         }
 
         // 与 FxManager.DrawBlood 行为一致：满 alpha 出现 + 飞溅动画，不做淡入
@@ -145,47 +248,19 @@ namespace ProjectBlood
             var c = blood.color;
             blood.color = new Color(c.r, c.g, c.b, 1f);
 
-            // 血液随机向一个地方飞溅
+            // 血液随机向一个地方飞溅(守卫：精灵被淘汰进入淡出 alpha<1 后停止写入，
+            // 防止旧动画闭包污染已归池/复用的精灵)
             var angle = Random.Range(0, 360);
             var radius = Random.Range(0.2f, 1.5f);
             var movePos = angle.AngleToDirection2D() * radius;
             var scaleTo = Random.Range(0.2f, 3.0f);
             ActionKit.Lerp(0, 1, Random.Range(0.1f, 0.3f), (p) =>
             {
+                if (blood.color.a < 1f) return;
                 p = EaseUtility.InCubic(0, 1, p);
                 blood.Position2D(originPos + movePos * p);
                 blood.LocalScale(scaleTo * p);
             }).StartCurrentScene();
-        }
-
-        private IEnumerator FadeOutAndRelease(SpriteRenderer sprite, float duration)
-        {
-            if (sprite == null)
-            {
-                _releasing.Remove(sprite);
-                yield break;
-            }
-
-            var startColor = sprite.color;
-            float elapsed = 0f;
-            while (elapsed < duration)
-            {
-                elapsed += Time.deltaTime;
-                // 关卡切换时 ClearAll 会销毁精灵，协程下一帧检测到 null 后安全退出
-                if (sprite == null) { _releasing.Remove(sprite); yield break; }
-                float t = Mathf.Clamp01(elapsed / duration);
-                sprite.color = new Color(startColor.r, startColor.g, startColor.b, 1f - t);
-                yield return null;
-            }
-
-            if (sprite != null)
-            {
-                sprite.gameObject.SetActive(false);
-                // 复位 alpha 供下次复用
-                sprite.color = new Color(startColor.r, startColor.g, startColor.b, 1f);
-                _freePool.Push(sprite);
-            }
-            _releasing.Remove(sprite);
         }
     }
 }
