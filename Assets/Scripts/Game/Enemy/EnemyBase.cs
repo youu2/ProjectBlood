@@ -175,7 +175,7 @@ namespace ProjectBlood
         {
             AudioKitManager.Instance.PlayOneShot("Torch Impact 2", volume: 0.5f);
             FxManager.PlayEnemyHurtFX(transform.Position2D());
-            FxManager.DrawEnemyBlood(transform.Position2D());
+            FxManager.DrawEnemyBlood(transform.Position2D(), Room);
             currentHealth -= damage;
             if (currentHealth <= 0f)
             {

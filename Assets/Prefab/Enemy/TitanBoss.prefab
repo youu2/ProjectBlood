@@ -433,7 +433,7 @@ GameObject:
   - component: {fileID: 6532819935276294440}
   - component: {fileID: 3846359185140523581}
   - component: {fileID: 6885501857683488525}
-  - component: {fileID: 1942449423102109053}
+  - component: {fileID: 7709951268060492699}
   m_Layer: 7
   m_Name: TitanBoss
   m_TagString: Enemy
@@ -588,8 +588,8 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!61 &1942449423102109053
-BoxCollider2D:
+--- !u!70 &7709951268060492699
+CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -620,16 +620,6 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.01, y: 0.21}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 0.94, y: 0.88}
-  m_EdgeRadius: 0
+  m_Offset: {x: 0.054374002, y: 0.20541802}
+  m_Size: {x: 0.6087481, y: 0.83609164}
+  m_Direction: 0
