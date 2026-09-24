@@ -12,6 +12,9 @@ namespace ProjectBlood
         public int countActive;
         public int countInactive;
 
+        // 弹壳实例的专用父容器，与子弹容器分开，避免被子弹池的跨关卡清理误销毁
+        private Transform shellContainer;
+
         private void Awake()
         {
             if (instance != null && instance != this)
@@ -22,12 +25,16 @@ namespace ProjectBlood
             instance = this;
             shellPool = new ObjectPool<GameObject>(CreateShell, GetShell, ReleaseShell, DestroyShell, true, 50, 200);
             DontDestroyOnLoad(gameObject); // 跨场景保留
+
+            shellContainer = new GameObject("Shells").transform;
+            shellContainer.SetParent(transform, false);
         }
         public ObjectPool<GameObject> shellPool;
         public GameObject CreateShell()
         {
-            // 生成在池宿主(WeaponPools,跨场景保留)下方，便于在 Hierarchy 中统一管理
-            var shell = Instantiate(DropManager.Instance.Shell.gameObject, transform);
+            // 生成在专用弹壳容器(WeaponPools/Shells,跨场景保留)下方，
+            // 与子弹容器隔离，避免被子弹池的跨关卡清理误销毁
+            var shell = Instantiate(DropManager.Instance.Shell.gameObject, shellContainer);
             shell.SetActive(false);
             return shell;
         }

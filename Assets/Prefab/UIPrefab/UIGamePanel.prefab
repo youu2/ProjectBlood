@@ -4438,7 +4438,7 @@ GameObject:
   - component: {fileID: 1775754516866520274}
   - component: {fileID: 2372456789595637416}
   m_Layer: 5
-  m_Name: BackToGameText
+  m_Name: QuitText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

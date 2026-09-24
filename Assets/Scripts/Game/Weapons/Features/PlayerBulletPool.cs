@@ -21,6 +21,13 @@ namespace ProjectBlood
         // "Trying to release an object that has already been released to the pool"
         private HashSet<GameObject> activeObjects = new HashSet<GameObject>();
 
+        // 子弹实例的专用父容器。与弹壳容器分开：
+        // 两个池组件挂在同一个 WeaponPools 物体上，各自管理各自的子物体
+        private Transform bulletContainer;
+
+        // 池跨关卡持久化（与 ShellPool 一致）：只在首次加载时预热，之后不再重建
+        private bool poolsInitialized = false;
+
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -30,6 +37,9 @@ namespace ProjectBlood
             }
             Instance = this;
             DontDestroyOnLoad(gameObject); // 跨场景保留
+
+            bulletContainer = new GameObject("PlayerBullets").transform;
+            bulletContainer.SetParent(transform, false);
         }
 
         void OnEnable()
@@ -118,8 +128,9 @@ namespace ProjectBlood
             var pool = new ObjectPool<GameObject>(
                 createFunc: () =>
                 {
-                    // 生成在池宿主(WeaponPools,跨场景保留)下方，便于在 Hierarchy 中统一管理
-                    var obj = Instantiate(prefab, transform);
+                    // 生成在专用子弹容器(WeaponPools/PlayerBullets,跨场景保留)下方，
+                    // 便于在 Hierarchy 中统一管理，与弹壳容器隔离
+                    var obj = Instantiate(prefab, bulletContainer);
                     // 预制体上 BulletPrefab 字段被序列化为指向自身根节点的自引用，
                     // Instantiate 后 Unity 会把它重映射到实例自身，
                     // 导致 Release(obj, bullet.BulletPrefab) 用实例 ID 查池找不到对应池，
@@ -157,24 +168,20 @@ namespace ProjectBlood
 
         private void OnSceneLoaded()
         {
-            Debug.Log("[PlayerBulletPool] OnSceneLoaded: 场景加载完成，开始预热子弹池。");
-            // 子弹实例现在是本物体(跨场景保留)的子物体，不再随场景卸载而销毁，
-            // 重建池前必须先清掉上一关还未碰撞回收的全部子弹，避免跨关卡累积泄漏
-            // 回收全部子弹的性价比低
-            for (int i = transform.childCount - 1; i >= 0; i--)
-            {
-                Destroy(transform.GetChild(i).gameObject);
-            }
-
-            // 然后清空旧池记录与借出状态跟踪
-            poolDictionary.Clear();
-            activeObjects.Clear();
-
-            // Player 实例未就绪则跳过预热
+            // Player 实例未就绪则跳过（下次场景加载仍会尝试首次预热）
             if (Player.player1 == null) return;
 
-            // 无论是否解锁，为所有武器预热子弹池（总预热量约 100 个非激活实例）。
-            // 运行中解锁新武器时其池已就绪，无需任何切换/解锁时的补预热逻辑
+            // 关卡切换：强制回收上一关所有在飞子弹。
+            // 子弹虽有寿命兜底，但加载屏只有 1~2 秒，临近切换时射出的子弹可能还没到期，
+            // 不回收会携带上一关的强化/吸血/伤害状态在新场景中继续飞（最长近一个寿命周期）。
+            // 池持久化存在，回收正常入栈；SetActive(false) 同时终止子弹的寿命协程
+            RecycleAllActive();
+
+            // 池与子弹实例均跨关卡保留，只在游戏首次加载时为所有武器预热一次，
+            // 之后无论解锁与否各池都已就绪
+            if (poolsInitialized) return;
+
+            Debug.Log("[PlayerBulletPool] 首次加载：开始预热全部武器子弹池。");
             foreach (var config in WeaponConfig.All)
             {
                 var currentWeapon = Player.player1.GetWeaponFromName(config.weaponName);
@@ -191,6 +198,27 @@ namespace ProjectBlood
                     continue;
                 }
                 Preload(prefab, ResolvePrewarmCount(config));
+            }
+            poolsInitialized = true;
+        }
+
+        /// <summary>
+        /// 强制回收全部借出中的子弹（关卡切换时调用）。
+        /// Release 会修改 activeObjects，必须先拍快照再遍历；走子弹自身的 Recycle 以保留幂等防护
+        /// </summary>
+        private void RecycleAllActive()
+        {
+            if (activeObjects.Count == 0) return;
+            var snapshot = new List<GameObject>(activeObjects);
+            foreach (var obj in snapshot)
+            {
+                // 理论上子弹随 DDOL 容器不会被外部销毁；万一引用已死，只清理账本，不抛异常
+                if (obj == null)
+                {
+                    activeObjects.Remove(obj);
+                    continue;
+                }
+                obj.GetComponent<PlayerBullet>()?.Recycle();
             }
         }
 

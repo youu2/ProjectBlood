@@ -9,6 +9,7 @@ public class PlayerBullet : MonoBehaviour
     public Vector2 direction;
     public float speed = 10.0f;
     public float damage = 20.0f;
+    [SerializeField] protected float lifetime = 3f; // 子弹寿命(秒)，到期未命中则强制回收，射程 = speed × lifetime，可按武器在预制体调整
     public float lifestealPercent = 0f; // 吸血比例(%)
     public bool isEnhanced = true; // 当前子弹是否被血库强化
     public WeaponType weaponType = WeaponType.DE; // 发射该子弹的武器类型，由武器开火时设置，用于强化伤害计算
@@ -31,6 +32,16 @@ public class PlayerBullet : MonoBehaviour
     protected virtual void OnEnable()
     {
         ResetPooledState();
+        StartCoroutine(LifetimeRoutine());
+    }
+
+    // 寿命兜底：子弹只靠碰撞回收时，射不进墙的开阔弹道会永久挂在池的借出账上。
+    // 协程挂在子弹自身上，SetActive(false)(回池/关卡切换强制回收)会自动终止，
+    // 下次借出 OnEnable 重新计时；到期与碰撞竞态由 isRecycled 幂等拦截
+    private IEnumerator LifetimeRoutine()
+    {
+        yield return new WaitForSeconds(lifetime);
+        Recycle();
     }
 
     void Update()

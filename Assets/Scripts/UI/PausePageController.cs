@@ -31,7 +31,7 @@ namespace ProjectBlood
         [SerializeField] private TextMeshProUGUI hpText;                  // 生命值：当前/上限
         [SerializeField] private TextMeshProUGUI speedText;               // 移动速度
         [SerializeField] private TextMeshProUGUI bloodBankText;           // 血库容量：当前/上限
-        [SerializeField] private TextMeshProUGUI skillCDText;             // 各技能冷却剩余
+        [SerializeField] private TextMeshProUGUI skillCDText;             // 各技能标准CD
         [SerializeField] private TextMeshProUGUI globalDamageRateText;    // 全局增伤百分比
 
         [Header("武器")]
@@ -133,24 +133,17 @@ namespace ProjectBlood
             RefreshSkillCD();
         }
 
-        // 技能冷却：列出所有尚在充能中的技能及剩余秒数，全部就绪时显示"就绪"
+        // 技能CD：列出所有技能的标准CD（基础充能间隔减去全部冷却减免后的最终常量，固定显示）
         private void RefreshSkillCD()
         {
             var builder = new StringBuilder("技能CD：");
-            bool anyCooling = false;
 
             foreach (var skill in Player.player1.SelfSkillManager.GetAllSkills())
             {
-                float remaining = skill.RemainingTimeToNextCharge;
-                if (remaining <= 0f) continue;
-
-                anyCooling = true;
                 builder.Append(skill.Data.skillName)
-                       .Append(remaining.ToString("F1"))
+                       .Append(skill.EffectiveChargeInterval.ToString("F1"))
                        .Append("S ");
             }
-
-            if (!anyCooling) builder.Append("就绪");
 
             skillCDText.text = builder.ToString().TrimEnd();
         }

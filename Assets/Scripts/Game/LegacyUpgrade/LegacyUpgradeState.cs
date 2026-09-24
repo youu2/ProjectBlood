@@ -31,17 +31,14 @@ namespace ProjectBlood
             LoadConfigs();
             saveData = LegacySaveManager.Load();
 
-            // 旧版迁移的等级可能超过新配置上限（旧版无上限），按配置收敛
-            foreach (var entry in saveData.entries)
-            {
-                if (configs.TryGetValue(entry.id, out var so))
-                {
-                    entry.level = Mathf.Clamp(entry.level, 0, so.maxLevel);
-                }
-            }
-
             LegacyPoint = new BindableProperty<int>(saveData.legacyPoint);
-            LegacyPoint.Register(_ => LegacySaveManager.Save(saveData));   // 点数变化自动持久化
+            // 点数变化自动持久化：必须先把新值同步进 saveData 再落盘，
+            // 否则磁盘上永远是加载时的旧值（下次启动表现为“清空遗产点”）
+            LegacyPoint.Register(value =>
+            {
+                saveData.legacyPoint = value;
+                LegacySaveManager.Save(saveData);
+            });
 
             ApplyEffects();
         }

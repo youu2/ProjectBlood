@@ -280,10 +280,6 @@ namespace ProjectBlood
             {
                 AudioKitManager.Instance.PlayOneShot("Hurt", volume: 0.5f);
             }
-            else
-            {
-                Death();
-            }
         }
 
         public void ActivateShield(int blockCount, float duration)
