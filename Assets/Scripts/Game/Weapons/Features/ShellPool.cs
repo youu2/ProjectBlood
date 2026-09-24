@@ -26,8 +26,8 @@ namespace ProjectBlood
         public ObjectPool<GameObject> shellPool;
         public GameObject CreateShell()
         {
-            var shell = Instantiate(DropManager.Instance.Shell.gameObject);
-            // shell.transform.SetParent(transform);
+            // 生成在池宿主(WeaponPools,跨场景保留)下方，便于在 Hierarchy 中统一管理
+            var shell = Instantiate(DropManager.Instance.Shell.gameObject, transform);
             shell.SetActive(false);
             return shell;
         }

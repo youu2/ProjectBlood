@@ -118,7 +118,8 @@ namespace ProjectBlood
             var pool = new ObjectPool<GameObject>(
                 createFunc: () =>
                 {
-                    var obj = Instantiate(prefab);
+                    // 生成在池宿主(WeaponPools,跨场景保留)下方，便于在 Hierarchy 中统一管理
+                    var obj = Instantiate(prefab, transform);
                     // 预制体上 BulletPrefab 字段被序列化为指向自身根节点的自引用，
                     // Instantiate 后 Unity 会把它重映射到实例自身，
                     // 导致 Release(obj, bullet.BulletPrefab) 用实例 ID 查池找不到对应池，
@@ -138,26 +139,48 @@ namespace ProjectBlood
             poolDictionary.Add(key, pool);
         }
 
+        // 新武器未配置预热数时的兜底默认值
+        private const int FallbackPrewarmCount = 10;
+
+        /// <summary>
+        /// 读取武器预热数量：负数视为非法配置，回退默认值并警告
+        /// </summary>
+        private static int ResolvePrewarmCount(WeaponConfig config)
+        {
+            if (config.poolPrewarmCount <= 0)
+            {
+                Debug.LogWarning($"[PlayerBulletPool] {config.weaponName} 的预热数配置非法({config.poolPrewarmCount})，回退默认值 {FallbackPrewarmCount}。");
+                return FallbackPrewarmCount;
+            }
+            return config.poolPrewarmCount;
+        }
+
         private void OnSceneLoaded()
         {
             Debug.Log("[PlayerBulletPool] OnSceneLoaded: 场景加载完成，开始预热子弹池。");
-            // 场景加载完成时，先清空旧池。
-            // 池实例挂在 DontDestroyOnLoad 下，但池中的子弹实例生成在旧场景中，
-            // 会随场景卸载被销毁，活跃跟踪集合也必须同步清空，避免残留已销毁对象的引用
+            // 子弹实例现在是本物体(跨场景保留)的子物体，不再随场景卸载而销毁，
+            // 重建池前必须先清掉上一关还未碰撞回收的全部子弹，避免跨关卡累积泄漏
+            // 回收全部子弹的性价比低
+            for (int i = transform.childCount - 1; i >= 0; i--)
+            {
+                Destroy(transform.GetChild(i).gameObject);
+            }
+
+            // 然后清空旧池记录与借出状态跟踪
             poolDictionary.Clear();
             activeObjects.Clear();
 
             // Player 实例未就绪则跳过预热
             if (Player.player1 == null) return;
 
-            // 然后根据已解锁的武器预热子弹池
-            for (int i = 0; i < WeaponDataSystem.weaponDataList.Count; i++)
+            // 无论是否解锁，为所有武器预热子弹池（总预热量约 100 个非激活实例）。
+            // 运行中解锁新武器时其池已就绪，无需任何切换/解锁时的补预热逻辑
+            foreach (var config in WeaponConfig.All)
             {
-                var weaponName = WeaponDataSystem.weaponDataList[i].weaponName;
-                var currentWeapon = Player.player1.GetWeaponFromName(weaponName);
+                var currentWeapon = Player.player1.GetWeaponFromName(config.weaponName);
                 if (currentWeapon == null)
                 {
-                    Debug.LogWarning($"[PlayerBulletPool] 未找到武器 {weaponName}，跳过预热。");
+                    Debug.LogWarning($"[PlayerBulletPool] 未找到武器 {config.weaponName}，跳过预热。");
                     continue;
                 }
 
@@ -167,7 +190,7 @@ namespace ProjectBlood
                     // 例如 Laser 武器不发射子弹，BulletPrefab 无需赋值，这里静默跳过
                     continue;
                 }
-                Preload(prefab, 50);
+                Preload(prefab, ResolvePrewarmCount(config));
             }
         }
 
