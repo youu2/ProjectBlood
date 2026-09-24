@@ -9,19 +9,6 @@ namespace ProjectBlood
     public partial class UIGamePanel
     {
         public const string Name = "UIGamePanel";
-
-        // [SerializeField]
-        // public TMPro.TextMeshProUGUI HPText;
-        // [SerializeField]
-        // public TMPro.TextMeshProUGUI ExpText;
-        // [SerializeField]
-        // public TMPro.TextMeshProUGUI LegacyText;
-        // [SerializeField]
-        // public TMPro.TextMeshProUGUI CoinText;
-        // [SerializeField]
-        // public TMPro.TextMeshProUGUI LevelText;
-        // [SerializeField]
-        // public TMPro.TextMeshProUGUI TimeText;
         [SerializeField]
         public RectTransform UpgradeRoot;
         // 升级选项按钮已改为 UIGamePanel.optionCards（3 张动态填充卡片），旧的硬编码按钮字段移除
@@ -30,12 +17,6 @@ namespace ProjectBlood
 
         protected override void ClearUIComponents()
         {
-            // HPText = null;
-            // ExpText = null;
-            // LegacyText = null;
-            // CoinText = null;
-            // LevelText = null;
-            // TimeText = null;
             UpgradeRoot = null;
 
             mData = null;

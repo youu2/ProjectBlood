@@ -6141,6 +6141,7 @@ MonoBehaviour:
   skillCDText: {fileID: 8741132176199426890}
   globalDamageRateText: {fileID: 2131183448264338902}
   continueButton: {fileID: 3447332360716259843}
+  quitButton: {fileID: 2321415630597330306}
   weaponRows:
   - rowObject: {fileID: 9045566952405224403}
     dmgText: {fileID: 6000092277125805487}

@@ -169,6 +169,7 @@ namespace ProjectBlood
             WeaponDataSystem.weaponDataList.Clear();
             WeaponDataSystem.weaponDataList.Add(WeaponConfig.DE.NewWeapon()); // 默认武器只有DE
             PlayerUpgradeState.ApplyGlobalWeaponUnlocks(); // 局外养成额外解锁武器（按宝箱掉落顺序）
+            Chest.ResetWeaponIndex(); // 重置宝箱武器掉落进度
             if (Player.player1 != null)
             {
                 Player.player1.UpdateSpecialReloadCost();   // 更新玩家的特殊装弹成本

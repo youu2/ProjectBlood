@@ -36,6 +36,7 @@ namespace ProjectBlood
 
         [Header("武器")]
         [SerializeField] private Button continueButton;  // 继续游戏按钮
+        [SerializeField] private Button quitButton;      // 退出游戏按钮
         [SerializeField] private WeaponRow[] weaponRows; // 全部武器行（未拥有的自动隐藏）
 
         [Header("血印")]

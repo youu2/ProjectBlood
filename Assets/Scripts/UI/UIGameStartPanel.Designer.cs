@@ -26,6 +26,8 @@ namespace ProjectBlood
         public TMPro.TextMeshProUGUI LegacyHeldText;
         [SerializeField]
         public TMPro.TextMeshProUGUI TittleText;
+        [SerializeField]
+        public UnityEngine.UI.Button BtnContinueGame;
 
         private UIGameStartPanelData mPrivateData = null;
 
@@ -39,6 +41,7 @@ namespace ProjectBlood
             BtnCloseUpgradePage = null;
             LegacyHeldText = null;
             TittleText = null;
+            BtnContinueGame = null;
 
             mData = null;
         }
