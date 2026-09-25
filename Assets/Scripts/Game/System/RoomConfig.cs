@@ -43,6 +43,12 @@ namespace ProjectBlood
         public int Height => roomMap.Count;
         public int Width => roomMap.First().Length;
 
+        // 从存档的 tileRows 重建一个临时 RoomConfig（仅用于按档建图，不入静态模板库）
+        public static RoomConfig FromTileRows(RoomType type, List<string> tileRows)
+        {
+            return new RoomConfig { roomType = type, roomMap = new List<string>(tileRows) };
+        }
+
         /*
             地图：18x18格，边界为（'1'和‘2’）掩体为（'3'）房门为（'d'）内部地面（' '） 玩家（'P'） 敌人（'e'） 传送门（'#'） 宝箱（'c'）
             商店（'s'） 商人（'b'）

@@ -201,12 +201,14 @@ MonoBehaviour:
   maxHealth: 100
   Damage: 1
   useFlipSprite: 1
+  sightCheckInterval: 0.5
+  sightBlockingMask:
+    serializedVersion: 2
+    m_Bits: 1024
   attackRange: 12
   chaseRange: 9
   WanderDuration: 2
   currentState: 1
-  Triangle: {fileID: 1064901047130097146}
-  SelfRigidbody2D: {fileID: 3539995425142677862}
   enemyBullet: {fileID: 6994590605233443270}
   totalBurstCount: 2
   shootInterval: 1.8
@@ -219,10 +221,6 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 35355fb181c22c54ba6962ea171bce26, type: 3}
   - {fileID: 8300000, guid: f133518fc7c20d84c9720033c278fdb1, type: 3}
   - {fileID: 8300000, guid: f883bad48e6600a4ebc0310ced707ca0, type: 3}
-  sightCheckInterval: 0.5
-  sightBlockingMask:
-    serializedVersion: 2
-    m_Bits: 1024
 --- !u!58 &4571616546380118342
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -425,7 +423,7 @@ MonoBehaviour:
   - {x: 0.18839858, y: -0.42747208, z: 0}
   m_ShapePathHash: 1661588403
   m_Mesh: {fileID: 0}
-  m_InstanceId: 54066
+  m_InstanceId: 63332
   m_LocalBounds:
     m_Center: {x: -0.024253994, y: -0.020146877, z: 0}
     m_Extent: {x: 0.35458118, y: 0.4073252, z: 0}

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -339,6 +340,80 @@ namespace ProjectBlood
             if (GlobalMoveSpeedBonus != 0f && Player.player1 != null)
             {
                 Player.player1.moveSpeed = Mathf.Max(MinMoveSpeed, Player.player1.moveSpeed + GlobalMoveSpeedBonus);
+            }
+        }
+
+        // ============================== 存档导入导出 ==============================
+
+        // 供 RunSaveService 填充：把当前状态写入已存在的 RunSaveData
+        public static void ExportTo(RunSaveData data)
+        {
+            data.globalDamageRatio = GlobalDamageRatio;
+            data.moveSpeedBonus = moveSpeedBonus;
+
+            data.weaponDamageLevels.Clear();
+            foreach (var kv in weaponDamageLevels)
+            {
+                data.weaponDamageLevels.Add(new WeaponDamageSaveEntry { weaponType = kv.Key.ToString(), level = kv.Value });
+            }
+
+            data.weaponDamageRatios.Clear();
+            foreach (var kv in weaponDamageRatios)
+            {
+                data.weaponDamageRatios.Add(new WeaponDamageRatioSaveEntry { weaponType = kv.Key.ToString(), ratio = kv.Value });
+            }
+
+            data.skillCooldownReductions.Clear();
+            foreach (var kv in skillCooldownReductions)
+            {
+                data.skillCooldownReductions.Add(new SkillCooldownSaveEntry { skillName = kv.Key, reduction = kv.Value });
+            }
+
+            // UpgradeSO 的 id 可能为空，回退使用资产名保证可序列化
+            data.upgrades.Clear();
+            foreach (var kv in upgradeUsageCounts)
+            {
+                if (kv.Key == null) continue;
+                data.upgrades.Add(new UpgradeSaveEntry
+                {
+                    upgradeId = string.IsNullOrEmpty(kv.Key.id) ? kv.Key.name : kv.Key.id,
+                    count = kv.Value,
+                });
+            }
+        }
+
+        // 从存档恢复。soLookup 由外部提供（避免本层直接依赖 UpgradeManager），key 与 Export 写入的一致
+        public static void ImportFrom(RunSaveData data, Func<string, UpgradeSO> soLookup)
+        {
+            GlobalDamageRatio = data.globalDamageRatio;
+            moveSpeedBonus = data.moveSpeedBonus;
+
+            weaponDamageLevels.Clear();
+            foreach (var e in data.weaponDamageLevels)
+            {
+                if (System.Enum.TryParse<WeaponType>(e.weaponType, out var t))
+                    weaponDamageLevels[t] = e.level;
+            }
+
+            weaponDamageRatios.Clear();
+            foreach (var e in data.weaponDamageRatios)
+            {
+                if (System.Enum.TryParse<WeaponType>(e.weaponType, out var t))
+                    weaponDamageRatios[t] = e.ratio;
+            }
+
+            skillCooldownReductions.Clear();
+            foreach (var e in data.skillCooldownReductions)
+            {
+                skillCooldownReductions[e.skillName] = e.reduction;
+            }
+
+            upgradeUsageCounts.Clear();
+            foreach (var e in data.upgrades)
+            {
+                var so = soLookup?.Invoke(e.upgradeId);
+                if (so != null)
+                    upgradeUsageCounts[so] = e.count;
             }
         }
 

@@ -84,6 +84,13 @@ namespace ProjectBlood
         void Start()
         {
             Global.IsGamePaused = false;
+            // 读档还原：存在待恢复载荷时走还原路径，跳过 BFS 随机生成
+            if (RunSaveService.PendingRestore != null)
+            {
+                RestoreFromSave(RunSaveService.PendingRestore);
+                RunSaveService.PendingRestore = null;
+                return;
+            }
             // 如果打通了所有关卡，打开游戏通关面板
             if (Global.currentDifficulty >= Global.LevelConfigs.Count)
             {
@@ -110,6 +117,9 @@ namespace ProjectBlood
             ShadowCaster2DGenerator.Generate(wallTilemap);  // 为围墙/掩体/走廊墙生成阴影投影
 
             Room.FindRoom();
+
+            // 关卡检查点：新关卡生成完成后存档（过传送门进入下一关 / 新游戏开局都会经过这里）
+            RunSaveService.SaveNow();
         }
 
         // BFS生成房间布局，通过预测权重控制分支方向，避免生成死路
@@ -560,6 +570,163 @@ namespace ProjectBlood
                     wallTilemap.SetTile(new Vector3Int(x, y, 0), randWallH);
                 }
             }
+        }
+
+        // ============================== 存档：地图导出 ==============================
+
+        // 把当前布局/房间状态写入存档（地图与房间层）
+        public void ExportTo(RunSaveData data)
+        {
+            data.levelName = Global.LevelConfigs[Global.currentDifficulty].LevelName;
+            data.rooms.Clear();
+            data.discoveredRooms.Clear();
+
+            DynamicDoorLayout.ForEach((x, y, cfg) =>
+            {
+                if (cfg == null || cfg.roomConfig == null) return;
+                var room = RoomGrid[x, y];
+                var entry = new RoomSaveEntry
+                {
+                    gridX = x,
+                    gridY = y,
+                    roomType = (int)cfg.roomNode.roomType,
+                    tileRows = new List<string>(cfg.roomConfig.roomMap),
+                    roomState = room != null ? (int)room.roomState : (int)Room.RoomState.Unknown,
+                };
+                foreach (var dir in cfg.doorDirections)
+                    entry.doorDirs.Add((int)dir);
+
+                // 宝箱/商店收集状态
+                room?.CollectSaveState(entry);
+
+                data.rooms.Add(entry);
+
+                // 已发现 = Init/Battle/Finished/Idle（即非 Unknown）
+                if (room != null && room.roomState != Room.RoomState.Unknown)
+                    data.discoveredRooms.Add($"{x},{y}");
+            });
+        }
+
+        // ============================== 存档：还原路径 ==============================
+
+        // 按存档数据重建整张地图（跳过 BFS），恢复房间状态与玩家位置
+        private void RestoreFromSave(RunSaveData data)
+        {
+            var levelConfig = Global.LevelConfigs[data.difficultyIndex];
+            GameUI.ShowLevelText(levelConfig.LevelName, duration: 3);
+
+            // 1. 按存档重建布局网格（房间中心仍固定槽位中心，走廊绘制逻辑复用）
+            foreach (var entry in data.rooms)
+            {
+                var roomType = (RoomType)entry.roomType;
+                var roomConfig = RoomConfig.FromTileRows(roomType, entry.tileRows);
+                var doorDirs = new HashSet<Direction>();
+                foreach (var d in entry.doorDirs)
+                    doorDirs.Add((Direction)d);
+
+                var genConfig = new RoomGenerateConfig
+                {
+                    roomNode = new RoomNode(roomType),
+                    roomPosX = entry.gridX,
+                    roomPosY = entry.gridY,
+                    doorDirections = doorDirs,
+                    roomConfig = roomConfig,
+                };
+                DynamicDoorLayout[entry.gridX, entry.gridY] = genConfig;
+            }
+
+            // 2. 生成房间实例（不重置 Global.currentRoom，由后面按玩家坐标设置）
+            DynamicDoorLayout.ForEach((x, y, cfg) =>
+            {
+                var entry = data.rooms.Find(r => r.gridX == x && r.gridY == y);
+                var room = CreateRoomFromSave(x, y, cfg, entry);
+                RoomGrid[x, y] = room;
+            });
+
+            // 3. 走廊与阴影
+            GenerateCorridors();
+            ShadowCaster2DGenerator.Generate(wallTilemap);
+
+            // 4. 装饰痕迹：已完成的战斗房间生成血迹/尸体，直观标识房间已清理
+            foreach (var entry in data.rooms)
+            {
+                var state = (Room.RoomState)entry.roomState;
+                if (state != Room.RoomState.Finished) continue;
+                var room = RoomGrid[entry.gridX, entry.gridY];
+                if (room != null)
+                    FxManager.SpawnBattleTraces(room);
+            }
+
+            // 5. 全局状态恢复（血印、升级、武器、全局数值 —— 依赖先还原 Room 环境再做事件驱动）
+            Global.ImportFrom(data);
+            WeaponDataSystem.ImportFrom(data);
+            PlayerUpgradeState.ImportFrom(data, id => UpgradeManager.Instance?.FindById(id));
+            BloodSigilState.ImportFrom(data, id => BloodSigilManager.Instance?.FindById(id));
+
+            // 6. 地面掉落物（含血印掉落）
+            RunSaveService.RestoreDrops(data);
+
+            // 7. 玩家位置（存档记录的是 grid 格坐标，转世界坐标放中心）
+            Player.player1.transform.position = new Vector3(data.playerGridX + 0.5f, data.playerGridY + 0.5f, 0);
+            Global.currentRoom = FindRoomAtWorldPos(Player.player1.transform.position);
+
+            Room.FindRoom();
+        }
+
+        // 还原单个房间：复用 GenerateRoom 绘制瓦片与门，但用存档的房间模板，
+        // 并按存档的房间状态设置（Finished 不生成敌人，非 Finished 重新生成满血敌人）
+        private Room CreateRoomFromSave(int gridX, int gridY, RoomGenerateConfig cfg, RoomSaveEntry entry)
+        {
+            var startX = RoomStartPosX(cfg);
+            var startY = RoomStartPosY(cfg);
+            var savedState = (Room.RoomState)entry.roomState;
+            var room = GenerateRoom(startX, startY, cfg.roomConfig, cfg);
+
+            // GenerateRoom 的 HandleTileType 已对 'e'/'#'/'c'/'s' 做了生成，
+            // 这里按存档的房间状态修正：
+            if (savedState == Room.RoomState.Finished || savedState == Room.RoomState.Idle)
+            {
+                // 已完成房间：移除所有敌人；X-3 Boss 房需保证传送门可见（Boss 死后才显示传送门，
+                // 读档还原时 Boss 不再生成，但传送门必须可通行）
+                foreach (var enemy in room.GetEnemies().ToList())
+                {
+                    if (enemy is Component c && c != null)
+                    {
+                        if (enemy is BossBase boss && boss.portal != null)
+                            boss.portal.SetActive(true);    // 直接显示 Boss 关联的隐藏传送门
+                        Destroy(c.gameObject);
+                    }
+                }
+                room.GetEnemies().Clear();
+            }
+            else if (cfg.roomNode.roomType == RoomType.BossRoom && savedState == Room.RoomState.Battle)
+            {
+                // 战斗中退出：回滚为未开始（Boss 满血、门未锁），下次进入重新触发战斗
+                savedState = Room.RoomState.Init;
+            }
+
+            room.roomState = savedState;
+
+            // 宝箱/商店按存档标记隐藏已收集项
+            room.RestoreSaveState(entry);
+
+            return room;
+        }
+
+        // 按世界坐标反查所在房间（用于还原玩家所在房间）
+        private Room FindRoomAtWorldPos(Vector3 worldPos)
+        {
+            Room result = null;
+            RoomGrid.ForEach((x, y, room) =>
+            {
+                if (result != null || room == null) return;
+                if (worldPos.x >= room.LB.x && worldPos.x <= room.RT.x
+                    && worldPos.y >= room.LB.y && worldPos.y <= room.RT.y)
+                {
+                    result = room;
+                }
+            });
+            return result;
         }
 
         public void LoadNextLevel()

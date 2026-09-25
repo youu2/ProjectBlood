@@ -183,6 +183,40 @@ namespace ProjectBlood
             cumulativeNum.Value = 0;
         }
 
+        // ============================== 存档导入导出（玩家状态部分） ==============================
+        // 地图/房间部分由 MapController 自行填充，本方法只负责 Global 持有的数值
+
+        public static void ExportTo(RunSaveData data)
+        {
+            data.difficultyIndex = currentDifficulty;
+            data.currentHP = currentHP.Value;
+            data.maxHP = INGAME_MAX_HP.Value;
+            data.coin = Coin.Value;
+            data.level = Level.Value;
+            data.exp = Exp.Value;
+            data.maxExp = MAX_EXP.Value;
+            data.runElapsedSeconds = RunElapsedSeconds;
+            data.remainingTime = RemainingTime.Value;
+            data.blazingCircleDamage = BlazingCircleDamage.Value;
+            data.bcAttackInterval = BCAttackInterval.Value;
+        }
+
+        // 从存档恢复数值。不涉及地图重建，仅赋值 BindableProperty（UI 自动同步）
+        public static void ImportFrom(RunSaveData data)
+        {
+            currentDifficulty = data.difficultyIndex;
+            currentHP.Value = data.currentHP;
+            INGAME_MAX_HP.Value = data.maxHP;
+            Coin.Value = data.coin;
+            Level.Value = data.level;
+            Exp.Value = data.exp;
+            MAX_EXP.Value = data.maxExp;
+            RunElapsedSeconds = data.runElapsedSeconds;
+            RemainingTime.Value = data.remainingTime;
+            BlazingCircleDamage.Value = data.blazingCircleDamage;
+            BCAttackInterval.Value = data.bcAttackInterval;
+        }
+
         // Generate drops when enemy dies
         public static void GenerateExp(GameObject enemy)
         {

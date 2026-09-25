@@ -277,9 +277,56 @@ namespace ProjectBlood
             OnPlayerEnteredRoom?.Invoke(this);
         }
 
+        // 玩家离开房间时触发自动存档。
+        // 守卫：战斗中（房间锁门）不存档——战斗中退出游戏时磁盘上保留的是"进入战斗前"的快照，
+        // 读档即回滚到战斗前状态；Finished 房间等掉落物飞行结束后再采集。
+        private void OnTriggerExit2D(Collider2D other)
+        {
+            if (!other.CompareTag("Player")) return;
+            if (roomState == RoomState.Battle) return;
+
+            // 延迟 0.5s 采集：房间完成后掉落物飞向玩家自动拾取，
+            // 等飞行结束再存档避免同一掉落物既记为"地面存在"又"已入包"
+            this.Delay(0.5f, () =>
+            {
+                if (this == null || gameObject == null) return;
+                RunSaveService.SaveNow();
+            });
+        }
+
         public void AddDoor(Door door)
         {
             doorList.Add(door);
+        }
+
+        // ============================== 存档：房间可交互物状态 ==============================
+
+        public void CollectSaveState(RoomSaveEntry entry)
+        {
+            var chest = GetComponentInChildren<Chest>();
+            entry.chestCollected = chest != null && !chest.CanInteract;
+
+            var shops = GetComponentsInChildren<ShopItem>();
+            entry.collectedShopItems.Clear();
+            for (int i = 0; i < shops.Length; i++)
+            {
+                if (!shops[i].CanInteract)
+                    entry.collectedShopItems.Add(i);
+            }
+        }
+
+        public void RestoreSaveState(RoomSaveEntry entry)
+        {
+            var chest = GetComponentInChildren<Chest>();
+            if (chest != null && entry.chestCollected)
+                chest.gameObject.SetActive(false);
+
+            var shops = GetComponentsInChildren<ShopItem>();
+            for (int i = 0; i < shops.Length; i++)
+            {
+                if (entry.collectedShopItems.Contains(i))
+                    shops[i].gameObject.SetActive(false);
+            }
         }
 
         public HashSet<IDamageable> GetEnemies()

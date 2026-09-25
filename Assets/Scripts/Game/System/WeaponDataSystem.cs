@@ -89,5 +89,38 @@ namespace ProjectBlood
         {
             WeaponConfig.DE.NewWeapon(),
         };
+
+        // 存档导出：重建 weaponDataList 快照
+        public static void ExportTo(RunSaveData data)
+        {
+            data.weapons.Clear();
+            foreach (var wd in weaponDataList)
+            {
+                data.weapons.Add(new WeaponSaveEntry
+                {
+                    weaponName = wd.weaponName,
+                    currentAmmo = wd.weaponCurrentAmmo,
+                    maxAmmo = wd.weaponMaxAmmo,
+                });
+            }
+        }
+
+        // 存档导入：按武器名匹配 WeaponConfig 重建列表，忽略未知武器
+        public static void ImportFrom(RunSaveData data)
+        {
+            weaponDataList.Clear();
+            foreach (var entry in data.weapons)
+            {
+                var config = WeaponConfig.All.Find(c => c.weaponName == entry.weaponName);
+                if (config == null) continue;
+                var wd = config.NewWeapon();
+                wd.weaponCurrentAmmo = entry.currentAmmo;
+                wd.weaponMaxAmmo = entry.maxAmmo;
+                weaponDataList.Add(wd);
+            }
+            // 兜底：至少保留初始武器，避免空手
+            if (weaponDataList.Count == 0)
+                weaponDataList.Add(WeaponConfig.DE.NewWeapon());
+        }
     }
 }

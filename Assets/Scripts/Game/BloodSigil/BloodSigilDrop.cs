@@ -10,6 +10,9 @@ namespace ProjectBlood
     {
         private BloodSigilSO sigil;
 
+        // 存档导出用：读取当前绑定的血印 id（未绑定返回 null）
+        public string SigilId => sigil == null ? null : (string.IsNullOrEmpty(sigil.id) ? sigil.name : sigil.id);
+
         // 缓存子物体上的 SpriteRenderer（掉落物克隆体为独立实例，缓存安全）
         private SpriteRenderer cachedSpriteRenderer;
 

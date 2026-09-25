@@ -15,6 +15,10 @@ namespace ProjectBlood
         public string description;          // 强化描述(卡片正文)
         public Sprite icon;                 // 强化图标
 
+        [Header("存档")]
+        [Tooltip("存档匹配键，创建后不可修改；留空时回退使用资产名")]
+        public string id;
+
         [Header("池配置")]
         [Tooltip("是否进入随机抽取池,置 false 可临时禁用而不删除资产")]
         public bool isInPool = true;

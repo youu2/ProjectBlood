@@ -67,6 +67,7 @@ namespace ProjectBlood
                     if (Global.CurrentWaves.Value >= Global.maxWavesNum.Value && Global.currentNum.Value <= 0)
                     {
                         LegacyUpgradeState.SettleFromRun(Global.Level.Value);    // Settle legacy points upon level completion
+                        RunSaveService.DeleteSave();    // 通关：删除本局存档（已过传送门后下一关会重建）
                         AudioKitManager.Instance.PlayOneShot("WinMusic");
                         UIKit.OpenPanel<UIGamePassPanel>(); //Survive until the last wave => pass the level
                         OnTimerFinished?.Invoke();

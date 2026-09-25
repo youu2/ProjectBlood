@@ -26,6 +26,19 @@ namespace ProjectBlood
             Instance = this;
         }
 
+        // 按存档 id 查找强化配置（id 为空时回退资产名匹配），供读档还原使用
+        public UpgradeSO FindById(string id)
+        {
+            if (string.IsNullOrEmpty(id)) return null;
+            foreach (var upgrade in upgradePool)
+            {
+                if (upgrade == null) continue;
+                var key = string.IsNullOrEmpty(upgrade.id) ? upgrade.name : upgrade.id;
+                if (key == id) return upgrade;
+            }
+            return null;
+        }
+
         // 从池中随机抽取 count 个可用强化。
         // 过滤条件：非空、isInPool 为 true、配置校验通过(无效/冲突配置不进入池)、本卡被选择次数未满 MaxUpgradeCount、
         // 效果条目当前可用(组合效果全有或全无：任一条目不可用即整体排除,如武器未拥有、被动已解锁)。

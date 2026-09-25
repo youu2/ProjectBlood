@@ -16,6 +16,8 @@ namespace ProjectBlood
     {
         [Header("=== 敌人基础设置 ===")]
         [SerializeField] protected SpriteRenderer body;
+        // 尸体渲染器（存档装饰痕迹等外部系统读取用）
+        public SpriteRenderer DeadBody => body;
         protected SpriteRenderer spriteRenderer;          // 用于朝向控制
         [SerializeField] public float moveSpeed = 2.0f;   // 移动速度（Boss 转阶段时也会改这个值）
         public float currentHealth;

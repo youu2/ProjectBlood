@@ -33,10 +33,31 @@ namespace ProjectBlood
             {
                 GameUI.GUIInstance.Show();
                 this.CloseSelf();
+                RunSaveService.DeleteSave();    // 新游戏 = 新一局，清除旧存档
                 Global.ResetLevel();
                 Time.timeScale = 1.0f;
                 GameUI.ShowLoadingPage("InGame");
             });
+
+            // 继续游戏：读档 → 校验 → 载荷填充 → 加载 InGame 场景走还原路径
+            BtnContinueGame.onClick.AddListener(() =>
+            {
+                if (!RunSaveService.TryLoad(out var data))
+                {
+                    Debug.LogWarning("[UIGameStartPanel] 无存档或存档无效，无法继续游戏");
+                    return;
+                }
+
+                RunSaveService.PendingRestore = data;
+                GameUI.GUIInstance.Show();
+                this.CloseSelf();
+                // 注意：不调用 Global.ResetLevel()——还原路径会从存档恢复全部状态
+                Time.timeScale = 1.0f;
+                GameUI.ShowLoadingPage("InGame");
+            });
+
+            // 根据存档存在与否控制继续按钮可用状态（无存档时显示但不可点击）
+            BtnContinueGame.interactable = RunSaveService.HasSave();
 
             BtnLegacyUpgrade.onClick.AddListener(() =>
             {

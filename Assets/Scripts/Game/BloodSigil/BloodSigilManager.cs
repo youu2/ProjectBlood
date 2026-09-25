@@ -64,5 +64,18 @@ namespace ProjectBlood
         {
             BloodSigilState.Unlock(so);
         }
+
+        // 按存档 id 查找血印配置（id 为空时回退资产名匹配），供读档还原使用
+        public BloodSigilSO FindById(string id)
+        {
+            if (string.IsNullOrEmpty(id)) return null;
+            foreach (var sigil in sigilPool)
+            {
+                if (sigil == null) continue;
+                var key = string.IsNullOrEmpty(sigil.id) ? sigil.name : sigil.id;
+                if (key == id) return sigil;
+            }
+            return null;
+        }
     }
 }

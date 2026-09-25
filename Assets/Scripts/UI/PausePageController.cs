@@ -57,7 +57,22 @@ namespace ProjectBlood
             HidePage();
 
             continueButton.onClick.AddListener(Resume);
+            quitButton.onClick.AddListener(QuitToMainMenu);
             sigilDetailText.gameObject.SetActive(false);
+        }
+
+        // 退出到主菜单：非战斗状态补一次存档（战斗中不覆盖，保留进房前的快照），
+        // 然后回主菜单（场景重载自动释放本关全部动态对象）
+        private void QuitToMainMenu()
+        {
+            if (Global.currentRoom == null || Global.currentRoom.roomState != Room.RoomState.Battle)
+                RunSaveService.SaveNow();
+
+            isPaused = false;
+            Time.timeScale = 1f;
+            Global.IsGamePaused = false;
+            HidePage();
+            GameUI.ShowLoadingPage("GameStart");
         }
 
         private void Update()

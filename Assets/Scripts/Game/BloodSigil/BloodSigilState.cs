@@ -336,6 +336,78 @@ namespace ProjectBlood
         public static void AddPermanentDamageBonus(float additiveRatio)
             => permanentDamageBonus += additiveRatio;
 
+        // 存档导出
+        public static void ExportTo(RunSaveData data)
+        {
+            data.permanentDamageBonus = permanentDamageBonus;
+            data.damageImmunityCharges = damageImmunityCharges;
+
+            data.sigils.Clear();
+            foreach (var sigil in unlocked)
+            {
+                if (!runtimes.TryGetValue(sigil, out var ctx)) continue;
+                var entry = new SigilSaveEntry
+                {
+                    sigilId = string.IsNullOrEmpty(sigil.id) ? sigil.name : sigil.id,
+                };
+                foreach (var rt in ctx.Modules)
+                {
+                    entry.modules.Add(new SigilModuleSaveEntry
+                    {
+                        firedCount = rt.FiredCount,
+                        active = rt.Active,
+                        triggerLatched = rt.TriggerLatched,
+                        endRemaining = rt.EndRemaining,
+                        endLatched = rt.EndLatched,
+                    });
+                }
+                data.sigils.Add(entry);
+            }
+        }
+
+        // 从存档恢复：静默重建（不触发 OnAcquire 事件、不驱动 SigilUnlocked UI），
+        // 仅还原模块状态机；激活模块的结算效果由后续 OnPlayerSpawned/事件自然补齐
+        public static void ImportFrom(RunSaveData data, Func<string, BloodSigilSO> soLookup)
+        {
+            permanentDamageBonus = data.permanentDamageBonus;
+            damageImmunityCharges = data.damageImmunityCharges;
+
+            foreach (var entry in data.sigils)
+            {
+                var sigil = soLookup?.Invoke(entry.sigilId);
+                if (sigil == null) continue;
+                if (unlocked.Contains(sigil)) continue;
+
+                var ctx = new BloodSigilRuntimeContext(sigil);
+                unlocked.Add(sigil);
+                runtimes[sigil] = ctx;
+
+                // 恢复模块状态
+                for (int i = 0; i < ctx.Modules.Count && i < entry.modules.Count; i++)
+                {
+                    var rt = ctx.Modules[i];
+                    var saved = entry.modules[i];
+                    rt.FiredCount = saved.firedCount;
+                    rt.TriggerLatched = saved.triggerLatched;
+
+                    // 恢复结束条件数组（长度按配置重建，取存档值）
+                    if (saved.endRemaining != null && saved.endRemaining.Length == rt.EndRemaining.Length)
+                        Array.Copy(saved.endRemaining, rt.EndRemaining, rt.EndRemaining.Length);
+                    if (saved.endLatched != null && saved.endLatched.Length == rt.EndLatched.Length)
+                        Array.Copy(saved.endLatched, rt.EndLatched, rt.EndLatched.Length);
+
+                    // 恢复激活态：重新加入激活/计时列表，但不重新触发 OnApply
+                    //（数值类效果已在 Global/PlayerUpgradeState 中还原，这里只负责状态机）
+                    if (saved.active)
+                    {
+                        rt.Active = true;
+                        activeModules.Add(rt);
+                        if (HasDurationEnd(rt.Module)) timedModules.Add(rt);
+                    }
+                }
+            }
+        }
+
         public static void AddDamageImmunityCharges(int charges)
         {
             if (charges > 0) damageImmunityCharges += charges;

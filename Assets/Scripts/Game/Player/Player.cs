@@ -290,6 +290,7 @@ namespace ProjectBlood
         private void Death()
         {
             LegacyUpgradeState.SettleFromRun(Global.Level.Value);
+            RunSaveService.DeleteSave();    // 永久死亡：删除本局存档
             AudioKitManager.Instance.PlayOneShot("WilhelmScream");
             this.DestroyGameObjGracefully();
             UIKit.OpenPanel<UIGameOverPanel>();
