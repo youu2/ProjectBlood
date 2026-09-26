@@ -33,12 +33,26 @@ namespace ProjectBlood
 
             MapRoot.DestroyChildren();
 
-            // 获取玩家当前所在的房间
+            // 获取绘制中心：优先用玩家所在房间；玩家在过道/边界（currentRoom 为 null）时
+            // 退到最近房间的网格坐标，确保读档后小地图不会因 currentRoom == null 而空白
+            int playerX, playerY;
             var currentRoom = Global.currentRoom;
-            if (currentRoom == null || currentRoom.roomGenerateConfig == null) return;
-
-            int playerX = currentRoom.roomGenerateConfig.roomPosX;
-            int playerY = currentRoom.roomGenerateConfig.roomPosY;
+            if (currentRoom != null && currentRoom.roomGenerateConfig != null)
+            {
+                playerX = currentRoom.roomGenerateConfig.roomPosX;
+                playerY = currentRoom.roomGenerateConfig.roomPosY;
+            }
+            else if (Player.player1 != null)
+            {
+                var nearest = MapController.instance.FindNearestRoomGridPos(Player.player1.transform.position);
+                if (!nearest.HasValue) return;
+                playerX = nearest.Value.x;
+                playerY = nearest.Value.y;
+            }
+            else
+            {
+                return;
+            }
 
             // 只绘制玩家周围 mapRange 范围内的房间
             MapController.instance.RoomGrid.ForEach((x, y, room) =>

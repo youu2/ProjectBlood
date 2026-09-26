@@ -729,6 +729,25 @@ namespace ProjectBlood
             return result;
         }
 
+        // 按世界坐标查找最近房间的网格坐标，用于玩家在过道/边界时的小地图绘制兜底
+        public Vector2Int? FindNearestRoomGridPos(Vector3 worldPos)
+        {
+            Vector2Int? result = null;
+            float minSqrDist = float.MaxValue;
+            RoomGrid.ForEach((x, y, room) =>
+            {
+                if (room == null || room.roomGenerateConfig == null) return;
+                var roomCenter = new Vector2(room.LB.x + room.RT.x, room.LB.y + room.RT.y) * 0.5f;
+                float sqrDist = ((Vector2)worldPos - roomCenter).sqrMagnitude;
+                if (sqrDist < minSqrDist)
+                {
+                    minSqrDist = sqrDist;
+                    result = new Vector2Int(x, y);
+                }
+            });
+            return result;
+        }
+
         public void LoadNextLevel()
         {
             Global.currentDifficulty += 1;

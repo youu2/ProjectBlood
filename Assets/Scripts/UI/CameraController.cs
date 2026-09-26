@@ -32,6 +32,11 @@ public class CameraController : MonoBehaviour
     // 场景重载后，Player 在 MapController.Start 中才被传送到新关出生点，
     // 标记后在首个能取到 Player 的 LateUpdate 直接吸附，避免从上一关位置长距离缓动
     private bool pendingSnapToPlayer = false;
+    // 加载页显示期间为 true：冻结跟随/鼠标偏移/房间旋转等一切游戏内镜头运动。
+    // 否则"返回主菜单"时旧场景在加载的 1.5 秒内仍然存活，相机每帧继续按玩家
+    // 在房间内的位置施加 Z 轴旋转，倾斜会通过主相机渲染的 Screen Space-Camera
+    // 菜单 UI 残留到主菜单
+    private bool loadingFreeze = false;
 
     void Awake()
     {
@@ -60,8 +65,19 @@ public class CameraController : MonoBehaviour
     }
     void LateUpdate()
     {
+        // 加载页期间冻结全部游戏内镜头运动（进入冻结时已立即回正，见 SetLoadingFreeze）
+        if (loadingFreeze)
+        {
+            return;
+        }
         if (Player.player1 == null)
         {
+            // 非游戏场景（主菜单等）没有跟随目标：主动保持相机回正，
+            // 不依赖 sceneLoaded 的一次性复位，避免任何时序下旋转残留到主菜单 UI
+            if (transform.rotation != Quaternion.identity)
+            {
+                transform.rotation = Quaternion.identity;
+            }
             return;
         }
         // 新场景第一帧（Player 已在 MapController.Start 传送到出生点）直接吸附
@@ -147,6 +163,22 @@ public class CameraController : MonoBehaviour
         isShaking = true;
         intensity = i;
         duration = d;
+    }
+
+    // 加载页显示/隐藏时由 GameUI 调用：进入加载立即停止震动、清空鼠标偏移并回正相机，
+    // 冻结期间 LateUpdate 不再施加任何跟随与房间旋转；场景激活完成后解除冻结，
+    // 由 pendingSnapToPlayer 重新吸附到新场景的 Player
+    public void SetLoadingFreeze(bool freeze)
+    {
+        loadingFreeze = freeze;
+        if (freeze)
+        {
+            isShaking = false;
+            intensity = 0;
+            duration = 0;
+            currentMouseOffset = Vector3.zero;
+            transform.rotation = Quaternion.identity;
+        }
     }
 
     public void UpdateCameraSize()

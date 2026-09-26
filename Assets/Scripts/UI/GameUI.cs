@@ -138,6 +138,9 @@ namespace ProjectBlood
             }
 
             Global.IsGamePaused = true;
+            // 加载页一出现就回正并冻结相机：旧场景在异步加载的最小等待期间仍然存活，
+            // 不冻结的话相机会继续按玩家房间位置施加 Z 旋转，倾斜会残留到主菜单 UI
+            CameraUtils.MainCameraController()?.SetLoadingFreeze(true);
             loadingDotIndex = 0;
 
             // 开始加载场景, 但不激活场景
@@ -173,6 +176,9 @@ namespace ProjectBlood
                 yield return null;
             }
 
+            // 场景已激活（sceneLoaded 已复位相机并置 pendingSnapToPlayer），解除冻结：
+            // 进入游戏场景时首帧吸附到新 Player，进入主菜单时无 Player 则持续保持回正
+            CameraUtils.MainCameraController()?.SetLoadingFreeze(false);
 
             if (LoadingPage != null)
             {
