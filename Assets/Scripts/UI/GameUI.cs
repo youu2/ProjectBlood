@@ -22,8 +22,8 @@ namespace ProjectBlood
                 GUIInstance = this;
             }
             DontDestroyOnLoad(gameObject);
-            // 主相机为常驻预制体（Global.Initialize 中先于场景创建），Canvas 的场景内序列化引用已移除，
-            // 这里显式绑定一次：GameUI 与相机都 DontDestroyOnLoad，之后场景重载不再失效
+            // 相机为场景内对象，GameUI 为 DDOL。Awake 首次绑定后，
+            // 后续场景重载由 Global.RebindCameraOnSceneLoad 统一重绑 Canvas 渲染相机
             var canvas = GetComponent<Canvas>();
             if (canvas != null)
             {

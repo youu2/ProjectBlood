@@ -10,6 +10,8 @@ namespace ProjectBlood
     {
         public float moveSpeed = 3.5f;
         public static Player player1;
+        // 主菜单场景标记：主菜单中的玩家仅作互动展示，禁用切枪/特殊换弹/死亡等局内逻辑
+        private static bool IsMainMenuScene => UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "GameStart";
         public PlayerBullet playerBullet;
         public WeaponBase currentWeapon; // 当前装备的武器
         // private List<WeaponBase> weapons = new List<WeaponBase>(); // 武器列表
@@ -229,7 +231,9 @@ namespace ProjectBlood
         {
             Global.currentHP.RegisterWithInitValue(currentHP =>
             {
-                if (currentHP <= 0)
+                // 主菜单不触发死亡：从游戏失败返回主菜单时 currentHP 残留为 0，
+                // 若此处死亡会误开 UIGameOverPanel 并销毁菜单展示玩家
+                if (currentHP <= 0 && !IsMainMenuScene)
                 {
                     Death();
                 }
@@ -298,6 +302,17 @@ namespace ProjectBlood
 
         void Update()
         {
+            bool inMainMenu = IsMainMenuScene;
+            // 主菜单养成面板打开期间(IsGamePaused=true)：冻结玩家全部操作(移动/瞄准/射击/换弹)
+            if (inMainMenu && Global.IsGamePaused)
+            {
+                SelfRigidbody2D.velocity = Vector2.zero;
+                PlayerAnimator.SetBool("isMoving", false);
+                AimMark.Hide();
+                currentWeapon.StopAttacking();
+                return;
+            }
+
             float horizontal = Input.GetAxis("Horizontal"); // A/D
             float vertical = Input.GetAxis("Vertical");     // W/S
             // 暂停(加载进入下一关/结算等)期间冻结玩家移动输入
@@ -406,8 +421,13 @@ namespace ProjectBlood
             // 更新武器朝向和角色朝向
             UpdateWeaponAim(smoothAimDir);
 
+            // 主菜单中指针悬停在 UI 上时不触发射击，避免点击菜单按钮误开火
+            bool pointerOverUI = inMainMenu
+                && UnityEngine.EventSystems.EventSystem.current != null
+                && UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject();
+
             //鼠标左键射击(朝平滑后的瞄准方向)
-            if (Input.GetMouseButtonDown(0) && playerBullet != null && !Global.IsGamePaused)
+            if (Input.GetMouseButtonDown(0) && playerBullet != null && !Global.IsGamePaused && !pointerOverUI)
             {
                 if (isSpecialReloadTriggered && specialReloadCoroutine != null)
                 {
@@ -418,7 +438,7 @@ namespace ProjectBlood
                 currentWeapon.StartAttacking();
             }
             //限制为固定射速
-            if (Input.GetMouseButton(0) && playerBullet != null && !Global.IsGamePaused)
+            if (Input.GetMouseButton(0) && playerBullet != null && !Global.IsGamePaused && !pointerOverUI)
             {
                 if (isSpecialReloadTriggered && specialReloadCoroutine != null)
                 {
@@ -443,7 +463,7 @@ namespace ProjectBlood
                     firstReloadTime = currentTime;
                     isSpecialReloadTriggered = false;
                 }
-                else if (currentTime - firstReloadTime <= specialReloadWindow &&
+                else if (!inMainMenu && currentTime - firstReloadTime <= specialReloadWindow &&
                 BloodBank.Instance.CurrentBloodAmount >= specialReloadBloodCost &&
                 WeaponDataSystem.weaponDataList.Count > 2)
                 {
@@ -458,7 +478,9 @@ namespace ProjectBlood
             }
             GameUI.UpdateBloodText();
 
-            // 切枪
+            // 切枪（主菜单仅展示初始武器 DE，禁用一切切枪输入）
+            if (!inMainMenu)
+            {
             if (Input.GetKeyDown(KeyCode.Alpha1) && !Global.IsGamePaused)
             {
                 UseWeapon(0);
@@ -492,12 +514,13 @@ namespace ProjectBlood
             {
                 UseWeapon((WeaponDataSystem.weaponDataList.IndexOf(currentWeapon.Data) + 1) % WeaponDataSystem.weaponDataList.Count);
             }
+            }
 
             // 血印系统:每帧驱动限时效果计时（被动计时已迁移至血印系统）
             BloodSigilState.Tick(Time.deltaTime);
 
-            // 通关耗时累计：暂停（加载/升级/暂停页）期间不计入
-            if (!Global.IsGamePaused)
+            // 通关耗时累计：暂停（加载/升级/暂停页）与主菜单展示期间不计入
+            if (!Global.IsGamePaused && !inMainMenu)
             {
                 Global.RunElapsedSeconds += Time.deltaTime;
             }

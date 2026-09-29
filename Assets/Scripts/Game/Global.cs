@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using QFramework;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace ProjectBlood
 {
@@ -54,11 +55,9 @@ namespace ProjectBlood
             AudioKit.PlaySoundMode = AudioKit.PlaySoundModes.IgnoreSameSoundInGlobalFrames;
             ResKit.Init();
             UIKit.Root.SetResolution(1920, 1080, 1.0f);
-            // 相机为跨场景常驻预制体(Assets/Resources/MainCamera.prefab)，场景中不再自带相机
-            EnsurePersistentCamera();
-            // UIRoot 的 Canvas 为 Screen Space - Camera 模式；主相机是运行时实例化的常驻对象，
-            // 预制体中无法序列化对它的引用，因此在两者都就绪后统一绑定 UICamera 字段与渲染相机
-            BindUIRootCamera();
+            // 相机为各场景内自带对象（非 DDOL、非预制体），场景切换时由 sceneLoaded 统一重绑
+            // UIRoot / GameUI 的 Canvas 渲染相机，避免引用失效
+            SceneManager.sceneLoaded += RebindCameraOnSceneLoad;
             // 初始化强化系统（订阅武器开火事件，用于单武器持续输出叠加被动）
             PlayerUpgradeState.Initialize();
             // 初始化血印系统（订阅武器开火事件等游戏事件）
@@ -80,39 +79,30 @@ namespace ProjectBlood
             LevelConfigs.Add(Level3_3.Config);
         }
 
-        // 实例化跨场景常驻主相机：首个场景加载前创建一次并 DontDestroyOnLoad，
-        // 使 Screen Space - Camera 的 Canvas（GameUI）在场景重载后引用不再失效
-        private static void EnsurePersistentCamera()
+        // 场景加载后将 UIRoot / GameUI 的 Canvas 渲染相机绑定到当前场景的主相机。
+        // 相机为场景内对象，场景切换时旧相机销毁、新相机创建，DDOL 的 Canvas 引用需重绑。
+        private static void RebindCameraOnSceneLoad(Scene scene, LoadSceneMode mode)
         {
-            if (Camera.main != null)
+            var cam = Camera.main;
+            if (cam == null)
             {
+                Debug.LogError($"场景 {scene.name} 缺少 MainCamera，Canvas 渲染相机绑定失败");
                 return;
             }
-            var cameraPrefab = Resources.Load<GameObject>("MainCamera");
-            if (cameraPrefab == null)
-            {
-                Debug.LogError("Resources/MainCamera 预制体缺失，常驻主相机初始化失败");
-                return;
-            }
-            var cameraObject = UnityEngine.Object.Instantiate(cameraPrefab);
-            cameraObject.name = "Main Camera";
-            UnityEngine.Object.DontDestroyOnLoad(cameraObject);
-        }
-
-        // 把 QFramework UIRoot 的 UICamera 字段和 Canvas(Screen Space - Camera) 的
-        // Render Camera 都绑定到常驻主相机，保证 UIKit 面板由主相机渲染
-        private static void BindUIRootCamera()
-        {
-            var mainCamera = Camera.main;
-            if (mainCamera == null)
-            {
-                Debug.LogError("常驻主相机缺失，UIRoot Canvas 渲染相机绑定失败");
-                return;
-            }
+            // UIRoot (QFramework 运行时创建，DDOL)
             var uiRoot = UIKit.Root;
-            uiRoot.UICamera = mainCamera;
-            uiRoot.Canvas.renderMode = UnityEngine.RenderMode.ScreenSpaceCamera;
-            uiRoot.Canvas.worldCamera = mainCamera;
+            uiRoot.UICamera = cam;
+            uiRoot.Canvas.renderMode = RenderMode.ScreenSpaceCamera;
+            uiRoot.Canvas.worldCamera = cam;
+            // GameUI (场景内创建后 DDOL，Awake 首次绑定后由这里维持后续场景的引用)
+            if (GameUI.GUIInstance != null)
+            {
+                var canvas = GameUI.GUIInstance.GetComponent<Canvas>();
+                if (canvas != null)
+                {
+                    canvas.worldCamera = cam;
+                }
+            }
         }
 
         // level up after getting 5 exp, then increase the required exp by 10%

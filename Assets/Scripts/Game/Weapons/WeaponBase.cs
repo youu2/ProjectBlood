@@ -37,6 +37,9 @@ namespace ProjectBlood
         public LifestealFeature Lifesteal { get; set; } = new LifestealFeature(); // 吸血功能
         public bool IsBulletEnhanced { get; protected set; } = true; // 当前弹夹是否被血库强化
         public float AdditionalCameraSize = 0.5f;
+        // 弹壳模板（可选）：仅在无 ShellPool 的场景（如主菜单）中抛壳时使用，
+        // 直接实例化并在动画结束后自毁；游戏内场景仍走对象池
+        [SerializeField] protected Rigidbody2D ShellPrefab;
         public virtual void StartAttacking() { }
         public abstract void StopAttacking();
         public virtual void InitGunClip()
@@ -59,7 +62,18 @@ namespace ProjectBlood
             // 计算旋转:根据 shootDir 向量创建对应的 Quaternion 朝向
             Quaternion bulletRotation = Quaternion.FromToRotation(Vector2.right, finalDirection.normalized);
             // var bullet = Instantiate(BulletPrefab, BulletPrefab.transform.position, bulletRotation);  // 挂在枪口位置
-            var bullet = PlayerBulletPool.Instance.Get(BulletPrefab);
+            GameObject bullet;
+            if (PlayerBulletPool.Instance != null)
+            {
+                bullet = PlayerBulletPool.Instance.Get(BulletPrefab);
+            }
+            else
+            {
+                // 无对象池场景（主菜单）：直接实例化，寿命到期由 PlayerBullet.Recycle 兜底销毁
+                bullet = Instantiate(BulletPrefab);
+                var pb = bullet.GetComponent<PlayerBullet>();
+                if (pb != null) pb.BulletPrefab = BulletPrefab;
+            }
             bullet.transform.SetPositionAndRotation(BulletSpawnPoint.position, bulletRotation);
             bullet.GetComponent<PlayerBullet>().direction = finalDirection;
             bullet.GetComponent<PlayerBullet>().weaponType = WeaponType; // 标记子弹来源武器,供强化伤害计算
@@ -102,13 +116,22 @@ namespace ProjectBlood
 
         private void CreateShell(Vector2 finalDirection)
         {
-            if (ShellPool.instance == null)
+            if (ShellPool.instance != null)
             {
+                GameObject shellObj = ShellPool.instance.shellPool.Get();
+                shellObj.transform.SetPositionAndRotation(transform.position, transform.rotation);
+                shellObj.GetComponent<ShellManager>().PlayShellAnimation(finalDirection, transform);
                 return;
             }
-            GameObject shellObj = ShellPool.instance.shellPool.Get();
-            shellObj.transform.SetPositionAndRotation(transform.position, transform.rotation);
-            shellObj.GetComponent<ShellManager>().PlayShellAnimation(finalDirection, transform);
+            // 无弹壳池场景（主菜单）：实例化弹壳模板，动画结束后自毁
+            var shellSource = ShellPrefab != null ? ShellPrefab
+                : (DropManager.Instance != null ? DropManager.Instance.Shell : null);
+            if (shellSource == null) return;
+            var shell = Instantiate(shellSource.gameObject, transform.position, transform.rotation);
+            var sm = shell.GetComponent<ShellManager>();
+            if (sm == null) return;
+            sm.freePlay = true;
+            sm.PlayShellAnimation(finalDirection, transform);
         }
 
         // 全自动武器支持随机散布

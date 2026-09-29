@@ -38,11 +38,21 @@ public class CameraController : MonoBehaviour
     // 菜单 UI 残留到主菜单
     private bool loadingFreeze = false;
 
+    [Header("=== 主菜单模式（GameStart 场景） ===")]
+    [Tooltip("主菜单相机视野半高：值越小玩家占屏越大。玩家占屏高度 ≈ 玩家高度/(2×该值)，30% 左右可按玩家实际高度微调")]
+    [SerializeField] private float menuOrthographicSize = 2.2f;
+    [Tooltip("主菜单跟随缓动速度：比局内(3.0)小，跟随幅度更柔和")]
+    [SerializeField] private float menuFollowLerpSpeed = 1.5f;
+    [Tooltip("相机相对玩家的世界偏移：负x使玩家显示在屏幕右侧，正y使玩家偏下")]
+    [SerializeField] private Vector2 menuScreenOffset = new Vector2(-1.6f, 0.7f);
+    private bool isMenuMode = false;
+
     void Awake()
     {
         mCamera = GetComponent<Camera>();
         currentBgColor = mCamera.backgroundColor;
         targetBgColor = currentBgColor;
+        isMenuMode = SceneManager.GetActiveScene().name == "GameStart";
     }
     void OnEnable()
     {
@@ -81,11 +91,41 @@ public class CameraController : MonoBehaviour
             return;
         }
         // 新场景第一帧（Player 已在 MapController.Start 传送到出生点）直接吸附
-        if (pendingSnapToPlayer)
+        if (pendingSnapToPlayer && !isMenuMode)
         {
             var spawnPos = Player.player1.transform.position;
             transform.position = new Vector3(spawnPos.x, spawnPos.y, -10);
             pendingSnapToPlayer = false;
+        }
+
+        // 主菜单模式：瞄准不引起相机偏移（禁用鼠标偏移），小幅度缓动跟随 +
+        // 固定屏幕偏移使玩家保持在屏幕右偏下；保留开火震动以维持局内手感
+        if (isMenuMode)
+        {
+            currentMouseOffset = Vector3.zero;
+            Vector3 menuTarget = (Vector3)((Vector2)Player.player1.transform.position + menuScreenOffset);
+            menuTarget.z = -10;
+            if (pendingSnapToPlayer)
+            {
+                transform.position = menuTarget; // 进场首帧直接吸附到位
+                pendingSnapToPlayer = false;
+            }
+            else
+            {
+                menuTarget = Vector3.Lerp(transform.position, menuTarget,
+                    1.0f - Mathf.Exp(-menuFollowLerpSpeed * Time.deltaTime));
+                if (isShaking)
+                {
+                    var menuShake = (duration / 60).Lerp(intensity, 0);
+                    menuTarget.x += Random.Range(-menuShake, menuShake);
+                    menuTarget.y += Random.Range(-menuShake, menuShake);
+                    duration--;
+                    if (duration <= 0) isShaking = false;
+                }
+                menuTarget.z = -10;
+                transform.position = menuTarget;
+            }
+            return;
         }
         // 先更新鼠标动态偏移（双摇杆射击：镜头向鼠标瞄准方向小幅偏移）
         UpdateMouseOffset();
@@ -183,12 +223,14 @@ public class CameraController : MonoBehaviour
 
     public void UpdateCameraSize()
     {
+        // 主菜单使用独立的较小视野，让玩家占屏约 30%；局内仍为 武器加成 + 7
+        float targetSize = isMenuMode ? menuOrthographicSize : Global.WeaponAdditionalCameraSize + 7;
         mCamera.orthographicSize =
         (1.0f - Mathf.Exp(-Time.deltaTime * 3.0f))
-        .Lerp(mCamera.orthographicSize, Global.WeaponAdditionalCameraSize + 7);
+        .Lerp(mCamera.orthographicSize, targetSize);
     }
 
-    // 相机常驻跨场景：新场景加载后复位临时状态，等待首帧吸附到新 Player
+    // 相机为场景内对象（每场景新建）：sceneLoaded 时复位临时状态，等待首帧吸附到 Player
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         isShaking = false;
@@ -199,6 +241,7 @@ public class CameraController : MonoBehaviour
         targetBgColor = currentBgColor;
         transform.rotation = Quaternion.identity;
         pendingSnapToPlayer = true;
+        isMenuMode = scene.name == "GameStart";
     }
 
     public void OnPlayerEnteredRoom(Room room)

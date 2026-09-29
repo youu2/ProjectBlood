@@ -130,50 +130,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 454223517}
     m_Modifications:
-    - target: {fileID: 299277303755277523, guid: 17d3c800398587047b66d84b8e7c00c0, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 299277303755277523, guid: 17d3c800398587047b66d84b8e7c00c0, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 299277303755277523, guid: 17d3c800398587047b66d84b8e7c00c0, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 299277303755277523, guid: 17d3c800398587047b66d84b8e7c00c0, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1909648184030631550, guid: 17d3c800398587047b66d84b8e7c00c0, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1909648184030631550, guid: 17d3c800398587047b66d84b8e7c00c0, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1909648184030631550, guid: 17d3c800398587047b66d84b8e7c00c0, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2431512070217401815, guid: 17d3c800398587047b66d84b8e7c00c0, type: 3}
-      propertyPath: m_fontColor.b
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2431512070217401815, guid: 17d3c800398587047b66d84b8e7c00c0, type: 3}
-      propertyPath: m_fontColor.g
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2431512070217401815, guid: 17d3c800398587047b66d84b8e7c00c0, type: 3}
-      propertyPath: m_fontColor.r
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2431512070217401815, guid: 17d3c800398587047b66d84b8e7c00c0, type: 3}
-      propertyPath: m_fontColor32.rgba
-      value: 4294967295
-      objectReference: {fileID: 0}
     - target: {fileID: 2968858737346169830, guid: 17d3c800398587047b66d84b8e7c00c0, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -254,45 +210,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3343846577362520775, guid: 17d3c800398587047b66d84b8e7c00c0, type: 3}
-      propertyPath: m_Color.b
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3343846577362520775, guid: 17d3c800398587047b66d84b8e7c00c0, type: 3}
-      propertyPath: m_Color.g
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3343846577362520775, guid: 17d3c800398587047b66d84b8e7c00c0, type: 3}
-      propertyPath: m_Color.r
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3872251487799266915, guid: 17d3c800398587047b66d84b8e7c00c0, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 66.73
-      objectReference: {fileID: 0}
-    - target: {fileID: 3872251487799266915, guid: 17d3c800398587047b66d84b8e7c00c0, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -230
-      objectReference: {fileID: 0}
-    - target: {fileID: 4285412814294757270, guid: 17d3c800398587047b66d84b8e7c00c0, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -313
-      objectReference: {fileID: 0}
     - target: {fileID: 4598381515349922812, guid: 17d3c800398587047b66d84b8e7c00c0, type: 3}
       propertyPath: m_Name
       value: UIGameStartPanel
-      objectReference: {fileID: 0}
-    - target: {fileID: 7421367915853017886, guid: 17d3c800398587047b66d84b8e7c00c0, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7421367915853017886, guid: 17d3c800398587047b66d84b8e7c00c0, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7840304310442622286, guid: 17d3c800398587047b66d84b8e7c00c0, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -461,6 +381,14 @@ PrefabInstance:
     - target: {fileID: 1000012438581554, guid: c70aac0028afd42eabc9e0c55824c824, type: 3}
       propertyPath: m_Name
       value: UIRoot
+      objectReference: {fileID: 0}
+    - target: {fileID: 114574186442532806, guid: c70aac0028afd42eabc9e0c55824c824, type: 3}
+      propertyPath: m_ReferenceResolution.x
+      value: 1920
+      objectReference: {fileID: 0}
+    - target: {fileID: 114574186442532806, guid: c70aac0028afd42eabc9e0c55824c824, type: 3}
+      propertyPath: m_ReferenceResolution.y
+      value: 1080
       objectReference: {fileID: 0}
     - target: {fileID: 223938889282763000, guid: c70aac0028afd42eabc9e0c55824c824, type: 3}
       propertyPath: m_RenderMode

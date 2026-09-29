@@ -11,7 +11,7 @@ namespace ProjectBlood
         [SerializeField] private float fadeOutDelay = 0.09f;
 
         private Light2D fireLight;
-        private float initialIntensity;
+        [SerializeField] private float initialIntensity;
         private Coroutine _currentFadeRoutine;
 
         private void Awake()
@@ -19,7 +19,7 @@ namespace ProjectBlood
             fireLight = GetComponent<Light2D>();
             if (fireLight != null)
             {
-                initialIntensity = fireLight.intensity;
+                // initialIntensity = fireLight.intensity;
                 fireLight.enabled = false;
             }
         }

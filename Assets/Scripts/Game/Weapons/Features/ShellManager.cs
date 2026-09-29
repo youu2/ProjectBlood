@@ -10,6 +10,8 @@ namespace ProjectBlood
     {
         public float ShellVolume = 0.5f;
         public float delay2Release = 10f;
+        // 非池化模式（主菜单等无 ShellPool 场景直接 Instantiate 的弹壳）：动画结束后自毁而非回池
+        [System.NonSerialized] public bool freePlay = false;
         public void PlayShellAnimation(Vector2 finalDirection, Transform weaponTransform)
         {
             gameObject.SetActive(true);
@@ -53,7 +55,14 @@ namespace ProjectBlood
 
             // 延迟20秒后释放弹壳回池子
             yield return new WaitForSeconds(delay2Release);
-            ShellPool.instance.shellPool.Release(gameObject);
+            if (freePlay || ShellPool.instance == null)
+            {
+                Destroy(gameObject); // 非池化实例：直接销毁
+            }
+            else
+            {
+                ShellPool.instance.shellPool.Release(gameObject);
+            }
         }
 
         // 使用QF ActionKit 的抛壳方案：

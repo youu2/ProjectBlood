@@ -15,8 +15,10 @@ namespace ProjectBlood
         protected override void OnInit(IUIData uiData = null)
         {
             mData = uiData as UIGameStartPanelData ?? new UIGameStartPanelData();
-            Time.timeScale = 0;
-            Global.IsGamePaused = true;
+            // 开始界面时间正常流动（TimeScale = 1），保证界面动画/特效与主菜单玩家可动；
+            // IsGamePaused 保持 false 以允许主菜单玩家操作，仅在养成面板打开期间置 true
+            Time.timeScale = 1.0f;
+            // Global.IsGamePaused = true;
             GameUI.GUIInstance.Hide();
 
             // 遗产点显示与条目刷新（加载/持久化统一由 LegacyUpgradeState 负责）
@@ -61,6 +63,7 @@ namespace ProjectBlood
 
             BtnLegacyUpgrade.onClick.AddListener(() =>
             {
+                Global.IsGamePaused = true;  // 进入局外养成：禁用主菜单玩家全部操作
                 BuildUpgradeEntries();
                 RefreshEntries();
                 LegacyUpgradePanel.gameObject.SetActive(true);
@@ -71,6 +74,7 @@ namespace ProjectBlood
             {
                 LegacyUpgradePanel.gameObject.SetActive(false);
                 TittleText.Show();
+                Global.IsGamePaused = false; // 返回主菜单：恢复玩家操作
             });
         }
 
