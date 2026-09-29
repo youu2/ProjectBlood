@@ -22,6 +22,10 @@ namespace ProjectBlood
         // ---- 技能充能(CD)累计减免比例:按技能名(SkillData.skillName)独立累加 ----
         // 0.1 = 充能间隔缩短 10%,可为负(-0.1 = 增加 10%);有效间隔 = 基础间隔 × (1 - 减免)
         private static readonly Dictionary<string, float> skillCooldownReductions = new Dictionary<string, float>();
+        // ---- 技能最大充能层数累计加成:按技能名独立累加(可为负) ----
+        // 有效最大层数 = SkillData.maxCharges + 累计加成,夹到下限 1。局内效果(血印),随 Reset 清空,不入存档
+        private static readonly Dictionary<string, int> skillMaxChargesBonuses = new Dictionary<string, int>();
+        private const int MinSkillMaxCharges = 1; // 技能最大充能层数下限(至少保留 1 层,技能才可用)
         // ---- 每张强化卡(UpgradeSO 资产)的累计被选择次数 ----
         // 按卡牌维度独立计数:MaxUpgradeCount 限制的是"这张卡能被选几次",
         // 多张影响同一属性/武器的卡互不影响(例如两张 MaxUpgradeCount=5 的生命卡,生命值最多可被改 10 次)
@@ -206,6 +210,29 @@ namespace ProjectBlood
             {
                 skill.ScaleChargeTimer(newInterval / oldInterval, newInterval);
             }
+        }
+
+        // ---- 技能最大充能层数加成 ----
+
+        // 某技能的累计最大层数加成(整数,可为负;未修改为 0)
+        public static int GetSkillMaxChargesBonus(string skillName)
+            => !string.IsNullOrEmpty(skillName) && skillMaxChargesBonuses.TryGetValue(skillName, out int v) ? v : 0;
+
+        // 应用加成后的有效最大层数 = 基础层数(SkillData.maxCharges) + 累计加成,夹到下限。
+        // SkillBase.MaxCharges 统一走此入口,保证血印/强化对层数的修改聚合生效。
+        public static int GetAdjustedSkillMaxCharges(string skillName, int baseMaxCharges)
+            => Mathf.Max(MinSkillMaxCharges, baseMaxCharges + GetSkillMaxChargesBonus(skillName));
+
+        // 应用一次最大层数加成(delta 可为负表示减少):累加后通知技能整理当前层数/计时。
+        // 目标层数 = baseMax + delta 的组合由调用方(血印 Outcome)换算,此处保持增量语义以便对称撤销。
+        public static void ApplySkillMaxChargesBonus(string skillName, int delta)
+        {
+            if (string.IsNullOrEmpty(skillName) || delta == 0) return;
+            skillMaxChargesBonuses[skillName] = GetSkillMaxChargesBonus(skillName) + delta;
+
+            var skillManager = FindSkillManager();
+            var skill = skillManager != null ? skillManager.GetSkillByName(skillName) : null;
+            skill?.RefreshChargesAfterMaxChanged();
         }
 
         // 伤害计算统一入口(PlayerBullet / Laser 命中时调用)：
@@ -423,6 +450,7 @@ namespace ProjectBlood
             weaponDamageLevels.Clear();
             weaponDamageRatios.Clear();
             skillCooldownReductions.Clear();
+            skillMaxChargesBonuses.Clear();
             upgradeUsageCounts.Clear();
             GlobalDamageRatio = 1f;
 

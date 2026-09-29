@@ -15,8 +15,28 @@ public abstract class SkillBase
     public int CurrentCharges { get; protected set; }  // 当前充能层数
     protected float chargeTimer;                        // 距下一次充能的倒计时(秒)
 
-    // 最大层数(从 data 读取,但缓存运行时以便升级时重新夹取)
-    public int MaxCharges => data != null ? Mathf.Max(1, data.maxCharges) : 1;
+    // 最大层数 = SkillData 基础层数 + 强化/血印系统的累计加成(经 PlayerUpgradeState 聚合),
+    // 下限 1。外部不直接改 data.maxCharges,统一走 SetMaxCharges 以保持层数/计时一致性。
+    public int MaxCharges
+        => data != null
+            ? ProjectBlood.PlayerUpgradeState.GetAdjustedSkillMaxCharges(data.skillName, data.maxCharges)
+            : 1;
+
+    /// <summary>
+    /// 由 PlayerUpgradeState 在层数加成变化后调用,处理当前层数与充能计时的过渡。
+    /// 仅做状态整理,真正的数值来源是 MaxCharges 聚合(基础 + 加成)。
+    /// </summary>
+    public void RefreshChargesAfterMaxChanged()
+    {
+        int max = MaxCharges;
+        if (CurrentCharges > max)
+        {
+            // 加成被撤销导致上限降低:夹取多余层数,若因此变满则清空充能计时
+            CurrentCharges = max;
+            chargeTimer = 0f;
+        }
+        // 上限提高时不主动补充层数,让 TickCharge 按既有节奏逐层充能,保持经济平衡
+    }
 
     // 应用强化系统充能减免/惩罚后的实际充能间隔(秒)。
     // 所有充能计时统一走此属性:0.1 减免 => 基础间隔 × 0.9;负数减免 => 间隔变长。

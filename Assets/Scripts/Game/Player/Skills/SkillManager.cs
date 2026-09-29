@@ -58,14 +58,18 @@ public class SkillManager : MonoBehaviour
         // 3. 更新角色朝向(临时：根据水平输入判断)
         UpdateFacingDirection();
 
-        // 4. 处理输入
-        if (Input.GetKeyDown(rollKey))
+        // 4. 处理输入（主菜单展示模式下禁用技能输入，避免翻滚/技能破坏菜单定位）
+        bool inMainMenu = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "GameStart";
+        if (!inMainMenu)
         {
-            TryUseSkillByName("翻滚");
-        }
-        if (Input.GetKeyDown(skill2Key))
-        {
-            TryUseSkillByName("技能2");
+            if (Input.GetKeyDown(rollKey))
+            {
+                TryUseSkillByName("翻滚");
+            }
+            if (Input.GetKeyDown(skill2Key))
+            {
+                TryUseSkillByName("技能2");
+            }
         }
     }
 

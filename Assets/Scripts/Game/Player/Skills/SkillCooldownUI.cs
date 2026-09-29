@@ -65,7 +65,7 @@ public class SkillCooldownUI : MonoBehaviour
         int maxCharges = skillManager.GetMaxCharges(skillName);
 
         // 层数小于1时更新遮罩填充量：充能中时填充量从1递减到0,提示玩家当前无法使用技能
-        if (cooldownOverlay != null && currentCharges <= 1)
+        if (cooldownOverlay != null && currentCharges < 1)
         {
             cooldownOverlay.fillAmount = 1f - chargeProgress;
         }
@@ -76,7 +76,11 @@ public class SkillCooldownUI : MonoBehaviour
             // 多层充能：显示 "当前/最大"
             if (chargeText != null) chargeText.text = $"{currentCharges}";
             if (chargeCircle != null) chargeCircle.Show();
-            if (chargeCDOverlay != null) chargeCDOverlay.fillAmount = chargeProgress;
+            if (chargeCDOverlay != null)
+            {
+                chargeCDOverlay.fillAmount = chargeProgress;
+                chargeCDOverlay.Show();
+            }
         }
         else
         {
