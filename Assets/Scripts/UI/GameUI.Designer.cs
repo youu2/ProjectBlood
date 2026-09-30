@@ -1,10 +1,12 @@
-// Generate Id:281124da-d973-4ca5-96ca-e37f5b9663e4
+// Generate Id:4f9573b0-0cd1-4f96-9897-0530e1296bd6
 using UnityEngine;
 
 namespace ProjectBlood
 {
 	public partial class GameUI
 	{
+		public ProjectBlood.HealthBar HealthBar;
+		
 		public ProjectBlood.UIMap UIMap;
 		
 		public UnityEngine.UI.Image SkillIcon;

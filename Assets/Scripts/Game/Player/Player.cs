@@ -481,39 +481,39 @@ namespace ProjectBlood
             // 切枪（主菜单仅展示初始武器 DE，禁用一切切枪输入）
             if (!inMainMenu)
             {
-            if (Input.GetKeyDown(KeyCode.Alpha1) && !Global.IsGamePaused)
-            {
-                UseWeapon(0);
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha2) && !Global.IsGamePaused)
-            {
-                UseWeapon(1);
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha3) && !Global.IsGamePaused)
-            {
-                UseWeapon(2);
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha4) && !Global.IsGamePaused)
-            {
-                UseWeapon(3);
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha5) && !Global.IsGamePaused)
-            {
-                UseWeapon(4);
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha6) && !Global.IsGamePaused)
-            {
-                UseWeapon(5);
-            }
-            if ((Input.mouseScrollDelta.y > 0 || Input.GetKeyDown(KeyCode.Q)) && !Global.IsGamePaused) // 鼠标滚轮向上滚动切换到上一个武器
-            {
-                // 使用模运算实现循环切换武器
-                UseWeapon((WeaponDataSystem.weaponDataList.IndexOf(currentWeapon.Data) - 1 + WeaponDataSystem.weaponDataList.Count) % WeaponDataSystem.weaponDataList.Count);
-            }
-            else if ((Input.mouseScrollDelta.y < 0 || Input.GetKeyDown(KeyCode.E)) && !Global.IsGamePaused) // 鼠标滚轮向下滚动切换到下一个武器
-            {
-                UseWeapon((WeaponDataSystem.weaponDataList.IndexOf(currentWeapon.Data) + 1) % WeaponDataSystem.weaponDataList.Count);
-            }
+                if (Input.GetKeyDown(KeyCode.Alpha1) && !Global.IsGamePaused)
+                {
+                    UseWeapon(0);
+                }
+                if (Input.GetKeyDown(KeyCode.Alpha2) && !Global.IsGamePaused)
+                {
+                    UseWeapon(1);
+                }
+                if (Input.GetKeyDown(KeyCode.Alpha3) && !Global.IsGamePaused)
+                {
+                    UseWeapon(2);
+                }
+                if (Input.GetKeyDown(KeyCode.Alpha4) && !Global.IsGamePaused)
+                {
+                    UseWeapon(3);
+                }
+                if (Input.GetKeyDown(KeyCode.Alpha5) && !Global.IsGamePaused)
+                {
+                    UseWeapon(4);
+                }
+                if (Input.GetKeyDown(KeyCode.Alpha6) && !Global.IsGamePaused)
+                {
+                    UseWeapon(5);
+                }
+                if ((Input.mouseScrollDelta.y > 0 || Input.GetKeyDown(KeyCode.Q)) && !Global.IsGamePaused) // 鼠标滚轮向上滚动切换到上一个武器
+                {
+                    // 使用模运算实现循环切换武器
+                    UseWeapon((WeaponDataSystem.weaponDataList.IndexOf(currentWeapon.Data) - 1 + WeaponDataSystem.weaponDataList.Count) % WeaponDataSystem.weaponDataList.Count);
+                }
+                else if ((Input.mouseScrollDelta.y < 0 || Input.GetKeyDown(KeyCode.E)) && !Global.IsGamePaused) // 鼠标滚轮向下滚动切换到下一个武器
+                {
+                    UseWeapon((WeaponDataSystem.weaponDataList.IndexOf(currentWeapon.Data) + 1) % WeaponDataSystem.weaponDataList.Count);
+                }
             }
 
             // 血印系统:每帧驱动限时效果计时（被动计时已迁移至血印系统）
@@ -597,7 +597,15 @@ namespace ProjectBlood
 
         private void OnDestroy()
         {
-            player1 = null;
+            // 仅当自己仍是当前 player1 时才清空，避免场景切换时旧 Player 的 OnDestroy
+            // 在新 Player 的 Awake 之后执行，把新 Player 已赋值的 player1 误清空。
+            // 一旦 player1 被误清空，WeaponBase.Attack 中 fireFlash.Flash 等访问
+            // Player.player1 的代码会抛 NullReferenceException，导致 KeepAttacking
+            // 中的 RecordAttackTime / gunClip.Shoot 被跳过 → 无冷却且不扣弹的每帧连发。
+            if (player1 == this)
+            {
+                player1 = null;
+            }
             if (specialReloadCoroutine != null)
             {
                 StopCoroutine(specialReloadCoroutine);

@@ -206,6 +206,7 @@ namespace ProjectBlood
             GUIInstance.HPText.Hide();
             GUIInstance.SkillText.Hide();
             GUIInstance.PlayerLevelText.Hide();
+            GUIInstance.HealthBar.Hide();
             if (Player.player1 != null) Player.player1.ShieldSprite.Hide();
         }
 
@@ -224,6 +225,7 @@ namespace ProjectBlood
             GUIInstance.HPText.Show();
             GUIInstance.SkillText.Show();
             GUIInstance.PlayerLevelText.Show();
+            GUIInstance.HealthBar.Show();
             if (Player.player1 != null) Player.player1.ShieldSprite.Show();
         }
     }

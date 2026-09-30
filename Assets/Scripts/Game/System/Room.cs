@@ -289,6 +289,10 @@ namespace ProjectBlood
         {
             if (!other.CompareTag("Player")) return;
             if (roomState == RoomState.Battle) return;
+            // 场景卸载/物体失活过程中 Unity 也会补触发 OnTriggerExit2D，
+            // 此时在失活物体上启动协程(QFramework this.Delay)会报错；
+            // 卸载引发的"退出"不应安排自动存档，直接忽略。
+            if (!isActiveAndEnabled) return;
 
             // 延迟 0.5s 采集：房间完成后掉落物飞向玩家自动拾取，
             // 等飞行结束再存档避免同一掉落物既记为"地面存在"又"已入包"

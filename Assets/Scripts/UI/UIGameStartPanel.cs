@@ -19,7 +19,12 @@ namespace ProjectBlood
             // IsGamePaused 保持 false 以允许主菜单玩家操作，仅在养成面板打开期间置 true
             Time.timeScale = 0.8f;
             // Global.IsGamePaused = true;
-            GameUI.GUIInstance.Hide();
+            // 仅逐个隐藏战斗 HUD 元素，绝不能停用 GameUI 物体本身：
+            // 战斗→主菜单的 LoadingPageCoroutine 正运行在 GameUI 上，
+            // GameObject 失活会立即杀死协程，导致其收尾逻辑
+            // （IsGamePaused=false、相机解冻、OnLoadingComplete 事件）全部丢失，
+            // 主菜单玩家会被 Player.Update 的“暂停冻结分支”永久锁死。
+            GameUI.HideGameUI();
 
             // FMOD BGM：进入主菜单（幂等，重复打开面板只切回主菜单音乐）
             FmodMusicManager.Instance.Init();

@@ -79,18 +79,29 @@ namespace ProjectBlood
             bullet.GetComponent<PlayerBullet>().weaponType = WeaponType; // 标记子弹来源武器,供强化伤害计算
             bullet.SetActive(true);
 
-            ApplyLifestealToBullet(bullet.GetComponent<PlayerBullet>()); // 应用吸血功能
+            // 子弹已成功生成并激活，后续均为非关键衍生功能。
+            // 用 try-catch 包裹：若任一副作用抛异常（如主菜单缺失某些引用、事件订阅者异常），
+            // 也不能让异常向上传播到 KeepAttacking，否则 RecordAttackTime / gunClip.Shoot
+            // 会被跳过，导致冷却与弹药扣减失效 → 每帧连发且弹药不消耗。
+            try
+            {
+                ApplyLifestealToBullet(bullet.GetComponent<PlayerBullet>()); // 应用吸血功能
 
-            fireFlash.Flash(BulletSpawnPoint.position, shootDir); // 显示枪口火焰特效
+                fireFlash.Flash(BulletSpawnPoint.position, shootDir); // 显示枪口火焰特效
 
-            //镜头震动
-            CameraUtils.ShakeMainCamera(CameraShakeIntensity, CameraShakeDuration);
-            WeaponAnimator.SetTrigger(ShootAnimatioTrigger);
+                //镜头震动
+                CameraUtils.ShakeMainCamera(CameraShakeIntensity, CameraShakeDuration);
+                WeaponAnimator.SetTrigger(ShootAnimatioTrigger);
 
-            // 播放抛壳动画
-            CreateShell(finalDirection);
+                // 播放抛壳动画
+                CreateShell(finalDirection);
 
-            OnWeaponFired?.Invoke(this);
+                OnWeaponFired?.Invoke(this);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[WeaponBase.Attack] 开火衍生功能异常，已忽略（子弹已发射）: {e.Message}");
+            }
         }
 
         public virtual void KeepAttacking(Vector2 shootDir)
@@ -116,7 +127,10 @@ namespace ProjectBlood
 
         private void CreateShell(Vector2 finalDirection)
         {
-            if (ShellPool.instance != null)
+            // 弹壳池为跨场景常驻对象，战斗结束进入主菜单后仍然存在，
+            // 但 DropManager（弹壳模板持有者）是局内场景对象，主菜单中不存在。
+            // 二者必须同时就绪才能走池路径，否则池内工厂会取空模板抛 NullReferenceException。
+            if (ShellPool.instance != null && DropManager.Instance != null && DropManager.Instance.Shell != null)
             {
                 GameObject shellObj = ShellPool.instance.shellPool.Get();
                 shellObj.transform.SetPositionAndRotation(transform.position, transform.rotation);

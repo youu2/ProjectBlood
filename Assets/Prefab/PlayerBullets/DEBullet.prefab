@@ -50,8 +50,10 @@ MonoBehaviour:
   direction: {x: 0, y: 0}
   speed: 35
   damage: 50
+  lifetime: 3
   lifestealPercent: 0
   isEnhanced: 1
+  weaponType: 1
   BulletPrefab: {fileID: 66847308508560688}
 --- !u!50 &8849338919111298154
 Rigidbody2D:
@@ -142,7 +144,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.425, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.85, y: 0.85, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6770554108618282410}
