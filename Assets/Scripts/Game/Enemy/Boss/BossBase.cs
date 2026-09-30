@@ -70,6 +70,7 @@ namespace ProjectBlood
 
             bossFightStarted = true;
             Global.BossActive.Value = true;
+            FmodMusicManager.Instance.SetStage(GameStage.BossPhase1);   // Boss 开战：一阶段音乐
             Room.OnPlayerEnteredRoom -= HandlePlayerEnteredRoom;
         }
 
@@ -106,6 +107,7 @@ namespace ProjectBlood
         protected virtual void StartPhaseTwo()
         {
             OnPhaseTwoStarted?.Invoke();
+            FmodMusicManager.Instance.SetStage(GameStage.BossPhase2);   // 转阶段：二阶段音乐
 
             // 打断当前正在进行的所有动作（攻击 / 换弹 / 推进 / 环射）
             StopAllCoroutines();
@@ -157,6 +159,7 @@ namespace ProjectBlood
 
             // 通知 UI Boss 已离场
             Global.BossActive.Value = false;
+            FmodMusicManager.Instance.SetStage(GameStage.Normal);   // Boss 死亡：回 Normal 战斗音乐
 
             // Boss 专属掉落：金币 + dirtyBlood
             GenerateBossDrops();

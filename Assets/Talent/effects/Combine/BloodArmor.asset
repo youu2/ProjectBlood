@@ -16,6 +16,6 @@ MonoBehaviour:
   outcomes:
   - {fileID: 11400000, guid: e1d1e82d1d724c1409123e8ab0aa644a, type: 2}
   endConditions:
-  - {fileID: 11400000, guid: 4b5694aa94bb53441bb074b49439401b, type: 2}
+  - {fileID: 11400000, guid: 9aaf8a78b2aea924c88693cbae2d0bd2, type: 2}
   endMatchMode: 0
   maxStacks: -1

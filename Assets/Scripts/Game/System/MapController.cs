@@ -84,6 +84,8 @@ namespace ProjectBlood
         void Start()
         {
             Global.IsGamePaused = false;
+            // 关卡加载完成：切到 Normal 战斗音乐（首次进入或传送门停止后重开都走这里）
+            FmodMusicManager.Instance.StartMusic(GameStage.Normal);
             // 读档还原：存在待恢复载荷时走还原路径，跳过 BFS 随机生成
             if (RunSaveService.PendingRestore != null)
             {

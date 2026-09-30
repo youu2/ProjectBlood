@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: Time(0.5)
   m_EditorClassIdentifier: 
   endConditionType: 1
-  duration: 1.5
+  duration: 0.5
+  healthCompare: 2
+  healthThreshold: 0.3

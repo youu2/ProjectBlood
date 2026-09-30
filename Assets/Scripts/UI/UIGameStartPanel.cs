@@ -17,9 +17,12 @@ namespace ProjectBlood
             mData = uiData as UIGameStartPanelData ?? new UIGameStartPanelData();
             // 开始界面时间正常流动（TimeScale = 1），保证界面动画/特效与主菜单玩家可动；
             // IsGamePaused 保持 false 以允许主菜单玩家操作，仅在养成面板打开期间置 true
-            Time.timeScale = 1.0f;
+            Time.timeScale = 0.8f;
             // Global.IsGamePaused = true;
             GameUI.GUIInstance.Hide();
+
+            // FMOD BGM：进入主菜单（幂等，重复打开面板只切回主菜单音乐）
+            FmodMusicManager.Instance.Init();
 
             // 遗产点显示与条目刷新（加载/持久化统一由 LegacyUpgradeState 负责）
             LegacyUpgradeState.LegacyPoint.RegisterWithInitValue(legacy =>

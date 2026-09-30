@@ -119,3 +119,7 @@ InitTestScene*.unity*
 !/[Aa]ssets/Gizmos/FMOD/*
 !/[Aa]ssets/Editor Default Resources/FMOD/*
 .trae/documents/*
+Docs/存档系统开发教程.md
+Docs/存档系统面试题方案.md
+Docs/存档系统使用手册.md
+Docs/LevelProgressSave_Design.md

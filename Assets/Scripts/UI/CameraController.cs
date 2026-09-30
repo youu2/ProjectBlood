@@ -230,7 +230,7 @@ public class CameraController : MonoBehaviour
         .Lerp(mCamera.orthographicSize, targetSize);
     }
 
-    // 相机为场景内对象（每场景新建）：sceneLoaded 时复位临时状态，等待首帧吸附到 Player
+    // 相机常驻跨场景：新场景加载后复位临时状态，等待首帧吸附到新 Player
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         isShaking = false;

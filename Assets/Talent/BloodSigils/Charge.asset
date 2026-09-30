@@ -12,12 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2487fe209676f554e8ac93dcfc2f236a, type: 3}
   m_Name: Charge
   m_EditorClassIdentifier: 
-  sigilName: "\u65B0\u8840\u5370"
-  description: 
-  icon: {fileID: 0}
+  sigilName: "\u84C4\u80FD"
+  description: "\u4F7F[\u7FFB\u6EDA]\u53EF\u4EE5\u5B58\u50A83\u6B21"
+  icon: {fileID: 21300000, guid: b703b769a1ed02e4fbfc6e393123af44, type: 3}
   id: 
   isInPool: 1
   rarity: 0
   dropWeight: 10
   removable: 1
-  effects: []
+  effects:
+  - {fileID: 11400000, guid: 5e5ef79abd00bb8488d15bf898ba2c52, type: 2}

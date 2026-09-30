@@ -17,6 +17,7 @@ public class Portal : MonoBehaviour
             // 先设置为直接通关
             // UIKit.OpenPanel<UIGamePassPanel>();
             // AudioKitManager.Instance.PlayOneShot("WinMusic");
+            FmodMusicManager.Instance.StopMusic();  // 触碰传送门：淡出停止 BGM
             MapController.instance.LoadNextLevel();
         }
     }
