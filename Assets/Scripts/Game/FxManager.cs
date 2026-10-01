@@ -178,8 +178,8 @@ namespace ProjectBlood
             }
             if (floorCells.Count == 0) return;
 
-            // 血迹：3~6 处，随机位置/旋转/透明度（模拟干涸）
-            int bloodCount = Mathf.Min(Random.Range(3, 7), floorCells.Count);
+            // 血迹：6~10 处，随机位置/旋转/透明度（模拟干涸）
+            int bloodCount = Mathf.Min(Random.Range(6, 11), floorCells.Count);
             for (int i = 0; i < bloodCount; i++)
             {
                 var cell = floorCells[Random.Range(0, floorCells.Count)];
@@ -194,7 +194,7 @@ namespace ProjectBlood
                 Instance._spawnedEffects.Add(blood.gameObject);
             }
 
-            // 尸体：1~3 具，从当前关卡实际会出现的敌人尸体中随机选。
+            // 尸体：3~5 具，从当前关卡实际会出现的敌人尸体中随机选。
             // 直接使用 FxManager 的 EnemyXBody 字段（这些是专用于死亡效果的尸体精灵，
             // 与敌人 prefab 上存活时的 body 是完全不同的 SpriteRenderer）。
             var availableBodies = new List<SpriteRenderer>();
@@ -215,7 +215,7 @@ namespace ProjectBlood
             if (availableBodies.Count == 0 && Instance.Enemy1Body != null)
                 availableBodies.Add(Instance.Enemy1Body);   // 兜底：至少保留一种
 
-            int bodyCount = Mathf.Min(Random.Range(1, 4), floorCells.Count);
+            int bodyCount = Mathf.Min(Random.Range(3, 6), floorCells.Count);
             for (int i = 0; i < bodyCount; i++)
             {
                 var cell = floorCells[Random.Range(0, floorCells.Count)];

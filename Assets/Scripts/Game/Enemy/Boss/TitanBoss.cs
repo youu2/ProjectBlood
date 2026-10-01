@@ -136,7 +136,6 @@ namespace ProjectBlood
             }
 
             directionToPlayer = GetDirectionToPlayer();
-            UpdateRotate(directionToPlayer);
             float distanceToPlayer = GetDistanceToPlayer();
 
             // 冷却倒计时
@@ -166,8 +165,12 @@ namespace ProjectBlood
                     break;
             }
 
-            // 每帧更新武器朝向（Arm 旋转 + 武器翻转），协程状态中同样生效
-            AimWeaponAtPlayer();
+            // 非待机状态下每帧更新身体朝向和武器瞄准；Idle 时保持默认朝向
+            if (currentBossState != BossState.Idle)
+            {
+                UpdateRotate(directionToPlayer);
+                AimWeaponAtPlayer();
+            }
         }
 
         // 待机：等玩家进入 Boss 房（房间状态变成 Battle）就开始追踪
