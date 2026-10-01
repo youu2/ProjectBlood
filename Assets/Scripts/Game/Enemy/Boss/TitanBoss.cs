@@ -80,6 +80,22 @@ namespace ProjectBlood
             base.Awake();
             // 初始状态：待机
             currentBossState = BossState.Idle;
+
+            // 基类 Awake 里 GetComponentInChildren<SpriteRenderer>() 按层级序会最先拿到枪的 sprite，
+            // 重指到身体，让转阶段变红演出作用在最显眼的 Body 上（朝向翻转不走 flipX，见 UpdateRotate 重写）
+            spriteRenderer = Face;
+
+        }
+
+        // Boss 是分部件帧动画，基类 flipX 单个 sprite 没意义，改为翻转整个 WholeBody 节点
+        public override void UpdateRotate(Vector3 dirToPlayer)
+        {
+            if (dirToPlayer.x == 0) return;
+            if (WholeBody == null) return;
+
+            Vector3 bodyScale = WholeBody.localScale;
+            bodyScale.x = dirToPlayer.x < 0 ? -Mathf.Abs(bodyScale.x) : Mathf.Abs(bodyScale.x);
+            WholeBody.localScale = bodyScale;
         }
 
         protected override void Start()
@@ -149,6 +165,9 @@ namespace ProjectBlood
                 case BossState.PhaseTransition:
                     break;
             }
+
+            // 每帧更新武器朝向（Arm 旋转 + 武器翻转），协程状态中同样生效
+            AimWeaponAtPlayer();
         }
 
         // 待机：等玩家进入 Boss 房（房间状态变成 Battle）就开始追踪
@@ -221,7 +240,10 @@ namespace ProjectBlood
             if (enemyBullet == null || player == null) return;
             UpdateRotate(directionToPlayer);
 
-            FireScatterBullets(enemyBullet, directionToPlayer, shotgunPelletCount, shotgunSpreadAngle);
+            // 子弹从枪口 ShotPoint 射出，散射方向也从枪口重新计算，保证视觉与弹道一致
+            Vector3 spawnPos = ShotPoint != null ? ShotPoint.position : transform.position;
+            Vector3 fireDir = (player.transform.position - spawnPos).normalized;
+            FireScatterBullets(enemyBullet, fireDir, shotgunPelletCount, shotgunSpreadAngle, spawnPos: spawnPos);
         }
 
         // 换弹：原地停一段时间，结束后根据阶段决定下一步
@@ -321,7 +343,6 @@ namespace ProjectBlood
             {
                 FireRing(ring);
                 PlayBossSfx(ringShotSound, 0.6f);
-                TriggerShot();
                 yield return new WaitForSeconds(ringInterval);
             }
 
@@ -335,7 +356,9 @@ namespace ProjectBlood
         private void FireRing(int ringIndex)
         {
             if (enemyBullet == null) return;
-            FireScatterBullets(enemyBullet, directionToPlayer, ringBulletCount, 360f);
+            // 环射同样从枪口射出
+            Vector3 spawnPos = transform.position;
+            FireScatterBullets(enemyBullet, directionToPlayer, ringBulletCount, 360f, spawnPos: spawnPos);
         }
 
         // 沿寻路路径移动（复用 Enemy 基类的 A* 寻路结果）
@@ -380,6 +403,23 @@ namespace ProjectBlood
         {
             StopAllCoroutines();
             base.OnDestroy();
+        }
+
+        // 每帧旋转 Arm 使枪指向玩家；瞄向左半边时翻转武器（scale.y 取反），避免枪身倒置
+        private void AimWeaponAtPlayer()
+        {
+            if (Arm == null || Player.player1 == null) return;
+
+            Vector3 dir = Player.player1.transform.position - Arm.position;
+            float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+            Arm.rotation = Quaternion.Euler(0f, 0f, angle);
+
+            if (WeaponAnimator != null)
+            {
+                Vector3 weaponScale = WeaponAnimator.transform.localScale;
+                weaponScale.y = dir.x < 0f ? -Mathf.Abs(weaponScale.y) : Mathf.Abs(weaponScale.y);
+                WeaponAnimator.transform.localScale = weaponScale;
+            }
         }
 
         // 设置身体是否在移动（驱动 TitanIdle ↔ TitanMove 转换）

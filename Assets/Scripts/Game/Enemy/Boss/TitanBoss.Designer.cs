@@ -1,4 +1,4 @@
-// Generate Id:1e56c832-126a-4bc5-9637-ea359d57eda3
+// Generate Id:390a6f2c-c722-42ac-905b-e8f7aafa7697
 using UnityEngine;
 
 namespace ProjectBlood
@@ -13,7 +13,17 @@ namespace ProjectBlood
 		
 		public Transform ShotPoint;
 		
-		public UnityEngine.SpriteRenderer FireFlash;
+		public Transform WholeBody;
+		
+		public SpriteRenderer Body;
+		
+		public SpriteRenderer Face;
+		
+		public SpriteRenderer Shoulder;
+		
+		public SpriteRenderer LegLeft;
+		
+		public SpriteRenderer LegRight;
 		
 	}
 }

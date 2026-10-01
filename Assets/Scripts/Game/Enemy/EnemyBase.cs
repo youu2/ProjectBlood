@@ -80,9 +80,12 @@ namespace ProjectBlood
         /// ShootingEnemy 的 FireBullet 和 TitanBoss 的 FireShotgun 共用这段散射数学，
         /// 避免重复代码，同时不引入新的 Inspector 字段。
         /// </summary>
-        protected void FireScatterBullets(EnemyBullet bulletPrefab, Vector3 baseDirection, int pelletCount, float spreadAngle, bool randomScatter = false)
+        protected void FireScatterBullets(EnemyBullet bulletPrefab, Vector3 baseDirection, int pelletCount, float spreadAngle, bool randomScatter = false, Vector3? spawnPos = null)
         {
             if (bulletPrefab == null) return;
+
+            // 子弹出生点：默认从自身位置出射，调用方可指定枪口等位置（如 TitanBoss 的 ShotPoint）
+            Vector3 origin = spawnPos ?? transform.position;
 
             for (int i = 0; i < pelletCount; i++)
             {
@@ -109,7 +112,7 @@ namespace ProjectBlood
                     0
                 ).normalized;
 
-                EnemyBullet bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
+                EnemyBullet bullet = Instantiate(bulletPrefab, origin, Quaternion.identity);
                 bullet.direction = bulletDirection;
                 bullet.gameObject.SetActive(true);
             }
