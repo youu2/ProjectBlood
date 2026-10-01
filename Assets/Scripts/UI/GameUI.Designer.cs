@@ -1,4 +1,4 @@
-// Generate Id:4f9573b0-0cd1-4f96-9897-0530e1296bd6
+// Generate Id:ba222203-9aa7-40d4-a53c-0924332e8610
 using UnityEngine;
 
 namespace ProjectBlood
@@ -34,6 +34,8 @@ namespace ProjectBlood
 		public TMPro.TextMeshProUGUI PlayerLevelText;
 		
 		public TMPro.TextMeshProUGUI HPText;
+		
+		public Animator BossShowAnimator;
 		
 	}
 }

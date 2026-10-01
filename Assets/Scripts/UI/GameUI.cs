@@ -237,5 +237,25 @@ namespace ProjectBlood
             GUIInstance.HealthBar.Show();
             if (Player.player1 != null) Player.player1.ShieldSprite.Show();
         }
+
+        // 进入 Boss 房时调用：播放 MeetBoss 动画并暂停时间 2.5 秒
+        // 动画期间 timeScale = 0，动画本身不受 timeScale 影响（Animator 默认使用 UnscaledTime）
+        public static void PlayBossShow()
+        {
+            if (GUIInstance == null || GUIInstance.BossShowAnimator == null) return;
+            GUIInstance.StartCoroutine(GUIInstance.BossShowCoroutine());
+        }
+
+        private IEnumerator BossShowCoroutine()
+        {
+            // 动画使用 UnscaledTime 更新，否则 timeScale=0 会把出场动画一起冻结
+            BossShowAnimator.updateMode = AnimatorUpdateMode.UnscaledTime;
+            BossShowAnimator.SetTrigger("MeetBoss");
+            Global.IsGamePaused = true;
+            Time.timeScale = 0f;
+            yield return new WaitForSecondsRealtime(2.5f);
+            Time.timeScale = 1f;
+            Global.IsGamePaused = false;
+        }
     }
 }

@@ -64,6 +64,9 @@ MonoBehaviour:
     - TypeName: TMPro.TextMeshProUGUI
       PathToRoot: PlayerStates/HPText
       MemberName: HPText
+    - TypeName: Animator
+      PathToRoot: BossShowAnimator
+      MemberName: BossShowAnimator
     ScriptsFolder: Assets\Scripts\UI
     ClassName: GameUI
     Namespace: ProjectBlood

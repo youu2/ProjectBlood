@@ -257,6 +257,7 @@ namespace ProjectBlood
                     if (enemySet.Count > 0)
                     {
                         roomState = RoomState.Battle;
+                        GameUI.PlayBossShow();  // 播放 Boss 出场动画并暂停时间
 
                         if (doorList != null)
                         {

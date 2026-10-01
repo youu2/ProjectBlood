@@ -31,7 +31,7 @@ namespace ProjectBlood
 
         private FmodMusicManager() { }
 
-        // 创建并启动 GameMusics 实例，进入主菜单阶段；幂等，重复调用只切回主菜单
+        // 创建并启动 GameMusics 实例，进入主菜单阶段；幂等注册，每次调用都淡出旧音乐后重新播放
         public void Init()
         {
             if (!_initialized)
@@ -42,14 +42,8 @@ namespace ProjectBlood
                 AudioKitManager.GlobalVolumeRatio.Register(_ => ApplyVolume());
             }
 
-            if (_hasInstance)
-            {
-                SetStage(GameStage.MainMenu);
-            }
-            else
-            {
-                StartMusic(GameStage.MainMenu);
-            }
+            // 加载结束统一行为：先淡出停止当前音乐，再开始播放目标音乐
+            StartMusic(GameStage.MainMenu);
         }
 
         // 切换游戏阶段（FMOD 内部用 AHDSR 做淡入淡出）

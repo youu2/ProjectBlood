@@ -500,7 +500,7 @@ MonoBehaviour:
   phase2MoveSpeed: 6
   phase2ShootInterval: 0.3
   phase2ReloadTime: 2
-  bossAttackRange: 6
+  bossAttackRange: 5
   shotgunPelletCount: 5
   shotgunSpreadAngle: 28
   ringShotCooldown: 10
