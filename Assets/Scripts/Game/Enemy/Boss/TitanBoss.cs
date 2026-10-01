@@ -22,7 +22,7 @@ namespace ProjectBlood
         PhaseTransition  // 转阶段演出（由基类控制）
     }
 
-    public class TitanBoss : BossBase
+    public partial class TitanBoss : BossBase
     {
         [Header("=== 一阶段参数 ===")]
         [Tooltip("一阶段移动速度")] public float phase1MoveSpeed = 2.0f;
@@ -60,6 +60,10 @@ namespace ProjectBlood
         [Tooltip("爆发推进音效")] public AudioClip dashSound;
         [Tooltip("转二阶段音效")] public AudioClip phaseTwoSound;
         [Tooltip("环形射击音效")] public AudioClip ringShotSound;
+
+        // Animator 参数（BossAnimator / WeaponAnimator 在 Designer 文件中序列化赋值）
+        private static readonly int ParamIsMoving = Animator.StringToHash("TitanIsMoving");
+        private static readonly int ParamShot = Animator.StringToHash("TitanShot");
 
         // 当前 Boss 状态（用独立字段，避免和 Enemy 基类的 currentState 混淆）
         public BossState currentBossState = BossState.Idle;
@@ -99,6 +103,7 @@ namespace ProjectBlood
             if (Player.player1 == null)
             {
                 currentBossState = BossState.Idle;
+                SetMoving(false);
                 return;
             }
             if (isDead) return;
@@ -152,6 +157,7 @@ namespace ProjectBlood
             if (Room != null && Room.roomState == Room.RoomState.Battle)
             {
                 currentBossState = BossState.Chase;
+                SetMoving(true);
             }
         }
 
@@ -193,12 +199,15 @@ namespace ProjectBlood
             currentBossState = angry ? BossState.AngryAttack : BossState.Attack;
             float interval = angry ? phase2ShootInterval : phase1ShootInterval;
 
-            // 双管：快速射两次
+            // 攻击时站定，身体切回 Idle
+            SetMoving(false);
 
+            // 双管：快速射两次，每次触发武器 Shot 动画
             for (int i = 0; i < 2; i++)
             {
                 FireShotgun();
                 PlayBossSfx(shootSound);
+                TriggerShot();
                 yield return new WaitForSeconds(interval);
             }
 
@@ -221,9 +230,10 @@ namespace ProjectBlood
             currentBossState = angry ? BossState.AngryReload : BossState.Reload;
             float reloadTime = angry ? phase2ReloadTime : phase1ReloadTime;
 
-            // 换弹时停下
+            // 换弹时停下，身体播放 Idle 动画
             moveSpeedBeforeReload = moveSpeed;
             moveSpeed = 0f;
+            SetMoving(false);
 
             yield return new WaitForSeconds(reloadTime);
 
@@ -239,12 +249,14 @@ namespace ProjectBlood
                 else
                 {
                     currentBossState = BossState.AngryChase;
+                    SetMoving(true);
                 }
             }
             else
             {
                 // 一阶段换弹结束：回去追
                 currentBossState = BossState.Chase;
+                SetMoving(true);
             }
         }
 
@@ -254,6 +266,7 @@ namespace ProjectBlood
             currentBossState = BossState.Dash;
             dashCooldownTimer = dashCooldown;
             PlayBossSfx(dashSound);
+            SetMoving(true);
 
             // 朝玩家方向冲
             Vector3 dashDir = directionToPlayer.normalized;
@@ -273,6 +286,8 @@ namespace ProjectBlood
         // 转二阶段：先播放转阶段音效，再走基类的打断协程 + 变红演出
         protected override void StartPhaseTwo()
         {
+            // 演出期间原地不动，身体切回 Idle
+            SetMoving(false);
             PlayBossSfx(phaseTwoSound);
             base.StartPhaseTwo();
         }
@@ -297,14 +312,16 @@ namespace ProjectBlood
             currentBossState = BossState.RingShot;
             ringShotCooldownTimer = ringShotCooldown;
 
-            // 环射时停下
+            // 环射时停下，身体播放 Idle
             moveSpeedBeforeReload = moveSpeed;
             moveSpeed = 0f;
+            SetMoving(false);
 
             for (int ring = 0; ring < ringCount; ring++)
             {
                 FireRing(ring);
                 PlayBossSfx(ringShotSound, 0.6f);
+                TriggerShot();
                 yield return new WaitForSeconds(ringInterval);
             }
 
@@ -363,6 +380,24 @@ namespace ProjectBlood
         {
             StopAllCoroutines();
             base.OnDestroy();
+        }
+
+        // 设置身体是否在移动（驱动 TitanIdle ↔ TitanMove 转换）
+        private void SetMoving(bool isMoving)
+        {
+            if (BossAnimator != null)
+            {
+                BossAnimator.SetBool(ParamIsMoving, isMoving);
+            }
+        }
+
+        // 触发武器射击动画（TitanWeaponIdle → TitanShot，播完由 Exit Time 自动回到 Idle）
+        private void TriggerShot()
+        {
+            if (WeaponAnimator != null)
+            {
+                WeaponAnimator.SetTrigger(ParamShot);
+            }
         }
     }
 }

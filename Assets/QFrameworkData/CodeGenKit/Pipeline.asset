@@ -19,56 +19,23 @@ MonoBehaviour:
     From: 0
     NameToFullName: []
     BindInfos:
-    - TypeName: ProjectBlood.HealthBar
-      PathToRoot: HealthBar
-      MemberName: HealthBar
-    - TypeName: ProjectBlood.UIMap
-      PathToRoot: UIMap
-      MemberName: UIMap
-    - TypeName: UnityEngine.UI.Image
-      PathToRoot: SkillIcon
-      MemberName: SkillIcon
-    - TypeName: UnityEngine.UI.Image
-      PathToRoot: LoadingPage
-      MemberName: LoadingPage
-    - TypeName: TMPro.TextMeshProUGUI
-      PathToRoot: LoadingPage/LoadingText
-      MemberName: LoadingText
-    - TypeName: UnityEngine.UI.Image
-      PathToRoot: CoinIcon
-      MemberName: CoinIcon
-    - TypeName: UnityEngine.UI.Image
-      PathToRoot: FaceFrame
-      MemberName: FaceFrame
-    - TypeName: TMPro.TextMeshProUGUI
-      PathToRoot: LevelText
-      MemberName: LevelText
-    - TypeName: TMPro.TextMeshProUGUI
-      PathToRoot: ClipText
-      MemberName: ClipText
-    - TypeName: TMPro.TextMeshProUGUI
-      PathToRoot: BloodText
-      MemberName: BloodText
-    - TypeName: TMPro.TextMeshProUGUI
-      PathToRoot: CoinText
-      MemberName: CoinText
-    - TypeName: RectTransform
-      PathToRoot: SkillText
-      MemberName: SkillText
-    - TypeName: TMPro.TextMeshProUGUI
-      PathToRoot: PlayerStates/ExpText
-      MemberName: ExpText
-    - TypeName: TMPro.TextMeshProUGUI
-      PathToRoot: PlayerStates/PlayerLevelText
-      MemberName: PlayerLevelText
-    - TypeName: TMPro.TextMeshProUGUI
-      PathToRoot: PlayerStates/HPText
-      MemberName: HPText
-    - TypeName: Animator
-      PathToRoot: BossShowAnimator
-      MemberName: BossShowAnimator
-    ScriptsFolder: Assets\Scripts\UI
-    ClassName: GameUI
+    - TypeName: UnityEngine.Animator
+      PathToRoot: BossAnimator
+      MemberName: BossAnimator
+    - TypeName: Transform
+      PathToRoot: BossAnimator/Arm
+      MemberName: Arm
+    - TypeName: UnityEngine.Animator
+      PathToRoot: BossAnimator/Arm/WeaponAnimator
+      MemberName: WeaponAnimator
+    - TypeName: Transform
+      PathToRoot: BossAnimator/Arm/WeaponAnimator/WSTR_ShotGun/ShotPoint
+      MemberName: ShotPoint
+    - TypeName: UnityEngine.SpriteRenderer
+      PathToRoot: BossAnimator/Arm/WeaponAnimator/FireFlash
+      MemberName: FireFlash
+    ScriptsFolder: Assets\Scripts\Game\Enemy\Boss
+    ClassName: TitanBoss
     Namespace: ProjectBlood
     MainCode: 
     DesignerCode: 
