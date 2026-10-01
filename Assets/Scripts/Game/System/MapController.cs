@@ -84,6 +84,8 @@ namespace ProjectBlood
         void Start()
         {
             Global.IsGamePaused = false;
+            // 加载协程在场景加载期间把 timeScale 冻结为 0，进入战斗场景后恢复正常节奏
+            Time.timeScale = 1f;
             // 关卡加载完成：切到 Normal 战斗音乐（首次进入或传送门停止后重开都走这里）
             FmodMusicManager.Instance.StartMusic(GameStage.Normal);
             // 读档还原：存在待恢复载荷时走还原路径，跳过 BFS 随机生成

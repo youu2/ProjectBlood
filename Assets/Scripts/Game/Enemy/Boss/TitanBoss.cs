@@ -92,6 +92,9 @@ namespace ProjectBlood
 
         protected override void Update()
         {
+            // 暂停/场景加载期间冻结 Boss AI：状态机、冷却、寻路、冲锋/霰弹/环射协程一律不启动
+            if (Global.IsGamePaused) return;
+
             // 玩家没了就待机
             if (Player.player1 == null)
             {
@@ -275,11 +278,11 @@ namespace ProjectBlood
         }
 
         // 播放 Boss 音效（未在 Inspector 配置时静默跳过）
-        private void PlayBossSfx(AudioClip clip)
+        private void PlayBossSfx(AudioClip clip, float volume = 1.0f)
         {
             if (clip != null)
             {
-                AudioKitManager.Instance.PlayOneShot(clip, volume: 0.5f);
+                AudioKitManager.Instance.PlayOneShot(clip, volume);
             }
         }
 
@@ -301,7 +304,7 @@ namespace ProjectBlood
             for (int ring = 0; ring < ringCount; ring++)
             {
                 FireRing(ring);
-                PlayBossSfx(ringShotSound);
+                PlayBossSfx(ringShotSound, 0.6f);
                 yield return new WaitForSeconds(ringInterval);
             }
 

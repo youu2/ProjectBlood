@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using ProjectBlood;
 using UnityEngine;
 
 /// <summary>
@@ -58,9 +59,12 @@ public class SkillManager : MonoBehaviour
         // 3. 更新角色朝向(临时：根据水平输入判断)
         UpdateFacingDirection();
 
-        // 4. 处理输入（主菜单展示模式下禁用技能输入，避免翻滚/技能破坏菜单定位）
+        // 4. 处理输入
+        // 主菜单展示模式下禁用技能输入，避免翻滚/技能破坏菜单定位；
+        // 暂停页/场景加载期间(IsGamePaused)同样禁用：加载页 timeScale=0 只能冻住翻滚位移，
+        // 无法阻止 GetKeyDown 触发技能（无敌层级、动画 trigger 会立即生效），必须在输入层拦截
         bool inMainMenu = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "GameStart";
-        if (!inMainMenu)
+        if (!inMainMenu && !Global.IsGamePaused)
         {
             if (Input.GetKeyDown(rollKey))
             {

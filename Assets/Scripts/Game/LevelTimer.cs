@@ -60,6 +60,14 @@ namespace ProjectBlood
                         OnTimerTick?.Invoke(Remaining);
                     }
                 }
+                // 暂停/场景加载期间只等待，不推进波次/通关状态机：
+                // 本协程用 yield return null 驱动，不受 timeScale=0 影响，
+                // 不拦截可能在加载的 1.5 秒内错误推进波次或重复弹结算面板
+                if (Global.IsGamePaused)
+                {
+                    yield return null;
+                    continue;
+                }
                 // yield return null;
                 // clear enemy => next wave
                 if (Global.currentNum.Value <= 0 && Global.cumulativeNum.Value >= waves.getWave1TotalNum())

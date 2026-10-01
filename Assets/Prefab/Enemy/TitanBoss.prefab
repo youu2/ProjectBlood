@@ -511,10 +511,10 @@ MonoBehaviour:
   dashCooldown: 8
   dashSpeed: 20
   dashDuration: 0.25
-  shootSound: {fileID: 8300000, guid: 58837674c0b5a1f4cbc8f0f2a2b9be3e, type: 3}
-  dashSound: {fileID: 0}
+  shootSound: {fileID: 8300000, guid: 5fe488c5c8b64a44081ccf13e75ded29, type: 3}
+  dashSound: {fileID: 8300000, guid: 62e37a56120bdc2469fa15a1b98235cf, type: 3}
   phaseTwoSound: {fileID: 0}
-  ringShotSound: {fileID: 0}
+  ringShotSound: {fileID: 8300000, guid: 35355fb181c22c54ba6962ea171bce26, type: 3}
   currentBossState: 0
 --- !u!61 &3846359185140523581
 BoxCollider2D:

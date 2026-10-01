@@ -50,6 +50,9 @@ namespace ProjectBlood
 
         private void Update()
         {
+            // 暂停/场景加载期间禁止交互：F 键检测不受 timeScale=0 影响，必须显式拦截，
+            // 否则加载页显示期间仍可开启宝箱/购买商品/拾取血印
+            if (Global.IsGamePaused) return;
             if (!Tips.gameObject.activeSelf) return;
             if (!Input.GetKeyDown(KeyCode.F)) return;
             OnInteract();

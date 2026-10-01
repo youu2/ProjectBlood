@@ -91,6 +91,9 @@ namespace ProjectBlood
 
         private void Update()
         {
+            // 暂停/场景加载期间不推进刷下一批与开门（yield/帧计数不受 timeScale 影响，需显式拦截）
+            if (Global.IsGamePaused) return;
+
             if (Time.frameCount % 30 == 0)
             {
                 // enemySet.RemoveWhere(enemy => enemy.IsDying);

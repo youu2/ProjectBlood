@@ -138,6 +138,13 @@ namespace ProjectBlood
             }
 
             Global.IsGamePaused = true;
+            // 冻结时间流逝：旧场景在异步加载的 1.5 秒内仍然存活，仅靠各输入点检查
+            // IsGamePaused 无法冻结敌人 AI / 物理 / 子弹 / WaitForSeconds 协程
+            // （曾出现加载页期间玩家仍能翻滚瞄准、敌人继续移动攻击的问题）。
+            // timeScale=0 一次性停住 FixedUpdate、物理、WaitForSeconds 与所有 deltaTime 驱动逻辑；
+            // 本协程用 unscaledTime/unscaledDeltaTime 计时，场景异步加载也不受 timeScale 影响。
+            // 节奏由目标场景自行恢复：InGame 由 MapController.Start 设回 1，GameStart 由主菜单面板设 0.8
+            Time.timeScale = 0f;
             // 加载页一出现就回正并冻结相机：旧场景在异步加载的最小等待期间仍然存活，
             // 不冻结的话相机会继续按玩家房间位置施加 Z 旋转，倾斜会残留到主菜单 UI
             CameraUtils.MainCameraController()?.SetLoadingFreeze(true);
@@ -184,6 +191,8 @@ namespace ProjectBlood
             {
                 LoadingPage.gameObject.SetActive(false);
             }
+            // 注意：此处不恢复 Time.timeScale —— 场景激活时目标场景的 Start 已先于本收尾执行：
+            // InGame 由 MapController.Start 设回 1，GameStart 由 UIGameStartPanel.OnInit 设为 0.8
             Global.IsGamePaused = false;
             onLoadingComplete?.Invoke();
             OnLoadingComplete?.Invoke(); // 场景真正激活完成后触发外部事件（对象池预热等）

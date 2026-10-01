@@ -248,6 +248,11 @@ namespace ProjectBlood
 
         public void TakeDamage(float damage)    // 玩家受到伤害
         {
+            // 暂停/场景加载期间免伤：timeScale=0 已冻结物理碰撞，
+            // 这里作为最后一道防线拦住不经过物理步进的即时伤害
+            // （如近战敌人攻击协程启动当帧的 MakeDamage、激光持续伤害协程）
+            if (Global.IsGamePaused) return;
+
             // 检查护盾是否抵挡伤害
             if (shieldState.HandleDamage(transform.Position2D()))
             {
@@ -329,97 +334,107 @@ namespace ProjectBlood
             var direction = new Vector2(horizontal, vertical).normalized;
             SelfRigidbody2D.velocity = direction * moveSpeed;
 
-            // 获取鼠标在屏幕上的位置
-            Vector3 mouseScreenPos = Input.mousePosition;
-            // 转成世界坐标,Z 要设成 0(2D 游戏)
-            mouseScreenPos.z = 0;
-            Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
-
-            // 计算从玩家指向鼠标的方向
-            Vector2 shootDir = (mouseWorldPos - transform.position).normalized;
-
-            // 检查敌人自动锁敌功能
-            if (Global.currentRoom && Global.currentRoom.GetEnemies().Count > 0)
+            // 暂停/场景加载期间冻结整条瞄准链路：不读鼠标、不锁敌、不旋转武器，准星隐藏。
+            // Esc 暂停(timeScale=0)时插值本已冻结，加载页(timeScale=0)同理；
+            // 这里显式跳过，保证任何暂停语义下武器都保持最后朝向、准星不闪烁
+            if (!Global.IsGamePaused)
             {
-                var enemies = Global.currentRoom.GetEnemies();
+                // 获取鼠标在屏幕上的位置
+                Vector3 mouseScreenPos = Input.mousePosition;
+                // 转成世界坐标,Z 要设成 0(2D 游戏)
+                mouseScreenPos.z = 0;
+                Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
 
-                // 将 HashSet 转换为 List 并过滤掉已销毁或正在死亡的敌人
-                var enemiesList = enemies.Where(enemy => enemy != null).ToList();
+                // 计算从玩家指向鼠标的方向
+                Vector2 shootDir = (mouseWorldPos - transform.position).normalized;
 
-                if (enemiesList.Count > 0)
+                // 检查敌人自动锁敌功能
+                if (Global.currentRoom && Global.currentRoom.GetEnemies().Count > 0)
                 {
-                    // 将敌人按离鼠标指针的距离从近到远排序
-                    var sortedEnemies = enemiesList.OrderBy(enemy =>
-                        Vector2.Distance(enemy.GameObject.transform.position, mouseWorldPos)
-                    ).ToList();
+                    var enemies = Global.currentRoom.GetEnemies();
 
-                    // 获取 Wall Layer 的掩码
-                    int wallLayer = LayerMask.GetMask("Wall");
+                    // 将 HashSet 转换为 List 并过滤掉已销毁或正在死亡的敌人
+                    var enemiesList = enemies.Where(enemy => enemy != null).ToList();
 
-                    // 标记是否找到了可瞄准的敌人
-                    bool foundTarget = false;
-
-                    // 遍历排序后的敌人,找到第一个没有障碍物的
-                    foreach (var enemy in sortedEnemies)
+                    if (enemiesList.Count > 0)
                     {
-                        // 再次检查敌人是否还存在且没有在死亡过程中
-                        if (enemy == null)
+                        // 将敌人按离鼠标指针的距离从近到远排序
+                        var sortedEnemies = enemiesList.OrderBy(enemy =>
+                            Vector2.Distance(enemy.GameObject.transform.position, mouseWorldPos)
+                        ).ToList();
+
+                        // 获取 Wall Layer 的掩码
+                        int wallLayer = LayerMask.GetMask("Wall");
+
+                        // 标记是否找到了可瞄准的敌人
+                        bool foundTarget = false;
+
+                        // 遍历排序后的敌人,找到第一个没有障碍物的
+                        foreach (var enemy in sortedEnemies)
                         {
-                            continue;
+                            // 再次检查敌人是否还存在且没有在死亡过程中
+                            if (enemy == null)
+                            {
+                                continue;
+                            }
+
+                            // 检查玩家到敌人之间是否有墙壁障碍物
+                            Vector2 playerPos = transform.position;
+                            Vector2 enemyPos = enemy.GameObject.transform.position;
+                            Vector2 dirToEnemy = (enemyPos - playerPos).normalized;
+
+                            // 检查敌人是否在鼠标方向的30度范围内
+                            float angleToEnemy = Vector2.Angle(shootDir, dirToEnemy);
+                            if (angleToEnemy > aimAngle)
+                            {
+                                continue;
+                            }
+
+                            // 使用射线检测,只检测 Wall 层的物体
+                            RaycastHit2D hit = Physics2D.Linecast(playerPos, enemyPos, wallLayer);
+
+                            // 如果没有碰到墙壁
+                            if (hit.collider == null)
+                            {
+                                // 瞄准这个敌人
+                                shootDir = dirToEnemy;
+                                AimMark.Position2D(enemyPos);
+                                AimMark.Show(); // 显示瞄准标记
+                                foundTarget = true;
+                                break;
+                            }
                         }
 
-                        // 检查玩家到敌人之间是否有墙壁障碍物
-                        Vector2 playerPos = transform.position;
-                        Vector2 enemyPos = enemy.GameObject.transform.position;
-                        Vector2 dirToEnemy = (enemyPos - playerPos).normalized;
-
-                        // 检查敌人是否在鼠标方向的30度范围内
-                        float angleToEnemy = Vector2.Angle(shootDir, dirToEnemy);
-                        if (angleToEnemy > aimAngle)
+                        // 如果没有找到可瞄准的敌人,隐藏瞄准标记
+                        if (!foundTarget)
                         {
-                            continue;
-                        }
-
-                        // 使用射线检测,只检测 Wall 层的物体
-                        RaycastHit2D hit = Physics2D.Linecast(playerPos, enemyPos, wallLayer);
-
-                        // 如果没有碰到墙壁
-                        if (hit.collider == null)
-                        {
-                            // 瞄准这个敌人
-                            shootDir = dirToEnemy;
-                            AimMark.Position2D(enemyPos);
-                            AimMark.Show(); // 显示瞄准标记
-                            foundTarget = true;
-                            break;
+                            AimMark.Hide();
                         }
                     }
-
-                    // 如果没有找到可瞄准的敌人,隐藏瞄准标记
-                    if (!foundTarget)
+                    else
                     {
+                        // 如果过滤后没有敌人,隐藏瞄准标记(保持瞄准鼠标方向)
                         AimMark.Hide();
                     }
                 }
                 else
                 {
-                    // 如果过滤后没有敌人,隐藏瞄准标记(保持瞄准鼠标方向)
+                    // 如果没有敌人,隐藏瞄准标记
                     AimMark.Hide();
                 }
+
+                // 平滑过渡瞄准方向
+                // 使用线性插值使武器旋转更自然,避免方向突变
+                // 速度由aimSmoothSpeed控制插值速度,值越大过渡越快
+                smoothAimDir = Vector2.Lerp(smoothAimDir, shootDir, Time.deltaTime * aimSmoothSpeed);
+                smoothAimDir.Normalize();
+                // 更新武器朝向和角色朝向
+                UpdateWeaponAim(smoothAimDir);
             }
             else
             {
-                // 如果没有敌人,隐藏瞄准标记
                 AimMark.Hide();
             }
-
-            // 平滑过渡瞄准方向
-            // 使用线性插值使武器旋转更自然,避免方向突变
-            // 速度由aimSmoothSpeed控制插值速度,值越大过渡越快
-            smoothAimDir = Vector2.Lerp(smoothAimDir, shootDir, Time.deltaTime * aimSmoothSpeed);
-            smoothAimDir.Normalize();
-            // 更新武器朝向和角色朝向
-            UpdateWeaponAim(smoothAimDir);
 
             // 主菜单中指针悬停在 UI 上时不触发射击，避免点击菜单按钮误开火
             bool pointerOverUI = inMainMenu

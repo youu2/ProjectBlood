@@ -73,6 +73,9 @@ namespace ProjectBlood
 
         protected override void Update()
         {
+            // 暂停/场景加载期间冻结 AI：不做视线检测、不推进状态机，不再启动充能/激光协程
+            if (Global.IsGamePaused) return;
+
             // 仅在追踪/游走状态启用射线检测, 攻击状态(充能+激光协程)不执行
             if (currentState == State.Chase || currentState == State.Wander)
             {

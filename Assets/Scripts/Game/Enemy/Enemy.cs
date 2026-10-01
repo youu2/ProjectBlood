@@ -37,6 +37,11 @@ namespace ProjectBlood
 
         protected override void Update()
         {
+            // 暂停/场景加载期间冻结 AI：不推进状态机、不转向、不启动攻击协程。
+            // timeScale=0 已冻结 deltaTime 位移，但近战伤害(MakeDamage)在攻击协程启动当帧立即执行，
+            // 不经过 WaitForSeconds，必须在此拦住 StartFire 才能完全免伤
+            if (Global.IsGamePaused) return;
+
             if (Player.player1 == null)
             {
                 currentState = State.Idle;
