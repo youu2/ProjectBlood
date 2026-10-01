@@ -10,7 +10,7 @@ namespace ProjectBlood
 
         public static AudioKitManager Instance => instance;
         public static BindableProperty<float> SoundVolumeRatio = new BindableProperty<float>(1f);
-        public static BindableProperty<float> MusicVolumeRatio = new BindableProperty<float>(0.7f);
+        public static BindableProperty<float> MusicVolumeRatio = new BindableProperty<float>(1f);
         public static BindableProperty<float> GlobalVolumeRatio = new BindableProperty<float>(1f);
 
         private AudioKitManager() { }  // 私有构造函数，防止外部 new

@@ -27,6 +27,11 @@ namespace ProjectBlood
         private int specialReloadBloodCost = 20; // 特殊换弹消耗的血库资源
         private const float aimSmoothSpeed = 20f; // 瞄准平滑速度,值越大过渡越快
         private const float aimAngle = 35f; // 自动锁敌的角度范围(度)
+
+        // 自动瞄准锁敌开关：默认关闭（已从基础能力移除），由血印结算效果在激活/结束时置位。
+        // 置 true 后锁敌逻辑与原基础能力完全一致（角度/遮挡检测/瞄准标记/精度不变）。
+        public bool AutoAimLockEnabled { get; set; }
+
         [SerializeField] private float SpecialReloadVolume = 0.7f;
         private bool recorded = false;
         Vector2 lastMoveDir;
@@ -110,6 +115,55 @@ namespace ProjectBlood
                 SetFlipX(false);
             }
             Arm.eulerAngles = new Vector3(0, 0, angle);
+        }
+
+        // 自动瞄准锁敌逻辑：从 Player.Update 中抽出，供 AutoAimLock 开关复用。
+        // 行为与原基础能力完全一致：角度范围 aimAngle(35°) → 距离鼠标最近排序 →
+        // 墙射线检测 → 标记瞄准 → 平滑插值仍由 Update 内统一处理。
+        private Vector2 ApplyAutoAimLock(Vector2 currentShootDir, Vector2 mouseWorldPos)
+        {
+            if (Global.currentRoom == null)
+            {
+                AimMark.Hide();
+                return currentShootDir;
+            }
+
+            var enemies = Global.currentRoom.GetEnemies();
+            var enemiesList = enemies.Where(enemy => enemy != null).ToList();
+            if (enemiesList.Count == 0)
+            {
+                AimMark.Hide();
+                return currentShootDir;
+            }
+
+            var sortedEnemies = enemiesList.OrderBy(enemy =>
+                Vector2.Distance(enemy.GameObject.transform.position, mouseWorldPos)
+            ).ToList();
+
+            int wallLayer = LayerMask.GetMask("Wall");
+
+            foreach (var enemy in sortedEnemies)
+            {
+                if (enemy == null) continue;
+
+                Vector2 playerPos = transform.position;
+                Vector2 enemyPos = enemy.GameObject.transform.position;
+                Vector2 dirToEnemy = (enemyPos - playerPos).normalized;
+                float angleToEnemy = Vector2.Angle(currentShootDir, dirToEnemy);
+                if (angleToEnemy > aimAngle) continue;
+
+                RaycastHit2D hit = Physics2D.Linecast(playerPos, enemyPos, wallLayer);
+                if (hit.collider == null)
+                {
+                    AimMark.Position2D(enemyPos);
+                    AimMark.Show();
+                    return dirToEnemy; // 锁定成功，直接返回敌人方向
+                }
+            }
+
+            // 未命中任何可锁目标，保持鼠标方向并隐藏标记
+            AimMark.Hide();
+            return currentShootDir;
         }
 
         // 显示跟随玩家的提示文本(换弹提示,购买提示)
@@ -348,78 +402,13 @@ namespace ProjectBlood
                 // 计算从玩家指向鼠标的方向
                 Vector2 shootDir = (mouseWorldPos - transform.position).normalized;
 
-                // 检查敌人自动锁敌功能
-                if (Global.currentRoom && Global.currentRoom.GetEnemies().Count > 0)
+                // 自动瞄准锁敌：已不再是基础能力，仅当血印结算效果激活开关后才执行
+                if (AutoAimLockEnabled)
                 {
-                    var enemies = Global.currentRoom.GetEnemies();
-
-                    // 将 HashSet 转换为 List 并过滤掉已销毁或正在死亡的敌人
-                    var enemiesList = enemies.Where(enemy => enemy != null).ToList();
-
-                    if (enemiesList.Count > 0)
-                    {
-                        // 将敌人按离鼠标指针的距离从近到远排序
-                        var sortedEnemies = enemiesList.OrderBy(enemy =>
-                            Vector2.Distance(enemy.GameObject.transform.position, mouseWorldPos)
-                        ).ToList();
-
-                        // 获取 Wall Layer 的掩码
-                        int wallLayer = LayerMask.GetMask("Wall");
-
-                        // 标记是否找到了可瞄准的敌人
-                        bool foundTarget = false;
-
-                        // 遍历排序后的敌人,找到第一个没有障碍物的
-                        foreach (var enemy in sortedEnemies)
-                        {
-                            // 再次检查敌人是否还存在且没有在死亡过程中
-                            if (enemy == null)
-                            {
-                                continue;
-                            }
-
-                            // 检查玩家到敌人之间是否有墙壁障碍物
-                            Vector2 playerPos = transform.position;
-                            Vector2 enemyPos = enemy.GameObject.transform.position;
-                            Vector2 dirToEnemy = (enemyPos - playerPos).normalized;
-
-                            // 检查敌人是否在鼠标方向的30度范围内
-                            float angleToEnemy = Vector2.Angle(shootDir, dirToEnemy);
-                            if (angleToEnemy > aimAngle)
-                            {
-                                continue;
-                            }
-
-                            // 使用射线检测,只检测 Wall 层的物体
-                            RaycastHit2D hit = Physics2D.Linecast(playerPos, enemyPos, wallLayer);
-
-                            // 如果没有碰到墙壁
-                            if (hit.collider == null)
-                            {
-                                // 瞄准这个敌人
-                                shootDir = dirToEnemy;
-                                AimMark.Position2D(enemyPos);
-                                AimMark.Show(); // 显示瞄准标记
-                                foundTarget = true;
-                                break;
-                            }
-                        }
-
-                        // 如果没有找到可瞄准的敌人,隐藏瞄准标记
-                        if (!foundTarget)
-                        {
-                            AimMark.Hide();
-                        }
-                    }
-                    else
-                    {
-                        // 如果过滤后没有敌人,隐藏瞄准标记(保持瞄准鼠标方向)
-                        AimMark.Hide();
-                    }
+                    shootDir = ApplyAutoAimLock(shootDir, mouseWorldPos);
                 }
                 else
                 {
-                    // 如果没有敌人,隐藏瞄准标记
                     AimMark.Hide();
                 }
 
