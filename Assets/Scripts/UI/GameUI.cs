@@ -9,6 +9,8 @@ namespace ProjectBlood
     {
         public static GameUI GUIInstance;
         public static event System.Action OnLoadingComplete;
+        // 加载页显隐事件：true=加载页打开（隐藏指针），false=加载页关闭（恢复指针）
+        public static event System.Action<bool> OnLoadingPageStateChanged;
 
         private void Awake()
         {
@@ -136,6 +138,7 @@ namespace ProjectBlood
             {
                 LoadingPage.gameObject.SetActive(true);
             }
+            OnLoadingPageStateChanged?.Invoke(true); // 加载页打开，隐藏指针
 
             Global.IsGamePaused = true;
             // 冻结时间流逝：旧场景在异步加载的 1.5 秒内仍然存活，仅靠各输入点检查
@@ -191,6 +194,7 @@ namespace ProjectBlood
             {
                 LoadingPage.gameObject.SetActive(false);
             }
+            OnLoadingPageStateChanged?.Invoke(false); // 加载页关闭，恢复指针
             // 注意：此处不恢复 Time.timeScale —— 场景激活时目标场景的 Start 已先于本收尾执行：
             // InGame 由 MapController.Start 设回 1，GameStart 由 UIGameStartPanel.OnInit 设为 0.8
             Global.IsGamePaused = false;
