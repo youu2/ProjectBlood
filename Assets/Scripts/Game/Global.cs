@@ -31,7 +31,23 @@ namespace ProjectBlood
         public static BindableProperty<bool> FireEnabled = new BindableProperty<bool>(true);
         public static int currentDifficulty;    // 0 - 9 共10个难度等级
         public static List<LevelsConfig> LevelConfigs = new List<LevelsConfig>();
-        public static bool IsGamePaused = false;
+        // 暂停状态：字段改属性包装，赋值处派发变更事件。
+        // 字段→属性对全部读写调用点（Global.IsGamePaused = x / if (Global.IsGamePaused)）语法兼容，零改动
+        private static bool _isGamePaused = false;
+
+        // 暂停状态变更事件（true=进入暂停，false=恢复），供 CursorManager 等纯表现层订阅
+        public static event System.Action<bool> OnGamePausedChanged;
+
+        public static bool IsGamePaused
+        {
+            get => _isGamePaused;
+            set
+            {
+                if (_isGamePaused == value) return;
+                _isGamePaused = value;
+                OnGamePausedChanged?.Invoke(value);
+            }
+        }
         public static float WeaponAdditionalCameraSize = 0.5f;
 
         // ===== Boss 战相关状态（供 UI 血条 / 阶段演出订阅）=====
@@ -54,6 +70,13 @@ namespace ProjectBlood
             // Set AudioKit to ignore same sound played in the same frame
             AudioKit.PlaySoundMode = AudioKit.PlaySoundModes.IgnoreSameSoundInGlobalFrames;
             ResKit.Init();
+            // 注意：AudioKitManager 的音量初始化不能放在这里。
+            // AudioKit.Settings 的 SoundVolume/MusicVolume 只有在 AudioKit 自己的
+            // [RuntimeInitializeOnLoadMethod(BeforeSceneLoad)] AutoInit 执行后才非 null；
+            // 同为 BeforeSceneLoad 的本方法与它跨程序集（AudioKit.asmdef vs Assembly-CSharp），
+            // 调用顺序无保证。若本方法先跑，AudioKit.Settings.SoundVolume 会抛 NullReferenceException，
+            // 异常会中断本方法剩余部分（相机重绑注册/UI 分辨率/各 State 初始化），导致 UI 全部消失。
+            // 因此改由下方 AfterSceneLoad 引导完成，那时所有 BeforeSceneLoad 必然已结束。
             UIKit.Root.SetResolution(1920, 1080, 1.0f);
             // 相机为各场景内自带对象（非 DDOL、非预制体），场景切换时由 sceneLoaded 统一重绑
             // UIRoot / GameUI 的 Canvas 渲染相机，避免引用失效
@@ -77,6 +100,16 @@ namespace ProjectBlood
             LevelConfigs.Add(Level3_1.Config);
             LevelConfigs.Add(Level3_2.Config);
             LevelConfigs.Add(Level3_3.Config);
+        }
+
+        // 音频存档音量初始化：必须晚于 AudioKit 自身的 BeforeSceneLoad AutoInit，
+        // 否则 AudioKit.Settings.SoundVolume/MusicVolume 尚未构造，访问会抛空引用。
+        // AfterSceneLoad 时首个场景已加载（场景对象 Awake 已结束），但尚未开始游戏交互，
+        // 仍然早于任何 UI 面板（如主菜单 UIGameStartPanel 中启动 FMOD BGM）播放声音。
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        private static void InitAudioSettings()
+        {
+            AudioKitManager.Instance.Init();
         }
 
         // 场景加载后将 UIRoot / GameUI 的 Canvas 渲染相机绑定到当前场景的主相机。

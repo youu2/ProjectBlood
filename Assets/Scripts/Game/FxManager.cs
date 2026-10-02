@@ -172,7 +172,7 @@ namespace ProjectBlood
                     char c = roomMap[i][j];
                     if (c != ' ') continue;             // 只取纯地面，避开墙/掩体/门/宝箱等
                     int x = j + room.LB.x;
-                    int y = room.LB.y + (h - 1 - i);
+                    int y = room.RT.y - i;
                     floorCells.Add(new Vector2Int(x, y));
                 }
             }
@@ -187,9 +187,9 @@ namespace ProjectBlood
                 var blood = Instance.EnemyBlood.Instantiate()
                     .Position2D(pos)
                     .EulerAnglesZ(Random.Range(0, 360f))
-                    .LocalScale(Random.Range(0.5f, 1.2f))
+                    .LocalScale(Random.Range(0.5f, 3.0f))
                     .Show();
-                blood.color = new Color(1f, 1f, 1f, Random.Range(0.5f, 0.8f));
+                blood.color = new Color(1f, 1f, 1f, Random.Range(0.6f, 1.0f));
                 blood.sortingOrder = -2;                // 血迹在最底层
                 Instance._spawnedEffects.Add(blood.gameObject);
             }

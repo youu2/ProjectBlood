@@ -9,14 +9,31 @@ namespace ProjectBlood
         private static readonly AudioKitManager instance = new AudioKitManager();
 
         public static AudioKitManager Instance => instance;
-        public static BindableProperty<float> SoundVolumeRatio = new BindableProperty<float>(1f);
-        public static BindableProperty<float> MusicVolumeRatio = new BindableProperty<float>(1f);
+
         public static BindableProperty<float> GlobalVolumeRatio = new BindableProperty<float>(1f);
+        public static BindableProperty<float> MusicVolumeRatio = new BindableProperty<float>(1f);
+
+        public static BindableProperty<float> SoundVolumeRatio = new BindableProperty<float>(1f);
 
         private AudioKitManager() { }  // 私有构造函数，防止外部 new
 
+        private bool initialized;
+
         public void Init()
         {
+            // 幂等保护：音量监听注册在常驻的静态 BindableProperty 上，重复 Init 会导致重复注册
+            if (initialized) return;
+
+            // AudioKit.Settings 的音量属性由 AudioKit 自身 BeforeSceneLoad AutoInit 构造。
+            // 若被过早调用（早于该 AutoInit），此处为 null：打印明确日志并放弃本次初始化，
+            // 不置 initialized，保证稍后（AfterSceneLoad）可重试，且绝不抛异常中断调用方启动流程。
+            if (AudioKit.Settings.SoundVolume == null || AudioKit.Settings.MusicVolume == null)
+            {
+                Debug.LogError("[AudioKitManager] Init 过早：AudioKit.Settings 尚未完成初始化，本次跳过，等待稍后重试。");
+                return;
+            }
+            initialized = true;
+
             // 从 PlayerPrefs 加载音量比例
             if (PlayerPrefs.HasKey("GlobalVolumeRatio"))
             {
@@ -102,6 +119,11 @@ namespace ProjectBlood
         public void SetGlobalVolume(float volume)
         {
             GlobalVolumeRatio.Value = volume;
+
+            // 总音量是音效/音乐通道的公共系数，变化后重算 AudioKit 各通道最终音量，
+            // 使拖动总音量滑条时正在播放的音效也实时变化（FMOD 音乐由 FmodMusicManager 自行监听 GlobalVolumeRatio）
+            AudioKit.Settings.SoundVolume.Value = SoundVolumeRatio.Value * volume;
+            AudioKit.Settings.MusicVolume.Value = MusicVolumeRatio.Value * volume;
         }
 
         // 停止指定的音频播放器

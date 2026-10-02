@@ -39,6 +39,10 @@ namespace ProjectBlood
         [SerializeField] private Button quitButton;      // 退出游戏按钮
         [SerializeField] private WeaponRow[] weaponRows; // 全部武器行（未拥有的自动隐藏）
 
+        [Header("音频设置")]
+        [SerializeField] private Button audioSettingButton;           // 右上角打开音频设置页的按钮
+        [SerializeField] private AudioSettingPageController audioSettingPage; // 覆盖在暂停页上的音频设置页
+
         [Header("血印")]
         [SerializeField] private GameObject[] sigilSlots;        // 血印槽位（共 10 个）
         [SerializeField] private TextMeshProUGUI sigilDetailText; // 血印详情文本（悬停时显示）
@@ -58,6 +62,7 @@ namespace ProjectBlood
 
             continueButton.onClick.AddListener(Resume);
             quitButton.onClick.AddListener(QuitToMainMenu);
+            audioSettingButton.onClick.AddListener(OpenAudioSettingPage);
             sigilDetailText.gameObject.SetActive(false);
         }
 
@@ -78,6 +83,13 @@ namespace ProjectBlood
         private void Update()
         {
             if (!Input.GetKeyDown(KeyCode.Escape)) return;
+
+            // 音频设置页打开时，ESC 只关闭它（露出下面的暂停页），不恢复游戏
+            if (audioSettingPage != null && audioSettingPage.IsOpen)
+            {
+                audioSettingPage.Close();
+                return;
+            }
 
             if (isPaused)
             {
@@ -117,8 +129,16 @@ namespace ProjectBlood
             Time.timeScale = 1f;
             Global.IsGamePaused = false;
 
+            audioSettingPage?.Close();
             sigilDetailText.gameObject.SetActive(false);
             HidePage();
+        }
+
+        // 打开音频设置页：仅暂停状态下可用，页面激活后覆盖在暂停页之上
+        private void OpenAudioSettingPage()
+        {
+            if (!isPaused) return;
+            audioSettingPage?.Open();
         }
 
         // ============================== 信息刷新 ==============================
