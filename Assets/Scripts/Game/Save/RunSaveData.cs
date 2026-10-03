@@ -11,6 +11,7 @@ namespace ProjectBlood
         // ---- 关卡标识 ----
         public int difficultyIndex;
         public string levelName;
+        public bool isDarkLevel;    // 本关是否为黑暗关（读档时不重新掷骰，保持进度一致）
 
         // ---- 地图与房间（静态，每关一次）----
         public List<RoomSaveEntry> rooms = new List<RoomSaveEntry>();

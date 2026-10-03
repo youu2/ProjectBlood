@@ -103,6 +103,8 @@ namespace ProjectBlood
             }
             else
             {
+                // 新关卡：先按概率规则判定黑暗关类型并应用光照，再生成地图
+                DarkLevelController.SetupForLevel(Global.currentDifficulty);
                 InitializeLevel(Global.LevelConfigs[Global.currentDifficulty]);
             }
         }
@@ -111,7 +113,7 @@ namespace ProjectBlood
         // 初始化关卡，生成房间布局和连接通道 参数：levelConfig - 关卡配置
         private void InitializeLevel(LevelsConfig levelConfig)
         {
-            GameUI.ShowLevelText(levelConfig.LevelName, duration: 3);
+            GameUI.ShowLevelText(levelConfig.LevelName, duration: 3, DarkLevelController.IsDarkLevel);
 
             var layout = levelConfig.InitRoom;
 
@@ -582,6 +584,7 @@ namespace ProjectBlood
         public void ExportTo(RunSaveData data)
         {
             data.levelName = Global.LevelConfigs[Global.currentDifficulty].LevelName;
+            data.isDarkLevel = DarkLevelController.IsDarkLevel;
             data.rooms.Clear();
             data.discoveredRooms.Clear();
 
@@ -617,7 +620,9 @@ namespace ProjectBlood
         private void RestoreFromSave(RunSaveData data)
         {
             var levelConfig = Global.LevelConfigs[data.difficultyIndex];
-            GameUI.ShowLevelText(levelConfig.LevelName, duration: 3);
+            // 读档不重新掷骰：直接恢复存档时的黑暗关状态（保证地图与光照一致）
+            DarkLevelController.RestoreFromSave(data.isDarkLevel);
+            GameUI.ShowLevelText(levelConfig.LevelName, duration: 3, isDarkLevel: DarkLevelController.IsDarkLevel);
 
             // 1. 按存档重建布局网格（房间中心仍固定槽位中心，走廊绘制逻辑复用）
             foreach (var entry in data.rooms)

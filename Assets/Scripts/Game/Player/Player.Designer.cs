@@ -1,4 +1,4 @@
-// Generate Id:4077bb64-0019-4526-828e-0c04178dcf61
+// Generate Id:41230c6e-ac03-42b8-a5ee-3c94953340bc
 using UnityEngine;
 
 namespace ProjectBlood
@@ -9,11 +9,11 @@ namespace ProjectBlood
 		
 		public CircleCollider2D HurtBox;
 		
-		public TMPro.TextMeshProUGUI NoticeText;
-		
 		public SpriteRenderer AimMark;
 		
 		public Animator PlayerAnimator;
+		
+		public Transform PlayerSelfLight2D;
 		
 		public Transform Arm;
 		
@@ -34,6 +34,8 @@ namespace ProjectBlood
 		public UnityEngine.SpriteRenderer FireFlash;
 		
 		public SpriteRenderer ShieldSprite;
+		
+		public TMPro.TextMeshProUGUI NoticeText;
 		
 		public UnityEngine.Rigidbody2D SelfRigidbody2D;
 		

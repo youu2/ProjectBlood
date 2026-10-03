@@ -77,19 +77,21 @@ namespace ProjectBlood
             }
         }
 
-        public static void ShowLevelText(string levelName, float duration = 2f)
+        public static void ShowLevelText(string levelName, float duration = 2f, bool isDarkLevel = false)
         {
             if (GUIInstance != null && GUIInstance.LevelText != null)
             {
-                GUIInstance.StartCoroutine(GUIInstance.ShowLevelTextCoroutine(levelName, duration));
+                GUIInstance.StartCoroutine(GUIInstance.ShowLevelTextCoroutine(levelName, duration, isDarkLevel));
             }
         }
 
-        private IEnumerator ShowLevelTextCoroutine(string levelName, float duration)
+        private IEnumerator ShowLevelTextCoroutine(string levelName, float duration, bool isDarkLevel = false)
         {
             var displayName = levelName.Replace("Level ", "");
             LevelText.text = displayName;
-            var color = LevelText.color;
+            // 黑暗关关卡名用红色显示，非黑暗关保持原色
+            var baseColor = isDarkLevel ? Color.red : Color.white;
+            var color = baseColor;
             color.a = 0f;
             LevelText.color = color;
 
@@ -100,6 +102,8 @@ namespace ProjectBlood
                 LevelText.color = color;
                 yield return null;
             }
+            color.a = 1f;
+            color = baseColor;
             color.a = 1f;
             LevelText.color = color;
 
