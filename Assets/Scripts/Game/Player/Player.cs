@@ -467,8 +467,9 @@ namespace ProjectBlood
                     firstReloadTime = currentTime;
                     isSpecialReloadTriggered = false;
                 }
+                // 特殊换弹不要求血库存量充足:血量不足也允许触发,
+                // 但补装的其他武器子弹不会被强化(具体处理见 SpecialReloadCoroutine)
                 else if (!inMainMenu && currentTime - firstReloadTime <= specialReloadWindow &&
-                BloodBank.Instance.CurrentBloodAmount >= specialReloadBloodCost &&
                 WeaponDataSystem.weaponDataList.Count > 2)
                 {
                     isSpecialReloadTriggered = true;
@@ -543,9 +544,15 @@ namespace ProjectBlood
                 yield break;
             }
 
-            if (isSpecialReloadTriggered && BloodBank.Instance.CurrentBloodAmount >= specialReloadBloodCost)
+            if (isSpecialReloadTriggered)
             {
-                BloodBank.Instance.RemoveBlood(specialReloadBloodCost);
+                // 血库足以支付特殊换弹代价时才扣血,并让其他武器补装强化子弹;
+                // 血量不足时特殊换弹照常执行(补满其他武器弹夹),但不扣血、补装的子弹不强化
+                bool canEnhance = BloodBank.Instance.CurrentBloodAmount >= specialReloadBloodCost;
+                if (canEnhance)
+                {
+                    BloodBank.Instance.RemoveBlood(specialReloadBloodCost);
+                }
 
                 foreach (var weaponData in WeaponDataSystem.weaponDataList)
                 {
@@ -569,7 +576,7 @@ namespace ProjectBlood
                         weapon.LoadWeaponData(weaponData);
                     }
 
-                    weapon.FillClipDirectly();
+                    weapon.FillClipDirectly(canEnhance);
                     weapon.SaveWeaponData();
                 }
 

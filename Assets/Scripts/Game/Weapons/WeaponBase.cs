@@ -192,10 +192,10 @@ namespace ProjectBlood
 
             gunClip.FinishReload();
 
-            // 根据换弹时血库状态决定当前弹夹是否被强化
-            IsBulletEnhanced = BloodBank.Instance != null && BloodBank.Instance.CurrentBloodAmount > 0;
+            // 血库存量足以支付当前武器换弹强化所需血量(BloodRequired)时才进行强化;
+            // 血量不足时仍正常换弹补满弹夹,但不消耗血液、子弹也不会被强化
+            IsBulletEnhanced = BloodBank.Instance != null && BloodBank.Instance.CurrentBloodAmount >= BloodRequired;
 
-            // 消耗血液(血库为空时也能换弹,只是子弹不会被强化)
             if (IsBulletEnhanced)
             {
                 BloodBank.Instance.RemoveBlood(BloodRequired);
@@ -265,13 +265,15 @@ namespace ProjectBlood
             AudioKitManager.Instance?.Stop(_shootClipPlayer);
         }
 
-        public void FillClipDirectly()
+        // 特殊换弹调用:直接补满弹夹;isEnhanced 表示这次装填的子弹是否被血库强化
+        public void FillClipDirectly(bool isEnhanced = false)
         {
             StopReload();
             if (gunClip != null)
             {
                 gunClip.currentAmmo = gunClip.maxAmmo;
                 gunClip.isReloading = false;
+                IsBulletEnhanced = isEnhanced;
                 gunClip.UpdateClipUI();
             }
         }
