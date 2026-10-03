@@ -47,8 +47,16 @@ namespace ProjectBlood
 
         private static bool initialized;
 
-        // 复用缓冲：事件分发时的血印快照（献祭等会在遍历中增删集合）
-        private static readonly List<BloodSigilSO> snapshotBuffer = new List<BloodSigilSO>();
+        // 事件分发快照：每次分发独立分配，禁止复用静态缓冲。
+        // 原因：切枪等结算会触发嵌套事件（开火回调→切枪→切枪事件），
+        // 共享静态缓冲会在内层 Clear 时破坏外层 foreach 的枚举器，抛 Collection was modified。
+        private static List<BloodSigilSO> CreateSnapshot()
+        {
+            var snapshot = new List<BloodSigilSO>(unlocked.Count);
+            foreach (var sigil in unlocked)
+                snapshot.Add(sigil);
+            return snapshot;
+        }
 
         // ============================== 初始化 / 重置 ==============================
 
@@ -67,7 +75,6 @@ namespace ProjectBlood
             runtimes.Clear();
             activeModules.Clear();
             timedModules.Clear();
-            snapshotBuffer.Clear();
             permanentDamageBonus = 0f;
             damageImmunityCharges = 0;
             resetGeneration++;   // 允许新一局应用一次全局随机血印
@@ -199,8 +206,8 @@ namespace ProjectBlood
                 Damage = damage,
             };
 
-            BuildSnapshot();
-            foreach (var sigil in snapshotBuffer)
+            var snapshot = CreateSnapshot();
+            foreach (var sigil in snapshot)
             {
                 if (!runtimes.TryGetValue(sigil, out var runtime)) continue;
                 for (int i = 0; i < runtime.Modules.Count; i++)
@@ -304,9 +311,9 @@ namespace ProjectBlood
         // 批量移除（献祭语义）：快照后逐个移除，返回被移除列表
         public static List<BloodSigilSO> RemoveAll(bool removableOnly = true)
         {
-            BuildSnapshot();
+            var snapshot = CreateSnapshot();
             var removed = new List<BloodSigilSO>();
-            foreach (var sigil in snapshotBuffer)
+            foreach (var sigil in snapshot)
             {
                 if (removableOnly && !sigil.removable) continue;
                 Remove(sigil);
@@ -516,8 +523,8 @@ namespace ProjectBlood
 
         private static void DispatchEvent(in BloodSigilFireContext ctx)
         {
-            BuildSnapshot();
-            foreach (var sigil in snapshotBuffer)
+            var snapshot = CreateSnapshot();
+            foreach (var sigil in snapshot)
             {
                 if (!runtimes.TryGetValue(sigil, out var runtime)) continue;
                 for (int i = 0; i < runtime.Modules.Count; i++)
@@ -553,11 +560,5 @@ namespace ProjectBlood
             }
         }
 
-        private static void BuildSnapshot()
-        {
-            snapshotBuffer.Clear();
-            foreach (var sigil in unlocked)
-                snapshotBuffer.Add(sigil);
-        }
     }
 }

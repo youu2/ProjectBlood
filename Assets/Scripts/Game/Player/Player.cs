@@ -281,6 +281,19 @@ namespace ProjectBlood
             BloodSigilState.NotifyWeaponSwitched(currentWeapon.WeaponType);
         }
 
+        // 切换到下一把已持有武器（循环），逻辑与按 E / 滚轮向下完全一致：
+        // 取当前武器在持有列表中的下一个下标，模运算实现首尾循环，天然支持任意数量武器。
+        // 供血印结算效果调用；仅持有一把（或无当前武器）时无"下一把"可切，直接忽略。
+        public void SwitchToNextWeapon()
+        {
+            int count = WeaponDataSystem.weaponDataList.Count;
+            if (count <= 1 || currentWeapon == null || currentWeapon.Data == null) return;
+
+            int currentIndex = WeaponDataSystem.weaponDataList.IndexOf(currentWeapon.Data);
+            int next = (currentIndex + 1) % count;
+            UseWeapon(next);
+        }
+
         void Start()
         {
             Global.currentHP.RegisterWithInitValue(currentHP =>
@@ -517,7 +530,7 @@ namespace ProjectBlood
                 }
                 else if ((Input.mouseScrollDelta.y < 0 || Input.GetKeyDown(KeyCode.E)) && !Global.IsGamePaused) // 鼠标滚轮向下滚动切换到下一个武器
                 {
-                    UseWeapon((WeaponDataSystem.weaponDataList.IndexOf(currentWeapon.Data) + 1) % WeaponDataSystem.weaponDataList.Count);
+                    SwitchToNextWeapon();
                 }
             }
 

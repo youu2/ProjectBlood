@@ -56,7 +56,7 @@ namespace ProjectBlood
             }
             CameraUtils.ShakeMainCamera(0.04f, 5);
             OnLaserActivate?.Invoke();
-            // TriggerWeaponFired(); // 触发开火事件，供强化系统单武器持续叠加等逻辑使用
+            TriggerWeaponFired(); // 触发开火事件，供强化系统单武器持续叠加等逻辑使用
         }
 
         public override void KeepAttacking(Vector2 shootDir)
@@ -77,9 +77,11 @@ namespace ProjectBlood
 
             if (attackInterval.CanAttack() && gunClip.CanShoot())
             {
-                Attack(shootDir); // 激光攻击：使用 BoxCast 直接造成伤害
-                attackInterval.RecordAttackTime();
+                // 先结算弹药与冷却，再 Attack：与基类保持同一结算时序，
+                // 保证开火事件回调（血印切枪等）中保存的弹药是扣减后的值
                 gunClip.Shoot();
+                attackInterval.RecordAttackTime();
+                Attack(shootDir); // 激光攻击：使用 BoxCast 直接造成伤害
                 reloadTextShown = false; // 有弹药时重置 reload 文本显示标记
                 WeaponAnimator.SetBool("isLaserShooting", true);
             }

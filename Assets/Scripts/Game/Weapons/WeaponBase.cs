@@ -108,9 +108,12 @@ namespace ProjectBlood
         {
             if (attackInterval.CanAttack() && gunClip.CanShoot()) // 只有在满足攻击间隔且有弹药时才允许攻击
             {
-                Attack(shootDir);
-                attackInterval.RecordAttackTime();
+                // 先结算弹药与冷却，再 Attack 生成子弹并广播 OnWeaponFired：
+                // 保证事件回调（血印切枪等）中 SaveWeaponData 读到的是扣减后的弹药，
+                // 且回调抛异常也不再影响弹药/冷却结算
                 gunClip.Shoot(); // 射击时减少弹药量
+                attackInterval.RecordAttackTime();
+                Attack(shootDir);
                 reloadTextShown = false; // 有弹药时重置 reload 文本显示标记
             }
             else if (!gunClip.CanShoot() && !reloadTextShown)
