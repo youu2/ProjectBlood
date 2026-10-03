@@ -66,13 +66,9 @@ namespace ProjectBlood
             sigilDetailText.gameObject.SetActive(false);
         }
 
-        // 退出到主菜单：非战斗状态补一次存档（战斗中不覆盖，保留进房前的快照），
-        // 然后回主菜单（场景重载自动释放本关全部动态对象）
+        // 退出到主菜单：不触发存档，立即返回（进度只由房间检查点负责保存）
         private void QuitToMainMenu()
         {
-            if (Global.currentRoom == null || Global.currentRoom.roomState != Room.RoomState.Battle)
-                RunSaveService.SaveNow();
-
             isPaused = false;
             Time.timeScale = 1f;
             Global.IsGamePaused = false;

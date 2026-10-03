@@ -114,6 +114,12 @@ namespace ProjectBlood
                         {
                             door.Hide();
                         }
+
+                        // 存档点：战斗房通关（达成胜利条件）后自动存档。
+
+                        if (this == null || gameObject == null) return;
+                        RunSaveService.SaveNow();
+
                         return;
                     }
                 }
@@ -284,27 +290,15 @@ namespace ProjectBlood
 
             // 触发玩家进入房间事件（放在房间状态更新之后，保证订阅者拿到最终状态）
             OnPlayerEnteredRoom?.Invoke(this);
-        }
 
-        // 玩家离开房间时触发自动存档。
-        // 守卫：战斗中（房间锁门）不存档——战斗中退出游戏时磁盘上保留的是"进入战斗前"的快照，
-        // 读档即回滚到战斗前状态；Finished 房间等掉落物飞行结束后再采集。
-        private void OnTriggerExit2D(Collider2D other)
-        {
-            if (!other.CompareTag("Player")) return;
-            if (roomState == RoomState.Battle) return;
-            // 场景卸载/物体失活过程中 Unity 也会补触发 OnTriggerExit2D，
-            // 此时在失活物体上启动协程(QFramework this.Delay)会报错；
-            // 卸载引发的"退出"不应安排自动存档，直接忽略。
-            if (!isActiveAndEnabled) return;
-
-            // 延迟 0.5s 采集：房间完成后掉落物飞向玩家自动拾取，
-            // 等飞行结束再存档避免同一掉落物既记为"地面存在"又"已入包"
-            this.Delay(0.5f, () =>
+            // 存档点：成功进入非战斗房间后自动存档（商店/宝箱等类型房为 Idle；
+            // X-1/X-2 无 Boss 的空 Boss 房也为 Idle；重入已完成房为 Finished，快照哈希会自动防重）。
+            // 战斗房（NormalRoom/有 Boss 的 BossRoom）首次进入即为 Battle，不存档——
+            // 战斗中退出游戏时磁盘上保留的是进入战斗前的快照。
+            if (roomState != RoomState.Battle)
             {
-                if (this == null || gameObject == null) return;
                 RunSaveService.SaveNow();
-            });
+            }
         }
 
         public void AddDoor(Door door)
