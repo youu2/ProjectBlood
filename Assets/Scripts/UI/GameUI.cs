@@ -224,6 +224,7 @@ namespace ProjectBlood
             GUIInstance.SkillText.Hide();
             GUIInstance.PlayerLevelText.Hide();
             GUIInstance.HealthBar.Hide();
+            Global.ResetBossState();
             if (Player.player1 != null) Player.player1.ShieldSprite.Hide();
         }
 

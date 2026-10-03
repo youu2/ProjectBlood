@@ -14,6 +14,12 @@ namespace ProjectBlood
 		{
 			mData = uiData as UIGamePassPanelData ?? new UIGamePassPanelData();
 
+			// 面板先被无父实例化(世界旋转=0)，再 SetParent(Common)（默认
+			// worldPositionStays=true）：在相机倾斜期间打开时，本地旋转会被烤成
+			// Common 世界旋转的反号，导致与本地旋转始终为 0 的暂停页表现不一致。
+			// 框架的 SetDefaultSizeOfPanel 不复位旋转，这里复位
+			transform.localRotation = Quaternion.identity;
+
 			Time.timeScale = 0;
 			Global.IsGamePaused = true;
 			ActionKit.OnUpdate.Register(() =>

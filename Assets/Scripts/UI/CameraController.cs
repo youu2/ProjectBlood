@@ -80,14 +80,10 @@ public class CameraController : MonoBehaviour
         {
             return;
         }
+        // 无跟随目标（如玩家死亡后的结算期间）：停止一切镜头运动，
+        // 保留当前姿态；切场景时的回正由 OnSceneLoaded / SetLoadingFreeze 负责
         if (Player.player1 == null)
         {
-            // 非游戏场景（主菜单等）没有跟随目标：主动保持相机回正，
-            // 不依赖 sceneLoaded 的一次性复位，避免任何时序下旋转残留到主菜单 UI
-            if (transform.rotation != Quaternion.identity)
-            {
-                transform.rotation = Quaternion.identity;
-            }
             return;
         }
         // 新场景第一帧（Player 已在 MapController.Start 传送到出生点）直接吸附

@@ -185,10 +185,7 @@ namespace ProjectBlood
             currentDifficulty = 0;
             RunElapsedSeconds = 0f;
             // 重置 Boss 战状态，避免上一关的 Boss 血条残留到下一关
-            BossActive.Value = false;
-            BossMaxHp.Value = 0f;
-            BossCurrentHp.Value = 0f;
-            BossPhaseTwo.Value = false;
+            ResetBossState();
             WeaponDataSystem.weaponDataList.Clear();
             WeaponDataSystem.weaponDataList.Add(WeaponConfig.DE.NewWeapon()); // 默认武器只有DE
             PlayerUpgradeState.ApplyGlobalWeaponUnlocks(); // 局外养成额外解锁武器（按宝箱掉落顺序）
@@ -197,6 +194,18 @@ namespace ProjectBlood
             {
                 Player.player1.UpdateSpecialReloadCost();   // 更新玩家的特殊装弹成本
             }
+        }
+
+        // 仅重置 Boss 战状态：BossActive=false 会驱动 BossHealthBar 节点自行隐藏。
+        // 玩家死亡 / 暂停后直接返回主菜单时，Boss 仍存活、不会走死亡逻辑把 BossActive 置 false，
+        // 而 GameUI 画布是 DontDestroyOnLoad，血条会跨场景残留在主菜单；
+        // 这类退出路径在加载主菜单前必须调用本方法。
+        public static void ResetBossState()
+        {
+            BossActive.Value = false;
+            BossMaxHp.Value = 0f;
+            BossCurrentHp.Value = 0f;
+            BossPhaseTwo.Value = false;
         }
 
         public static void ResetWave()
