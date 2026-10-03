@@ -42,6 +42,7 @@ namespace ProjectBlood
             WeaponDataSystem.ExportTo(data);
             PlayerUpgradeState.ExportTo(data);
             BloodSigilState.ExportTo(data);
+            Chest.ExportTo(data);
 
             // 2. 玩家网格坐标（从世界坐标向下取整）
             if (Player.player1 != null)

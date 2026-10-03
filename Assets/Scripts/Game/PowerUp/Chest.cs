@@ -15,6 +15,18 @@ namespace ProjectBlood
             currentWeaponIndex = 0;
         }
 
+        // 存档导出：static 进度不会随场景/游戏重启保留，需显式写入存档
+        public static void ExportTo(RunSaveData data)
+        {
+            data.chestWeaponIndex = currentWeaponIndex;
+        }
+
+        // 存档导入：继续游戏时恢复掉落进度，防止已获取武器被重复掉落
+        public static void ImportFrom(RunSaveData data)
+        {
+            currentWeaponIndex = Mathf.Max(0, data.chestWeaponIndex);
+        }
+
         void Start()
         {
             isCollected = false;

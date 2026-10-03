@@ -671,6 +671,7 @@ namespace ProjectBlood
             WeaponDataSystem.ImportFrom(data);
             PlayerUpgradeState.ImportFrom(data, id => UpgradeManager.Instance?.FindById(id));
             BloodSigilState.ImportFrom(data, id => BloodSigilManager.Instance?.FindById(id));
+            Chest.ImportFrom(data);   // 宝箱武器掉落进度（static 字段，游戏重启后必须从存档恢复）
 
             // 6. 地面掉落物（含血印掉落）
             RunSaveService.RestoreDrops(data);
