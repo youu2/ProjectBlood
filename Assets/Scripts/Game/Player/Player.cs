@@ -191,6 +191,7 @@ namespace ProjectBlood
             // 依次添加武器到武器列表,后续可能会改成根据游戏进度逐步获取,比如从宝箱中获取
             player1 = this;
             PlayerUpgradeState.OnPlayerSpawned(); // 补回累计移速加成(Player 不跨场景,强化加成存在静态状态中)
+            BloodSigilState.OnPlayerSpawned();    // 补回激活血印的持续型结算效果（AutoAim/技能层数/属性加成等）
             UseWeapon(0); // 默认装备第一把武器
             // 场景重载后武器实例全部重建,但静态 WeaponData 跨场景存活。
             // 立即为其余已拥有武器静默补加载数据(含尚未激活、Awake 未执行的隐藏武器),

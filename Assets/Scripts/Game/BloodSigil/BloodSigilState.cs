@@ -531,7 +531,7 @@ namespace ProjectBlood
         }
 
         // 从存档恢复：静默重建（不触发 OnAcquire 事件、不驱动 SigilUnlocked UI），
-        // 仅还原模块状态机；激活模块的结算效果由后续 OnPlayerSpawned/事件自然补齐
+        // 仅还原模块状态机,激活模块的持续型结算效果由 Player 生成后调用 BloodSigilState.OnPlayerSpawned 统一补回（见 Player.Awake）
         public static void ImportFrom(RunSaveData data, Func<string, BloodSigilSO> soLookup)
         {
             permanentDamageBonus = data.permanentDamageBonus;
@@ -588,6 +588,29 @@ namespace ProjectBlood
         {
             if (charges <= 0) return;
             damageImmunityCharges = Mathf.Max(0, damageImmunityCharges - charges);
+        }
+
+        // ============================== 玩家生成后补回 ==============================
+
+        // 玩家场景重建后补回所有激活模块的持续型结算效果。
+        // 场景切换/继续游戏时 Player 实例销毁重建，但 BloodSigilState 作为静态状态机存活。
+        // activeModules 里的模块在存档中已是 Active，但 Outcome 的 OnApply 只作用于 Player
+        // 的实例字段/组件；Player 重建后这些效果消失，需重新 OnApply 恢复。
+        // 与 PlayerUpgradeState.OnPlayerSpawned 同构；空上下文传 Empty，持续型 OnApply
+        // 通常不读取事件来源字段。
+        public static void OnPlayerSpawned()
+        {
+            for (int i = 0; i < activeModules.Count; i++)
+            {
+                var rt = activeModules[i];
+                if (!rt.Active) continue;
+                var outcomes = rt.Module.outcomes;
+                if (outcomes == null) continue;
+                for (int j = 0; j < outcomes.Count; j++)
+                {
+                    outcomes[j]?.OnApply(rt, BloodSigilFireContext.Empty);
+                }
+            }
         }
 
         // ============================== 查询 ==============================

@@ -4,6 +4,9 @@ namespace ProjectBlood
     // struct + 可空字段语义：未使用的信息保持默认值，由触发类型决定读取哪些字段。
     public struct BloodSigilFireContext
     {
+        // 空上下文：用于 OnPlayerSpawned 等无具体事件来源的场景
+        public static readonly BloodSigilFireContext Empty = new BloodSigilFireContext();
+
         // 本次事件类型
         public BloodSigilTriggerType TriggerType;
 

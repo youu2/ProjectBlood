@@ -15,6 +15,7 @@ namespace ProjectBlood
 
         // 缓存子物体上的 SpriteRenderer（掉落物克隆体为独立实例，缓存安全）
         private SpriteRenderer cachedSpriteRenderer;
+        public AudioClip pickUpSound;
 
         // 绑定掉落物对应的血印配置（由生成方调用），用血印 SO 中的 icon 替换预制体默认图标，
         // 并将名字/描述写入 Name 文本框
@@ -28,13 +29,15 @@ namespace ProjectBlood
         }
 
         // 靠近时额外显示名字/描述文本，离开时隐藏
-        protected override void OnEnterRange(){
-            Name.Show(); 
+        protected override void OnEnterRange()
+        {
+            Name.Show();
             Tips.Show();
         }
-        protected override void OnExitRange(){
-            Name.Hide(); 
-            Tips.Hide(); 
+        protected override void OnExitRange()
+        {
+            Name.Hide();
+            Tips.Hide();
         }
 
         protected override void DoInteract()
@@ -48,7 +51,7 @@ namespace ProjectBlood
             isCollected = true;
             Tips.Hide();
             Name.Hide();
-            AudioKitManager.Instance.PlayOneShot("SigilPickUp", volume: 1.0f);
+            AudioKitManager.Instance.PlayOneShot(pickUpSound, volume: 1.0f);
             BloodSigilManager.Instance?.Unlock(sigil);
             this.DestroyGameObjGracefully();
         }
