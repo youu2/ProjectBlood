@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace ProjectBlood
 {
@@ -27,6 +28,10 @@ namespace ProjectBlood
         // 仅在条件由 false→true 的跨越瞬间允许 Fire；离开区间自动复位以支持反复跨越
         public bool TriggerLatched { get; set; }
 
+        // 启用门控（第五要素）当前使能状态：无门控模块恒为 true；
+        // ToggleKey 由按键翻转，HoldKey 由按住状态驱动；解锁时按 gate.startEnabled 初始化
+        public bool GateEnabled { get; set; } = true;
+
         // 结束条件运行时状态（与 Module.endConditions 按索引一一对应；null 表示该条件无需计时）
         public float[] EndRemaining { get; }
         public bool[] EndLatched { get; }
@@ -38,6 +43,8 @@ namespace ProjectBlood
         {
             Sigil = sigil;
             Module = module;
+            // 门控初始态：无门控=使能；有门控按其 startEnabled（开关类通常 false）
+            GateEnabled = module.gate == null || module.gate.startEnabled;
             int endCount = module.endConditions != null ? module.endConditions.Count : 0;
             EndRemaining = new float[endCount];
             EndLatched = new bool[endCount];
@@ -96,6 +103,22 @@ namespace ProjectBlood
             }
         }
 
+        // 锁存按键松开结束条件：仅锁存"类型=InputRelease 且在监听该键"的条件
+        public void LatchKeyRelease(KeyCode key)
+        {
+            var ends = Module.endConditions;
+            if (ends == null) return;
+            for (int i = 0; i < ends.Count; i++)
+            {
+                if (ends[i] != null
+                    && ends[i].endConditionType == BloodSigilEndConditionType.InputRelease
+                    && ends[i].IsWatchingKey(key))
+                {
+                    EndLatched[i] = true;
+                }
+            }
+        }
+
         // 是否包含指定类型的结束条件（引擎据此只在相关事件中评估对应模块，避免无谓遍历）
         public bool HasEndType(BloodSigilEndConditionType type)
         {
@@ -139,6 +162,7 @@ namespace ProjectBlood
                     return EndRemaining[index] <= 0f;
                 case BloodSigilEndConditionType.WeaponSwitched:
                 case BloodSigilEndConditionType.Reload:
+                case BloodSigilEndConditionType.InputRelease:
                     return EndLatched[index];
                 case BloodSigilEndConditionType.HealthThreshold:
                     // 电平判定：仅在携带血量的评估（血量变化事件/解锁初评）中生效

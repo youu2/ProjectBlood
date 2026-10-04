@@ -26,6 +26,9 @@ namespace ProjectBlood
         [Tooltip("什么游戏事件触发本模块")]
         public BloodSigilTriggerSO trigger;
 
+        [Tooltip("启用门控（可选，第五要素）：挂上后只有门控使能期间才允许触发；留空=永远使能")]
+        public BloodSigilGateSO gate;
+
         [Header("② 结算效果（可配多个，触发时同时结算）")]
         [Tooltip("触发时执行的结算效果列表")]
         public List<BloodSigilOutcomeSO> outcomes = new List<BloodSigilOutcomeSO>();

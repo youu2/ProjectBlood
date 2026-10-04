@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace ProjectBlood
@@ -5,7 +6,8 @@ namespace ProjectBlood
     // 血印结束条件配置（四要素之一）。枚举驱动：
     //   duration        仅 Duration 类型生效；
     //   healthCompare / healthThreshold 仅 HealthThreshold 类型生效，
-    //   比较运算符与判定逻辑与触发条件共用 BloodSigilHealthThreshold。
+    //   比较运算符与判定逻辑与触发条件共用 BloodSigilHealthThreshold；
+    //   watchKeys       仅 InputRelease 类型生效，松开任一听键即结束。
     // 一个模块可挂多个结束条件，由模块上的 EndMatchMode 决定"满足其一(Any)"还是"全部满足(All)"。
     [CreateAssetMenu(fileName = "SigilEnd_", menuName = "血印系统/结束条件", order = 11)]
     public class BloodSigilEndConditionSO : ScriptableObject
@@ -21,6 +23,13 @@ namespace ProjectBlood
 
         [Tooltip("血量百分比阈值（仅 HealthThreshold 类型生效，0~1，0.3=30%，1=满血）")]
         [Range(0f, 1f)] public float healthThreshold = 0.3f;
+
+        [Tooltip("监听按键（仅 InputRelease 类型生效，松开任一键即结束；含鼠标键 Mouse0~6）")]
+        public List<KeyCode> watchKeys = new List<KeyCode>();
+
+        // 是否监听指定键（InputRelease 用）：空列表视为任意键
+        public bool IsWatchingKey(KeyCode key)
+            => watchKeys == null || watchKeys.Count == 0 || watchKeys.Contains(key);
     }
 
     // 多结束条件的匹配模式

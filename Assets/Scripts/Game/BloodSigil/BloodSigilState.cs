@@ -30,6 +30,10 @@ namespace ProjectBlood
         // activeModules 的子集：含 Duration 结束条件、需要每帧推进计时的模块
         private static readonly List<BloodSigilModuleRuntime> timedModules = new List<BloodSigilModuleRuntime>();
 
+        // 输入支持：所有已解锁模块实际配置的监听键并集（触发器/结束条件/门控三类来源）。
+        // 每帧只轮询这些键，不做全键盘扫描；在解锁/移除/读档后增量重建（低频操作，全量扫描即可）。
+        private static readonly HashSet<KeyCode> watchedKeys = new HashSet<KeyCode>();
+
         // 献祭永久增伤台账（来源血印消失后仍保留至单局结束）
         private static float permanentDamageBonus;
 
@@ -75,6 +79,7 @@ namespace ProjectBlood
             runtimes.Clear();
             activeModules.Clear();
             timedModules.Clear();
+            watchedKeys.Clear();
             permanentDamageBonus = 0f;
             damageImmunityCharges = 0;
             resetGeneration++;   // 允许新一局应用一次全局随机血印
@@ -215,6 +220,7 @@ namespace ProjectBlood
                     var rt = runtime.Modules[i];
                     if (rt.Module.trigger != null
                         && rt.Module.trigger.Matches(ctx)
+                        && IsGateOpen(rt)
                         && rt.CanFireByCooldown(rt.Module.triggerCooldownSeconds, Time.time)
                         && rt.CanFire(rt.Module.maxStacks))
                     {
@@ -236,9 +242,12 @@ namespace ProjectBlood
 
         // ============================== 每帧驱动 ==============================
 
-        // 仅推进含 Duration 条件的激活模块（暂停时 dt=0，与旧被动计时一致）
+        // 每帧驱动：先轮询输入型条件（触发/结束/门控），再推进 Duration 计时。
+        // 暂停时两者都不执行（与武器开火的暂停策略一致）
         public static void Tick(float deltaTime)
         {
+            PollInput();
+
             if (deltaTime <= 0f || timedModules.Count == 0) return;
 
             for (int i = timedModules.Count - 1; i >= 0; i--)
@@ -251,6 +260,148 @@ namespace ProjectBlood
                 }
             }
         }
+
+        // ============================== 输入轮询（按键触发/结束/门控） ==============================
+
+        // 每帧对已解锁模块实际监听的键采样：
+        //   GetKeyDown → 翻转 ToggleKey 门控 + 派发 KeyPress 触发事件
+        //   GetKey     → 派发 KeyHold 触发事件（电平，配合模块触发CD做周期触发）
+        //   GetKeyUp   → 派发 KeyRelease 触发事件 + 评估 InputRelease 结束条件 + 复位 HoldKey 门控
+        // 门控翻转与事件分发顺序：同帧同键先翻转门控再分发，便于"一键开关自身触发"类配置。
+        private static void PollInput()
+        {
+            if (watchedKeys.Count == 0 || Global.IsGamePaused) return;
+
+            foreach (var key in watchedKeys)
+            {
+                if (Input.GetKeyDown(key))
+                {
+                    ToggleGates(key);
+                    DispatchKeyEvent(BloodSigilTriggerType.KeyPress, key);
+                }
+                if (Input.GetKey(key))
+                {
+                    DispatchKeyEvent(BloodSigilTriggerType.KeyHold, key);
+                }
+                if (Input.GetKeyUp(key))
+                {
+                    DispatchKeyEvent(BloodSigilTriggerType.KeyRelease, key);
+                    LatchKeyReleaseAndEnd(key);
+                    ReleaseHoldGates(key);
+                }
+            }
+        }
+
+        private static void DispatchKeyEvent(BloodSigilTriggerType type, KeyCode key)
+            => DispatchEvent(new BloodSigilFireContext
+            {
+                TriggerType = type,
+                PressedKey = key,
+            });
+
+        // 翻转所有监听该键的 ToggleKey 门控
+        private static void ToggleGates(KeyCode key)
+        {
+            foreach (var runtime in runtimes.Values)
+            {
+                for (int i = 0; i < runtime.Modules.Count; i++)
+                {
+                    var rt = runtime.Modules[i];
+                    var gate = rt.Module.gate;
+                    if (gate != null
+                        && gate.gateType == BloodSigilGateType.ToggleKey
+                        && gate.IsWatchingKey(key))
+                    {
+                        rt.GateEnabled = !rt.GateEnabled;
+                    }
+                }
+            }
+        }
+
+        // HoldKey 门控：任一监听键松开后重新计算（仍有其他键按住则保持使能）
+        private static void ReleaseHoldGates(KeyCode key)
+        {
+            foreach (var runtime in runtimes.Values)
+            {
+                for (int i = 0; i < runtime.Modules.Count; i++)
+                {
+                    var rt = runtime.Modules[i];
+                    var gate = rt.Module.gate;
+                    if (gate == null || gate.gateType != BloodSigilGateType.HoldKey) continue;
+
+                    bool anyHeld = false;
+                    if (gate.watchKeys != null)
+                    {
+                        for (int k = 0; k < gate.watchKeys.Count; k++)
+                        {
+                            if (Input.GetKey(gate.watchKeys[k])) { anyHeld = true; break; }
+                        }
+                    }
+                    rt.GateEnabled = anyHeld;
+                }
+            }
+        }
+
+        // 按键松开结束条件：锁存所有激活模块中监听该键的 InputRelease 条件，满足匹配模式即结束
+        private static void LatchKeyReleaseAndEnd(KeyCode key)
+        {
+            for (int i = activeModules.Count - 1; i >= 0; i--)
+            {
+                var rt = activeModules[i];
+                if (!rt.HasEndType(BloodSigilEndConditionType.InputRelease)) continue;
+                rt.LatchKeyRelease(key);
+                if (rt.IsEndSatisfied(rt.Module.endMatchMode))
+                {
+                    EndModule(rt);
+                }
+            }
+        }
+
+        // 重建监听键并集（解锁/移除/献祭/读档后调用；低频，直接全量扫描）
+        private static void RebuildWatchedKeys()
+        {
+            watchedKeys.Clear();
+            foreach (var runtime in runtimes.Values)
+            {
+                foreach (var rt in runtime.Modules)
+                {
+                    var trigger = rt.Module.trigger;
+                    if (trigger != null
+                        && (trigger.triggerType == BloodSigilTriggerType.KeyPress
+                            || trigger.triggerType == BloodSigilTriggerType.KeyHold
+                            || trigger.triggerType == BloodSigilTriggerType.KeyRelease)
+                        && trigger.watchKeys != null)
+                    {
+                        foreach (var k in trigger.watchKeys) watchedKeys.Add(k);
+                    }
+
+                    var ends = rt.Module.endConditions;
+                    if (ends != null)
+                    {
+                        foreach (var end in ends)
+                        {
+                            if (end != null
+                                && end.endConditionType == BloodSigilEndConditionType.InputRelease
+                                && end.watchKeys != null)
+                            {
+                                foreach (var k in end.watchKeys) watchedKeys.Add(k);
+                            }
+                        }
+                    }
+
+                    var gate = rt.Module.gate;
+                    if (gate != null && gate.watchKeys != null)
+                    {
+                        foreach (var k in gate.watchKeys) watchedKeys.Add(k);
+                    }
+                }
+            }
+        }
+
+        // 门控资格：无门控恒开；有门控看 GateEnabled。
+        // 门控关闭时事件被整体跳过：不 Fire、不消耗次数、不写触发CD时间戳。
+        private static bool IsGateOpen(BloodSigilModuleRuntime rt)
+            => rt.Module.gate == null || rt.GateEnabled;
 
         // ============================== 解锁 / 移除 ==============================
 
@@ -274,6 +425,7 @@ namespace ProjectBlood
             {
                 if (rt.Module.trigger != null
                     && rt.Module.trigger.Matches(acquireCtx)
+                    && IsGateOpen(rt)
                     && rt.CanFireByCooldown(rt.Module.triggerCooldownSeconds, Time.time)
                     && rt.CanFire(rt.Module.maxStacks))
                 {
@@ -289,6 +441,8 @@ namespace ProjectBlood
             {
                 EvaluateHealthEnds(GetCurrentHealthPercent());
             }
+
+            RebuildWatchedKeys();
 
             SigilUnlocked?.Invoke(so);
             return true;
@@ -308,6 +462,7 @@ namespace ProjectBlood
                 runtimes.Remove(so);
             }
             unlocked.Remove(so);
+            RebuildWatchedKeys();
         }
 
         // 批量移除（献祭语义）：快照后逐个移除，返回被移除列表
@@ -340,6 +495,7 @@ namespace ProjectBlood
                 runtimes.Remove(so);
             }
             unlocked.Remove(so);
+            RebuildWatchedKeys();
         }
 
         public static void AddPermanentDamageBonus(float additiveRatio)
@@ -413,8 +569,11 @@ namespace ProjectBlood
                         activeModules.Add(rt);
                         if (HasDurationEnd(rt.Module)) timedModules.Add(rt);
                     }
+                    // 门控使能态不持久化：沿用构造函数按 gate.startEnabled 的初始化（新局复位语义）
                 }
             }
+
+            RebuildWatchedKeys();
         }
 
         public static void AddDamageImmunityCharges(int charges)
@@ -539,6 +698,8 @@ namespace ProjectBlood
                     bool met = trigger.Matches(ctx);
                     // 模块级触发冷却（CD=0 时短路恒真，行为与无冷却一致）
                     bool cooldownReady = rt.CanFireByCooldown(rt.Module.triggerCooldownSeconds, Time.time);
+                    // 启用门控（无门控恒开）
+                    bool gateOpen = IsGateOpen(rt);
 
                     // 边沿触发（血量阈值）：仅在条件由假变真的跨越瞬间 Fire；
                     // 每次评估都刷新锁存，离开区间后再次跨越可重新触发
@@ -549,13 +710,15 @@ namespace ProjectBlood
                             rt.TriggerLatched = false;
                             continue;
                         }
+                        // 门控关闭：不 Fire 也不动锁存，使能后本次区间仍可跨越触发
+                        if (!gateOpen) continue;
                         if (rt.TriggerLatched) continue;
                         // CD 未过时本次跨越不算数：不锁存，CD 过后下一次事件仍在区间内可再尝试
                         if (!cooldownReady) continue;
                         rt.TriggerLatched = true;
                         if (!rt.CanFire(rt.Module.maxStacks)) continue;
                     }
-                    else if (!met || !cooldownReady || !rt.CanFire(rt.Module.maxStacks))
+                    else if (!met || !gateOpen || !cooldownReady || !rt.CanFire(rt.Module.maxStacks))
                     {
                         continue;
                     }

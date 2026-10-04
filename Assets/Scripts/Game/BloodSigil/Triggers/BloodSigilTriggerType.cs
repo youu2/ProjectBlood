@@ -20,5 +20,11 @@ namespace ProjectBlood
         WeaponSwitched = 6,
         // 当前血量百分比跨越配置阈值时触发（大于/等于/小于，边沿触发：仅在条件由假变真瞬间 Fire）
         HealthThreshold = 7,
+        // 按下监听键的瞬间触发（Input.GetKeyDown，天然单帧边沿，无需引擎锁存）
+        KeyPress = 8,
+        // 按住监听键期间持续触发（Input.GetKey 电平，每帧派发；配合模块触发CD做周期触发）
+        KeyHold = 9,
+        // 松开监听键的瞬间触发（Input.GetKeyUp，用于松手释放类玩法）
+        KeyRelease = 10,
     }
 }

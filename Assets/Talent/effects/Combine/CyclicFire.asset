@@ -12,10 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84aa3cdbb44024740a13a3d5f462c185, type: 3}
   m_Name: CyclicFire
   m_EditorClassIdentifier: 
-  trigger: {fileID: 11400000, guid: 373ae4da33cf90a4b99e90e0dbd44125, type: 2}
+  trigger: {fileID: 11400000, guid: d1ecb2e703afcb04483d70672533822f, type: 2}
+  gate: {fileID: 11400000, guid: f332d827e738f794cb33d84af5468700, type: 2}
   outcomes:
   - {fileID: 11400000, guid: 1cfcd6e63e2fa6b4787638c84bea48ee, type: 2}
   endConditions:
   - {fileID: 11400000, guid: 76d7e1369e649ba4f9bfb4adaeb6a45d, type: 2}
   endMatchMode: 0
+  triggerCooldownSeconds: 0.2
   maxStacks: -1

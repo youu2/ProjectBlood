@@ -18,5 +18,8 @@ namespace ProjectBlood
 
         // HealthThreshold：变化后的当前血量百分比（0~1）
         public float HealthPercent;
+
+        // KeyPress / KeyHold / KeyRelease：本次事件对应的键（含鼠标键 Mouse0~6，统一用 KeyCode）
+        public UnityEngine.KeyCode PressedKey;
     }
 }
