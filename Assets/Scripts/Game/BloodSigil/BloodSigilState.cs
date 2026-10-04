@@ -215,6 +215,7 @@ namespace ProjectBlood
                     var rt = runtime.Modules[i];
                     if (rt.Module.trigger != null
                         && rt.Module.trigger.Matches(ctx)
+                        && rt.CanFireByCooldown(rt.Module.triggerCooldownSeconds, Time.time)
                         && rt.CanFire(rt.Module.maxStacks))
                     {
                         FireModule(rt, ctx);
@@ -273,6 +274,7 @@ namespace ProjectBlood
             {
                 if (rt.Module.trigger != null
                     && rt.Module.trigger.Matches(acquireCtx)
+                    && rt.CanFireByCooldown(rt.Module.triggerCooldownSeconds, Time.time)
                     && rt.CanFire(rt.Module.maxStacks))
                 {
                     FireModule(rt, acquireCtx);
@@ -457,6 +459,7 @@ namespace ProjectBlood
         {
             var module = rt.Module;
             rt.FiredCount++;
+            rt.LastFireTime = Time.time; // 记录触发时刻，驱动模块级触发冷却
 
             if (!rt.Active)
             {
@@ -534,6 +537,8 @@ namespace ProjectBlood
                     if (trigger == null) continue;
 
                     bool met = trigger.Matches(ctx);
+                    // 模块级触发冷却（CD=0 时短路恒真，行为与无冷却一致）
+                    bool cooldownReady = rt.CanFireByCooldown(rt.Module.triggerCooldownSeconds, Time.time);
 
                     // 边沿触发（血量阈值）：仅在条件由假变真的跨越瞬间 Fire；
                     // 每次评估都刷新锁存，离开区间后再次跨越可重新触发
@@ -545,10 +550,12 @@ namespace ProjectBlood
                             continue;
                         }
                         if (rt.TriggerLatched) continue;
+                        // CD 未过时本次跨越不算数：不锁存，CD 过后下一次事件仍在区间内可再尝试
+                        if (!cooldownReady) continue;
                         rt.TriggerLatched = true;
                         if (!rt.CanFire(rt.Module.maxStacks)) continue;
                     }
-                    else if (!met || !rt.CanFire(rt.Module.maxStacks))
+                    else if (!met || !cooldownReady || !rt.CanFire(rt.Module.maxStacks))
                     {
                         continue;
                     }

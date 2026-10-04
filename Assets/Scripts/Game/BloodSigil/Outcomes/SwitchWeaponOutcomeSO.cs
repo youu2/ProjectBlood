@@ -9,16 +9,14 @@ namespace ProjectBlood
     // 相机尺寸、瞄准矫正），并经由 UseWeapon 内的 BloodSigilState.NotifyWeaponSwitched
     // 正常派发切枪事件，因此切枪触发/切枪结束的其他血印模块也能联动。
     //
-    // 无需配置参数；典型组合：击杀/开火/受伤触发 + 本结算 + Unlimited 结束。
+    // 触发频率节流请配置所属模块的"触发冷却 triggerCooldownSeconds"（模块级通用属性），
+    // 本结算效果自身无参数。
     [CreateAssetMenu(fileName = "Outcome_SwitchWeapon", menuName = "血印系统/结算效果/切换下一把武器")]
     public class SwitchWeaponOutcomeSO : BloodSigilOutcomeSO
     {
         public override void OnImmediate(BloodSigilModuleRuntime rt, in BloodSigilFireContext ctx)
         {
-            if (Player.player1 != null)
-            {
-                Player.player1.SwitchToNextWeapon();
-            }
+            Player.player1?.SwitchToNextWeapon();
         }
     }
 }

@@ -29,6 +29,13 @@ namespace ProjectBlood
         public override void KeepAttacking(Vector2 shootDir)
         {
             base.KeepAttacking(shootDir);
+
+            // 开火事件结算（如血印"开火切枪"）可能在 base 内部同步把当前武器切走：
+            // 此时 SwitchFromSet 已对本枪 StopAttacking（循环音已停）并置 newClip=true。
+            // 若继续按 newClip 续播，会给已切走的枪重新播一层循环音且覆盖播放器引用，
+            // 该循环音此后永远无法被停止 → 每切一轮叠加一层。
+            if (Player.player1 == null || Player.player1.currentWeapon != this) return;
+
             // 全程按住左键换弹后，要重新开始播放射击循环音效
             if (newClip && gunClip != null && gunClip.CanShoot())
             {

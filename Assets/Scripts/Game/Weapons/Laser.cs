@@ -83,6 +83,13 @@ namespace ProjectBlood
                 attackInterval.RecordAttackTime();
                 Attack(shootDir); // 激光攻击：使用 BoxCast 直接造成伤害
                 reloadTextShown = false; // 有弹药时重置 reload 文本显示标记
+
+                // 开火事件结算（如血印"开火切枪"）可能在 Attack 内部同步把当前武器切走：
+                // 此时 SwitchFromSet→StopAttacking 已把 isLaserShooting 置回 false。
+                // 若继续置 true，会给共享 Animator 留下一个无人清理的 true，
+                // 状态机将永久卡在 LaserShooting 循环振动 → 武器持续小幅高频抖动。
+                if (Player.player1 == null || Player.player1.currentWeapon != this) return;
+
                 WeaponAnimator.SetBool("isLaserShooting", true);
             }
             else if (!gunClip.CanShoot() && !reloadTextShown)

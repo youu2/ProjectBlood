@@ -290,6 +290,19 @@ namespace ProjectBlood
             StopAttacking();
             StopReload();
             Player.HideText();
+
+            // 共享 Animator 防线（所有武器引用同一个持枪手臂 Animator）：
+            // 清掉尚未消费的射击触发器与可能残留的激光 bool，防止孤儿触发器/卡死状态
+            // 在切枪后于共享手臂上重放后坐或持续振动。
+            // 不强制回 Idle：FastShooting/OneShot 靠退出时间自动返回，LaserShooting
+            // 由条件转换(bool=false)自动归位，正在播放的动画不会被截断。
+            if (WeaponAnimator != null)
+            {
+                WeaponAnimator.ResetTrigger(ShootAnimatioTrigger);
+                WeaponAnimator.ResetTrigger("FastShot");
+                WeaponAnimator.ResetTrigger("SingleShoot");
+                WeaponAnimator.SetBool("isLaserShooting", false);
+            }
         }
 
         public void SwitchToSet()

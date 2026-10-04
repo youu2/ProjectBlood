@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: E_SwitchWeapon
   m_EditorClassIdentifier: 
   outcomeKey: 
+  cooldownSeconds: 0

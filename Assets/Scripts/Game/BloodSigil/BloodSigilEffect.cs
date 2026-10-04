@@ -37,7 +37,10 @@ namespace ProjectBlood
         [Tooltip("多个结束条件的匹配方式：满足任一 / 必须全部满足")]
         public BloodSigilEndMatchMode endMatchMode = BloodSigilEndMatchMode.Any;
 
-        [Header("④ 可生效次数")]
+        [Header("④ 触发门控")]
+        [Tooltip("两次成功触发之间的最小间隔（秒）；0 = 无冷却，事件到达即可触发（现有血印默认行为）")]
+        [Min(0f)] public float triggerCooldownSeconds = 0f;
+
         [Tooltip("本模块最多可触发的次数；-1 表示无限制，1 表示整局仅一次")]
         [Min(-1)] public int maxStacks = -1;
 

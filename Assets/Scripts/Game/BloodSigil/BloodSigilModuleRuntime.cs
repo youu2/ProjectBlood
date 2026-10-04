@@ -16,6 +16,10 @@ namespace ProjectBlood
         // 已触发次数
         public int FiredCount { get; set; }
 
+        // 上次成功 Fire 的时间戳（Time.time，由引擎写入）；-1 = 从未触发。
+        // 用于模块级通用触发冷却 triggerCooldownSeconds
+        public float LastFireTime { get; set; } = -1f;
+
         // 持续型效果是否激活中
         public bool Active { get; set; }
 
@@ -42,6 +46,13 @@ namespace ProjectBlood
         // 是否还能继续触发（maxStacks < 0 表示无限制）
         public bool CanFire(int maxStacks)
             => maxStacks < 0 || FiredCount < maxStacks;
+
+        // 触发冷却门控：cooldownSeconds <= 0 时短路恒真，CD=0 的模块零额外开销、行为不变。
+        // nowTime 由引擎传 Time.time（暂停时随 timeScale 冻结）
+        public bool CanFireByCooldown(float cooldownSeconds, float nowTime)
+            => cooldownSeconds <= 0f
+               || LastFireTime < 0f
+               || nowTime - LastFireTime >= cooldownSeconds;
 
         // 初始化/刷新结束条件计时与事件锁存（每次触发时调用）
         public void ResetEndTracking()
