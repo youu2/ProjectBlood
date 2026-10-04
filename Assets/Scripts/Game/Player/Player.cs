@@ -190,8 +190,11 @@ namespace ProjectBlood
             Application.targetFrameRate = 300;
             // 依次添加武器到武器列表,后续可能会改成根据游戏进度逐步获取,比如从宝箱中获取
             player1 = this;
+            // 在施加任何移速加成之前记录该 Player 实例的原始移速，
+            // 供 PlayerUpgradeState.OnPlayerSpawned 以"基线+台账"赋值（读档补应用时也不会叠加）
+            PlayerUpgradeState.CapturePlayerSpawnBaseline(moveSpeed);
             PlayerUpgradeState.OnPlayerSpawned(); // 补回累计移速加成(Player 不跨场景,强化加成存在静态状态中)
-            BloodSigilState.OnPlayerSpawned();    // 补回激活血印的持续型结算效果（AutoAim/技能层数/属性加成等）
+            BloodSigilState.OnPlayerSpawned();    // 补回激活血印的玩家实例类持续效果（自动瞄准等）
             UseWeapon(0); // 默认装备第一把武器
             // 场景重载后武器实例全部重建,但静态 WeaponData 跨场景存活。
             // 立即为其余已拥有武器静默补加载数据(含尚未激活、Awake 未执行的隐藏武器),
@@ -560,6 +563,10 @@ namespace ProjectBlood
 
             if (isSpecialReloadTriggered)
             {
+                // 以当前实际武器数量实时计算代价：
+                // 读档还原武器列表晚于 Player.Awake，Awake 缓存的代价可能是 0
+                UpdateSpecialReloadCost();
+
                 // 血库足以支付特殊换弹代价时才扣血,并让其他武器补装强化子弹;
                 // 血量不足时特殊换弹照常执行(补满其他武器弹夹),但不扣血、补装的子弹不强化
                 bool canEnhance = BloodBank.Instance.CurrentBloodAmount >= specialReloadBloodCost;
@@ -604,6 +611,47 @@ namespace ProjectBlood
         public void UpdateSpecialReloadCost()
         {
             specialReloadBloodCost = (WeaponDataSystem.weaponDataList.Count - 1) * 3;
+        }
+
+        // 读档还原后（MapController.RestoreFromSave，晚于 Player.Awake）调用：
+        // WeaponDataSystem 此时才从存档恢复武器列表，Player.Awake 期间只加载到默认武器。
+        // 本方法把恢复后的 WeaponData 静默加载回全部武器实例，并切回存档时手持的武器；
+        // 不走 UseWeapon：避免播放切枪音效，也避免 NotifyWeaponSwitched 误触血印的切枪结束条件。
+        public void RestoreWeaponsAfterLoad(int savedWeaponIndex)
+        {
+            WeaponBase firstLoaded = null;
+
+            // 为全部已拥有武器实例加载存档数据（弹药/弹夹容量），未在列表中的实例保持隐藏
+            foreach (var weaponData in WeaponDataSystem.weaponDataList)
+            {
+                if (weaponData == null) continue;
+                var weapon = GetWeaponFromName(weaponData.weaponName);
+                if (weapon == null)
+                {
+                    Debug.LogWarning($"读档还原:找不到武器 {weaponData.weaponName} 的实例,已跳过");
+                    continue;
+                }
+                weapon.LoadWeaponData(weaponData, updateUI: false);
+                if (firstLoaded == null) firstLoaded = weapon;
+                weapon.Hide();
+            }
+
+            int index = Mathf.Clamp(savedWeaponIndex, 0, WeaponDataSystem.weaponDataList.Count - 1);
+            var targetData = WeaponDataSystem.weaponDataList[index];
+            currentWeapon = GetWeaponFromName(targetData.weaponName) ?? firstLoaded;
+            if (currentWeapon != null)
+            {
+                if (WeaponDataSystem.weaponDataList.Count > 1) currentWeapon.SwitchToSet();
+                currentWeapon.Show();
+                currentWeapon.LoadWeaponData(currentWeapon.Data ?? targetData);
+                GameUI.UpdateClipText(currentWeapon.GetGunClip());
+                Global.WeaponAdditionalCameraSize = currentWeapon.AdditionalCameraSize;
+                // 立即对准当前瞄准方向，避免还原后第一帧武器朝向错误
+                if (smoothAimDir != Vector2.zero) UpdateWeaponAim(smoothAimDir);
+            }
+
+            // 武器数量已恢复：刷新特殊换弹代价（Awake 时按默认 1 把武器算成了 0）
+            UpdateSpecialReloadCost();
         }
 
         public void UpdateRollAnimationDirection()

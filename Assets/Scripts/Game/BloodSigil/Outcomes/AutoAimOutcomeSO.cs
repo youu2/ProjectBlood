@@ -13,6 +13,9 @@ namespace ProjectBlood
     [CreateAssetMenu(fileName = "Outcome_AutoAim", menuName = "血印系统/结算效果/自动瞄准锁敌")]
     public class AutoAimOutcomeSO : BloodSigilOutcomeSO
     {
+        // 只修改 Player 实例上的自动瞄准开关：新场景 Player 重建后必须重新生效
+        public override OutcomeScope Scope => OutcomeScope.PlayerInstance;
+
         public override void OnApply(BloodSigilModuleRuntime rt, in BloodSigilFireContext ctx)
         {
             Enable(true);

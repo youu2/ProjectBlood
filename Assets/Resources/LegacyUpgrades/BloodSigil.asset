@@ -16,9 +16,9 @@ MonoBehaviour:
   upgradeName: "\u8840\u6E90"
   description: 
   icon: {fileID: 21300000, guid: 5c040942fe348954fbbc516c6de90a19, type: 3}
-  maxLevel: 2
+  maxLevel: 3
   baseCost: 50
-  costIncrement: 50
+  costIncrement: 25
   statType: 6
   baseValue: 0
   valuePerLevel: 0

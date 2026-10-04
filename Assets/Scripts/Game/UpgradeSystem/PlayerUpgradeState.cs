@@ -23,7 +23,8 @@ namespace ProjectBlood
         // 0.1 = 充能间隔缩短 10%,可为负(-0.1 = 增加 10%);有效间隔 = 基础间隔 × (1 - 减免)
         private static readonly Dictionary<string, float> skillCooldownReductions = new Dictionary<string, float>();
         // ---- 技能最大充能层数累计加成:按技能名独立累加(可为负) ----
-        // 有效最大层数 = SkillData.maxCharges + 累计加成,夹到下限 1。局内效果(血印),随 Reset 清空,不入存档
+        // 有效最大层数 = SkillData.maxCharges + 累计加成,夹到下限 1。局内效果(血印)，随 Reset 清空；
+        // 随关卡存档导出/导入（冷启动读档后台账为空，由存档恢复，不依赖血印效果重新触发）
         private static readonly Dictionary<string, int> skillMaxChargesBonuses = new Dictionary<string, int>();
         private const int MinSkillMaxCharges = 1; // 技能最大充能层数下限(至少保留 1 层,技能才可用)
         // ---- 每张强化卡(UpgradeSO 资产)的累计被选择次数 ----
@@ -235,6 +236,16 @@ namespace ProjectBlood
             skill?.RefreshChargesAfterMaxChanged();
         }
 
+        // 读档恢复层数台账后调用：让当前玩家所有技能按恢复后的有效上限整理层数/计时。
+        // Player.Awake 早于 MapController 的还原流程，技能初始化时台账还是空的，必须在此补一次。
+        public static void RefreshSkillChargesAfterRestore()
+        {
+            var skillManager = FindSkillManager();
+            if (skillManager == null) return;
+            foreach (var skill in skillManager.GetAllSkills())
+                skill?.RefreshChargesAfterMaxChanged();
+        }
+
         // 伤害计算统一入口(PlayerBullet / Laser 命中时调用)：
         // 最终倍率 = 全局倍率 × 该武器独立系数 × 血印系统系数
         // 切枪增益、连射递增等动态增伤已迁移至血印系统（DamageMultiplierOutcome 组合模块）
@@ -356,18 +367,22 @@ namespace ProjectBlood
             upgradeUsageCounts[upgrade] = GetUpgradeUsageCount(upgrade) + 1;
         }
 
-        // Player 重建时补回累计移速加成(Player.Awake 中调用；Player 不跨场景,静态加成需手动重新应用)
+        // Player 重建时补回累计移速加成(Player.Awake 中调用；Player 不跨场景,静态加成需手动重新应用)。
+        // 以"生成时基线 + 台账"赋值而非累加：读档还原在 Player.Awake 之后还会补调用一次，
+        // 赋值语义保证调用任意次数结果都一致，不会重复叠加。
+        private static float playerSpawnBaseMoveSpeed = -1f;
+
+        // 由 Player.Awake 在施加任何加成之前调用，记录该 Player 实例的原始移速
+        public static void CapturePlayerSpawnBaseline(float pristineMoveSpeed)
+        {
+            playerSpawnBaseMoveSpeed = pristineMoveSpeed;
+        }
+
         public static void OnPlayerSpawned()
         {
-            if (moveSpeedBonus != 0f && Player.player1 != null)
-            {
-                Player.player1.moveSpeed += moveSpeedBonus;
-            }
-            // 局外养成全局移速加成（跨局保留，Player 重建时用默认值，需叠加）
-            if (GlobalMoveSpeedBonus != 0f && Player.player1 != null)
-            {
-                Player.player1.moveSpeed = Mathf.Max(MinMoveSpeed, Player.player1.moveSpeed + GlobalMoveSpeedBonus);
-            }
+            if (Player.player1 == null) return;
+            float baseSpeed = playerSpawnBaseMoveSpeed >= 0f ? playerSpawnBaseMoveSpeed : Player.player1.moveSpeed;
+            Player.player1.moveSpeed = Mathf.Max(MinMoveSpeed, baseSpeed + moveSpeedBonus + GlobalMoveSpeedBonus);
         }
 
         // ============================== 存档导入导出 ==============================
@@ -394,6 +409,12 @@ namespace ProjectBlood
             foreach (var kv in skillCooldownReductions)
             {
                 data.skillCooldownReductions.Add(new SkillCooldownSaveEntry { skillName = kv.Key, reduction = kv.Value });
+            }
+
+            data.skillMaxChargesBonuses.Clear();
+            foreach (var kv in skillMaxChargesBonuses)
+            {
+                data.skillMaxChargesBonuses.Add(new SkillMaxChargesSaveEntry { skillName = kv.Key, bonus = kv.Value });
             }
 
             // UpgradeSO 的 id 可能为空，回退使用资产名保证可序列化
@@ -433,6 +454,13 @@ namespace ProjectBlood
             foreach (var e in data.skillCooldownReductions)
             {
                 skillCooldownReductions[e.skillName] = e.reduction;
+            }
+
+            skillMaxChargesBonuses.Clear();
+            foreach (var e in data.skillMaxChargesBonuses)
+            {
+                if (!string.IsNullOrEmpty(e.skillName))
+                    skillMaxChargesBonuses[e.skillName] = e.bonus;
             }
 
             upgradeUsageCounts.Clear();

@@ -39,16 +39,24 @@ namespace ProjectBlood
 
             // 1. 玩家状态与局内成长
             Global.ExportTo(data);
+            data.bloodBankMax = BloodBank.Instance.MaxBloodAmount;
+            data.bloodBankCurrent = BloodBank.Instance.CurrentBloodAmount;
             WeaponDataSystem.ExportTo(data);
             PlayerUpgradeState.ExportTo(data);
             BloodSigilState.ExportTo(data);
             Chest.ExportTo(data);
 
-            // 2. 玩家网格坐标（从世界坐标向下取整）
+            // 2. 玩家网格坐标（从世界坐标向下取整）与当前手持武器索引
             if (Player.player1 != null)
             {
                 data.playerGridX = Mathf.FloorToInt(Player.player1.transform.position.x);
                 data.playerGridY = Mathf.FloorToInt(Player.player1.transform.position.y);
+
+                if (Player.player1.currentWeapon != null && Player.player1.currentWeapon.Data != null)
+                {
+                    int idx = WeaponDataSystem.weaponDataList.IndexOf(Player.player1.currentWeapon.Data);
+                    data.currentWeaponIndex = idx >= 0 ? idx : 0;
+                }
             }
 
             // 3. 地图与房间

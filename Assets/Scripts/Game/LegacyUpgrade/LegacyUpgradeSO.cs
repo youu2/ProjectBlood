@@ -66,7 +66,7 @@ namespace ProjectBlood
                 case LegacyStatType.BloodBankCapacity:
                     return $"血库容量 +{valuePerLevel:F0}/级（当前 {current:F0}）";
                 case LegacyStatType.WeaponUnlock:
-                    return $"游戏开始时额外解锁MP5";
+                    return $"游戏开始时额外解锁武器（当前{level}把）";
                 case LegacyStatType.RandomSigilUnlock:
                     return $"游戏开始时获得随机血印（当前{level}个）";
                 default:

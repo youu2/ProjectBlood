@@ -20,11 +20,27 @@ namespace ProjectBlood
     // 并在 BloodSigilOutcomeLibrary 中登记一个稳定的 OutcomeKey 即可被表格/JSON 引用。
     public abstract class BloodSigilOutcomeSO : ScriptableObject
     {
+        // 结算效果的作用域，决定玩家场景重建（过传送门/读档）后是否需要随
+        // BloodSigilState.OnPlayerSpawned 对新 Player 实例重新生效。
+        //   PersistentState —— 效果写入静态/持久系统（PlayerUpgradeState 台账、Global 数值、
+        //                      BloodBank 等），这些状态跨场景存活且已被关卡存档覆盖，
+        //                      模块激活时只应用一次，场景重建/读档均不得重复应用，否则会无限叠加。
+        //   PlayerInstance  —— 效果只作用于 Player 实例字段/组件（如自动瞄准开关），
+        //                      新场景的 Player 是全新实例，需要每次生成后重新应用。
+        public enum OutcomeScope
+        {
+            PersistentState = 0,
+            PlayerInstance = 1,
+        }
+
         [Tooltip("效果注册键（表格/JSON 驱动时用此键引用该效果资产，需在血印效果注册表中唯一）")]
         [SerializeField] private string outcomeKey;
 
         // 稳定的注册键；未填写时回落到资产名，保证总有可用标识
         public string OutcomeKey => string.IsNullOrWhiteSpace(outcomeKey) ? name : outcomeKey;
+
+        // 作用域：默认持久状态（绝大多数数值类效果）；仅纯玩家实例效果重写为 PlayerInstance
+        public virtual OutcomeScope Scope => OutcomeScope.PersistentState;
 
         // ===== 持续型生命周期（模块处于激活期间生效）=====
 

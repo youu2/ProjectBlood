@@ -668,10 +668,26 @@ namespace ProjectBlood
 
             // 5. 全局状态恢复（血印、升级、武器、全局数值 —— 依赖先还原 Room 环境再做事件驱动）
             Global.ImportFrom(data);
+            // 血库为纯 C# 单例，冷启动会回到默认 100/100：以存档绝对值恢复（已含强化/血印/局外养成加成）。
+            // 先恢复上限再夹取当前储量，避免当前值超过上限
+            BloodBank.Instance.MaxBloodAmount = Mathf.Max(1, data.bloodBankMax);
+            BloodBank.Instance.CurrentBloodAmount = Mathf.Clamp(data.bloodBankCurrent, 0, BloodBank.Instance.MaxBloodAmount);
             WeaponDataSystem.ImportFrom(data);
             PlayerUpgradeState.ImportFrom(data, id => UpgradeManager.Instance?.FindById(id));
             BloodSigilState.ImportFrom(data, id => BloodSigilManager.Instance?.FindById(id));
             Chest.ImportFrom(data);   // 宝箱武器掉落进度（static 字段，游戏重启后必须从存档恢复）
+
+            // 5.5 玩家侧运行时状态补应用。
+            // 时序原因：所有 Player.Awake 都早于本方法（MapController.Start），
+            // Awake 时武器列表/强化台账/血印集合都还是默认值，必须在此统一补一次：
+            //   - 移速按恢复后台账以"基线+加成"重新赋值（幂等，重复调用不叠加）
+            //   - 血印的玩家实例类效果（自动瞄准开关等）补回到新 Player
+            //   - 技能按恢复后的层数/CD 台账整理充能
+            //   - 武器实例加载恢复后的弹药数据，并静默切回存档时手持的武器
+            PlayerUpgradeState.OnPlayerSpawned();
+            BloodSigilState.OnPlayerSpawned();
+            PlayerUpgradeState.RefreshSkillChargesAfterRestore();
+            Player.player1.RestoreWeaponsAfterLoad(data.currentWeaponIndex);
 
             // 6. 地面掉落物（含血印掉落）
             RunSaveService.RestoreDrops(data);

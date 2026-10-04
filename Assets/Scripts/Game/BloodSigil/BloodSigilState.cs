@@ -530,8 +530,10 @@ namespace ProjectBlood
             }
         }
 
-        // 从存档恢复：静默重建（不触发 OnAcquire 事件、不驱动 SigilUnlocked UI），
-        // 仅还原模块状态机,激活模块的持续型结算效果由 Player 生成后调用 BloodSigilState.OnPlayerSpawned 统一补回（见 Player.Awake）
+        // 从存档恢复：静默重建（不触发 OnAcquire 事件、不驱动 SigilUnlocked UI），仅还原模块状态机。
+        // 持续型结算效果无需在此重新 OnApply：
+        //   - PersistentState 类（属性/层数/CD 等）由 Global / PlayerUpgradeState 的 ImportFrom 恢复其台账；
+        //   - PlayerInstance 类（自动瞄准等）由还原流程末尾的 BloodSigilState.OnPlayerSpawned 补回。
         public static void ImportFrom(RunSaveData data, Func<string, BloodSigilSO> soLookup)
         {
             permanentDamageBonus = data.permanentDamageBonus;
@@ -592,12 +594,13 @@ namespace ProjectBlood
 
         // ============================== 玩家生成后补回 ==============================
 
-        // 玩家场景重建后补回所有激活模块的持续型结算效果。
+        // 玩家场景重建后补回"玩家实例作用域"的激活效果（如自动瞄准开关）。
         // 场景切换/继续游戏时 Player 实例销毁重建，但 BloodSigilState 作为静态状态机存活。
-        // activeModules 里的模块在存档中已是 Active，但 Outcome 的 OnApply 只作用于 Player
-        // 的实例字段/组件；Player 重建后这些效果消失，需重新 OnApply 恢复。
-        // 与 PlayerUpgradeState.OnPlayerSpawned 同构；空上下文传 Empty，持续型 OnApply
-        // 通常不读取事件来源字段。
+        // 注意：只补 OutcomeScope.PlayerInstance 的效果——PersistentState 类效果
+        // （技能层数/CD 减免/属性修改等）写入的是静态台账与 Global 数值，
+        // 跨场景本来就存活、读档时也由 PlayerUpgradeState/Global 的 ImportFrom 恢复，
+        // 重复 OnApply 会导致每次过场景/读档无限叠加（曾出现翻滚层数每次继续游戏 +4 的事故）。
+        // 本方法对同一玩家实例调用多次是安全的：实例作用域的 OnApply 均为幂等设置。
         public static void OnPlayerSpawned()
         {
             for (int i = 0; i < activeModules.Count; i++)
@@ -608,7 +611,9 @@ namespace ProjectBlood
                 if (outcomes == null) continue;
                 for (int j = 0; j < outcomes.Count; j++)
                 {
-                    outcomes[j]?.OnApply(rt, BloodSigilFireContext.Empty);
+                    var outcome = outcomes[j];
+                    if (outcome != null && outcome.Scope == BloodSigilOutcomeSO.OutcomeScope.PlayerInstance)
+                        outcome.OnApply(rt, BloodSigilFireContext.Empty);
                 }
             }
         }

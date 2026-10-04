@@ -23,6 +23,8 @@ namespace ProjectBlood
         public int playerGridY;
         public float currentHP;
         public float maxHP;     // 对应 Global.INGAME_MAX_HP
+        public int bloodBankMax = 100;     // 血库容量（含强化/血印/局外养成加成）
+        public int bloodBankCurrent = 100; // 血库当前储量（特殊换弹/强化子弹的消耗资源）
         public int coin;
         public int level;
         public int exp;
@@ -35,6 +37,7 @@ namespace ProjectBlood
         public List<WeaponDamageSaveEntry> weaponDamageLevels = new List<WeaponDamageSaveEntry>();
         public List<WeaponDamageRatioSaveEntry> weaponDamageRatios = new List<WeaponDamageRatioSaveEntry>();
         public List<SkillCooldownSaveEntry> skillCooldownReductions = new List<SkillCooldownSaveEntry>();
+        public List<SkillMaxChargesSaveEntry> skillMaxChargesBonuses = new List<SkillMaxChargesSaveEntry>();
         public float globalDamageRatio = 1f;
         public float moveSpeedBonus;
         public List<SigilSaveEntry> sigils = new List<SigilSaveEntry>();
@@ -100,6 +103,13 @@ namespace ProjectBlood
     {
         public string skillName;    // SkillData.skillName
         public float reduction;
+    }
+
+    [Serializable]
+    public class SkillMaxChargesSaveEntry
+    {
+        public string skillName;    // SkillData.skillName
+        public int bonus;           // 最大充能层数累计加成（血印"翻滚层数变为3"等）
     }
 
     [Serializable]
