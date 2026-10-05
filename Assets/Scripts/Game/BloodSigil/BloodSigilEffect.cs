@@ -40,7 +40,7 @@ namespace ProjectBlood
         [Tooltip("多个结束条件的匹配方式：满足任一 / 必须全部满足")]
         public BloodSigilEndMatchMode endMatchMode = BloodSigilEndMatchMode.Any;
 
-        [Header("④ 触发门控")]
+        [Header("④ 触发限制")]
         [Tooltip("两次成功触发之间的最小间隔（秒）；0 = 无冷却，事件到达即可触发（现有血印默认行为）")]
         [Min(0f)] public float triggerCooldownSeconds = 0f;
 

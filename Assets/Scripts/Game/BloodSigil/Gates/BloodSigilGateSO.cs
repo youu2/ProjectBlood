@@ -31,5 +31,12 @@ namespace ProjectBlood
 
         [Tooltip("解锁血印时门控的初始状态：false=需按一下槽位键才开启（开关类血印的典型配置）")]
         public bool startEnabled = false;
+
+        [Header("生命周期（仅 ToggleKey 生效；HoldKey 为纯按住电平，不受影响）")]
+        [Tooltip("开启后的最长持续时间（秒，变身类技能）：到期自动关闭；0=无限持续，再按一次键关闭")]
+        [Min(0f)] public float activeDurationSeconds = 0f;
+
+        [Tooltip("关闭后的冷却时间（秒）：从关闭瞬间（含提前手动关闭）起算，冷却中按键无效；0=无冷却，随时可再开启")]
+        [Min(0f)] public float closeCooldownSeconds = 0f;
     }
 }

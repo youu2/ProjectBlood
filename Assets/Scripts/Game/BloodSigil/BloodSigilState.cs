@@ -53,6 +53,17 @@ namespace ProjectBlood
         // 主动血印槽位变动事件（供未来 HUD 显示"[1] xxx 开/关"）：slot 0..3=分配，-1=释放
         public static event Action<BloodSigilSO, int> ActiveSigilSlotChanged;
 
+        // 门控生命周期阶段转换事件（供 HUD 刷新；解锁/读档的静默创建不触发）
+        public static event Action<BloodSigilSO, SigilGatePhase> GatePhaseChanged;
+
+        // ---- 主动血印门控生命周期（仅 ToggleKey 类，血印级共享一个状态机） ----
+        // 三态：Ready →(按键)→ Active →(到期/再按键)→ Cooldown →(到期)→ Ready。
+        // 不持久化：继续游戏时按初始/就绪状态重建（存档不含剩余 CD/持续时间）。
+        private static readonly Dictionary<BloodSigilSO, SigilGateRuntime> gateRuntimes
+            = new Dictionary<BloodSigilSO, SigilGateRuntime>();
+        // 有限持续（Active）或冷却（Cooldown）中的门控，进 TickGates 推进；无限持续/就绪不进列表
+        private static readonly List<BloodSigilSO> timedGates = new List<BloodSigilSO>();
+
         // 献祭永久增伤台账（来源血印消失后仍保留至单局结束）
         private static float permanentDamageBonus;
 
@@ -101,6 +112,8 @@ namespace ProjectBlood
             watchedKeys.Clear();
             for (int i = 0; i < MaxActiveSigils; i++) activeSigilSlots[i] = null;
             sigilSlot.Clear();
+            gateRuntimes.Clear();
+            timedGates.Clear();
             permanentDamageBonus = 0f;
             damageImmunityCharges = 0;
             resetGeneration++;   // 允许新一局应用一次全局随机血印
@@ -263,11 +276,12 @@ namespace ProjectBlood
 
         // ============================== 每帧驱动 ==============================
 
-        // 每帧驱动：先轮询输入型条件（触发/结束/门控），再推进 Duration 计时。
-        // 暂停时两者都不执行（与武器开火的暂停策略一致）
+        // 每帧驱动：先轮询输入型条件（触发/结束/门控），再推进门控生命周期与 Duration 计时。
+        // 暂停时三者都不执行（与武器开火的暂停策略一致；TickGates 依赖 Time.time 冻结，天然暂停）
         public static void Tick(float deltaTime)
         {
             PollInput();
+            TickGates();
 
             if (deltaTime <= 0f || timedModules.Count == 0) return;
 
@@ -336,18 +350,99 @@ namespace ProjectBlood
             return false;
         }
 
-        // 翻转槽位血印的所有 ToggleKey 门控（同一血印多 gate 模块同步翻转）
+        // 翻转槽位血印的 ToggleKey 门控：三态生命周期
+        //   Ready   →按键→ Active（开启，有限持续则进 timedGates 计时）
+        //   Active  →按键→ 提前关闭 → Cooldown（closeCooldown>0）或直接 Ready（=0）
+        //   Cooldown →按键忽略
+        // 持续/冷却时长取主 gate 配置；两值均为 0 时退化为普通开关（旧行为逐字节一致）。
         private static void ToggleSlotGates(KeyCode key)
         {
             if (!TryGetSigilBySlotKey(key, out var sigil)) return;
-            if (!runtimes.TryGetValue(sigil, out var ctx)) return;
+            if (!gateRuntimes.TryGetValue(sigil, out var gr)) return; // HoldKey 门控由电平驱动，无按键生命周期
+
+            var gate = GetPrimaryGate(sigil);
+            float now = Time.time;
+            if (gr.Phase == SigilGatePhase.Active)
+            {
+                // 再按一次 = 提前结束，从关闭瞬间起算冷却
+                if (gr.Deactivate(now, gate != null ? gate.closeCooldownSeconds : 0f))
+                {
+                    SyncGateEnabled(sigil, false);
+                    if (!gr.Timed) timedGates.Remove(sigil);   // CD=0 直接回就绪，退出计时列表
+                    GatePhaseChanged?.Invoke(sigil, gr.Phase);
+                }
+            }
+            else if (gr.Phase == SigilGatePhase.Ready)
+            {
+                float duration = gate != null ? gate.activeDurationSeconds : 0f;
+                if (gr.TryActivate(now, duration))
+                {
+                    SyncGateEnabled(sigil, true);
+                    if (gr.Timed && !timedGates.Contains(sigil)) timedGates.Add(sigil);
+                    GatePhaseChanged?.Invoke(sigil, SigilGatePhase.Active);
+                }
+            }
+        }
+
+        // 门控生命周期计时：仅有限持续（Active）与冷却（Cooldown）中的血印进入本列表，
+        // 到期才发生转换，零空转；Time.time 在暂停时冻结，无需额外暂停判定
+        private static void TickGates()
+        {
+            if (timedGates.Count == 0) return;
+            float now = Time.time;
+            for (int i = timedGates.Count - 1; i >= 0; i--)
+            {
+                var sigil = timedGates[i];
+                if (!gateRuntimes.TryGetValue(sigil, out var gr))
+                {
+                    timedGates.RemoveAt(i);   // 血印已被移除/献祭，清理残留
+                    continue;
+                }
+                var gate = GetPrimaryGate(sigil);
+                if (!gr.Tick(now, gate != null ? gate.closeCooldownSeconds : 0f)) continue;
+
+                SyncGateEnabled(sigil, gr.IsEnabled);
+                if (!gr.Timed) timedGates.RemoveAt(i);   // 回到就绪（冷却结束或 CD=0）
+                GatePhaseChanged?.Invoke(sigil, gr.Phase);
+            }
+        }
+
+        // 主 gate 配置：该血印第一个挂 gate 的模块（与"主动血印单 gate 模块"约定配套）
+        private static BloodSigilGateSO GetPrimaryGate(BloodSigilSO so)
+        {
+            if (so == null || so.effects == null) return null;
+            for (int i = 0; i < so.effects.Count; i++)
+            {
+                var e = so.effects[i];
+                if (e != null && e.gate != null) return e.gate;
+            }
+            return null;
+        }
+
+        // 生命周期阶段统一向下同步到该血印所有 gate 模块的 GateEnabled
+        // （Fire 资格判定仍读模块状态，引擎判定路径零改动）
+        private static void SyncGateEnabled(BloodSigilSO so, bool enabled)
+        {
+            if (!runtimes.TryGetValue(so, out var ctx)) return;
             for (int i = 0; i < ctx.Modules.Count; i++)
             {
-                var rt = ctx.Modules[i];
-                if (rt.Module.gate != null && rt.Module.gate.gateType == BloodSigilGateType.ToggleKey)
-                {
-                    rt.GateEnabled = !rt.GateEnabled;
-                }
+                if (ctx.Modules[i].Module.gate != null) ctx.Modules[i].GateEnabled = enabled;
+            }
+        }
+
+        // 创建门控生命周期状态机（解锁/读档时调用，静默不发事件）：
+        // 仅 ToggleKey 类主 gate 创建；startEnabled=true 直接进入 Active（无限或有限持续）
+        private static void CreateGateRuntime(BloodSigilSO so)
+        {
+            var gate = GetPrimaryGate(so);
+            if (gate == null || gate.gateType != BloodSigilGateType.ToggleKey) return;
+
+            var gr = new SigilGateRuntime();
+            gateRuntimes[so] = gr;
+            if (gate.startEnabled && gr.TryActivate(Time.time, gate.activeDurationSeconds))
+            {
+                SyncGateEnabled(so, true);
+                if (gr.Timed && !timedGates.Contains(so)) timedGates.Add(so);
             }
         }
 
@@ -461,6 +556,30 @@ namespace ProjectBlood
         public static KeyCode GetSlotKey(int slot)
             => (slot >= 0 && slot < MaxActiveSigils) ? slotKeys[slot] : KeyCode.None;
 
+        // ============================== 门控 HUD 查询 ==============================
+
+        // 门控生命周期 HUD 快照：一次取齐阶段、使能态与当前阶段的总/剩余时长
+        public struct SigilGateHud
+        {
+            public SigilGatePhase Phase;   // 就绪 / 持续中 / 冷却中
+            public bool Enabled;           // 门控当前使能（仅 Active 为 true）
+            public float PhaseTotal;       // 当前阶段总时长（无限持续/就绪为 0）
+            public float PhaseRemaining;   // 当前阶段剩余秒数（无计时段为 0）
+        }
+
+        // 按槽位取主动血印的门控 HUD 数据；空槽/非 ToggleKey 主动血印返回 false
+        public static bool TryGetGateHudAtSlot(int slot, out SigilGateHud hud)
+        {
+            hud = default;
+            var sigil = GetSigilAtSlot(slot);
+            if (sigil == null || !gateRuntimes.TryGetValue(sigil, out var gr)) return false;
+            hud.Phase = gr.Phase;
+            hud.Enabled = gr.IsEnabled;
+            hud.PhaseTotal = gr.PhaseTotal;
+            hud.PhaseRemaining = gr.GetRemaining(Time.time);
+            return true;
+        }
+
         // 分配最低空槽（槽位不压缩）；已满返回 -1
         private static int AllocateSlot(BloodSigilSO so)
         {
@@ -509,8 +628,13 @@ namespace ProjectBlood
             unlocked.Add(so);
             runtimes[so] = ctx;
 
-            // 主动血印：按获取顺序分配数字键槽位
-            if (isActive) AllocateSlot(so);
+            // 主动血印：按获取顺序分配数字键槽位，并创建门控生命周期状态机
+            //（startEnabled=true 时立即进入 Active，保证 OnAcquire 模块能通过门控资格）
+            if (isActive)
+            {
+                AllocateSlot(so);
+                CreateGateRuntime(so);
+            }
 
             // OnAcquire 型模块在解锁时立即触发（常驻效果）
             var acquireCtx = new BloodSigilFireContext { TriggerType = BloodSigilTriggerType.OnAcquire };
@@ -556,6 +680,8 @@ namespace ProjectBlood
             }
             unlocked.Remove(so);
             ReleaseSlot(so);   // 槽位释放但不压缩，新主动血印可填入该空槽
+            gateRuntimes.Remove(so);
+            timedGates.Remove(so);
             RebuildWatchedKeys();
         }
 
@@ -590,6 +716,8 @@ namespace ProjectBlood
             }
             unlocked.Remove(so);
             ReleaseSlot(so);
+            gateRuntimes.Remove(so);
+            timedGates.Remove(so);
             RebuildWatchedKeys();
         }
 
@@ -619,7 +747,6 @@ namespace ProjectBlood
                         triggerLatched = rt.TriggerLatched,
                         endRemaining = rt.EndRemaining,
                         endLatched = rt.EndLatched,
-                        gateEnabled = rt.GateEnabled,
                     });
                 }
                 data.sigils.Add(entry);
@@ -675,9 +802,14 @@ namespace ProjectBlood
                         activeModules.Add(rt);
                         if (HasDurationEnd(rt.Module)) timedModules.Add(rt);
                     }
-                    // 恢复门控开关状态（无 gate 模块此值不参与判定，赋值无副作用）
-                    rt.GateEnabled = saved.gateEnabled;
                 }
+            }
+
+            // 主动血印门控生命周期：不持久化（不存剩余持续/CD），统一按初始状态重建——
+            // startEnabled=false 的开关类门控还原为就绪态，startEnabled=true 还原为开启态
+            foreach (var sigil in unlocked)
+            {
+                if (IsActiveSigil(sigil)) CreateGateRuntime(sigil);
             }
 
             RestoreSlots(data, soLookup);

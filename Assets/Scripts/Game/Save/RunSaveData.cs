@@ -131,7 +131,7 @@ namespace ProjectBlood
         public bool triggerLatched; // 边沿触发锁存
         public float[] endRemaining;    // 各结束条件剩余秒数
         public bool[] endLatched;       // 各结束条件事件锁存
-        public bool gateEnabled;        // 门控当前使能态（主动血印开关状态）
+        // 注：门控开关状态不持久化（生命周期不存档，继续游戏按初始/就绪状态还原）
     }
 
     [Serializable]
