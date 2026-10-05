@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ff06131771f55c4a872ab69b73d01cc, type: 3}
   m_Name: Switch
   m_EditorClassIdentifier: 
-  gateType: 0
-  watchKeys: 71000000
   startEnabled: 0
+  activeDurationSeconds: 3
+  closeCooldownSeconds: 3

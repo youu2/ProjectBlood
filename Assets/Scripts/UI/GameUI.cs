@@ -224,6 +224,7 @@ namespace ProjectBlood
             GUIInstance.SkillText.Hide();
             GUIInstance.PlayerLevelText.Hide();
             GUIInstance.HealthBar.Hide();
+            BloodSigilSlotHUD.HideAll();
             Global.ResetBossState();
             if (Player.player1 != null) Player.player1.ShieldSprite.Hide();
         }
@@ -244,6 +245,7 @@ namespace ProjectBlood
             GUIInstance.SkillText.Show();
             GUIInstance.PlayerLevelText.Show();
             GUIInstance.HealthBar.Show();
+            BloodSigilSlotHUD.RestoreVisibility();
             if (Player.player1 != null) Player.player1.ShieldSprite.Show();
         }
 
