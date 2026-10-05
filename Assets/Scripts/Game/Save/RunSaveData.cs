@@ -41,6 +41,9 @@ namespace ProjectBlood
         public float globalDamageRatio = 1f;
         public float moveSpeedBonus;
         public List<SigilSaveEntry> sigils = new List<SigilSaveEntry>();
+        // 主动血印槽位表（固定长度 4，对应数字键 1~4；空槽为空字符串）。
+        // 按槽位位置持久化，继续游戏后槽位不重新排列；旧存档无此字段时自动补分槽。
+        public List<string> activeSigilSlotIds = new List<string>();
         public float permanentDamageBonus;      // 献祭永久增伤台账
         public int damageImmunityCharges;       // "免疫下一次伤害"充能
         public float runElapsedSeconds;
@@ -128,6 +131,7 @@ namespace ProjectBlood
         public bool triggerLatched; // 边沿触发锁存
         public float[] endRemaining;    // 各结束条件剩余秒数
         public bool[] endLatched;       // 各结束条件事件锁存
+        public bool gateEnabled;        // 门控当前使能态（主动血印开关状态）
     }
 
     [Serializable]

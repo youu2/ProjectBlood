@@ -501,32 +501,9 @@ namespace ProjectBlood
             GameUI.UpdateBloodText();
 
             // 切枪（主菜单仅展示初始武器 DE，禁用一切切枪输入）
+            // 数字键 1~4 已划归主动血印开关槽位；武器切换仅保留鼠标滚轮循环
             if (!inMainMenu)
             {
-                if (Input.GetKeyDown(KeyCode.Alpha1) && !Global.IsGamePaused)
-                {
-                    UseWeapon(0);
-                }
-                if (Input.GetKeyDown(KeyCode.Alpha2) && !Global.IsGamePaused)
-                {
-                    UseWeapon(1);
-                }
-                if (Input.GetKeyDown(KeyCode.Alpha3) && !Global.IsGamePaused)
-                {
-                    UseWeapon(2);
-                }
-                if (Input.GetKeyDown(KeyCode.Alpha4) && !Global.IsGamePaused)
-                {
-                    UseWeapon(3);
-                }
-                if (Input.GetKeyDown(KeyCode.Alpha5) && !Global.IsGamePaused)
-                {
-                    UseWeapon(4);
-                }
-                if (Input.GetKeyDown(KeyCode.Alpha6) && !Global.IsGamePaused)
-                {
-                    UseWeapon(5);
-                }
                 if (Input.mouseScrollDelta.y > 0 && !Global.IsGamePaused) // 鼠标滚轮向上滚动切换到上一个武器
                 {
                     // 使用模运算实现循环切换武器

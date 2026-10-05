@@ -33,9 +33,15 @@ namespace ProjectBlood
         }
 
         // 从池中按 dropWeight 加权随机抽取一个未解锁的血印。
-        // 过滤：非空、isInPool、未解锁。池空时返回 null（调用方回落旧掉落）。
+        // 过滤：非空、isInPool、未解锁、dropWeight>0；
+        // 容量过滤：血印总数满 10 返回 null（调用方回落旧掉落）；
+        //           主动血印（挂 gate）满 4 后从候选中剔除，只掉被动血印。
         public BloodSigilSO GetRandomSigil()
         {
+            if (BloodSigilState.UnlockedCount >= BloodSigilState.MaxSigils) return null;
+
+            bool activeFull = BloodSigilState.ActiveSigilCount >= BloodSigilState.MaxActiveSigils;
+
             var available = new List<BloodSigilSO>();
             int totalWeight = 0;
             foreach (var sigil in sigilPool)
@@ -43,6 +49,7 @@ namespace ProjectBlood
                 if (sigil == null || !sigil.isInPool) continue;
                 if (BloodSigilState.IsUnlocked(sigil)) continue;
                 if (sigil.dropWeight <= 0) continue;
+                if (activeFull && BloodSigilState.IsActiveSigil(sigil)) continue;
                 available.Add(sigil);
                 totalWeight += sigil.dropWeight;
             }

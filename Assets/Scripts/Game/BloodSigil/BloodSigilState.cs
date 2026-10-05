@@ -34,6 +34,25 @@ namespace ProjectBlood
         // 每帧只轮询这些键，不做全键盘扫描；在解锁/移除/读档后增量重建（低频操作，全量扫描即可）。
         private static readonly HashSet<KeyCode> watchedKeys = new HashSet<KeyCode>();
 
+        // ---- 主动血印槽位注册表 ----
+        // 主动血印 = 任一模块挂了 gate 的血印。按获取顺序自动分配数字键槽位（1~4），
+        // 移除/献祭后槽位释放但不压缩（已有槽位含义不变，新主动血印填最低空槽）。
+        public const int MaxSigils = 10;        // 血印装备总数上限（含主动+被动）
+        public const int MaxActiveSigils = 4;   // 主动血印上限（对应数字键 1~4）
+
+        private static readonly KeyCode[] slotKeys =
+        {
+            KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3, KeyCode.Alpha4,
+        };
+        // 索引 0..3 对应数字键 1~4；null=空槽
+        private static readonly BloodSigilSO[] activeSigilSlots = new BloodSigilSO[MaxActiveSigils];
+        // 血印 → 槽位索引反查
+        private static readonly Dictionary<BloodSigilSO, int> sigilSlot
+            = new Dictionary<BloodSigilSO, int>();
+
+        // 主动血印槽位变动事件（供未来 HUD 显示"[1] xxx 开/关"）：slot 0..3=分配，-1=释放
+        public static event Action<BloodSigilSO, int> ActiveSigilSlotChanged;
+
         // 献祭永久增伤台账（来源血印消失后仍保留至单局结束）
         private static float permanentDamageBonus;
 
@@ -80,6 +99,8 @@ namespace ProjectBlood
             activeModules.Clear();
             timedModules.Clear();
             watchedKeys.Clear();
+            for (int i = 0; i < MaxActiveSigils; i++) activeSigilSlots[i] = null;
+            sigilSlot.Clear();
             permanentDamageBonus = 0f;
             damageImmunityCharges = 0;
             resetGeneration++;   // 允许新一局应用一次全局随机血印
@@ -263,11 +284,11 @@ namespace ProjectBlood
 
         // ============================== 输入轮询（按键触发/结束/门控） ==============================
 
-        // 每帧对已解锁模块实际监听的键采样：
-        //   GetKeyDown → 翻转 ToggleKey 门控 + 派发 KeyPress 触发事件
-        //   GetKey     → 派发 KeyHold 触发事件（电平，配合模块触发CD做周期触发）
-        //   GetKeyUp   → 派发 KeyRelease 触发事件 + 评估 InputRelease 结束条件 + 复位 HoldKey 门控
-        // 门控翻转与事件分发顺序：同帧同键先翻转门控再分发，便于"一键开关自身触发"类配置。
+        // 每帧对实际监听的键采样（触发/结束条件的 watchKeys + 已占用主动血印槽位键）：
+        //   GetKeyDown → 翻转槽位 ToggleKey 门控 + 派发 KeyPress 触发事件
+        //   GetKey     → 派发 KeyHold 触发事件 + 按住槽位 HoldKey 门控
+        //   GetKeyUp   → 派发 KeyRelease 触发事件 + 评估 InputRelease 结束条件 + 释放 HoldKey 门控
+        // 门控处理与事件分发顺序：同帧同键先处理门控再分发，便于"一键开关自身触发"类配置。
         private static void PollInput()
         {
             if (watchedKeys.Count == 0 || Global.IsGamePaused) return;
@@ -276,18 +297,19 @@ namespace ProjectBlood
             {
                 if (Input.GetKeyDown(key))
                 {
-                    ToggleGates(key);
+                    ToggleSlotGates(key);
                     DispatchKeyEvent(BloodSigilTriggerType.KeyPress, key);
                 }
                 if (Input.GetKey(key))
                 {
                     DispatchKeyEvent(BloodSigilTriggerType.KeyHold, key);
+                    ApplyHoldSlotGates(key, true);
                 }
                 if (Input.GetKeyUp(key))
                 {
                     DispatchKeyEvent(BloodSigilTriggerType.KeyRelease, key);
                     LatchKeyReleaseAndEnd(key);
-                    ReleaseHoldGates(key);
+                    ApplyHoldSlotGates(key, false);
                 }
             }
         }
@@ -299,45 +321,47 @@ namespace ProjectBlood
                 PressedKey = key,
             });
 
-        // 翻转所有监听该键的 ToggleKey 门控
-        private static void ToggleGates(KeyCode key)
+        // 槽位键 → 该槽主动血印；非槽位键/空槽返回 false
+        private static bool TryGetSigilBySlotKey(KeyCode key, out BloodSigilSO sigil)
         {
-            foreach (var runtime in runtimes.Values)
+            for (int i = 0; i < MaxActiveSigils; i++)
             {
-                for (int i = 0; i < runtime.Modules.Count; i++)
+                if (slotKeys[i] == key)
                 {
-                    var rt = runtime.Modules[i];
-                    var gate = rt.Module.gate;
-                    if (gate != null
-                        && gate.gateType == BloodSigilGateType.ToggleKey
-                        && gate.IsWatchingKey(key))
-                    {
-                        rt.GateEnabled = !rt.GateEnabled;
-                    }
+                    sigil = activeSigilSlots[i];
+                    return sigil != null;
+                }
+            }
+            sigil = null;
+            return false;
+        }
+
+        // 翻转槽位血印的所有 ToggleKey 门控（同一血印多 gate 模块同步翻转）
+        private static void ToggleSlotGates(KeyCode key)
+        {
+            if (!TryGetSigilBySlotKey(key, out var sigil)) return;
+            if (!runtimes.TryGetValue(sigil, out var ctx)) return;
+            for (int i = 0; i < ctx.Modules.Count; i++)
+            {
+                var rt = ctx.Modules[i];
+                if (rt.Module.gate != null && rt.Module.gate.gateType == BloodSigilGateType.ToggleKey)
+                {
+                    rt.GateEnabled = !rt.GateEnabled;
                 }
             }
         }
 
-        // HoldKey 门控：任一监听键松开后重新计算（仍有其他键按住则保持使能）
-        private static void ReleaseHoldGates(KeyCode key)
+        // 槽位键电平直接映射 HoldKey 门控（一个血印只有一个槽位键，无需多键任意按住计算）
+        private static void ApplyHoldSlotGates(KeyCode key, bool held)
         {
-            foreach (var runtime in runtimes.Values)
+            if (!TryGetSigilBySlotKey(key, out var sigil)) return;
+            if (!runtimes.TryGetValue(sigil, out var ctx)) return;
+            for (int i = 0; i < ctx.Modules.Count; i++)
             {
-                for (int i = 0; i < runtime.Modules.Count; i++)
+                var rt = ctx.Modules[i];
+                if (rt.Module.gate != null && rt.Module.gate.gateType == BloodSigilGateType.HoldKey)
                 {
-                    var rt = runtime.Modules[i];
-                    var gate = rt.Module.gate;
-                    if (gate == null || gate.gateType != BloodSigilGateType.HoldKey) continue;
-
-                    bool anyHeld = false;
-                    if (gate.watchKeys != null)
-                    {
-                        for (int k = 0; k < gate.watchKeys.Count; k++)
-                        {
-                            if (Input.GetKey(gate.watchKeys[k])) { anyHeld = true; break; }
-                        }
-                    }
-                    rt.GateEnabled = anyHeld;
+                    rt.GateEnabled = held;
                 }
             }
         }
@@ -357,7 +381,8 @@ namespace ProjectBlood
             }
         }
 
-        // 重建监听键并集（解锁/移除/献祭/读档后调用；低频，直接全量扫描）
+        // 重建监听键并集（解锁/移除/献祭/读档后调用；低频，直接全量扫描）。
+        // 来源：触发器/结束条件上配置的 watchKeys（任意键）+ 已占用主动血印槽位键（1~4）
         private static void RebuildWatchedKeys()
         {
             watchedKeys.Clear();
@@ -388,13 +413,13 @@ namespace ProjectBlood
                             }
                         }
                     }
-
-                    var gate = rt.Module.gate;
-                    if (gate != null && gate.watchKeys != null)
-                    {
-                        foreach (var k in gate.watchKeys) watchedKeys.Add(k);
-                    }
                 }
+            }
+
+            // 已占用槽位键加入轮询（空槽不监听）
+            for (int i = 0; i < MaxActiveSigils; i++)
+            {
+                if (activeSigilSlots[i] != null) watchedKeys.Add(slotKeys[i]);
             }
         }
 
@@ -411,13 +436,81 @@ namespace ProjectBlood
 
         public static int UnlockedCount => unlocked.Count;
 
+        // 当前已装备的主动血印数（占用槽位数）
+        public static int ActiveSigilCount => sigilSlot.Count;
+
+        // 主动血印判定：任一效果模块挂了 gate
+        public static bool IsActiveSigil(BloodSigilSO so)
+        {
+            if (so == null || so.effects == null) return false;
+            for (int i = 0; i < so.effects.Count; i++)
+            {
+                if (so.effects[i] != null && so.effects[i].gate != null) return true;
+            }
+            return false;
+        }
+
+        // 查询主动血印槽位（供 HUD）：未装备返回 false
+        public static bool TryGetActiveSlot(BloodSigilSO so, out int slot)
+            => sigilSlot.TryGetValue(so, out slot);
+
+        public static BloodSigilSO GetSigilAtSlot(int slot)
+            => (slot >= 0 && slot < MaxActiveSigils) ? activeSigilSlots[slot] : null;
+
+        // 槽位对应的开关按键（供 HUD 显示 1~4）
+        public static KeyCode GetSlotKey(int slot)
+            => (slot >= 0 && slot < MaxActiveSigils) ? slotKeys[slot] : KeyCode.None;
+
+        // 分配最低空槽（槽位不压缩）；已满返回 -1
+        private static int AllocateSlot(BloodSigilSO so)
+        {
+            for (int i = 0; i < MaxActiveSigils; i++)
+            {
+                if (activeSigilSlots[i] == null)
+                {
+                    activeSigilSlots[i] = so;
+                    sigilSlot[so] = i;
+                    ActiveSigilSlotChanged?.Invoke(so, i);
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        // 释放槽位（不压缩其他槽位）
+        private static void ReleaseSlot(BloodSigilSO so)
+        {
+            if (sigilSlot.TryGetValue(so, out int slot))
+            {
+                activeSigilSlots[slot] = null;
+                sigilSlot.Remove(so);
+                ActiveSigilSlotChanged?.Invoke(so, -1);
+            }
+        }
+
         public static bool Unlock(BloodSigilSO so)
         {
             if (so == null || unlocked.Contains(so)) return false;
 
+            // 容量防线（掉落池已先行过滤，这里兜底任何解锁途径）
+            if (unlocked.Count >= MaxSigils)
+            {
+                Debug.LogWarning($"[BloodSigil] 血印装备已达上限 {MaxSigils}，无法再解锁 {so.name}");
+                return false;
+            }
+            bool isActive = IsActiveSigil(so);
+            if (isActive && sigilSlot.Count >= MaxActiveSigils)
+            {
+                Debug.LogWarning($"[BloodSigil] 主动血印已达上限 {MaxActiveSigils}，无法再解锁 {so.name}");
+                return false;
+            }
+
             var ctx = new BloodSigilRuntimeContext(so);
             unlocked.Add(so);
             runtimes[so] = ctx;
+
+            // 主动血印：按获取顺序分配数字键槽位
+            if (isActive) AllocateSlot(so);
 
             // OnAcquire 型模块在解锁时立即触发（常驻效果）
             var acquireCtx = new BloodSigilFireContext { TriggerType = BloodSigilTriggerType.OnAcquire };
@@ -462,6 +555,7 @@ namespace ProjectBlood
                 runtimes.Remove(so);
             }
             unlocked.Remove(so);
+            ReleaseSlot(so);   // 槽位释放但不压缩，新主动血印可填入该空槽
             RebuildWatchedKeys();
         }
 
@@ -495,6 +589,7 @@ namespace ProjectBlood
                 runtimes.Remove(so);
             }
             unlocked.Remove(so);
+            ReleaseSlot(so);
             RebuildWatchedKeys();
         }
 
@@ -524,9 +619,18 @@ namespace ProjectBlood
                         triggerLatched = rt.TriggerLatched,
                         endRemaining = rt.EndRemaining,
                         endLatched = rt.EndLatched,
+                        gateEnabled = rt.GateEnabled,
                     });
                 }
                 data.sigils.Add(entry);
+            }
+
+            // 槽位表按位置导出（固定长度 4，空槽为空字符串）
+            data.activeSigilSlotIds = new List<string>(MaxActiveSigils);
+            for (int i = 0; i < MaxActiveSigils; i++)
+            {
+                var s = activeSigilSlots[i];
+                data.activeSigilSlotIds.Add(s == null ? string.Empty : (string.IsNullOrEmpty(s.id) ? s.name : s.id));
             }
         }
 
@@ -571,11 +675,32 @@ namespace ProjectBlood
                         activeModules.Add(rt);
                         if (HasDurationEnd(rt.Module)) timedModules.Add(rt);
                     }
-                    // 门控使能态不持久化：沿用构造函数按 gate.startEnabled 的初始化（新局复位语义）
+                    // 恢复门控开关状态（无 gate 模块此值不参与判定，赋值无副作用）
+                    rt.GateEnabled = saved.gateEnabled;
                 }
             }
 
+            RestoreSlots(data, soLookup);
+
             RebuildWatchedKeys();
+        }
+
+        // 恢复主动血印槽位（静默，不发槽位事件，与 ImportFrom 整体语义一致）：
+        // 按存档位置恢复，资产缺失/未解锁/非主动血印的槽位留空，不压缩。
+        // 旧档（无槽位表字段）主动血印无槽位可开关，需新开一局。
+        private static void RestoreSlots(RunSaveData data, Func<string, BloodSigilSO> soLookup)
+        {
+            if (data.activeSigilSlotIds == null || data.activeSigilSlotIds.Count != MaxActiveSigils) return;
+
+            for (int i = 0; i < MaxActiveSigils; i++)
+            {
+                var id = data.activeSigilSlotIds[i];
+                if (string.IsNullOrEmpty(id)) continue;
+                var sigil = soLookup?.Invoke(id);
+                if (sigil == null || !unlocked.Contains(sigil) || !IsActiveSigil(sigil)) continue;
+                activeSigilSlots[i] = sigil;
+                sigilSlot[sigil] = i;
+            }
         }
 
         public static void AddDamageImmunityCharges(int charges)
