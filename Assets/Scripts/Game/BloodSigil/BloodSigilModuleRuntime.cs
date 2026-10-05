@@ -29,7 +29,7 @@ namespace ProjectBlood
         public bool TriggerLatched { get; set; }
 
         // 启用门控（第五要素）当前使能状态：无门控模块恒为 true；
-        // ToggleKey 由按键翻转，HoldKey 由按住状态驱动；解锁时按 gate.startEnabled 初始化
+        // 有门控由血印级生命周期状态机同步（按键开启/持续到期/冷却关闭）；解锁时按 gate.startEnabled 初始化
         public bool GateEnabled { get; set; } = true;
 
         // 结束条件运行时状态（与 Module.endConditions 按索引一一对应；null 表示该条件无需计时）

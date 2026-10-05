@@ -299,9 +299,9 @@ namespace ProjectBlood
         // ============================== 输入轮询（按键触发/结束/门控） ==============================
 
         // 每帧对实际监听的键采样（触发/结束条件的 watchKeys + 已占用主动血印槽位键）：
-        //   GetKeyDown → 翻转槽位 ToggleKey 门控 + 派发 KeyPress 触发事件
-        //   GetKey     → 派发 KeyHold 触发事件 + 按住槽位 HoldKey 门控
-        //   GetKeyUp   → 派发 KeyRelease 触发事件 + 评估 InputRelease 结束条件 + 释放 HoldKey 门控
+        //   GetKeyDown → 翻转槽位门控（Ready/Active/Cooldown 生命周期）+ 派发 KeyPress 触发事件
+        //   GetKey     → 派发 KeyHold 触发事件（供"按住触发"类模块使用，与门控无关）
+        //   GetKeyUp   → 派发 KeyRelease 触发事件 + 评估 InputRelease 结束条件
         // 门控处理与事件分发顺序：同帧同键先处理门控再分发，便于"一键开关自身触发"类配置。
         private static void PollInput()
         {
@@ -317,13 +317,11 @@ namespace ProjectBlood
                 if (Input.GetKey(key))
                 {
                     DispatchKeyEvent(BloodSigilTriggerType.KeyHold, key);
-                    ApplyHoldSlotGates(key, true);
                 }
                 if (Input.GetKeyUp(key))
                 {
                     DispatchKeyEvent(BloodSigilTriggerType.KeyRelease, key);
                     LatchKeyReleaseAndEnd(key);
-                    ApplyHoldSlotGates(key, false);
                 }
             }
         }
@@ -358,7 +356,7 @@ namespace ProjectBlood
         private static void ToggleSlotGates(KeyCode key)
         {
             if (!TryGetSigilBySlotKey(key, out var sigil)) return;
-            if (!gateRuntimes.TryGetValue(sigil, out var gr)) return; // HoldKey 门控由电平驱动，无按键生命周期
+            if (!gateRuntimes.TryGetValue(sigil, out var gr)) return; // 理论不可达（主动血印必有状态机），防御性返回
 
             var gate = GetPrimaryGate(sigil);
             float now = Time.time;
@@ -431,11 +429,11 @@ namespace ProjectBlood
         }
 
         // 创建门控生命周期状态机（解锁/读档时调用，静默不发事件）：
-        // 仅 ToggleKey 类主 gate 创建；startEnabled=true 直接进入 Active（无限或有限持续）
+        // startEnabled=true 直接进入 Active（无限或有限持续）
         private static void CreateGateRuntime(BloodSigilSO so)
         {
             var gate = GetPrimaryGate(so);
-            if (gate == null || gate.gateType != BloodSigilGateType.ToggleKey) return;
+            if (gate == null) return;
 
             var gr = new SigilGateRuntime();
             gateRuntimes[so] = gr;
@@ -443,21 +441,6 @@ namespace ProjectBlood
             {
                 SyncGateEnabled(so, true);
                 if (gr.Timed && !timedGates.Contains(so)) timedGates.Add(so);
-            }
-        }
-
-        // 槽位键电平直接映射 HoldKey 门控（一个血印只有一个槽位键，无需多键任意按住计算）
-        private static void ApplyHoldSlotGates(KeyCode key, bool held)
-        {
-            if (!TryGetSigilBySlotKey(key, out var sigil)) return;
-            if (!runtimes.TryGetValue(sigil, out var ctx)) return;
-            for (int i = 0; i < ctx.Modules.Count; i++)
-            {
-                var rt = ctx.Modules[i];
-                if (rt.Module.gate != null && rt.Module.gate.gateType == BloodSigilGateType.HoldKey)
-                {
-                    rt.GateEnabled = held;
-                }
             }
         }
 
