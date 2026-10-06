@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using QFramework;
 using UnityEngine;
 
@@ -19,6 +20,51 @@ namespace ProjectBlood
 
         private bool initialized;
 
+        // ===== 循环音效暂停/恢复 =====
+        // timeScale=0 不影响 AudioSource（音频按实时时钟播放），暂停时循环音会继续响。
+        // 所有循环音统一经 PlayLoop 登记：进入暂停时快照并 Pause，恢复时仅续播仍有效的快照项。
+        private readonly HashSet<AudioPlayer> activeLoops = new HashSet<AudioPlayer>();
+        private readonly List<AudioPlayer> pausedLoops = new List<AudioPlayer>();
+
+        private void HandleGamePausedChanged(bool paused)
+        {
+            if (paused)
+            {
+                // 只暂停"暂停前就在响"的循环音，快照供恢复时使用
+                pausedLoops.Clear();
+                foreach (var player in activeLoops)
+                {
+                    if (player == null || player.IsRecycled) continue;
+                    player.Pause();
+                    pausedLoops.Add(player);
+                }
+            }
+            else
+            {
+                // 暂停期间被停止（松键停火/实体销毁/场景加载）的循环音已移出 activeLoops，不再恢复
+                foreach (var player in pausedLoops)
+                {
+                    if (player != null && !player.IsRecycled && activeLoops.Contains(player))
+                    {
+                        player.Resume();
+                    }
+                }
+                pausedLoops.Clear();
+            }
+        }
+
+        // 登记一个新播放的循环音；暂停期间播放（正常不会发生，开火输入已被拦截）时立即暂停并入快照
+        private void RegisterLoop(AudioPlayer player)
+        {
+            if (player == null) return;
+            activeLoops.Add(player);
+            if (Global.IsGamePaused)
+            {
+                player.Pause();
+                if (!pausedLoops.Contains(player)) pausedLoops.Add(player);
+            }
+        }
+
         public void Init()
         {
             // 幂等保护：音量监听注册在常驻的静态 BindableProperty 上，重复 Init 会导致重复注册
@@ -33,6 +79,10 @@ namespace ProjectBlood
                 return;
             }
             initialized = true;
+
+            // 订阅游戏暂停边沿事件：Esc 暂停页/关卡加载/过场/死亡与结算面板/主菜单养成等
+            // 全部经 Global.IsGamePaused 收口，一处订阅覆盖所有时间停止场景
+            Global.OnGamePausedChanged += HandleGamePausedChanged;
 
             // 从 PlayerPrefs 加载音量比例
             if (PlayerPrefs.HasKey("GlobalVolumeRatio"))
@@ -84,12 +134,18 @@ namespace ProjectBlood
 
         public AudioPlayer PlayLoop(AudioClip clip, float volume = 1f)
         {
-            return clip != null ? AudioKit.PlaySound(clip, loop: true, volume: volume) : null;
+            if (clip == null) return null;
+            var player = AudioKit.PlaySound(clip, loop: true, volume: volume);
+            RegisterLoop(player);
+            return player;
         }
 
         public AudioPlayer PlayLoop(string clipName, float volume = 1f)
         {
-            return !string.IsNullOrEmpty(clipName) ? AudioKit.PlaySound(clipName, loop: true, volume: volume) : null;
+            if (string.IsNullOrEmpty(clipName)) return null;
+            var player = AudioKit.PlaySound(clipName, loop: true, volume: volume);
+            RegisterLoop(player);
+            return player;
         }
 
         public void PlayMusic(AudioClip music, float volume = 1f)
@@ -129,7 +185,11 @@ namespace ProjectBlood
         // 停止指定的音频播放器
         public void Stop(AudioPlayer player)
         {
-            player?.Stop();
+            if (player == null) return;
+            // 同步移出循环音登记与暂停快照，保证恢复时不会复活已停的循环音
+            activeLoops.Remove(player);
+            pausedLoops.Remove(player);
+            player.Stop();
         }
         public void StopMusic()
         {

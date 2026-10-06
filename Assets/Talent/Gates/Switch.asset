@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Switch
   m_EditorClassIdentifier: 
   startEnabled: 0
-  activeDurationSeconds: 3
-  closeCooldownSeconds: 3
+  activeDurationSeconds: 10
+  closeCooldownSeconds: 8

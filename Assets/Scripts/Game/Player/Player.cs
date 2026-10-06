@@ -21,6 +21,10 @@ namespace ProjectBlood
         private Vector2 smoothAimDir; // 平滑过渡后的瞄准方向(单位向量)
         private float firstReloadTime; // 首次按下R键的时间
         private bool isSpecialReloadTriggered; // 是否已经触发了特殊换弹
+        // 开火键逻辑状态：按下置位，松开/进入暂停清零。
+        // 不用 Input.GetMouseButton 直判：暂停视为"自动松开开火键"，
+        // 恢复后即使物理按键仍按住也不继续开火，必须重新按下
+        private bool isFireHeld;
         private Coroutine specialReloadCoroutine; // 特殊换弹协程
         private const float specialReloadWindow = 2f; // 双击R的时间窗口(秒)
         private const float specialReloadDelay = 3f; // 特殊换弹延迟时间(秒)
@@ -317,6 +321,25 @@ namespace ProjectBlood
             }
         }
 
+        private void OnEnable()
+        {
+            Global.OnGamePausedChanged += HandleGamePausedChanged;
+        }
+
+        private void OnDisable()
+        {
+            Global.OnGamePausedChanged -= HandleGamePausedChanged;
+        }
+
+        // 暂停 = 自动松开开火键：进入暂停瞬间立即停火（循环开火音/激光视觉一并清理），
+        // 并清零开火键逻辑状态，恢复后需重新按下开火键才会继续射击
+        private void HandleGamePausedChanged(bool paused)
+        {
+            if (!paused) return;
+            isFireHeld = false;
+            currentWeapon?.StopAttacking();
+        }
+
         public void TakeDamage(float damage)    // 玩家受到伤害
         {
             // 暂停/场景加载期间免伤：timeScale=0 已冻结物理碰撞，
@@ -369,6 +392,11 @@ namespace ProjectBlood
 
         private void Death()
         {
+            // 死亡瞬间立即停止武器开火：玩家被击杀时通常仍按住左键，死亡后 Update 不再执行、
+            // 鼠标抬起事件也无法送达，需在此显式停掉 MP5/AK/Laser 的循环开火音（含停火尾音与激光视觉清理）；
+            // 即使遗漏，武器随玩家销毁时 AutomaticWeapon.OnDestroy 也会兜底停音。
+            currentWeapon?.StopAttacking();
+
             LegacyUpgradeState.SettleFromRun(Global.Level.Value);
             RunSaveService.DeleteSave();    // 永久死亡：删除本局存档
             AudioKitManager.Instance.PlayOneShot("WilhelmScream");
@@ -450,6 +478,7 @@ namespace ProjectBlood
             //鼠标左键射击(朝平滑后的瞄准方向)
             if (Input.GetMouseButtonDown(0) && playerBullet != null && !Global.IsGamePaused && !pointerOverUI)
             {
+                isFireHeld = true;
                 if (isSpecialReloadTriggered && specialReloadCoroutine != null)
                 {
                     StopCoroutine(specialReloadCoroutine);
@@ -458,8 +487,8 @@ namespace ProjectBlood
                 }
                 currentWeapon.StartAttacking();
             }
-            //限制为固定射速
-            if (Input.GetMouseButton(0) && playerBullet != null && !Global.IsGamePaused && !pointerOverUI)
+            //限制为固定射速；isFireHeld 代替 GetMouseButton 直判（暂停后按住不续火）
+            if (isFireHeld && playerBullet != null && !Global.IsGamePaused && !pointerOverUI)
             {
                 if (isSpecialReloadTriggered && specialReloadCoroutine != null)
                 {
@@ -469,9 +498,13 @@ namespace ProjectBlood
                 }
                 currentWeapon.KeepAttacking(smoothAimDir);
             }
-            if (Input.GetMouseButtonUp(0) && playerBullet != null)
+            if (Input.GetMouseButtonUp(0))
             {
-                currentWeapon.StopAttacking();
+                isFireHeld = false;
+                if (playerBullet != null)
+                {
+                    currentWeapon.StopAttacking();
+                }
             }
 
             // 按R键换弹

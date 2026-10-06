@@ -1,6 +1,6 @@
-using UnityEngine;
-using QFramework;
 using System.Collections.Generic;
+using QFramework;
+using UnityEngine;
 
 namespace ProjectBlood
 {
@@ -53,6 +53,15 @@ namespace ProjectBlood
             AudioKitManager.Instance?.Stop(_shootLoopPlayer);
             _shootLoopPlayer = null;
             hasFired = false;
+        }
+
+        // 销毁兜底：玩家死亡/场景卸载时武器对象随之销毁，
+        // 此时可能仍按住左键（收不到鼠标抬起），循环开火音必须在此停掉。
+        // 只停音频，不调用完整 StopAttacking：销毁顺序不保证，WeaponAnimator 等组件可能已失效。
+        protected virtual void OnDestroy()
+        {
+            AudioKitManager.Instance?.Stop(_shootLoopPlayer);
+            _shootLoopPlayer = null;
         }
     }
 }
