@@ -662,10 +662,10 @@ GameObject:
   - component: {fileID: 220123113487038574}
   - component: {fileID: 1998963291594443156}
   - component: {fileID: 7883401417386688070}
-  - component: {fileID: 126142792584932995}
   - component: {fileID: 4737079034023530160}
   - component: {fileID: 3970465933581660315}
   - component: {fileID: 3223594560725524056}
+  - component: {fileID: 126142792584932995}
   m_Layer: 7
   m_Name: SlimeBlue
   m_TagString: Enemy
@@ -735,41 +735,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!58 &126142792584932995
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9221604444027369072}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -0.016387582}
-  serializedVersion: 2
-  m_Radius: 0.42
 --- !u!114 &4737079034023530160
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -837,7 +802,7 @@ MonoBehaviour:
   - {x: 0.45436755, y: -0.40974212, z: 0}
   m_ShapePathHash: -1448283393
   m_Mesh: {fileID: 0}
-  m_InstanceId: 66070
+  m_InstanceId: 156234
   m_LocalBounds:
     m_Center: {x: -0.029057086, y: 0.0056397915, z: 0}
     m_Extent: {x: 0.48748142, y: 0.4153819, z: 0}
@@ -855,3 +820,38 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dangerText: {fileID: 8725426753040696709}
   windupText: {fileID: 2161245712532910406}
+--- !u!58 &126142792584932995
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9221604444027369072}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0.0055684447, y: -0.018243432}
+  serializedVersion: 2
+  m_Radius: 0.5128055

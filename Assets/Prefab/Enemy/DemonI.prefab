@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 4365978342055026328}
   - component: {fileID: 25982410076261091}
   - component: {fileID: 8502357463334345084}
+  - component: {fileID: 8944162806696020097}
   m_Layer: 7
   m_Name: DemonI
   m_TagString: Enemy
@@ -167,7 +168,7 @@ CircleCollider2D:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1024
   m_LayerOverridePriority: 0
   m_ForceSendLayers:
     serializedVersion: 2
@@ -184,9 +185,9 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.004086357, y: 0.010120227}
+  m_Offset: {x: 0.010968499, y: 0.010120221}
   serializedVersion: 2
-  m_Radius: 0.35067913
+  m_Radius: 0.42193827
 --- !u!50 &1247706901492828723
 Rigidbody2D:
   serializedVersion: 4
@@ -356,7 +357,7 @@ MonoBehaviour:
   - {x: 0.19673298, y: -0.3555871, z: 0}
   m_ShapePathHash: 1876961491
   m_Mesh: {fileID: 0}
-  m_InstanceId: 60916
+  m_InstanceId: 147362
   m_LocalBounds:
     m_Center: {x: -0.0030066967, y: 0.008757263, z: 0}
     m_Extent: {x: 0.3926227, y: 0.36434436, z: 0}
@@ -374,6 +375,41 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dangerText: {fileID: 4907549094985075245}
   windupText: {fileID: 4390749005519135623}
+--- !u!58 &8944162806696020097
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2075287160621077409}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 64
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: -0.12}
+  serializedVersion: 2
+  m_Radius: 0.23
 --- !u!1 &2244528097359160779
 GameObject:
   m_ObjectHideFlags: 0

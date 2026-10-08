@@ -715,7 +715,7 @@ MonoBehaviour:
   - {x: 0.21955213, y: -0.32877705, z: 0}
   m_ShapePathHash: 767123678
   m_Mesh: {fileID: 0}
-  m_InstanceId: -85778
+  m_InstanceId: 148326
   m_LocalBounds:
     m_Center: {x: 0.010081962, y: -0.17650296, z: 0}
     m_Extent: {x: 0.20947015, y: 0.15227409, z: 0}
@@ -1262,8 +1262,8 @@ GameObject:
   - component: {fileID: 611168441840763822}
   - component: {fileID: 6532819935276294440}
   - component: {fileID: 3846359185140523581}
-  - component: {fileID: 6885501857683488525}
   - component: {fileID: 7709951268060492699}
+  - component: {fileID: 6885501857683488525}
   m_Layer: 7
   m_Name: TitanBoss
   m_TagString: Enemy
@@ -1314,6 +1314,8 @@ MonoBehaviour:
   maxHealth: 10000
   Damage: 5
   useFlipSprite: 1
+  canBeExecuted: 0
+  statusIndicator: {fileID: 0}
   sightCheckInterval: 0.5
   sightBlockingMask:
     serializedVersion: 2
@@ -1371,7 +1373,7 @@ BoxCollider2D:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   m_LayerOverridePriority: 0
   m_ForceSendLayers:
     serializedVersion: 2
@@ -1401,6 +1403,41 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.4537122, y: 0.31325302}
   m_EdgeRadius: 0
+--- !u!70 &7709951268060492699
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8647600920540684443}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 1024
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.020386862, y: 0.06726914}
+  m_Size: {x: 0.8959951, y: 0.98828584}
+  m_Direction: 0
 --- !u!50 &6885501857683488525
 Rigidbody2D:
   serializedVersion: 4
@@ -1428,38 +1465,3 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!70 &7709951268060492699
-CapsuleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8647600920540684443}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0.04417202, y: 0.06462927}
-  m_Size: {x: 0.62915206, y: 0.9090933}
-  m_Direction: 0

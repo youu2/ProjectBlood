@@ -45,21 +45,54 @@ namespace ProjectBlood
         [Tooltip("升级面板中的 3 个选项卡片，按场景中手动摆放的按钮顺序赋值")]
         [SerializeField] private UpgradeOptionCard[] optionCards = new UpgradeOptionCard[3];
 
+        // 升级面板是否处于打开状态（打开期间 timeScale=0、IsGamePaused=true）
+        private bool isUpgradePanelOpen;
+
         protected override void OnInit(IUIData uiData = null)
         {
             GameUI.ShowGameUI();
 
             mData = uiData as UIGamePanelData ?? new UIGamePanelData();
 
-            // 升级时暂停游戏，弹出随机强化选项
-            Global.Level.Register(Level =>
+            // 升级后不再自动打开面板，仅累计可升级次数；
+            // 次数大于 0 时显示升级提示图标 UpgradeNotice，否则隐藏
+            Global.PendingUpgradeCount.RegisterWithInitValue(count =>
             {
-                Time.timeScale = 0;
-                Global.IsGamePaused = true; // 禁用武器操作
-                ShowUpgradeOptions();
+                if (GameUI.GUIInstance != null && GameUI.GUIInstance.UpgradeNotice != null)
+                {
+                    GameUI.GUIInstance.UpgradeNotice.gameObject.SetActive(count > 0);
+                }
             }).UnRegisterWhenGameObjectDestroyed(gameObject);
 
             UpgradeRoot.Hide();
+        }
+
+        private void Update()
+        {
+            // 袖剑处决慢动作期间屏蔽 Alt：关闭面板会把 timeScale 硬编码回 1，破坏处决节奏（处决仅约 0.5 真实秒）
+            if (HiddenBladeSettings.IsExecuting) return;
+
+            if (!Input.GetKeyDown(KeyCode.LeftAlt) && !Input.GetKeyDown(KeyCode.RightAlt)) return;
+
+            if (isUpgradePanelOpen)
+            {
+                // 升级界面中再次按 Alt：直接关闭面板（次数可保留，之后仍可按 Alt 继续选择）
+                CloseUpgradePanel();
+            }
+            else if (!Global.IsGamePaused && Global.PendingUpgradeCount.Value > 0)
+            {
+                // 有可升级次数且游戏未被暂停页/结算/演出等其他系统占用时，按 Alt 打开升级面板
+                OpenUpgradePanel();
+            }
+        }
+
+        // 打开升级面板：暂停游戏，弹出随机强化选项
+        private void OpenUpgradePanel()
+        {
+            isUpgradePanelOpen = true;
+            Time.timeScale = 0;
+            Global.IsGamePaused = true; // 禁用武器操作
+            ShowUpgradeOptions();
         }
 
         // 从升级池随机抽取并填充 3 张卡片
@@ -98,25 +131,42 @@ namespace ProjectBlood
 
             UpgradeRoot.Show();
 
-            // 池中已无可用强化、或卡片尚未配置时，直接恢复游戏，避免升级面板卡死（后续可改为提示文本）
+            // 池中已无可用强化、或卡片尚未配置时，直接关闭面板避免卡死；
+            // 不消耗累计次数（升级提示图标仍保留，待有新的可用强化后可再次打开）
             if (options.Count == 0 || validCardCount == 0)
             {
-                ResumeGame();
+                CloseUpgradePanel();
             }
         }
 
-        // 点击卡片：应用强化并关闭面板恢复游戏
+        // 点击卡片：应用强化并消耗一次累计升级次数；
+        // 次数仍有剩余则重新抽取选项继续选择，次数耗尽则自动关闭面板
         private void OnUpgradeSelected(UpgradeSO upgrade)
         {
             if (UpgradeManager.Instance != null)
             {
                 UpgradeManager.Instance.ApplyUpgrade(upgrade);
             }
-            ResumeGame();
+
+            if (Global.PendingUpgradeCount.Value > 0)
+            {
+                Global.PendingUpgradeCount.Value--;
+            }
+
+            if (Global.PendingUpgradeCount.Value <= 0)
+            {
+                CloseUpgradePanel();
+            }
+            else
+            {
+                ShowUpgradeOptions();
+            }
         }
 
-        private void ResumeGame()
+        // 关闭升级面板并恢复游戏（不再由选择卡片触发，仅由 Alt 或次数耗尽触发）
+        private void CloseUpgradePanel()
         {
+            isUpgradePanelOpen = false;
             Time.timeScale = 1;
             Global.IsGamePaused = false; // 重新启用开火
             UpgradeRoot.Hide();

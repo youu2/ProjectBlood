@@ -40,18 +40,6 @@ MonoBehaviour:
     - TypeName: UnityEngine.UI.Image
       PathToRoot: FaceFrame
       MemberName: FaceFrame
-    - TypeName: UnityEngine.RectTransform
-      PathToRoot: ActiveSigils/BloodSigilSlot1
-      MemberName: BloodSigilSlot1
-    - TypeName: UnityEngine.RectTransform
-      PathToRoot: ActiveSigils/BloodSigilSlot2
-      MemberName: BloodSigilSlot2
-    - TypeName: UnityEngine.RectTransform
-      PathToRoot: ActiveSigils/BloodSigilSlot3
-      MemberName: BloodSigilSlot3
-    - TypeName: UnityEngine.RectTransform
-      PathToRoot: ActiveSigils/BloodSigilSlot4
-      MemberName: BloodSigilSlot4
     - TypeName: TMPro.TextMeshProUGUI
       PathToRoot: LevelText
       MemberName: LevelText
@@ -79,6 +67,9 @@ MonoBehaviour:
     - TypeName: Animator
       PathToRoot: BossShowAnimator
       MemberName: BossShowAnimator
+    - TypeName: Animator
+      PathToRoot: UpgradeNotice
+      MemberName: UpgradeNotice
     ScriptsFolder: Assets\Scripts\UI
     ClassName: GameUI
     Namespace: ProjectBlood

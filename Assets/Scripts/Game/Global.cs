@@ -16,6 +16,8 @@ namespace ProjectBlood
         public static BindableProperty<int> Exp = new BindableProperty<int>(0);
         public static BindableProperty<int> Coin = new BindableProperty<int>(0);
         public static BindableProperty<int> Level = new BindableProperty<int>(1);
+        // 累计可选择升级次数：每次升级 +1，每选择一次强化 -1。大于 0 时显示升级提示图标，可按 Alt 打开升级面板
+        public static BindableProperty<int> PendingUpgradeCount = new BindableProperty<int>(0);
 
         public static BindableProperty<float> BlazingCircleDamage = new BindableProperty<float>(35.0f);
         public static BindableProperty<float> RemainingTime = new BindableProperty<float>(180);
@@ -149,6 +151,8 @@ namespace ProjectBlood
                 Level.Value++;
                 Exp.Value -= MAX_EXP.Value;
                 MAX_EXP.Value = 5 + (Level.Value - 1) / 3;
+                // 累计一次可选择升级次数，不再自动打开升级面板（由玩家按 Alt 主动打开）
+                PendingUpgradeCount.Value++;
                 //Debug.Log("Level Up! current LV: " + Level.Value);
             }
         }
@@ -173,6 +177,7 @@ namespace ProjectBlood
             currentHP.Value = INGAME_MAX_HP.Value;
             Level.Value = 1;
             Exp.Value = 0;
+            PendingUpgradeCount.Value = 0;
             Time.timeScale = 1;
             RemainingTime.Value = 180;
             CurrentWaves.Value = 1;
