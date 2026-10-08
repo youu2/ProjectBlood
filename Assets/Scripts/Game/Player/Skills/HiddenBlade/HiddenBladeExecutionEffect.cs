@@ -172,9 +172,14 @@ namespace ProjectBlood
             GameObject targetObject = enemy.gameObject;
             float targetMaxHealth = enemy.MaxHealth;
 
+            // 命中帧实时方向：施法者当前位置 → 目标当前位置（取一次，O(1)，不每帧追踪）
+            Vector2 stabDirection = ((Vector2)enemy.transform.position
+                - (Vector2)context.caster.transform.position).normalized;
+            if (stabDirection.sqrMagnitude < 0.0001f) stabDirection = context.dashDirection;
+
             // 刺击特效（纯演出）：处决/普通两个 trigger；目标中途死亡的分支不触发
             HiddenBladeVfxBridge bridge = context.caster.GetComponentInChildren<HiddenBladeVfxBridge>(true);
-            if (bridge != null) bridge.TriggerStab(context.isExecutionTarget);
+            if (bridge != null) bridge.TriggerStab(context.isExecutionTarget, stabDirection);
 
             bool killed = SkillDamageApplier.ApplyHiddenBladeHit(
                 target,

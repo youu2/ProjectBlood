@@ -30,11 +30,37 @@ namespace ProjectBlood
             if (vfxAnimator == null) vfxAnimator = GetComponent<Animator>();
         }
 
-        /// <summary>按目标类型触发对应刺击动画。</summary>
-        public void TriggerStab(bool isExecutionTarget)
+        /// <summary>
+        /// 按目标类型触发对应刺击动画，并把特效物体一次性转向目标（世界空间）。
+        /// 仅在命中帧调用一次：处决期间输入锁定、玩家朝向冻结，无需每帧追踪。
+        /// </summary>
+        /// <param name="isExecutionTarget">是否为濒死处决目标（决定播哪个 trigger）</param>
+        /// <param name="worldDirection">施法者→目标的世界空间方向（零向量时保持当前朝向）</param>
+        public void TriggerStab(bool isExecutionTarget, Vector2 worldDirection)
         {
+            FaceTarget(worldDirection);
             if (vfxAnimator == null) return;
             vfxAnimator.SetTrigger(isExecutionTarget ? executionTriggerName : stabTriggerName);
+        }
+
+        // 与武器瞄准同一套算法：Atan2 角度 → Z 轴旋转。
+        // 改为直接计算 localRotation：玩家 flipX（localScale.x = -1）时，
+        // Unity 反算 localRotation 的公式在某些角度边界不精确，
+        // 直接给 localRotation 赋值可以完全控制视觉朝向。
+        private void FaceTarget(Vector2 worldDirection)
+        {
+            if (worldDirection.sqrMagnitude < 0.0001f) return;
+            float angle = Mathf.Atan2(worldDirection.y, worldDirection.x) * Mathf.Rad2Deg;
+
+            // 检测玩家是否处于 flipX 状态（父级或自身的 x 缩放为负）
+            bool flipped = Mathf.Sign(transform.lossyScale.x) < 0f;
+            if (flipped)
+            {
+                // 镜像后视觉角度 = 180° - 原角度（绕 Y 轴翻转）
+                angle = 180f - angle;
+            }
+
+            transform.localRotation = Quaternion.Euler(0f, 0f, angle);
         }
 
         /// <summary>预留：动画命中帧事件的接收入口（方法名与 Animation Event 中填写一致）。</summary>
