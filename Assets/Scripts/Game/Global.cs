@@ -232,6 +232,7 @@ namespace ProjectBlood
             data.level = Level.Value;
             data.exp = Exp.Value;
             data.maxExp = MAX_EXP.Value;
+            data.pendingUpgradeCount = PendingUpgradeCount.Value;
             data.runElapsedSeconds = RunElapsedSeconds;
             data.remainingTime = RemainingTime.Value;
             data.blazingCircleDamage = BlazingCircleDamage.Value;
@@ -248,6 +249,7 @@ namespace ProjectBlood
             Level.Value = data.level;
             Exp.Value = data.exp;
             MAX_EXP.Value = data.maxExp;
+            PendingUpgradeCount.Value = data.pendingUpgradeCount;
             RunElapsedSeconds = data.runElapsedSeconds;
             RemainingTime.Value = data.remainingTime;
             BlazingCircleDamage.Value = data.blazingCircleDamage;

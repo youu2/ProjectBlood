@@ -29,6 +29,7 @@ namespace ProjectBlood
         public int level;
         public int exp;
         public int maxExp;
+        public int pendingUpgradeCount;   // 累计可选择升级次数（升级 +1，选强化 -1）
         public List<WeaponSaveEntry> weapons = new List<WeaponSaveEntry>();
         public int currentWeaponIndex;
 
