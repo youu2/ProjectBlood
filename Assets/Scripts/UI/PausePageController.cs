@@ -78,6 +78,10 @@ namespace ProjectBlood
 
         private void Update()
         {
+            // 袖剑处决慢动作期间屏蔽 Esc：处决仅约 0.5 真实秒，
+            // 暂停恢复会把 timeScale 硬编码回 1，会破坏处决节奏
+            if (ProjectBlood.HiddenBladeSettings.IsExecuting) return;
+
             if (!Input.GetKeyDown(KeyCode.Escape)) return;
 
             // 音频设置页打开时，ESC 只关闭它（露出下面的暂停页），不恢复游戏

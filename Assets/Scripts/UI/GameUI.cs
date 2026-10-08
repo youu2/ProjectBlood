@@ -12,6 +12,9 @@ namespace ProjectBlood
         // 加载页显隐事件：true=加载页打开（隐藏指针），false=加载页关闭（恢复指针）
         public static event System.Action<bool> OnLoadingPageStateChanged;
 
+        // Inspector 中设置的关卡名原色，用于非黑暗关显示
+        private Color levelTextBaseColor;
+
         private void Awake()
         {
             // 每次进入场景都会新建一个GameUI实例，自动销毁避免重复实例
@@ -23,6 +26,8 @@ namespace ProjectBlood
             {
                 GUIInstance = this;
             }
+            // 保存 Inspector 中设置的关卡名原色，黑暗关红色显示结束后需恢复为该颜色
+            levelTextBaseColor = LevelText.color;
             DontDestroyOnLoad(gameObject);
             // 相机为场景内对象，GameUI 为 DDOL。Awake 首次绑定后，
             // 后续场景重载由 Global.RebindCameraOnSceneLoad 统一重绑 Canvas 渲染相机
@@ -89,8 +94,8 @@ namespace ProjectBlood
         {
             var displayName = levelName.Replace("Level ", "");
             LevelText.text = displayName;
-            // 黑暗关关卡名用红色显示，非黑暗关保持原色
-            var baseColor = isDarkLevel ? Color.red : Color.white;
+            // 黑暗关关卡名用红色显示，非黑暗关使用 Inspector 中保存的原色
+            var baseColor = isDarkLevel ? Color.red : levelTextBaseColor;
             var color = baseColor;
             color.a = 0f;
             LevelText.color = color;

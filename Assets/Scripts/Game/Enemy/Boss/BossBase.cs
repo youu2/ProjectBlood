@@ -51,6 +51,10 @@ namespace ProjectBlood
         {
             base.Awake();
 
+            // Boss 永远不可被袖剑处决（未来可能通过专属血印放开）：
+            // 代码强制，不依赖预制体勾选
+            canBeExecuted = false;
+
             // 先把 Boss 血量数据同步到 Global（此时 BossActive 仍为 false，血条不显示），
             // 等玩家进入 Boss 房触发开战后再激活
             Global.BossMaxHp.Value = maxHealth;
@@ -156,6 +160,7 @@ namespace ProjectBlood
         {
             if (isDead) return;
             isDead = true;
+            IsDead = true;   // 同步基类死亡标记（袖剑奖励结算等外部逻辑读取）
 
             // 通知 UI Boss 已离场
             Global.BossActive.Value = false;

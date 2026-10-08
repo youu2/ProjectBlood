@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d42383594d773794ba7792067c4d388a, type: 3}
+  m_Name: HiddenBlade
+  m_EditorClassIdentifier: 
+  skillName: "\u8896\u5251"
+  icon: {fileID: 0}
+  description: "\u9AD8\u901F\u79FB\u52A8\u81F3\u654C\u4EBA\u8EAB\u540E\u5E76\u7ED9\u4E88\u81F4\u547D\u4E00\u51FB"
+  skillType: 4
+  chargeInterval: 1
+  maxCharges: 1
+  initialCharges: 1
+  duration: 0.7
+  useUnscaledTime: 1
+  effects:
+  - {fileID: 11400000, guid: 811369e671193774dae80527c869e983, type: 2}
+  - {fileID: 11400000, guid: 816b87fe69cb38a45874e4634a5c3160, type: 2}
+  - {fileID: 11400000, guid: 0a16f96c0ecf0644793da3be2efc639b, type: 2}
+  - {fileID: 11400000, guid: 0946ce54fce0e20419ae0694e6f8b87c, type: 2}
+  - {fileID: 11400000, guid: 5380d71e3f3a9b04c9ac76591dcc2a4a, type: 2}
+  executionMode: 1
+  startSFX: {fileID: 8300000, guid: c0167b1424b810345885c5e7788d5fad, type: 3}
+  endSFX: {fileID: 0}
+  startSfxVolume: 0.6
+  endSfxVolume: 1

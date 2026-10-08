@@ -16,8 +16,8 @@ public class SkillManager : MonoBehaviour
     [SerializeField] private List<SkillData> skillDataList = new List<SkillData>();
 
     [Header("输入设置(临时)")]
-    [SerializeField] private KeyCode rollKey = KeyCode.Space;  // 翻滚快捷键,后续可换成 Input System
-    [SerializeField] private KeyCode skill2Key = KeyCode.Q;    // 第二个技能快捷键,示例用
+    [SerializeField] private KeyCode rollKey = KeyCode.Space;      // 翻滚快捷键,后续可换成 Input System
+    [SerializeField] private KeyCode hiddenBladeKey = KeyCode.F;   // 袖剑快捷键
 
     // 运行时技能实例列表
     private List<SkillBase> skills = new List<SkillBase>();
@@ -37,6 +37,17 @@ public class SkillManager : MonoBehaviour
 
         // 根据数据列表创建技能实例
         InitializeSkills();
+    }
+
+    // 销毁兜底：袖剑处决进行中若施法者被销毁（异常路径/场景卸载），
+    // 确保 timeScale 不残留在 0.2。正常路径由 TimeScaleEffect.OnEnd 单一出口恢复。
+    private void OnDestroy()
+    {
+        if (HiddenBladeSettings.IsExecuting)
+        {
+            Time.timeScale = 1f;
+            HiddenBladeSettings.IsExecuting = false;
+        }
     }
 
     private void Update()
@@ -70,9 +81,9 @@ public class SkillManager : MonoBehaviour
             {
                 TryUseSkillByName("翻滚");
             }
-            if (Input.GetKeyDown(skill2Key))
+            if (Input.GetKeyDown(hiddenBladeKey))
             {
-                TryUseSkillByName("技能2");
+                TryUseSkillByName("袖剑");
             }
         }
     }
@@ -143,6 +154,20 @@ public class SkillManager : MonoBehaviour
         if (playerState != null && !playerState.CanUseSkill(skill.Data.skillType))
         {
             return false;
+        }
+
+        // 释放前置条件检查（在消耗充能之前）：
+        // 任一效果返回 false 即中止释放（不耗 CD、不启动技能）。
+        // 例如袖剑在范围内无敌人时，由目标搜索效果拦截并给出"无目标"提示。
+        if (skill.Data.effects != null)
+        {
+            foreach (var effect in skill.Data.effects)
+            {
+                if (effect != null && !effect.CheckCanCast(gameObject))
+                {
+                    return false;
+                }
+            }
         }
 
         // 如果是 GenericSkill,设置方向

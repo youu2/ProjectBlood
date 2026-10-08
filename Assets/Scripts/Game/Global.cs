@@ -315,25 +315,13 @@ namespace ProjectBlood
             }
             // 掉落Shield, 5%概率
             rand = Random.Range(0f, 100f);
-            if (rand < 5f) // 测试 ///////////////////////////////////////   
+            if (rand < 5f) // 测试 ///////////////////////////////////////
             {
                 GenerateShield(enemy);
                 return;
             }
-            // 只有当血库血量低于30%时才有可能掉落dirtyBlood
-            if (BloodBank.Instance != null)
-            {
-                // float bloodPercent = (float)BloodBank.Instance.CurrentBloodAmount / BloodBank.Instance.MaxBloodAmount;
-                // if (bloodPercent < 0.3f)
-                // {
-                rand = Random.Range(0f, 100f);
-                if (rand < 5f)
-                {
-                    GenerateDirtyBlood(enemy);
-                    return;
-                }
-                // }
-            }
+            // 普通敌人不再掉落 DirtyBlood（袖剑版本：受伤/处决回血清血库，
+            // DirtyBlood 仅保留在宝箱/商店与 Boss 专属掉落中）
         }
 
         protected override void Init()

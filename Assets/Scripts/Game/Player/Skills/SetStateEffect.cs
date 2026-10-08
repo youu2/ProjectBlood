@@ -41,7 +41,9 @@ public class SetStateEffect : SkillEffect
         if (IsDone) return;
 
         var state = context.GetOrCreateEffectState(this);
-        float elapsed = (float)state["elapsed"] + Time.deltaTime;
+        // 慢动作技能按真实时间计时，避免 Executing 状态在 timeScale 缩放下被拉长
+        float dt = context.useUnscaledTime ? Time.unscaledDeltaTime : Time.deltaTime;
+        float elapsed = (float)state["elapsed"] + dt;
         state["elapsed"] = elapsed;
 
         // 与其他持续型效果（MoveEffect/InvincibleEffect）一致：技能总时长结束后完成

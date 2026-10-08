@@ -11,6 +11,7 @@ public class PlayerState : MonoBehaviour
         Normal,     // 正常
         Rolling,    // 翻滚中
         Attacking,  // 攻击中
+        Executing,  // 袖剑处决中（锁全部输入、不可移动）
         Stunned,    // 眩晕
         Dead        // 死亡
     }

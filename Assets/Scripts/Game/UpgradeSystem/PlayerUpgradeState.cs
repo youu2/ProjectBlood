@@ -257,6 +257,14 @@ namespace ProjectBlood
             return ratio;
         }
 
+        // 技能伤害计算入口（袖剑刺击等非武器伤害使用）：
+        // 第一版只吃全局增伤；不吃武器独立系数、不吃按武器聚合的血印增伤。
+        // 未来增加"技能增伤"血印时在此扩展独立乘区（如 × SkillDamageRatio）。
+        public static float GetFinalSkillDamageRatio()
+        {
+            return GlobalDamageRatio;
+        }
+
         // ============================== 应用强化 ==============================
 
         // 基础属性强化:每次调用直接应用效果(属性无全局等级跟踪,池过滤由每卡 MaxUpgradeCount 独立控制)

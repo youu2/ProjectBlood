@@ -3761,7 +3761,7 @@ MonoBehaviour:
   skillDataList:
   - {fileID: 11400000, guid: 05771a837a129c840b0b93254e8e42bc, type: 2}
   rollKey: 304
-  skill2Key: 32
+  hiddenBladeKey: 102
 --- !u!114 &719161280
 MonoBehaviour:
   m_ObjectHideFlags: 0

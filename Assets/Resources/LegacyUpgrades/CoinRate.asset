@@ -15,10 +15,11 @@ MonoBehaviour:
   id: coin_drop_rate
   upgradeName: "\u8FD9\u4E9B\u5BB6\u4F19\u8EAB\u4E0A\u600E\u4F1A\u6709\u8FD9\u4E48\u591A\u94B1\uFF1F"
   description: "\u91D1\u5E01\u6389\u843D\u6982\u7387 +5%"
-  icon: {fileID: 21300000, guid: 8c3dc1072265d564ab1cac8214bfc7db, type: 3}
+  icon: {fileID: 21300000, guid: 12428cc9e62ea30409123d4fb9e78724, type: 3}
   maxLevel: 5
   baseCost: 5
   costIncrement: 5
   statType: 0
   baseValue: 0.3
   valuePerLevel: 0.05
+  reductionPerLevel: 0.05

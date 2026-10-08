@@ -37,7 +37,10 @@ public class SkillExecutor
         this.duration = duration;
 
         // 创建执行上下文，效果们会通过它获取状态和共享信息
-        context = new EffectContext(caster, direction, duration);
+        context = new EffectContext(caster, direction, duration)
+        {
+            useUnscaledTime = skillData.useUnscaledTime
+        };
     }
 
     /// <summary>
@@ -75,6 +78,14 @@ public class SkillExecutor
     public void Update()
     {
         if (isFinished) return;
+
+        // 效果可通过上下文请求提前结束（如袖剑目标中途死亡，到位即收，不走满时长）。
+        // End() 会对所有活跃效果调用 OnEnd，保证 timeScale/状态/无敌层统一恢复。
+        if (context.earlyFinish)
+        {
+            End();
+            return;
+        }
 
         if (skillData.executionMode == EffectExecutionMode.Parallel)
         {

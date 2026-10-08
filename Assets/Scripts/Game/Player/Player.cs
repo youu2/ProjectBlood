@@ -25,6 +25,8 @@ namespace ProjectBlood
         // 不用 Input.GetMouseButton 直判：暂停视为"自动松开开火键"，
         // 恢复后即使物理按键仍按住也不继续开火，必须重新按下
         private bool isFireHeld;
+        // 上一帧是否处于袖剑处决状态（用于进入处决的当帧停一次火）
+        private bool wasExecutingLastFrame;
         private Coroutine specialReloadCoroutine; // 特殊换弹协程
         private const float specialReloadWindow = 2f; // 双击R的时间窗口(秒)
         private const float specialReloadDelay = 3f; // 特殊换弹延迟时间(秒)
@@ -417,10 +419,15 @@ namespace ProjectBlood
                 return;
             }
 
+            // 袖剑处决期间锁定全部输入：移动/瞄准/射击/换弹/切枪全部冻结，
+            // 位移由袖剑效果直接驱动 transform（不用刚体速度）
+            bool isExecuting = SelfPlayerState != null
+                && SelfPlayerState.CurrentState == PlayerState.State.Executing;
+
             float horizontal = Input.GetAxis("Horizontal"); // A/D
             float vertical = Input.GetAxis("Vertical");     // W/S
             // 暂停(加载进入下一关/结算等)期间冻结玩家移动输入
-            if (Global.IsGamePaused)
+            if (Global.IsGamePaused || isExecuting)
             {
                 horizontal = 0f;
                 vertical = 0f;
@@ -433,10 +440,10 @@ namespace ProjectBlood
             var direction = new Vector2(horizontal, vertical).normalized;
             SelfRigidbody2D.velocity = direction * moveSpeed;
 
-            // 暂停/场景加载期间冻结整条瞄准链路：不读鼠标、不锁敌、不旋转武器，准星隐藏。
-            // Esc 暂停(timeScale=0)时插值本已冻结，加载页(timeScale=0)同理；
+            // 暂停/场景加载/袖剑处决期间冻结整条瞄准链路：不读鼠标、不锁敌、不旋转武器，准星隐藏。
+            // Esc 暂停(timeScale=0)时插值本已冻结，加载页(timeScale=0)同理；处决期间输入完全锁定；
             // 这里显式跳过，保证任何暂停语义下武器都保持最后朝向、准星不闪烁
-            if (!Global.IsGamePaused)
+            if (!Global.IsGamePaused && !isExecuting)
             {
                 // 获取鼠标在屏幕上的位置
                 Vector3 mouseScreenPos = Input.mousePosition;
@@ -475,8 +482,17 @@ namespace ProjectBlood
                 && UnityEngine.EventSystems.EventSystem.current != null
                 && UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject();
 
+            // 进入袖剑处决的当帧：若此前按住左键，停火一次（终止连发音效/激光视觉），
+            // 处决期间不再驱动武器；处决结束后需重新按下左键才恢复开火
+            if (isExecuting && !wasExecutingLastFrame)
+            {
+                isFireHeld = false;
+                currentWeapon?.StopAttacking();
+            }
+            wasExecutingLastFrame = isExecuting;
+
             //鼠标左键射击(朝平滑后的瞄准方向)
-            if (Input.GetMouseButtonDown(0) && playerBullet != null && !Global.IsGamePaused && !pointerOverUI)
+            if (Input.GetMouseButtonDown(0) && playerBullet != null && !Global.IsGamePaused && !pointerOverUI && !isExecuting)
             {
                 isFireHeld = true;
                 if (isSpecialReloadTriggered && specialReloadCoroutine != null)
@@ -488,7 +504,7 @@ namespace ProjectBlood
                 currentWeapon.StartAttacking();
             }
             //限制为固定射速；isFireHeld 代替 GetMouseButton 直判（暂停后按住不续火）
-            if (isFireHeld && playerBullet != null && !Global.IsGamePaused && !pointerOverUI)
+            if (isFireHeld && playerBullet != null && !Global.IsGamePaused && !pointerOverUI && !isExecuting)
             {
                 if (isSpecialReloadTriggered && specialReloadCoroutine != null)
                 {
@@ -507,8 +523,8 @@ namespace ProjectBlood
                 }
             }
 
-            // 按R键换弹
-            if (Input.GetKeyDown(KeyCode.R) && !Global.IsGamePaused)
+            // 按R键换弹（袖剑处决期间锁定）
+            if (Input.GetKeyDown(KeyCode.R) && !Global.IsGamePaused && !isExecuting)
             {
                 float currentTime = Time.time;
                 if (currentWeapon.GetGunClip().CanReload())
@@ -537,12 +553,12 @@ namespace ProjectBlood
             // 数字键 1~4 已划归主动血印开关槽位；武器切换仅保留鼠标滚轮循环
             if (!inMainMenu)
             {
-                if (Input.mouseScrollDelta.y > 0 && !Global.IsGamePaused) // 鼠标滚轮向上滚动切换到上一个武器
+                if (Input.mouseScrollDelta.y > 0 && !Global.IsGamePaused && !isExecuting) // 鼠标滚轮向上滚动切换到上一个武器
                 {
                     // 使用模运算实现循环切换武器
                     UseWeapon((WeaponDataSystem.weaponDataList.IndexOf(currentWeapon.Data) - 1 + WeaponDataSystem.weaponDataList.Count) % WeaponDataSystem.weaponDataList.Count);
                 }
-                else if (Input.mouseScrollDelta.y < 0 && !Global.IsGamePaused) // 鼠标滚轮向下滚动切换到下一个武器
+                else if (Input.mouseScrollDelta.y < 0 && !Global.IsGamePaused && !isExecuting) // 鼠标滚轮向下滚动切换到下一个武器
                 {
                     SwitchToNextWeapon();
                 }

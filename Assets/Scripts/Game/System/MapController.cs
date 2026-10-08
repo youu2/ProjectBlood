@@ -620,6 +620,10 @@ namespace ProjectBlood
         private void RestoreFromSave(RunSaveData data)
         {
             var levelConfig = Global.LevelConfigs[data.difficultyIndex];
+            // 先恢复全局难度：下面重建房间时 HandleTileType('#') 依赖它判断是否生成 Boss
+            // （含 SpawnBoss 按楼层选 Boss 预制体）。冷启动继续游戏时若不在最前恢复，
+            // currentDifficulty 仍为默认 0，X-3 关会误走"直接出传送门"分支，Boss 不生成。
+            Global.currentDifficulty = data.difficultyIndex;
             // 读档不重新掷骰：直接恢复存档时的黑暗关状态（保证地图与光照一致）
             DarkLevelController.RestoreFromSave(data.isDarkLevel);
             GameUI.ShowLevelText(levelConfig.LevelName, duration: 3, isDarkLevel: DarkLevelController.IsDarkLevel);

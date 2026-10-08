@@ -59,8 +59,8 @@ namespace ProjectBlood
         {
             if (!isActive) return;
 
-            // 累计时间
-            elapsedTime += Time.deltaTime;
+            // 累计时间（慢动作技能按真实时间走，避免无敌被拉长到技能结束之后）
+            elapsedTime += context.useUnscaledTime ? Time.unscaledDeltaTime : Time.deltaTime;
 
             // 当持续时间达到技能总时长时结束
             // context.duration 是技能总持续时间，由 SkillData 提供

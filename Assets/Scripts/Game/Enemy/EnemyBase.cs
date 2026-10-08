@@ -28,6 +28,14 @@ namespace ProjectBlood
         public bool useFlipSprite = true;
         public List<PathSearchingHelper.NodeBase<Vector3Int>> movePath = new();
 
+        [Header("=== 袖剑处决 ===")]
+        [Tooltip("是否可被袖剑处决（普通敌人勾选，Boss 取消勾选；未来血印可运行时改写）")]
+        public bool canBeExecuted = true;
+        // 死亡管线是否已执行（袖剑奖励结算等需要确认"真的被打死了"，避免无敌/减伤误发奖励）
+        public bool IsDead { get; protected set; }
+        // 头顶"危"/"!"指示器（预制体可选组件，缺失时静默跳过）
+        [SerializeField] protected EnemyStatusIndicator statusIndicator;
+
         [Header("=== 视线检测设置 ===")]
         [Tooltip("射线检测间隔时间(秒), 越小越精确但性能开销越大")]
         public float sightCheckInterval = 0.5f;
@@ -46,6 +54,8 @@ namespace ProjectBlood
             spriteRenderer = GetComponentInChildren<SpriteRenderer>();
             currentHealth = maxHealth;
             movePath.Clear();
+            // 指示器允许不在预制体上手动拖引：未拖时从子物体自动查找
+            if (statusIndicator == null) statusIndicator = GetComponentInChildren<EnemyStatusIndicator>(true);
         }
 
         // Start：初始化玩家引用 + 视线遮挡层。子类可重写并调用 base.Start()
@@ -185,11 +195,26 @@ namespace ProjectBlood
             if (currentHealth <= 0f)
             {
                 Death(HitDir);
+                return;
+            }
+
+            // 存活：血量首次跌破袖剑处决阈值时头顶显示"危"。
+            // 敌人只会掉血不会回血，无需在血量回升时隐藏；死亡时统一隐藏。
+            if (statusIndicator != null
+                && HiddenBladeSettings.IsInExecutionRange(currentHealth, maxHealth, canBeExecuted))
+            {
+                statusIndicator.ShowDanger();
             }
         }
 
+        // 近战攻击前摇提示（红色"!"），供 MeleeEnemy 调用
+        protected void ShowAttackWindup() => statusIndicator?.ShowWindup();
+        protected void HideAttackWindup() => statusIndicator?.HideWindup();
+
         protected virtual void Death(Vector2 HitDir)
         {
+            IsDead = true;
+            statusIndicator?.HideAll();
             AudioKitManager.Instance.PlayOneShot("KillSFX", volume: 0.6f);
             // 血印系统：击杀单位事件（敌人伤害均来自玩家武器）
             BloodSigilState.NotifyUnitKilled();

@@ -24,6 +24,13 @@ namespace ProjectBlood
         [Tooltip("散布角度(总角度范围, 单位:度)")][Range(0f, 360f)] public float scatterAngle = 45f;
         [Tooltip("是否使用随机散布(false=均匀分布)")] public bool useRandomScatter = false;
 
+        [Header("=== 转向限速 ===")]
+        [Tooltip("瞄准方向旋转速度(度/秒)。玩家绕到身后时子弹不会立刻转过来，防止贴脸瞬时连射")]
+        public float turnSpeed = 360f;
+        // 实际开火方向：以限速方式从当前方向平滑转向玩家，子弹沿此方向发射
+        protected Vector2 aimDirection;
+        private bool aimInitialized = false;
+
         [Header("=== 音效相关设置 ===")]
         [Tooltip("射击音效列表(随机播放)")] public List<AudioClip> shootSounds = new List<AudioClip>();
 
@@ -37,6 +44,27 @@ namespace ProjectBlood
             if (player != null)
             {
                 currentState = State.Chase;
+                aimDirection = GetDirectionToPlayer();
+                aimInitialized = true;
+            }
+        }
+
+        // 转向限速：开火方向以 turnSpeed 度/秒平滑转向玩家（而非瞬间指向），
+        // 翻转只负责表现朝向；FireBullet 沿平滑后的 aimDirection 发射
+        public override void UpdateRotate(Vector3 dirToPlayer)
+        {
+            if (dirToPlayer.sqrMagnitude < 0.0001f) return;
+            if (!aimInitialized)
+            {
+                aimDirection = dirToPlayer;
+                aimInitialized = true;
+            }
+            float maxStepRadians = turnSpeed * Time.deltaTime * Mathf.Deg2Rad;
+            aimDirection = Vector3.RotateTowards(aimDirection, dirToPlayer, maxStepRadians, 0f);
+
+            if (spriteRenderer != null)
+            {
+                spriteRenderer.flipX = aimDirection.x < 0f;
             }
         }
 
@@ -108,7 +136,8 @@ namespace ProjectBlood
             if (enemyBullet == null || player == null) return;
             UpdateRotate(directionToPlayer);
 
-            FireScatterBullets(enemyBullet, directionToPlayer, scatterBulletCount, scatterAngle, useRandomScatter);
+            // 沿限速平滑后的瞄准方向开火（而不是瞬时指向玩家的方向）
+            FireScatterBullets(enemyBullet, aimDirection, scatterBulletCount, scatterAngle, useRandomScatter);
 
             // 播放射击音效
             PlayShootSound();
