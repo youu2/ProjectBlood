@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,8 +8,8 @@ namespace ProjectBlood
     /// <summary>
     /// 暂停页(PausePage)专用逻辑：
     /// 1. Esc 键切换暂停/继续，继续按钮(BtnContinue)恢复游戏；
-    /// 2. 打开暂停页时刷新一次：玩家信息、武器信息、血印信息、通关耗时；
-    /// 3. 鼠标悬停血印图标时在 SigilDetail 显示血印名字与效果描述。
+    /// 2. 打开暂停页时刷新一次：玩家信息、武器信息、血印信息、技能槽位、通关耗时；
+    /// 3. 鼠标悬停血印/技能图标时在详情文本框显示名称与描述（见 PauseSigilSlot / PauseSkillSlot）。
     /// 页面物体始终保持激活（脚本需要 Update 响应 Esc），可见性通过 CanvasGroup 控制。
     /// </summary>
     public class PausePageController : MonoBehaviour
@@ -47,6 +46,10 @@ namespace ProjectBlood
         [SerializeField] private GameObject[] sigilSlots;        // 血印槽位（共 10 个）
         [SerializeField] private TextMeshProUGUI sigilDetailText; // 血印详情文本（悬停时显示）
 
+        [Header("技能")]
+        [SerializeField] private GameObject[] skillSlots;         // 技能槽位（共 5 个，无技能的隐藏）
+        [SerializeField] private TextMeshProUGUI skillDetailText; // 技能详情文本（悬停时显示）
+
         private CanvasGroup canvasGroup;
         private bool isPaused;   // 当前是否处于本暂停页打开的状态
 
@@ -64,6 +67,7 @@ namespace ProjectBlood
             quitButton.onClick.AddListener(QuitToMainMenu);
             audioSettingButton.onClick.AddListener(OpenAudioSettingPage);
             sigilDetailText.gameObject.SetActive(false);
+            if (skillDetailText != null) skillDetailText.gameObject.SetActive(false);
         }
 
         // 退出到主菜单：不触发存档，立即返回（进度只由房间检查点负责保存）
@@ -131,6 +135,7 @@ namespace ProjectBlood
 
             audioSettingPage?.Close();
             sigilDetailText.gameObject.SetActive(false);
+            if (skillDetailText != null) skillDetailText.gameObject.SetActive(false);
             HidePage();
         }
 
@@ -148,6 +153,7 @@ namespace ProjectBlood
             RefreshPlayerInfo();
             RefreshWeaponRows();
             RefreshSigils();
+            RefreshSkills();
         }
 
         // 玩家相关信息（数据源：Global 静态状态 / Player 实例 / BloodBank 单例）
@@ -169,19 +175,49 @@ namespace ProjectBlood
             RefreshSkillCD();
         }
 
-        // 技能CD：列出所有技能的标准CD（基础充能间隔减去全部冷却减免后的最终常量，固定显示）
+        // 技能CD减免：全局统一减免率（局外养成，对所有技能生效），直接显示单个百分比
         private void RefreshSkillCD()
         {
-            var builder = new StringBuilder("技能CD：");
+            int percent = Mathf.RoundToInt(PlayerUpgradeState.GlobalSkillCooldownReduction * 100f);
+            skillCDText.text = $"技能CD：- {percent}%";
+        }
 
-            foreach (var skill in Player.player1.SelfSkillManager.GetAllSkills())
+        // 技能槽位：打开暂停页时查询玩家当前所有技能，图标填入槽位（对标血印板块：图标 Image 在槽位根物体上），
+        // 超出槽位数量的技能不展示，无技能的槽位隐藏
+        private void RefreshSkills()
+        {
+            if (skillSlots == null || skillSlots.Length == 0 || Player.player1 == null) return;
+
+            var skillManager = Player.player1.SelfSkillManager;
+            var skills = skillManager.GetAllSkills();
+            for (int i = 0; i < skillSlots.Length; i++)
             {
-                builder.Append(skill.Data.skillName)
-                       .Append(skill.EffectiveChargeInterval.ToString("F1"))
-                       .Append("S ");
-            }
+                var slot = skillSlots[i];
+                if (slot == null) continue;
 
-            skillCDText.text = builder.ToString().TrimEnd();
+                if (i >= skills.Count)
+                {
+                    slot.SetActive(false);
+                    continue;
+                }
+
+                var skill = skills[i];
+                slot.SetActive(true);
+
+                var image = slot.GetComponent<Image>();
+                if (image != null)
+                {
+                    image.sprite = skill.Data.icon;
+                    image.enabled = skill.Data.icon != null; // 无图标时隐藏 Image，避免显示白块
+                    image.raycastTarget = true;              // 保证悬停射线能命中槽位
+                }
+
+                // 悬停交互组件只挂载一次（与血印的 PauseSigilSlot 同一模式）
+                var hover = slot.GetComponent<PauseSkillSlot>();
+                if (hover == null) hover = slot.AddComponent<PauseSkillSlot>();
+                hover.Initialize(skill.Data, skill.EffectiveChargeInterval,
+                    skillManager.GetKeyHint(skill.Data.skillName), skillDetailText);
+            }
         }
 
         // 武器行：已拥有的武器显示"攻击力(增伤%)   当前弹药/弹夹容量"，未拥有的隐藏

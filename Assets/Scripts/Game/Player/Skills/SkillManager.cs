@@ -19,6 +19,10 @@ public class SkillManager : MonoBehaviour
     [SerializeField] private KeyCode rollKey = KeyCode.Space;      // 翻滚快捷键,后续可换成 Input System
     [SerializeField] private KeyCode hiddenBladeKey = KeyCode.F;   // 袖剑快捷键
 
+    // 技能名常量：Update 按键分发与 GetKeyHint 键位提示共用同一份映射
+    private const string RollSkillName = "翻滚";
+    private const string HiddenBladeSkillName = "袖剑";
+
     // 运行时技能实例列表
     private List<SkillBase> skills = new List<SkillBase>();
 
@@ -79,11 +83,11 @@ public class SkillManager : MonoBehaviour
         {
             if (Input.GetKeyDown(rollKey))
             {
-                TryUseSkillByName("翻滚");
+                TryUseSkillByName(RollSkillName);
             }
             if (Input.GetKeyDown(hiddenBladeKey))
             {
-                TryUseSkillByName("袖剑");
+                TryUseSkillByName(HiddenBladeSkillName);
             }
         }
     }
@@ -301,6 +305,17 @@ public class SkillManager : MonoBehaviour
     public List<SkillBase> GetAllSkills()
     {
         return skills;
+    }
+
+    /// <summary>
+    /// 获取技能的键位提示文本（如 "[F]"），未映射键位的技能返回空字符串。
+    /// 与 Update 按键分发共用同一份键位配置：Inspector 改键后提示自动跟随。
+    /// </summary>
+    public string GetKeyHint(string skillName)
+    {
+        if (skillName == RollSkillName) return $"[{rollKey}]";
+        if (skillName == HiddenBladeSkillName) return $"[{hiddenBladeKey}]";
+        return "";
     }
 
     public Vector2 GetFacingDirection()
