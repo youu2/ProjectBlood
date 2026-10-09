@@ -212,12 +212,17 @@ namespace ProjectBlood
 
                 var clip = weapon.GetGunClip();
 
-                // 单发子弹攻击力 = 子弹预制体基础伤害 × 最终伤害倍率
-                // Laser 等无子弹预制体（或组件缺失）时按 0 处理，避免空引用
-                var bullet = weapon.BulletPrefab != null
-                    ? weapon.BulletPrefab.GetComponent<PlayerBullet>()
-                    : null;
-                float baseDamage = bullet != null ? bullet.damage : 0f;
+                // 基础攻击力：优先读子弹预制体上的 PlayerBullet.damage；
+                // Laser 等无子弹武器改读武器脚本上的直伤字段（Laser.HitDamage），否则会显示 0
+                float baseDamage = 0f;
+                if (weapon.BulletPrefab != null && weapon.BulletPrefab.TryGetComponent<PlayerBullet>(out var bullet))
+                {
+                    baseDamage = bullet.damage;
+                }
+                else if (weapon.TryGetComponent<Laser>(out var laser))
+                {
+                    baseDamage = laser.HitDamage;
+                }
                 float ratio = PlayerUpgradeState.GetFinalDamageRatio(row.weaponType);
                 int bonusPercent = Mathf.RoundToInt((ratio - 1f) * 100f);
                 string sign = bonusPercent >= 0 ? "+" : "";

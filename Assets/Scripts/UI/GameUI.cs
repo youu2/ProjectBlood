@@ -229,6 +229,9 @@ namespace ProjectBlood
             GUIInstance.SkillText.Hide();
             GUIInstance.PlayerLevelText.Hide();
             GUIInstance.HealthBar.Hide();
+            // GameUI 为 DontDestroyOnLoad，升级提示必须显式隐藏，
+            // 否则带未使用升级次数退出到主菜单/加载页时会跨场景残留
+            GUIInstance.UpgradeNotice.gameObject.SetActive(false);
             BloodSigilSlotHUD.HideAll();
             Global.ResetBossState();
             if (Player.player1 != null) Player.player1.ShieldSprite.Hide();
@@ -250,6 +253,8 @@ namespace ProjectBlood
             GUIInstance.SkillText.Show();
             GUIInstance.PlayerLevelText.Show();
             GUIInstance.HealthBar.Show();
+            // 按累计可升级次数恢复提示显隐：继续游戏等场景 ImportFrom 恢复相同值不触发事件，需主动同步
+            GUIInstance.UpgradeNotice.gameObject.SetActive(Global.PendingUpgradeCount.Value > 0);
             BloodSigilSlotHUD.RestoreVisibility();
             if (Player.player1 != null) Player.player1.ShieldSprite.Show();
         }
