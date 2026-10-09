@@ -755,9 +755,9 @@ MonoBehaviour:
   ArchitectureFullTypeName: 
   ViewControllerFullTypeName: 
   body: {fileID: 5188537939753590579}
-  moveSpeed: 2
-  currentHealth: 0
-  maxHealth: 100
+  moveSpeed: 3
+  currentHealth: 120
+  maxHealth: 120
   Damage: 2
   useFlipSprite: 1
   canBeExecuted: 1

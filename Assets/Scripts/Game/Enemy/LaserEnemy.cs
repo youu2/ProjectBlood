@@ -23,6 +23,11 @@ namespace ProjectBlood
         public float damageFrequency = 5f;   // 激光攻击频率（每秒的攻击次数）
         public float damagePerHit = 10f;     // 激光单次伤害
         public float rotationSpeed = 180f;   // 旋转(锁敌)速度
+        [Tooltip("旋转瞄准主体：分离结构（DemonI2）下指向 WholeBody 子物体，只转眼球不转头顶 UI；留空则旋转自身")]
+        public Transform wholeBody;
+
+        // 实际参与瞄准旋转的 Transform：分离结构为 WholeBody，旧单节点结构回退为自身
+        protected Transform AimTransform => wholeBody != null ? wholeBody : transform;
 
         [Header("=== 多激光设置 ===")]
         public int laserCount = 1;   // 激光数量
@@ -147,10 +152,11 @@ namespace ProjectBlood
         {
             if (direction.x == 0 && direction.y == 0) return;
 
+            // 旋转瞄准主体而非根节点：分离结构下头顶提示文本（Notice）与 WholeBody 平级，不会跟着转
             float targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            float currentAngle = transform.eulerAngles.z;
+            float currentAngle = AimTransform.eulerAngles.z;
             float newAngle = Mathf.LerpAngle(currentAngle, targetAngle, rotationSpeed * Time.deltaTime / 180f);
-            transform.eulerAngles = new Vector3(0, 0, newAngle);
+            AimTransform.eulerAngles = new Vector3(0, 0, newAngle);
         }
 
         protected override void StartFire()
@@ -214,7 +220,8 @@ namespace ProjectBlood
         {
             if (laserLines.Count == 0) return;
 
-            Vector3 startPos = transform.position + transform.right * laserStartOffset;
+            // 起点取根节点位置 + 瞄准主体的朝向偏移（WholeBody 与根节点同原点）
+            Vector3 startPos = transform.position + AimTransform.right * laserStartOffset;
             float width = laserWidth * chargeProgress;
 
             for (int i = 0; i < laserLines.Count; i++)
@@ -229,7 +236,7 @@ namespace ProjectBlood
                 lr.endWidth = width;
 
                 float angleOffset = GetLaserAngleOffset(i);
-                Vector3 laserDir = RotateVector(transform.right, angleOffset);
+                Vector3 laserDir = RotateVector(AimTransform.right, angleOffset);
                 lr.SetPosition(0, startPos);
                 lr.SetPosition(1, startPos + laserDir * attackRange);
             }
@@ -303,8 +310,8 @@ namespace ProjectBlood
                 for (int i = 0; i < laserCount; i++)
                 {
                     float angleOffset = GetLaserAngleOffset(i);
-                    Vector3 laserDir = RotateVector(transform.right, angleOffset);
-                    Vector3 startPos = transform.position + transform.right * laserStartOffset;
+                    Vector3 laserDir = RotateVector(AimTransform.right, angleOffset);
+                    Vector3 startPos = transform.position + AimTransform.right * laserStartOffset;
 
                     laserPointsList[i].Clear();
                     CalculateLaserPath(i, startPos, laserDir); // 计算激光的起点终点

@@ -27,7 +27,8 @@ public class PenetratingBullet : PlayerBullet
             float damageMultiplier = isEnhanced ? 1.0f : 0.8f; // 未强化时伤害降低到80%
             float finalDamage = damage * damageMultiplier;
 
-            var damageable = collision.gameObject.GetComponent<IDamageable>();
+            // 用 GetComponentInParent 兼容分离结构敌人（碰撞体在 WholeBody 子物体，伤害接口在根节点）
+            var damageable = collision.gameObject.GetComponentInParent<IDamageable>();
             if (damageable == null)
             {
                 return;

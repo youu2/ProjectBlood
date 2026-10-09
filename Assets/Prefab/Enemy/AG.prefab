@@ -563,8 +563,8 @@ MonoBehaviour:
   ViewControllerFullTypeName: 
   body: {fileID: 5688337175257971931}
   moveSpeed: 2
-  currentHealth: 100
-  maxHealth: 100
+  currentHealth: 120
+  maxHealth: 120
   Damage: 1
   useFlipSprite: 1
   canBeExecuted: 1

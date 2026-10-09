@@ -29,7 +29,8 @@ namespace ProjectBlood
             // 如果击中了敌人，造成伤害
             if (damageHit.collider != null)
             {
-                var damageable = damageHit.collider.GetComponent<IDamageable>();
+                // 用 GetComponentInParent 兼容分离结构敌人（碰撞体在 WholeBody 子物体，伤害接口在根节点）
+                var damageable = damageHit.collider.GetComponentInParent<IDamageable>();
                 if (damageable != null)
                 {
                     // 计算击退方向：从玩家到敌人的方向

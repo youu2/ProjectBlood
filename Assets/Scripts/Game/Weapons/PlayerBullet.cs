@@ -69,7 +69,8 @@ public class PlayerBullet : MonoBehaviour
             // 计算玩家到敌人的方向
             Vector2 playerToEnemyDir = (collision.transform.position - Player.player1.transform.position).normalized;
 
-            var damageable = collision.gameObject.GetComponent<IDamageable>();
+            // 用 GetComponentInParent 兼容分离结构敌人（碰撞体在 WholeBody 子物体，伤害接口在根节点）
+            var damageable = collision.gameObject.GetComponentInParent<IDamageable>();
             if (damageable == null)
             {
                 // 无可伤害组件也必须走池回收，直接 Destroy 会破坏池的状态跟踪
