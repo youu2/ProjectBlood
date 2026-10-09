@@ -541,7 +541,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   direction: {x: 0, y: 0}
   speed: 12
-  damage: 1
+  damage: 0.5
 --- !u!58 &5542107902490186517
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -715,7 +715,7 @@ MonoBehaviour:
   - {x: 0.21955213, y: -0.32877705, z: 0}
   m_ShapePathHash: 767123678
   m_Mesh: {fileID: 0}
-  m_InstanceId: 148326
+  m_InstanceId: 45898
   m_LocalBounds:
     m_Center: {x: 0.010081962, y: -0.17650296, z: 0}
     m_Extent: {x: 0.20947015, y: 0.15227409, z: 0}
@@ -1265,7 +1265,7 @@ GameObject:
   - component: {fileID: 7709951268060492699}
   - component: {fileID: 6885501857683488525}
   m_Layer: 7
-  m_Name: TitanBoss
+  m_Name: TitanBoss1
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1311,7 +1311,7 @@ MonoBehaviour:
   body: {fileID: 8621066446499680234}
   moveSpeed: 3
   currentHealth: 0
-  maxHealth: 10000
+  maxHealth: 8000
   Damage: 5
   useFlipSprite: 1
   canBeExecuted: 0
@@ -1332,14 +1332,13 @@ MonoBehaviour:
   phase2MoveSpeed: 7
   phase2ShootInterval: 0.3
   phase2ReloadTime: 2
-  bossAttackRange: 5
-  shotgunPelletCount: 5
+  bossAttackRange: 6
+  shotgunPelletCount: 8
   shotgunSpreadAngle: 28
   ringShotCooldown: 10
   ringCount: 3
   ringBulletCount: 20
   ringInterval: 0.8
-  ringSpiralOffset: 30
   dashCooldown: 8
   dashSpeed: 20
   dashDuration: 0.25

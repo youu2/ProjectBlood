@@ -23,6 +23,10 @@ namespace ProjectBlood
         [Tooltip("死亡时掉落 dirtyBlood 的数量")]
         public int dirtyBloodDropCount = 5;
 
+        [Header("=== 瞄准设置 ===")]
+        [Tooltip("武器瞄准玩家的旋转速度（度/秒）。值越小转得越慢，玩家越容易通过走位躲避；设很大则接近瞬间锁敌")]
+        public float rotationSpeed = 180f;
+
         [Header("=== 阶段切换设置 ===")]
         [Tooltip("进入二阶段的血量百分比（0.5 = 半血）")]
         [Range(0f, 1f)] public float phaseTwoHpPercent = 0.5f;

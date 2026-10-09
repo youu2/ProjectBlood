@@ -48,7 +48,6 @@ namespace ProjectBlood
         [Tooltip("一共射几圈")] public int ringCount = 3;
         [Tooltip("每圈有多少发子弹")] public int ringBulletCount = 16;
         [Tooltip("两圈之间的间隔（秒）")] public float ringInterval = 0.8f;
-        [Tooltip("每圈的旋转偏移角度（形成螺旋感）")] public float ringSpiralOffset = 15f;
 
         [Header("=== 爆发推进参数 ===")]
         [Tooltip("推进冷却时间（秒）")] public float dashCooldown = 8f;
@@ -71,6 +70,9 @@ namespace ProjectBlood
         // 两个技能的冷却计时器
         private float ringShotCooldownTimer = 0f;
         private float dashCooldownTimer = 0f;
+
+        // 当前平滑后的瞄准方向（用于 Arm 旋转与弹道方向，配合 rotationSpeed 实现非瞬间锁敌）
+        private Vector3 currentAimDir = Vector3.right;
 
         // 记录换弹前的移速，换弹结束后恢复
         private float moveSpeedBeforeReload;
@@ -108,6 +110,12 @@ namespace ProjectBlood
 
             // 散射参数直接用本类的 shotgunPelletCount / shotgunSpreadAngle，
             // 不再复用 ShootingEnemy 的字段（BossBase 不再继承 ShootingEnemy）
+
+            // 初始瞄准方向直接对准玩家，避免第一帧 Arm 从右方硬转过去
+            if (Player.player1 != null)
+            {
+                currentAimDir = (Player.player1.transform.position - transform.position).normalized;
+            }
         }
 
         protected override void Update()
@@ -243,9 +251,10 @@ namespace ProjectBlood
             if (enemyBullet == null || player == null) return;
             UpdateRotate(directionToPlayer);
 
-            // 子弹从枪口 ShotPoint 射出，散射方向也从枪口重新计算，保证视觉与弹道一致
+            // 子弹从枪口 ShotPoint 射出，方向使用平滑后的 currentAimDir（而非瞬间指向玩家），
+            // 保证弹道与枪口 Arm 实际朝向一致，配合 rotationSpeed 让玩家可走位躲避
             Vector3 spawnPos = ShotPoint != null ? ShotPoint.position : transform.position;
-            Vector3 fireDir = (player.transform.position - spawnPos).normalized;
+            Vector3 fireDir = currentAimDir.normalized;
             FireScatterBullets(enemyBullet, fireDir, shotgunPelletCount, shotgunSpreadAngle, spawnPos: spawnPos);
         }
 
@@ -409,18 +418,32 @@ namespace ProjectBlood
         }
 
         // 每帧旋转 Arm 使枪指向玩家；瞄向左半边时翻转武器（scale.y 取反），避免枪身倒置
+        // 加入 rotationSpeed 转向速度，Arm 不再瞬间锁敌，玩家可通过高速走位让枪口跟不上
         private void AimWeaponAtPlayer()
         {
             if (Arm == null || Player.player1 == null) return;
 
-            Vector3 dir = Player.player1.transform.position - Arm.position;
-            float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+            Vector3 targetDir = Player.player1.transform.position - Arm.position;
+
+            // 玩家几乎贴在 Arm 上时不更新瞄准，避免目标方向为零导致 RotateTowards 异常
+            if (targetDir.sqrMagnitude > 0.0001f)
+            {
+                // 用 RotateTowards 按 rotationSpeed（度/秒）逐步转向玩家，
+                // maxDelta 用弧度：rotationSpeed * Deg2Rad * deltaTime
+                currentAimDir = Vector3.RotateTowards(
+                    currentAimDir,
+                    targetDir,
+                    rotationSpeed * Mathf.Deg2Rad * Time.deltaTime,
+                    0f);
+            }
+
+            float angle = Mathf.Atan2(currentAimDir.y, currentAimDir.x) * Mathf.Rad2Deg;
             Arm.rotation = Quaternion.Euler(0f, 0f, angle);
 
             if (WeaponAnimator != null)
             {
                 Vector3 weaponScale = WeaponAnimator.transform.localScale;
-                weaponScale.y = dir.x < 0f ? -Mathf.Abs(weaponScale.y) : Mathf.Abs(weaponScale.y);
+                weaponScale.y = targetDir.x < 0f ? -Mathf.Abs(weaponScale.y) : Mathf.Abs(weaponScale.y);
                 WeaponAnimator.transform.localScale = weaponScale;
             }
         }
