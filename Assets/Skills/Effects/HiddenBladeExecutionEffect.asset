@@ -17,7 +17,7 @@ MonoBehaviour:
   totalDurationFallback: 0.5
   stabDamage: 1
   executionDamage: 9999
-  bloodBankReward: 30
+  bloodBankReward: 5
   lifestealPercent: 0.01
   skillName: "\u8896\u5251"
   wallMask:

@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skillName: "\u8896\u5251"
   icon: {fileID: 21300000, guid: b76dd95572dfce54997b665eb1ac3d74, type: 3}
-  description: "\u9AD8\u901F\u79FB\u52A8\u81F3\u654C\u4EBA\u8EAB\u540E\u5E76\u7ED9\u4E88\u81F4\u547D\u4E00\u51FB"
+  description: "\u9AD8\u901F\u79FB\u52A8\u81F3\u6FD2\u6B7B\u654C\u4EBA\u8EAB\u540E\u5E76\u7ED9\u4E88\u81F4\u547D\u4E00\u51FB\uFF0C\u6210\u529F\u523A\u6740\u76EE\u6807\u4F1A\u5237\u65B0\u51B7\u5374"
   skillType: 4
-  chargeInterval: 1
+  chargeInterval: 8
   maxCharges: 1
   initialCharges: 1
   duration: 0.7
