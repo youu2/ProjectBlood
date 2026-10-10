@@ -715,7 +715,7 @@ MonoBehaviour:
   - {x: 0.21955213, y: -0.32877705, z: 0}
   m_ShapePathHash: 767123678
   m_Mesh: {fileID: 0}
-  m_InstanceId: 45898
+  m_InstanceId: 71858
   m_LocalBounds:
     m_Center: {x: 0.010081962, y: -0.17650296, z: 0}
     m_Extent: {x: 0.20947015, y: 0.15227409, z: 0}
@@ -1324,6 +1324,7 @@ MonoBehaviour:
   portal: {fileID: 7066438792343617823, guid: e880434491b948f46a9a06390da3d907, type: 3}
   coinDropCount: 20
   dirtyBloodDropCount: 3
+  rotationSpeed: 180
   phaseTwoHpPercent: 0.5
   phaseTransitionDuration: 1
   phase1MoveSpeed: 5
@@ -1342,6 +1343,7 @@ MonoBehaviour:
   dashCooldown: 8
   dashSpeed: 20
   dashDuration: 0.25
+  phaseTransitionPureBloodCount: 30
   shootSound: {fileID: 8300000, guid: 5fe488c5c8b64a44081ccf13e75ded29, type: 3}
   dashSound: {fileID: 8300000, guid: 62e37a56120bdc2469fa15a1b98235cf, type: 3}
   phaseTwoSound: {fileID: 0}

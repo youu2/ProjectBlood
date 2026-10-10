@@ -1,4 +1,4 @@
-// Generate Id:5be3c690-ec95-464e-924d-042707d5964e
+// Generate Id:39a68c1b-41a1-490b-8d30-3275383db485
 using UnityEngine;
 
 namespace ProjectBlood
@@ -7,17 +7,15 @@ namespace ProjectBlood
 	{
 		public ProjectBlood.HealthBar HealthBar;
 		
+		public RectTransform ExpBar;
+		
 		public ProjectBlood.UIMap UIMap;
-		
-		public UnityEngine.UI.Image SkillIcon;
-		
-		public UnityEngine.UI.Image LoadingPage;
-		
-		public TMPro.TextMeshProUGUI LoadingText;
 		
 		public UnityEngine.UI.Image CoinIcon;
 		
-		public UnityEngine.UI.Image FaceFrame;
+		public RectTransform SkillsUI;
+		
+		public Animator UpgradeNotice;
 		
 		public TMPro.TextMeshProUGUI LevelText;
 		
@@ -27,8 +25,6 @@ namespace ProjectBlood
 		
 		public TMPro.TextMeshProUGUI CoinText;
 		
-		public RectTransform SkillText;
-		
 		public TMPro.TextMeshProUGUI ExpText;
 		
 		public TMPro.TextMeshProUGUI PlayerLevelText;
@@ -37,7 +33,11 @@ namespace ProjectBlood
 		
 		public Animator BossShowAnimator;
 		
-		public Animator UpgradeNotice;
+		public UnityEngine.UI.Image FaceFrame;
+		
+		public UnityEngine.UI.Image LoadingPage;
+		
+		public TMPro.TextMeshProUGUI LoadingText;
 		
 	}
 }

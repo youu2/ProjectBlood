@@ -52,11 +52,7 @@ namespace ProjectBlood
                 HPText.text = "HP: " + Mathf.FloorToInt(Global.currentHP.Value) + "/" + Mathf.FloorToInt(maxHP);
             }).UnRegisterWhenGameObjectDestroyed(gameObject);
 
-            Global.Exp.RegisterWithInitValue(Exp =>
-            {
-                ExpText.text = "Exp: " + Exp + "/" + Global.MAX_EXP;
-            }).UnRegisterWhenGameObjectDestroyed(gameObject);
-
+            // 不再展示 Exp 详细进度文本，经验进度改由经验条（ExpBar）显示
             Global.Level.RegisterWithInitValue(Level =>
             {
                 PlayerLevelText.text = "Level: " + Level;
@@ -219,16 +215,16 @@ namespace ProjectBlood
             GUIInstance.ClipText.Hide();
             GUIInstance.BloodText.Hide();
             GUIInstance.UIMap.Hide();
-            GUIInstance.SkillIcon.Hide();
+            GUIInstance.SkillsUI.Hide();
             GUIInstance.CoinIcon.Hide();
             GUIInstance.FaceFrame.Hide();
             GUIInstance.LevelText.Hide();
             GUIInstance.CoinText.Hide();
-            GUIInstance.ExpText.Hide();
             GUIInstance.HPText.Hide();
-            GUIInstance.SkillText.Hide();
             GUIInstance.PlayerLevelText.Hide();
             GUIInstance.HealthBar.Hide();
+            GUIInstance.ExpBar.Hide();
+
             // GameUI 为 DontDestroyOnLoad，升级提示必须显式隐藏，
             // 否则带未使用升级次数退出到主菜单/加载页时会跨场景残留
             GUIInstance.UpgradeNotice.gameObject.SetActive(false);
@@ -243,16 +239,15 @@ namespace ProjectBlood
             GUIInstance.ClipText.Show();
             GUIInstance.BloodText.Show();
             GUIInstance.UIMap.Show();
-            GUIInstance.SkillIcon.Show();
+            GUIInstance.SkillsUI.Show();
             GUIInstance.CoinIcon.Show();
             GUIInstance.FaceFrame.Show();
             GUIInstance.LevelText.Show();
             GUIInstance.CoinText.Show();
-            GUIInstance.ExpText.Show();
             GUIInstance.HPText.Show();
-            GUIInstance.SkillText.Show();
             GUIInstance.PlayerLevelText.Show();
             GUIInstance.HealthBar.Show();
+            GUIInstance.ExpBar.Show();
             // 按累计可升级次数恢复提示显隐：继续游戏等场景 ImportFrom 恢复相同值不触发事件，需主动同步
             GUIInstance.UpgradeNotice.gameObject.SetActive(Global.PendingUpgradeCount.Value > 0);
             BloodSigilSlotHUD.RestoreVisibility();

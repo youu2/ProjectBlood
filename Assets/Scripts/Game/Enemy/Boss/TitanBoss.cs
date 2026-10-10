@@ -54,6 +54,10 @@ namespace ProjectBlood
         [Tooltip("推进速度")] public float dashSpeed = 12f;
         [Tooltip("推进持续时间（秒），距离 = 速度 × 时长")] public float dashDuration = 0.4f;
 
+        [Header("=== 转阶段掉落 ===")]
+        [Tooltip("转二阶段时在 Boss 位置生成的 PureBlood 数量（飞射/追踪/吸收表现与强化武器击杀掉落完全一致）")]
+        [Min(0)] public int phaseTransitionPureBloodCount = 5;
+
         [Header("=== 音效设置 ===")]
         [Tooltip("霰弹射击音效")] public AudioClip shootSound;
         [Tooltip("爆发推进音效")] public AudioClip dashSound;
@@ -323,6 +327,10 @@ namespace ProjectBlood
             // 演出期间原地不动，身体切回 Idle
             SetMoving(false);
             PlayBossSfx(phaseTwoSound);
+
+            // 从 Boss 位置向四周喷射 PureBlood（复用武器吸血击杀的生成路径，表现完全一致）
+            Global.GeneratePureBlood(transform.position, phaseTransitionPureBloodCount);
+
             base.StartPhaseTwo();
         }
 

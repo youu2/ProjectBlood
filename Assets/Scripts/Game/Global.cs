@@ -284,7 +284,6 @@ namespace ProjectBlood
         // 单个 PB 治疗量 = 总治疗量 / 数量（保证 PB 治疗总和等于原吸血治疗量）
         public static void GeneratePureBlood(GameObject enemy, float totalLifestealAmount)
         {
-            if (DropManager.Instance == null || DropManager.Instance.PureBlood == null) return;
             if (enemy == null) return;
             if (totalLifestealAmount <= 0f) return;
 
@@ -292,7 +291,16 @@ namespace ProjectBlood
             if (count <= 0) return;
             float healPerPB = totalLifestealAmount / count;
 
-            Vector3 origin = enemy.Position();
+            GeneratePureBlood(enemy.Position(), count, healPerPB);
+        }
+
+        // 在指定位置生成指定数量的 PB 道具（Boss 转阶段等自定义场景复用，
+        // 与武器吸血击杀走完全相同的生成路径，飞射/追踪/吸收表现一致）
+        public static void GeneratePureBlood(Vector3 origin, int count, float healPerPB = 1f)
+        {
+            if (DropManager.Instance == null || DropManager.Instance.PureBlood == null) return;
+            if (count <= 0) return;
+
             for (int i = 0; i < count; i++)
             {
                 var pb = DropManager.Instance.PureBlood.Instantiate()
