@@ -41,7 +41,7 @@ namespace ProjectBlood
 
         private void OnWeaponFired(WeaponBase weapon)
         {
-            if (fireLight == null) return;
+            if (fireLight == null || weapon is Laser) return;
 
             // 高射速竞态：中断上一次尚未完成的淡出，保证每次开火都从满强度重新开始
             if (_currentFadeRoutine != null)
