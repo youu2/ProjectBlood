@@ -4371,7 +4371,7 @@ MonoBehaviour:
   playerBullet: {fileID: 2015287873}
   currentWeapon: {fileID: 0}
   SpecialReloadVolume: 0.7
-  HurtSoundCooldown: 3
+  HurtSoundCooldown: 1.5
   CollisionBox: {fileID: 1844329764}
   HurtBox: {fileID: 745137602}
   AimMark: {fileID: 232362980}
@@ -5348,7 +5348,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -5895,7 +5895,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 1, b: 0.7034366, a: 1}
+  m_Color: {r: 0, g: 0.919538, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -7032,7 +7032,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1014.3, y: -949.4}
+  m_AnchoredPosition: {x: 1014.9, y: -949.2}
   m_SizeDelta: {x: 100, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1083233936
@@ -7082,8 +7082,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 40
-  m_fontSizeBase: 40
+  m_fontSize: 35
+  m_fontSizeBase: 35
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -7515,7 +7515,7 @@ MonoBehaviour:
   healFadeInTime: 0.12
   healFadeOutTime: 0.7
   intensitySmoothSpeed: 8.98
-  vignetteSmoothness: 0.823
+  vignetteSmoothness: 0.855
   vignetteRounded: 0
 --- !u!1 &1139333989
 GameObject:
@@ -13012,7 +13012,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1014.3, y: -949.4}
+  m_AnchoredPosition: {x: 1014.7, y: -949.4}
   m_SizeDelta: {x: 100, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2060757684
@@ -13062,8 +13062,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 40
-  m_fontSizeBase: 40
+  m_fontSize: 35
+  m_fontSizeBase: 35
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
