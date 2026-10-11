@@ -175,10 +175,15 @@ namespace ProjectBlood
             RefreshSkillCD();
         }
 
-        // 技能CD减免：全局统一减免率（局外养成，对所有技能生效），直接显示单个百分比
+        // 技能CD减免：局外养成的全局减免（跨局保留）+ 局内升级系统的全技能共享减免（SkillCDUpgrade，单局有效）。
+        // 两类减免对充能间隔相加生效（见 PlayerUpgradeState.GetAdjustedSkillChargeInterval），此处按同一口径显示合计百分比。
         private void RefreshSkillCD()
         {
-            int percent = Mathf.RoundToInt(PlayerUpgradeState.GlobalSkillCooldownReduction * 100f);
+            float inGameReduction = UpgradeManager.Instance != null
+                ? UpgradeManager.Instance.GetSharedSkillCooldownReduction()
+                : 0f;
+            float totalReduction = PlayerUpgradeState.GlobalSkillCooldownReduction + inGameReduction;
+            int percent = Mathf.RoundToInt(totalReduction * 100f);
             skillCDText.text = $"技能CD：- {percent}%";
         }
 

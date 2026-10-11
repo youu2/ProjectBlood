@@ -84,6 +84,27 @@ namespace ProjectBlood
             return GetRandomUpgrades(defaultDrawCount);
         }
 
+        // 局内升级系统提供的技能 CD 减免率（当前所有 skillCooldowns 减免由全技能共享，
+        // 0.1 = 缩短 10%）：池中每张被选过的强化卡按 被选次数 × 每次减免 累加。
+        // 局外养成提供的全局减免见 PlayerUpgradeState.GlobalSkillCooldownReduction，由 UI 层另行叠加。
+        public float GetSharedSkillCooldownReduction()
+        {
+            float total = 0f;
+            foreach (var upgrade in upgradePool)
+            {
+                if (upgrade?.effect?.skillCooldowns == null) continue;
+
+                int usedCount = PlayerUpgradeState.GetUpgradeUsageCount(upgrade);
+                if (usedCount == 0) continue;
+
+                foreach (var skillCD in upgrade.effect.skillCooldowns)
+                {
+                    total += usedCount * skillCD.cooldownReductionPerStack;
+                }
+            }
+            return total;
+        }
+
         // 应用选中的组合强化：按条目顺序逐条应用；武器伤害/弹夹条目按掩码逐武器应用,
         // 任一武器伤害达到满级即触发该武器的进化。无效配置在此兜底拒绝。
         public void ApplyUpgrade(UpgradeSO upgrade)
