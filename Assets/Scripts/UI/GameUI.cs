@@ -11,6 +11,9 @@ namespace ProjectBlood
         public static event System.Action OnLoadingComplete;
         // 加载页显隐事件：true=加载页打开（隐藏指针），false=加载页关闭（恢复指针）
         public static event System.Action<bool> OnLoadingPageStateChanged;
+        // 加载页当前是否打开（静态可轮询状态）：供 VignetteManager 等无法可靠订阅事件时序的模块查询，
+        // 避免事件订阅晚于触发导致的漏报
+        public static bool IsLoadingPageActive { get; private set; }
 
         // Inspector 中设置的关卡名原色，用于非黑暗关显示
         private Color levelTextBaseColor;
@@ -143,6 +146,7 @@ namespace ProjectBlood
             {
                 LoadingPage.gameObject.SetActive(true);
             }
+            IsLoadingPageActive = true;
             OnLoadingPageStateChanged?.Invoke(true); // 加载页打开，隐藏指针
 
             Global.IsGamePaused = true;
@@ -199,6 +203,7 @@ namespace ProjectBlood
             {
                 LoadingPage.gameObject.SetActive(false);
             }
+            IsLoadingPageActive = false;
             OnLoadingPageStateChanged?.Invoke(false); // 加载页关闭，恢复指针
             // 注意：此处不恢复 Time.timeScale —— 场景激活时目标场景的 Start 已先于本收尾执行：
             // InGame 由 MapController.Start 设回 1，GameStart 由 UIGameStartPanel.OnInit 设为 0.8

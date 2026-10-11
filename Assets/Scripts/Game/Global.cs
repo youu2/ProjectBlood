@@ -346,11 +346,14 @@ namespace ProjectBlood
 
         public static void AddHP(float amount)
         {
+            if (amount <= 0f) return;
             currentHP.Value += amount;
             if (currentHP.Value > INGAME_MAX_HP.Value)
             {
                 currentHP.Value = INGAME_MAX_HP.Value;
             }
+            // 屏幕暗角：治疗闪绿
+            VignetteManager.GetOrCreateInstance().NotifyHeal();
             // 血印：治疗后血量变化事件（驱动"血量大于/等于阈值"类触发）
             BloodSigilState.NotifyHealthChanged();
         }

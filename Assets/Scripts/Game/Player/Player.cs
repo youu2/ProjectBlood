@@ -37,6 +37,8 @@ namespace ProjectBlood
         public bool AutoAimLockEnabled { get; set; }
 
         [SerializeField] private float SpecialReloadVolume = 0.7f;
+        [SerializeField] private float HurtSoundCooldown = 3f; // 受伤音效最小触发间隔(秒)
+        private float lastHurtSoundTime = -999f; // 上次播放受伤音效的时间
         private bool recorded = false;
         Vector2 lastMoveDir;
 
@@ -374,13 +376,19 @@ namespace ProjectBlood
             BloodBank.Instance.AddBlood((int)Mathf.Round(damage));
             if (Global.currentHP.Value < 0) Global.currentHP.Value = 0;
 
+            // 屏幕暗角：受伤叠加 BonusIntensity（在 BaseIntensity 之上短暂增强红屏）
+            VignetteManager.GetOrCreateInstance().NotifyHurt();
+
             // 血印：实际受伤事件（在扣血后通知，供受伤触发类模块结算）
             BloodSigilState.NotifyDamageTaken(damage);
             // 血印：血量变化事件（驱动血量阈值类触发，边沿锁存避免区间内重复触发）
             BloodSigilState.NotifyHealthChanged();
 
-            if (Global.currentHP.Value > 0)
+            // 受伤音效限频：冷却期内重复受伤不再叠加播放，避免音效轰炸
+            if (Global.currentHP.Value > 0
+                && Time.time - lastHurtSoundTime >= HurtSoundCooldown)
             {
+                lastHurtSoundTime = Time.time;
                 AudioKitManager.Instance.PlayOneShot("Hurt", volume: 0.5f);
             }
         }
