@@ -19,7 +19,7 @@ namespace ProjectBlood
         public class WeaponRow
         {
             public GameObject rowObject;              // 武器行物体，未拥有该武器时隐藏
-            public TextMeshProUGUI dmgText;          // 行文本：攻击力(增伤%)
+            public TextMeshProUGUI dmgText;          // 行文本：全自动=最终伤害(增伤%)，半自动=基础伤害(攻速%)
             public TextMeshProUGUI ammoText;         // 行文本：当前弹药/弹夹容量
             public WeaponType weaponType;             // 本行对应的武器类型
         }
@@ -225,7 +225,9 @@ namespace ProjectBlood
             }
         }
 
-        // 武器行：已拥有的武器显示"攻击力(增伤%)   当前弹药/弹夹容量"，未拥有的隐藏
+        // 武器行：已拥有的武器显示"伤害数值 + 强化比例   当前弹药/弹夹容量"，未拥有的隐藏。
+        // 按设计规则分支：全自动武器(MP5/AK/Laser)显示 最终伤害(基础×增伤倍率)+增伤%；
+        // 半自动武器(DE/ShotGun/AWP)不显示增伤,改为 基础伤害+攻速加成%。
         private void RefreshWeaponRows()
         {
             if (weaponRows == null || Player.player1 == null) return;
@@ -264,17 +266,30 @@ namespace ProjectBlood
                 {
                     baseDamage = laser.HitDamage;
                 }
-                float ratio = PlayerUpgradeState.GetFinalDamageRatio(row.weaponType);
-                int bonusPercent = Mathf.RoundToInt((ratio - 1f) * 100f);
-                string sign = bonusPercent >= 0 ? "+" : "";
+                string damageLine;
+                if (row.weaponType.IsSemiAutomatic())
+                {
+                    // 半自动:基础伤害(不吃任何伤害倍率) + 攻速加成比例
+                    int speedPercent = Mathf.RoundToInt(
+                        PlayerUpgradeState.GetWeaponAttackSpeedBonus(row.weaponType) * 100f);
+                    string speedSign = speedPercent >= 0 ? "+" : "";
+                    damageLine = $"{Mathf.RoundToInt(baseDamage)}{speedSign}{speedPercent}%";
+                }
+                else
+                {
+                    // 全自动:最终伤害(基础×增伤倍率) + 增伤比例
+                    float ratio = PlayerUpgradeState.GetFinalDamageRatio(row.weaponType);
+                    int bonusPercent = Mathf.RoundToInt((ratio - 1f) * 100f);
+                    string sign = bonusPercent >= 0 ? "+" : "";
+                    damageLine = $"{Mathf.RoundToInt(baseDamage * ratio)}{sign}{bonusPercent}%";
+                }
 
                 // 刚获得枪时 clip 可能为 null，弹药部分显示为 "-"
                 string ammoText = clip != null
                     ? $"{clip.currentAmmo}/{clip.maxAmmo}"
                     : "-/-";
 
-                row.dmgText.text =
-                    $"{Mathf.RoundToInt(baseDamage * ratio)}{sign}{bonusPercent}%";
+                row.dmgText.text = damageLine;
                 row.ammoText.text = ammoText;
             }
         }

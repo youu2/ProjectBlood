@@ -150,7 +150,8 @@ namespace ProjectBlood
         }
 
         // 配置校验：把发现的问题追加到 errors,返回是否通过(供编辑期 OnValidate 与运行期拦截共用)。
-        // 校验规则：不允许空配置、0 值(无效果)、同列表内重复子类型(重复叠加会造成配置歧义)。
+        // 校验规则：不允许空配置、0 值(无效果)、同列表内重复子类型(重复叠加会造成配置歧义);
+        // 设计分类:半自动武器(DE/ShotGun/AWP)只能配置攻速强化,全自动武器(MP5/AK/Laser)只能配置增伤。
         public bool Validate(List<string> errors)
         {
             if (IsEmpty) errors.Add("未配置任何效果");
@@ -170,6 +171,7 @@ namespace ProjectBlood
                 if (damage.damageBonusPerStack == 0f) errors.Add("武器伤害条目数值为 0(无效果)");
                 foreach (var weaponType in damage.weapons.ToWeaponTypes())
                 {
+                    if (weaponType.IsSemiAutomatic()) errors.Add($"武器 {weaponType} 是半自动武器,只能获得攻速强化,不能配置增伤");
                     if (!damageWeapons.Add(weaponType)) errors.Add($"武器 {weaponType} 在多条伤害条目中重复");
                 }
             }
@@ -192,6 +194,7 @@ namespace ProjectBlood
                 if (interval.attackSpeedBonusPerStack == 0f) errors.Add("武器攻速条目数值为 0(无效果)");
                 foreach (var weaponType in interval.weapons.ToWeaponTypes())
                 {
+                    if (!weaponType.IsSemiAutomatic()) errors.Add($"武器 {weaponType} 是全自动武器,只能获得增伤,不能配置攻速强化");
                     if (!intervalWeapons.Add(weaponType)) errors.Add($"武器 {weaponType} 在多条攻速条目中重复");
                 }
             }
