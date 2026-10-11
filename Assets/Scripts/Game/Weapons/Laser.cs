@@ -48,7 +48,7 @@ namespace ProjectBlood
                     damageable.TakeDamage(finalDamage, playerToEnemyDir);
 
                     // 吸血：致命一击时按敌人总生命值换算为 PB 道具
-                    if (isLethal && Lifesteal.Level > 0 && Player.player1 != null && enemyMaxHP > 0f)
+                    if (isLethal && Lifesteal.Level > 0 && Player.player1 != null && enemyMaxHP > 0f && (IsBulletEnhanced || damageable is BossBase))
                     {
                         float totalLifesteal = Lifesteal.GetLifestealAmount(enemyMaxHP);
                         Global.GeneratePureBlood(damageHit.collider.gameObject, totalLifesteal);

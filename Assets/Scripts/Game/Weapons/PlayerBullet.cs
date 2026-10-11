@@ -96,7 +96,7 @@ public class PlayerBullet : MonoBehaviour
             damageable.TakeDamage(finalDamage, playerToEnemyDir);
 
             // 吸血：致命一击时按敌人总生命值换算为 PB 道具
-            if (isLethal && lifestealPercent > 0f && Player.player1 != null && enemyMaxHP > 0f && isEnhanced)
+            if (isLethal && lifestealPercent > 0f && Player.player1 != null && enemyMaxHP > 0f && (isEnhanced || damageable is BossBase))
             {
                 float totalLifesteal = enemyMaxHP * (lifestealPercent / 100f);
                 Global.GeneratePureBlood(collision.gameObject, totalLifesteal);
