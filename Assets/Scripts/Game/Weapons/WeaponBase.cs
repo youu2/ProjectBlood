@@ -317,7 +317,7 @@ namespace ProjectBlood
         // 强化系统使用的武器类型枚举；Data 加载前(如 Awake 阶段)回退到物体名
         public WeaponType WeaponType => WeaponTypeExtensions.FromName(Data != null ? Data.weaponName : gameObject.name);
 
-        // 强化调整后的有效攻击间隔(唯一读取点):序列化基础间隔 × (1 - 累计缩减),下限保护在 PlayerUpgradeState 内。
+        // 强化调整后的有效攻击间隔(唯一读取点):序列化基础间隔 ÷ (1 + 累计攻速加成),下限保护在 PlayerUpgradeState 内。
         // 开火判定统一传入此值,强化应用/存档恢复无需回写武器实例
         public float EffectiveAttackInterval => PlayerUpgradeState.GetAdjustedAttackInterval(WeaponType, AttackInterval);
 

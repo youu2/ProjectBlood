@@ -37,7 +37,7 @@ namespace ProjectBlood
         public List<UpgradeSaveEntry> upgrades = new List<UpgradeSaveEntry>();
         public List<WeaponDamageSaveEntry> weaponDamageLevels = new List<WeaponDamageSaveEntry>();
         public List<WeaponDamageRatioSaveEntry> weaponDamageRatios = new List<WeaponDamageRatioSaveEntry>();
-        public List<WeaponAttackIntervalSaveEntry> weaponAttackIntervalReductions = new List<WeaponAttackIntervalSaveEntry>();
+        public List<WeaponAttackSpeedSaveEntry> weaponAttackSpeedBonuses = new List<WeaponAttackSpeedSaveEntry>();
         public List<SkillCooldownSaveEntry> skillCooldownReductions = new List<SkillCooldownSaveEntry>();
         public List<SkillMaxChargesSaveEntry> skillMaxChargesBonuses = new List<SkillMaxChargesSaveEntry>();
         public float globalDamageRatio = 1f;
@@ -104,10 +104,10 @@ namespace ProjectBlood
     }
 
     [Serializable]
-    public class WeaponAttackIntervalSaveEntry
+    public class WeaponAttackSpeedSaveEntry
     {
         public string weaponType;   // WeaponType 枚举名
-        public float reduction;     // 累计攻击间隔缩减比例(0.05 = 缩短 5%,可为负)
+        public float bonus;         // 累计攻速加成比例(0.05 = 基础攻速 +5%,线性相加,可为负)
     }
 
     [Serializable]

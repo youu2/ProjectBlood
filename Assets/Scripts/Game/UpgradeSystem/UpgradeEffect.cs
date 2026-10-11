@@ -41,16 +41,18 @@ namespace ProjectBlood
         public int ammoBonusPerStack = 2;
     }
 
-    // 单条武器攻击间隔(射速)效果,weapons 为多选掩码,intervalReductionPerStack 可为负。
-    // 缩减比例按相加方式叠加:有效攻击间隔 = 武器序列化基础间隔 × (1 - 累计缩减)
-    // (例如每次 5%,选 5 次后攻击间隔缩短 25%);负数表示增加攻击间隔(代价型)。
+    // 单条武器攻击速度(射速)效果,weapons 为多选掩码,attackSpeedBonusPerStack 可为负。
+    // 攻速提升按基础攻速线性相加:有效攻击间隔 = 武器序列化基础间隔 ÷ (1 + 累计攻速加成)
+    // (例如每次 +5%,选 5 次后攻速为基础值的 125%,攻击间隔变为 base ÷ 1.25);
+    // 负数表示降低攻速(代价型)。
     [Serializable]
     public class WeaponAttackIntervalEffect
     {
         [Tooltip("目标武器(可勾选多把)")]
         public WeaponTypeFlags weapons = WeaponTypeFlags.DE;
-        [Tooltip("每次选择的攻击间隔缩减比例,相加叠加(0.05 = 缩短 5%,-0.05 = 增加 5%)")]
-        public float intervalReductionPerStack = 0.05f;
+        [Tooltip("每次选择提升的攻击速度比例,按基础攻速线性相加(0.05 = +5% 基础攻速,-0.05 = -5%)")]
+        [UnityEngine.Serialization.FormerlySerializedAs("intervalReductionPerStack")]
+        public float attackSpeedBonusPerStack = 0.05f;
     }
 
     // 单条技能充能(CD)减免效果。
@@ -94,7 +96,7 @@ namespace ProjectBlood
         [Tooltip("武器弹夹容量升级(可多条,同一武器不可在多条中重复出现)")]
         public List<WeaponAmmoEffect> weaponAmmos = new List<WeaponAmmoEffect>();
 
-        [Tooltip("武器攻击间隔缩减/增加(可多条,同一武器不可在多条中重复出现;数值可负表示增加间隔)")]
+        [Tooltip("武器攻击速度提升/降低(可多条,同一武器不可在多条中重复出现;数值可负表示降低攻速)")]
         public List<WeaponAttackIntervalEffect> weaponAttackIntervals = new List<WeaponAttackIntervalEffect>();
 
         [Tooltip("技能充能(CD)减免(可多条,同一技能不可在多条中重复出现;数值可负表示增加冷却)")]
@@ -186,11 +188,11 @@ namespace ProjectBlood
             var intervalWeapons = new HashSet<WeaponType>();
             foreach (var interval in weaponAttackIntervals)
             {
-                if (interval.weapons == WeaponTypeFlags.None) errors.Add("武器攻击间隔条目未勾选任何武器");
-                if (interval.intervalReductionPerStack == 0f) errors.Add("武器攻击间隔条目数值为 0(无效果)");
+                if (interval.weapons == WeaponTypeFlags.None) errors.Add("武器攻速条目未勾选任何武器");
+                if (interval.attackSpeedBonusPerStack == 0f) errors.Add("武器攻速条目数值为 0(无效果)");
                 foreach (var weaponType in interval.weapons.ToWeaponTypes())
                 {
-                    if (!intervalWeapons.Add(weaponType)) errors.Add($"武器 {weaponType} 在多条攻击间隔条目中重复");
+                    if (!intervalWeapons.Add(weaponType)) errors.Add($"武器 {weaponType} 在多条攻速条目中重复");
                 }
             }
 

@@ -150,7 +150,7 @@ namespace ProjectBlood
             {
                 foreach (var weaponType in interval.weapons.ToWeaponTypes())
                 {
-                    PlayerUpgradeState.ApplyWeaponAttackIntervalReduction(weaponType, interval.intervalReductionPerStack);
+                    PlayerUpgradeState.ApplyWeaponAttackSpeedBonus(weaponType, interval.attackSpeedBonusPerStack);
                 }
             }
 

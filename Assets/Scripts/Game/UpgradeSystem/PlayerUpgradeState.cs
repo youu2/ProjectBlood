@@ -19,10 +19,10 @@ namespace ProjectBlood
         private static readonly Dictionary<WeaponType, int> weaponDamageLevels = new Dictionary<WeaponType, int>();
         // ---- 武器伤害系数(1.0 = 100%,每次强化累加 bonusPerStack)----
         private static readonly Dictionary<WeaponType, float> weaponDamageRatios = new Dictionary<WeaponType, float>();
-        // ---- 武器攻击间隔(射速)累计缩减比例:按武器类型独立累加 ----
-        // 0.05 = 攻击间隔缩短 5%(射速提升),缩减按相加方式叠加(0.05×5 次 = 缩短 25%);
-        // 可为负(-0.05 = 攻击间隔增加 5%,代价型)。有效攻击间隔 = 武器序列化基础间隔 × (1 - 累计缩减)
-        private static readonly Dictionary<WeaponType, float> weaponAttackIntervalReductions = new Dictionary<WeaponType, float>();
+        // ---- 武器攻击速度(射速)累计加成比例:按武器类型独立累加 ----
+        // 0.05 = 基础攻速 +5%,加成按基础攻速线性相加(0.05×5 次 = +25%,攻击间隔 = 基础间隔 ÷ 1.25);
+        // 可为负(-0.05 = 攻速 -5%,代价型)。有效攻击间隔 = 武器序列化基础间隔 ÷ (1 + 累计攻速加成)
+        private static readonly Dictionary<WeaponType, float> weaponAttackSpeedBonuses = new Dictionary<WeaponType, float>();
         // ---- 技能充能(CD)累计减免比例:按技能名(SkillData.skillName)独立累加 ----
         // 0.1 = 充能间隔缩短 10%,可为负(-0.1 = 增加 10%);有效间隔 = 基础间隔 × (1 - 减免)
         private static readonly Dictionary<string, float> skillCooldownReductions = new Dictionary<string, float>();
@@ -50,7 +50,8 @@ namespace ProjectBlood
         private const float MinWeaponDamageRatio = 0.05f; // 单武器伤害系数下限(5%)
         private const int MinWeaponMaxAmmo = 1;           // 弹夹容量下限(至少 1 发)
         private const float MinSkillChargeInterval = 0.1f; // 技能充能间隔下限(秒),防止高减免叠加导致除零/瞬发
-        private const float MinWeaponAttackInterval = 0.05f; // 武器攻击间隔下限(秒),防止高减免叠加导致每帧连发
+        private const float MinWeaponAttackInterval = 0.05f; // 武器攻击间隔下限(秒),防止攻速加成叠加过高导致每帧连发
+        private const float MinWeaponAttackSpeedRatio = 0.05f; // 武器攻速倍率下限(1+累计加成 的最小值),防止代价型叠加至 <= 0 造成除零/负间隔
 
         // 全局伤害倍率(迁移自旧 PlayerUpgrade.DamageRatio,默认 1.0 不影响原有伤害)
         public static float GlobalDamageRatio { get; private set; } = 1f;
@@ -149,14 +150,18 @@ namespace ProjectBlood
         public static float GetWeaponDamageRatio(WeaponType type)
             => weaponDamageRatios.TryGetValue(type, out float v) ? v : 1f;
 
-        // 某武器累计攻击间隔缩减比例(0.05 = 缩短 5%,可为负;未强化为 0)
-        public static float GetWeaponAttackIntervalReduction(WeaponType type)
-            => weaponAttackIntervalReductions.TryGetValue(type, out float v) ? v : 0f;
+        // 某武器累计攻速加成比例(0.05 = 基础攻速 +5%,按基础攻速线性相加,可为负;未强化为 0)
+        public static float GetWeaponAttackSpeedBonus(WeaponType type)
+            => weaponAttackSpeedBonuses.TryGetValue(type, out float v) ? v : 0f;
 
-        // 应用缩减后的有效攻击间隔 = 武器序列化基础间隔 × (1 - 累计缩减),夹到下限防止叠加至 0/负数导致每帧连发。
+        // 应用加成后的有效攻击间隔 = 武器序列化基础间隔 ÷ (1 + 累计攻速加成)。
+        // 双重保护:攻速倍率夹到下限防止代价型叠加至 <= 0 除零;间隔再夹到下限防止攻速过高每帧连发。
         // WeaponBase/Laser 的开火间隔判定统一走此入口(WeaponBase.EffectiveAttackInterval)。
         public static float GetAdjustedAttackInterval(WeaponType type, float baseInterval)
-            => Mathf.Max(MinWeaponAttackInterval, baseInterval * (1f - GetWeaponAttackIntervalReduction(type)));
+        {
+            float speedRatio = Mathf.Max(MinWeaponAttackSpeedRatio, 1f + GetWeaponAttackSpeedBonus(type));
+            return Mathf.Max(MinWeaponAttackInterval, baseInterval / speedRatio);
+        }
 
         // 某张强化卡累计被选择的次数(MaxUpgradeCount 池过滤依据,按卡牌独立计数)
         public static int GetUpgradeUsageCount(UpgradeSO upgrade)
@@ -381,14 +386,14 @@ namespace ProjectBlood
             }
         }
 
-        // 武器攻击间隔(射速)强化:累计缩减比例(reduction 可为负表示增加间隔)。
+        // 武器攻击速度(射速)强化:累计攻速加成(bonus 可为负表示降低攻速)。
         // 不直接改武器实例:WeaponBase 每次开火判定经 EffectiveAttackInterval 动态读取,
         // 武器重建/切枪/新解锁武器天然生效,无需补应用。
         // 注:不追踪全局等级,池过滤由每卡 MaxUpgradeCount 独立控制,也不参与武器进化线。
-        public static void ApplyWeaponAttackIntervalReduction(WeaponType type, float reduction)
+        public static void ApplyWeaponAttackSpeedBonus(WeaponType type, float bonus)
         {
             if (type == WeaponType.None) return;
-            weaponAttackIntervalReductions[type] = GetWeaponAttackIntervalReduction(type) + reduction;
+            weaponAttackSpeedBonuses[type] = GetWeaponAttackSpeedBonus(type) + bonus;
         }
 
         // 记录一张强化卡被选择一次(由 UpgradeManager.ApplyUpgrade 在应用前调用)。
@@ -437,10 +442,10 @@ namespace ProjectBlood
                 data.weaponDamageRatios.Add(new WeaponDamageRatioSaveEntry { weaponType = kv.Key.ToString(), ratio = kv.Value });
             }
 
-            data.weaponAttackIntervalReductions.Clear();
-            foreach (var kv in weaponAttackIntervalReductions)
+            data.weaponAttackSpeedBonuses.Clear();
+            foreach (var kv in weaponAttackSpeedBonuses)
             {
-                data.weaponAttackIntervalReductions.Add(new WeaponAttackIntervalSaveEntry { weaponType = kv.Key.ToString(), reduction = kv.Value });
+                data.weaponAttackSpeedBonuses.Add(new WeaponAttackSpeedSaveEntry { weaponType = kv.Key.ToString(), bonus = kv.Value });
             }
 
             data.skillCooldownReductions.Clear();
@@ -488,11 +493,11 @@ namespace ProjectBlood
                     weaponDamageRatios[t] = e.ratio;
             }
 
-            weaponAttackIntervalReductions.Clear();
-            foreach (var e in data.weaponAttackIntervalReductions)
+            weaponAttackSpeedBonuses.Clear();
+            foreach (var e in data.weaponAttackSpeedBonuses)
             {
                 if (System.Enum.TryParse<WeaponType>(e.weaponType, out var t))
-                    weaponAttackIntervalReductions[t] = e.reduction;
+                    weaponAttackSpeedBonuses[t] = e.bonus;
             }
 
             skillCooldownReductions.Clear();
@@ -522,7 +527,7 @@ namespace ProjectBlood
         {
             weaponDamageLevels.Clear();
             weaponDamageRatios.Clear();
-            weaponAttackIntervalReductions.Clear();
+            weaponAttackSpeedBonuses.Clear();
             skillCooldownReductions.Clear();
             skillMaxChargesBonuses.Clear();
             upgradeUsageCounts.Clear();
