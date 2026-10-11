@@ -76,7 +76,7 @@ namespace ProjectBlood
                 DrawLaser(shootDir);
             }
 
-            if (attackInterval.CanAttack() && gunClip.CanShoot())
+            if (attackInterval.CanAttack(EffectiveAttackInterval) && gunClip.CanShoot())
             {
                 // 先结算弹药与冷却，再 Attack：与基类保持同一结算时序，
                 // 保证开火事件回调（血印切枪等）中保存的弹药是扣减后的值

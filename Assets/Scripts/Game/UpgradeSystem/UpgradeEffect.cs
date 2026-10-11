@@ -41,6 +41,18 @@ namespace ProjectBlood
         public int ammoBonusPerStack = 2;
     }
 
+    // 单条武器攻击间隔(射速)效果,weapons 为多选掩码,intervalReductionPerStack 可为负。
+    // 缩减比例按相加方式叠加:有效攻击间隔 = 武器序列化基础间隔 × (1 - 累计缩减)
+    // (例如每次 5%,选 5 次后攻击间隔缩短 25%);负数表示增加攻击间隔(代价型)。
+    [Serializable]
+    public class WeaponAttackIntervalEffect
+    {
+        [Tooltip("目标武器(可勾选多把)")]
+        public WeaponTypeFlags weapons = WeaponTypeFlags.DE;
+        [Tooltip("每次选择的攻击间隔缩减比例,相加叠加(0.05 = 缩短 5%,-0.05 = 增加 5%)")]
+        public float intervalReductionPerStack = 0.05f;
+    }
+
     // 单条技能充能(CD)减免效果。
     // 技能系统是数据驱动的(SkillData 资产),身份标识为 SkillData.skillName 字符串而非固定枚举,
     // 因此多目标通过 skillNames 列表配置:填入与 SkillData.skillName 完全一致的名字即可勾选多个技能。
@@ -56,7 +68,7 @@ namespace ProjectBlood
     }
 
     // 组合强化效果：一个 UpgradeSO 内可同时配置多条不同大类、多个子类型的效果,
-    // 数值可正可负；应用时按 stats -> weaponDamages -> weaponAmmos -> skillCooldowns 顺序逐条生效。
+    // 数值可正可负；应用时按 stats -> weaponDamages -> weaponAmmos -> weaponAttackIntervals -> skillCooldowns 顺序逐条生效。
     // 可用性判定为"全部条目都可用才可抽取"(全有或全无),避免出现半生效的组合强化。
     // 被动增伤类效果已迁移至血印系统(BloodSigil)，不再在此配置。
     [Serializable]
@@ -82,18 +94,22 @@ namespace ProjectBlood
         [Tooltip("武器弹夹容量升级(可多条,同一武器不可在多条中重复出现)")]
         public List<WeaponAmmoEffect> weaponAmmos = new List<WeaponAmmoEffect>();
 
+        [Tooltip("武器攻击间隔缩减/增加(可多条,同一武器不可在多条中重复出现;数值可负表示增加间隔)")]
+        public List<WeaponAttackIntervalEffect> weaponAttackIntervals = new List<WeaponAttackIntervalEffect>();
+
         [Tooltip("技能充能(CD)减免(可多条,同一技能不可在多条中重复出现;数值可负表示增加冷却)")]
         public List<SkillCooldownEffect> skillCooldowns = new List<SkillCooldownEffect>();
 
         // 是否一条效果都没配置(无效配置)
         public bool IsEmpty
             => stats.Count == 0 && weaponDamages.Count == 0 && weaponAmmos.Count == 0
-            && skillCooldowns.Count == 0;
+            && weaponAttackIntervals.Count == 0 && skillCooldowns.Count == 0;
 
         // 条目级可用性(与卡牌身份无关):所有条目均满足才返回 true
         // BaseStat       -> 无运行时限制(属性总能被改,选择次数上限由 UpgradeManager 按 MaxUpgradeCount 控制)
         // WeaponDamage   -> 掩码中每把武器均已拥有
         // WeaponAmmo     -> 掩码中每把武器均已拥有
+        // WeaponAttackInterval -> 掩码中每把武器均已拥有
         // SkillCooldown  -> 列表中每个技能均已在当前玩家的 SkillManager 中加载
         // 注:各属性/武器/技能的全局累计次数不在此判断;每张卡"能被选几次"由 UpgradeManager 查
         //     PlayerUpgradeState.GetUpgradeUsageCount(本卡) 与 MaxUpgradeCount 比较得出,故多张卡互不影响。
@@ -109,6 +125,13 @@ namespace ProjectBlood
             foreach (var ammo in weaponAmmos)
             {
                 foreach (var weaponType in ammo.weapons.ToWeaponTypes())
+                {
+                    if (!PlayerUpgradeState.IsWeaponOwned(weaponType)) return false;
+                }
+            }
+            foreach (var interval in weaponAttackIntervals)
+            {
+                foreach (var weaponType in interval.weapons.ToWeaponTypes())
                 {
                     if (!PlayerUpgradeState.IsWeaponOwned(weaponType)) return false;
                 }
@@ -157,6 +180,17 @@ namespace ProjectBlood
                 foreach (var weaponType in ammo.weapons.ToWeaponTypes())
                 {
                     if (!ammoWeapons.Add(weaponType)) errors.Add($"武器 {weaponType} 在多条弹夹条目中重复");
+                }
+            }
+
+            var intervalWeapons = new HashSet<WeaponType>();
+            foreach (var interval in weaponAttackIntervals)
+            {
+                if (interval.weapons == WeaponTypeFlags.None) errors.Add("武器攻击间隔条目未勾选任何武器");
+                if (interval.intervalReductionPerStack == 0f) errors.Add("武器攻击间隔条目数值为 0(无效果)");
+                foreach (var weaponType in interval.weapons.ToWeaponTypes())
+                {
+                    if (!intervalWeapons.Add(weaponType)) errors.Add($"武器 {weaponType} 在多条攻击间隔条目中重复");
                 }
             }
 

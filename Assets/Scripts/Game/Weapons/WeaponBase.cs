@@ -53,7 +53,7 @@ namespace ProjectBlood
         public virtual void Awake()
         {
             InitGunClip();
-            attackInterval = new AttackIntervalFeature(AttackInterval);
+            attackInterval = new AttackIntervalFeature();
         }
 
         public virtual void Attack(Vector2 shootDir)
@@ -106,7 +106,7 @@ namespace ProjectBlood
 
         public virtual void KeepAttacking(Vector2 shootDir)
         {
-            if (attackInterval.CanAttack() && gunClip.CanShoot()) // 只有在满足攻击间隔且有弹药时才允许攻击
+            if (attackInterval.CanAttack(EffectiveAttackInterval) && gunClip.CanShoot()) // 只有在满足攻击间隔且有弹药时才允许攻击
             {
                 // 先结算弹药与冷却，再 Attack 生成子弹并广播 OnWeaponFired：
                 // 保证事件回调（血印切枪等）中 SaveWeaponData 读到的是扣减后的弹药，
@@ -316,6 +316,10 @@ namespace ProjectBlood
 
         // 强化系统使用的武器类型枚举；Data 加载前(如 Awake 阶段)回退到物体名
         public WeaponType WeaponType => WeaponTypeExtensions.FromName(Data != null ? Data.weaponName : gameObject.name);
+
+        // 强化调整后的有效攻击间隔(唯一读取点):序列化基础间隔 × (1 - 累计缩减),下限保护在 PlayerUpgradeState 内。
+        // 开火判定统一传入此值,强化应用/存档恢复无需回写武器实例
+        public float EffectiveAttackInterval => PlayerUpgradeState.GetAdjustedAttackInterval(WeaponType, AttackInterval);
 
         // updateUI=false 用于场景加载时为未激活的隐藏武器静默灌数据,避免反复刷新共享弹药 HUD
         public void LoadWeaponData(WeaponData weaponData, bool updateUI = true)

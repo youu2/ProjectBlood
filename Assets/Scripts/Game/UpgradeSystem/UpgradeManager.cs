@@ -125,6 +125,14 @@ namespace ProjectBlood
                 }
             }
 
+            foreach (var interval in effect.weaponAttackIntervals)
+            {
+                foreach (var weaponType in interval.weapons.ToWeaponTypes())
+                {
+                    PlayerUpgradeState.ApplyWeaponAttackIntervalReduction(weaponType, interval.intervalReductionPerStack);
+                }
+            }
+
             foreach (var skillCD in effect.skillCooldowns)
             {
                 if (skillCD.skillNames == null) continue;
