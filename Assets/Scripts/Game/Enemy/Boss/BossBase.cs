@@ -1,6 +1,6 @@
 // Boss 通用基类：所有 Boss 都继承它
 // 负责：血条数据同步到 Global、二阶段切换、Boss 专属掉落、死亡后显示传送门
-// 子类（如 TitanBoss）只需实现自己的状态机和 StartRingShot 即可
+// 子类（如 TitanBoss）只需实现自己的状态机和 StartTransitionBehavior 即可
 using System.Collections;
 using QFramework;
 using UnityEngine;
@@ -147,17 +147,17 @@ namespace ProjectBlood
                 yield return null;
             }
 
-            // 演出结束，恢复移速并触发环形射击
+            // 演出结束，恢复移速并触发转阶段行为
             moveSpeed = speedBeforeTransition;
             isInPhaseTransition = false;
-            StartRingShot();
+            StartTransitionBehavior();
         }
 
         /// <summary>
         /// 子类实现：触发环形射击（无差别 360 度弹幕）。
         /// 转阶段演出结束后会调用它。
         /// </summary>
-        protected abstract void StartRingShot();
+        protected abstract void StartTransitionBehavior();
 
         // Boss 死亡：专属掉落 + 显示传送门
         protected override void Death(Vector2 hitDir)

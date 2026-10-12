@@ -540,8 +540,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   direction: {x: 0, y: 0}
-  speed: 12
-  damage: 0.5
+  speed: 15
+  damage: 0.7
 --- !u!58 &5542107902490186517
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -710,15 +710,19 @@ MonoBehaviour:
   m_ApplyToSortingLayers: 00000000df712757d15d2bb38944af70832f5c62df1f1483038b9099dfb80f04
   m_ShapePath:
   - {x: -0.1963533, y: -0.32846397, z: 0}
-  - {x: -0.19938819, y: -0.027821118, z: 0}
-  - {x: 0.21384026, y: -0.02422887, z: 0}
+  - {x: -0.3040659, y: -0.031437878, z: 0.000000059604645}
+  - {x: -0.44300583, y: -0.031437133, z: 0.000000059604645}
+  - {x: -0.4632678, y: 0.23759559, z: 0.000000059604645}
+  - {x: -0.17912602, y: 0.47595662, z: 0}
+  - {x: 0.27462652, y: 0.47954848, z: 0}
+  - {x: 0.35300225, y: 0.2560589, z: 0.000000059604645}
   - {x: 0.21955213, y: -0.32877705, z: 0}
-  m_ShapePathHash: 767123678
+  m_ShapePathHash: -2069373727
   m_Mesh: {fileID: 0}
-  m_InstanceId: 45898
+  m_InstanceId: 237126
   m_LocalBounds:
-    m_Center: {x: 0.010081962, y: -0.17650296, z: 0}
-    m_Extent: {x: 0.20947015, y: 0.15227409, z: 0}
+    m_Center: {x: -0.055132776, y: 0.07538572, z: 0}
+    m_Extent: {x: 0.40813503, y: 0.40416276, z: 0}
 --- !u!114 &8250606705792564512
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1308,10 +1312,10 @@ MonoBehaviour:
   PrefabFolder: Assets/Art/Prefab
   ArchitectureFullTypeName: 
   ViewControllerFullTypeName: 
-  body: {fileID: 8621066446499680234}
+  body: {fileID: 8621066446499680234, guid: 3f307b5f1ed5fb245bb56899f5f73f70, type: 3}
   moveSpeed: 3
   currentHealth: 0
-  maxHealth: 9000
+  maxHealth: 12000
   Damage: 5
   useFlipSprite: 1
   canBeExecuted: 0
@@ -1320,30 +1324,32 @@ MonoBehaviour:
   sightBlockingMask:
     serializedVersion: 2
     m_Bits: 1024
-  enemyBullet: {fileID: 7739996555057011701}
+  enemyBullet: {fileID: 7739996555057011701, guid: 3f307b5f1ed5fb245bb56899f5f73f70, type: 3}
   portal: {fileID: 7066438792343617823, guid: e880434491b948f46a9a06390da3d907, type: 3}
   coinDropCount: 20
   dirtyBloodDropCount: 3
   rotationSpeed: 180
   phaseTwoHpPercent: 0.5
   phaseTransitionDuration: 1
-  phase1MoveSpeed: 5
-  phase1ShootInterval: 0.5
+  phase1MoveSpeed: 6
+  phase1ShootInterval: 0.35
   phase1ReloadTime: 2.5
-  phase2MoveSpeed: 7
-  phase2ShootInterval: 0.3
+  phase2MoveSpeed: 8
+  phase2ShootInterval: 0.25
   phase2ReloadTime: 2
-  bossAttackRange: 6
+  bossAttackRange: 5.5
   shotgunPelletCount: 8
   shotgunSpreadAngle: 28
+  ringShotTriggerRange: 8
   ringShotCooldown: 10
   ringCount: 3
   ringBulletCount: 20
   ringInterval: 0.8
+  dashTriggerRange: 6
   dashCooldown: 8
-  dashSpeed: 20
-  dashDuration: 0.25
-  phaseTransitionPureBloodCount: 40
+  dashSpeed: 23
+  dashDuration: 0.3
+  phaseTransitionPureBloodCount: 30
   shootSound: {fileID: 8300000, guid: 5fe488c5c8b64a44081ccf13e75ded29, type: 3}
   dashSound: {fileID: 8300000, guid: 62e37a56120bdc2469fa15a1b98235cf, type: 3}
   phaseTwoSound: {fileID: 0}

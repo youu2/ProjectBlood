@@ -19,7 +19,7 @@ namespace ProjectBlood
         public class WeaponRow
         {
             public GameObject rowObject;              // 武器行物体，未拥有该武器时隐藏
-            public TextMeshProUGUI dmgText;          // 行文本：全自动=最终伤害(增伤%)，半自动=基础伤害(攻速%)
+            public TextMeshProUGUI dmgText;          // 行文本：最终伤害(增伤%)[ 攻速(攻速%)]
             public TextMeshProUGUI ammoText;         // 行文本：当前弹药/弹夹容量
             public WeaponType weaponType;             // 本行对应的武器类型
         }
@@ -225,9 +225,9 @@ namespace ProjectBlood
             }
         }
 
-        // 武器行：已拥有的武器显示"伤害数值 + 强化比例   当前弹药/弹夹容量"，未拥有的隐藏。
-        // 按设计规则分支：全自动武器(MP5/AK/Laser)显示 最终伤害(基础×增伤倍率)+增伤%；
-        // 半自动武器(DE/ShotGun/AWP)不显示增伤,改为 基础伤害+攻速加成%。
+        // 武器行：已拥有的武器显示"最终伤害(增伤%)[ 攻速(攻速%)]   当前弹药/弹夹容量"，未拥有的隐藏。
+        // 增伤与攻速均可作用于任意武器(配置层面无武器类别限制)，故统一按实际生效数值展示,
+        // 对应比例为 0 时省略该后缀。最终伤害与战斗结算口径一致(基础 × GetFinalDamageRatio)。
         private void RefreshWeaponRows()
         {
             if (weaponRows == null || Player.player1 == null) return;
@@ -266,23 +266,19 @@ namespace ProjectBlood
                 {
                     baseDamage = laser.HitDamage;
                 }
-                string damageLine;
-                if (row.weaponType.IsSemiAutomatic())
-                {
-                    // 半自动:基础伤害(不吃任何伤害倍率) + 攻速加成比例
-                    int speedPercent = Mathf.RoundToInt(
-                        PlayerUpgradeState.GetWeaponAttackSpeedBonus(row.weaponType) * 100f);
-                    string speedSign = speedPercent >= 0 ? "+" : "";
-                    damageLine = $"{Mathf.RoundToInt(baseDamage)}{speedSign}{speedPercent}%";
-                }
-                else
-                {
-                    // 全自动:最终伤害(基础×增伤倍率) + 增伤比例
-                    float ratio = PlayerUpgradeState.GetFinalDamageRatio(row.weaponType);
-                    int bonusPercent = Mathf.RoundToInt((ratio - 1f) * 100f);
-                    string sign = bonusPercent >= 0 ? "+" : "";
-                    damageLine = $"{Mathf.RoundToInt(baseDamage * ratio)}{sign}{bonusPercent}%";
-                }
+                // 最终伤害与战斗结算口径一致(含武器独立增伤/全局增伤/血印乘区)
+                float ratio = PlayerUpgradeState.GetFinalDamageRatio(row.weaponType);
+                string damageLine = "";
+
+                int bonusPercent = Mathf.RoundToInt((ratio - 1f) * 100f);
+
+                damageLine += bonusPercent + "%";
+
+                // 攻速加成为 0 时省略后缀;非0(含代价型负值)时展示
+                int speedPercent = Mathf.RoundToInt(
+                    PlayerUpgradeState.GetWeaponAttackSpeedBonus(row.weaponType) * 100f);
+
+                damageLine += "+" + speedPercent + "%";
 
                 // 刚获得枪时 clip 可能为 null，弹药部分显示为 "-"
                 string ammoText = clip != null

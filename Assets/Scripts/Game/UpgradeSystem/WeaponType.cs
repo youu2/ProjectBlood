@@ -62,22 +62,6 @@ namespace ProjectBlood
                 default: return null;
             }
         }
-
-        // 是否为半自动武器(设计规则:半自动只能获得攻速强化,全自动只能获得增伤)。
-        // 与 Player 预制体上的武器组件映射一致:DE/ShotGun/AWP 挂 SemiAutomaticWeapon,
-        // MP5/AK/Laser 挂 AutomaticWeapon。强化池校验与暂停面板展示均以此为唯一分类依据。
-        public static bool IsSemiAutomatic(this WeaponType type)
-        {
-            switch (type)
-            {
-                case WeaponType.DE:
-                case WeaponType.ShotGun:
-                case WeaponType.AWP:
-                    return true;
-                default:
-                    return false;
-            }
-        }
     }
 
     public static class WeaponTypeFlagsExtensions

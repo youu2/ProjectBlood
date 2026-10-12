@@ -44,12 +44,14 @@ namespace ProjectBlood
         [Tooltip("霰弹散射总角度（度）")] public float shotgunSpreadAngle = 30f;
 
         [Header("=== 环形射击参数 ===")]
+        [Tooltip("环形射击触发距离（米）")] public float ringShotTriggerRange = 10f;
         [Tooltip("环形射击冷却时间（秒）")] public float ringShotCooldown = 10f;
         [Tooltip("一共射几圈")] public int ringCount = 3;
         [Tooltip("每圈有多少发子弹")] public int ringBulletCount = 16;
         [Tooltip("两圈之间的间隔（秒）")] public float ringInterval = 0.8f;
 
         [Header("=== 爆发推进参数 ===")]
+        [Tooltip("推进触发距离（米）")] public float dashTriggerRange = 8f;
         [Tooltip("推进冷却时间（秒）")] public float dashCooldown = 8f;
         [Tooltip("推进速度")] public float dashSpeed = 12f;
         [Tooltip("推进持续时间（秒），距离 = 速度 × 时长")] public float dashDuration = 0.4f;
@@ -221,7 +223,7 @@ namespace ProjectBlood
             {
                 StartCoroutine(AttackSequence(angry: true));
             }
-            else if (distanceToPlayer > bossAttackRange && cachedLineOfSight && dashCooldownTimer <= 0f)
+            else if (distanceToPlayer > dashTriggerRange && cachedLineOfSight && dashCooldownTimer <= 0f)
             {
                 StartCoroutine(DashSequence());
             }
@@ -280,9 +282,13 @@ namespace ProjectBlood
             if (angry)
             {
                 // 二阶段换弹结束：玩家在攻击范围内 + 环射没在 CD → 环射，否则继续追
-                if (GetDistanceToPlayer() <= bossAttackRange && ringShotCooldownTimer <= 0f)
+                if (GetDistanceToPlayer() <= ringShotTriggerRange && ringShotCooldownTimer <= 0f)
                 {
-                    StartRingShot();
+                    StartTransitionBehavior();
+                }
+                else if (GetDistanceToPlayer() > dashTriggerRange && cachedLineOfSight && dashCooldownTimer <= 0f)
+                {
+                    StartDashShot();
                 }
                 else
                 {
@@ -343,10 +349,15 @@ namespace ProjectBlood
             }
         }
 
-        // 环形射击：360 度射 3 圈，每圈带旋转偏移形成螺旋
-        protected override void StartRingShot()
+        // 环形射击3 圈
+        protected override void StartTransitionBehavior()
         {
             StartCoroutine(RingShotSequence());
+        }
+
+        protected void StartDashShot()
+        {
+            StartCoroutine(DashSequence());
         }
 
         private IEnumerator RingShotSequence()

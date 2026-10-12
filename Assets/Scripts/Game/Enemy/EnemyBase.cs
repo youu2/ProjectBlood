@@ -44,7 +44,7 @@ namespace ProjectBlood
 
         // 射线检测缓存(每sightCheckInterval秒刷新一次, 攻击状态期间不刷新)
         protected float sightCheckTimer = 0f;
-        protected bool cachedLineOfSight = false;
+        protected bool cachedLineOfSight = false; // 是否对玩家有直接视线
 
         // 内部状态：玩家引用（视线检测、朝向都用得到）
         protected Player player;
