@@ -7,7 +7,7 @@ namespace ProjectBlood
     public partial class Chest : InteractableBase
     {
         static int currentWeaponIndex = 0;
-        [SerializeField] private List<DropItem> weaponUnlockList;
+        [SerializeField] private List<InteractableBase> weaponUnlockList;
 
         // 重开新局时重置宝箱武器掉落进度（static 字段不会随场景重载清零）
         public static void ResetWeaponIndex()

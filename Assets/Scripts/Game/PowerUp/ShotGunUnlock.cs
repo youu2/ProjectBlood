@@ -3,10 +3,10 @@ using UnityEngine;
 
 namespace ProjectBlood
 {
-    public class ShotGunUnlock : DropItem
+    public class ShotGunUnlock : InteractableBase
     {
         public AudioClip CollectSound;
-        protected override void Collect()
+        protected override void DoInteract()
         {
             AudioKitManager.Instance.PlayOneShot(CollectSound, volume: 0.3f);
             WeaponDataSystem.weaponDataList.Add(WeaponConfig.ShotGun.NewWeapon());

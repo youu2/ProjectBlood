@@ -1,4 +1,4 @@
-// Generate Id:fd43f46d-1822-4703-9bdf-b3180d2fad91
+// Generate Id:0aab327e-3928-4a1b-a15a-4461cf6846bb
 using UnityEngine;
 
 namespace ProjectBlood
@@ -9,13 +9,13 @@ namespace ProjectBlood
 		
 		public ProjectBlood.MP5Unlock MP5Unlock;
 		
-		public CircleCollider2D ShotGunUnlock;
+		public ProjectBlood.ShotGunUnlock ShotGunUnlock;
 		
-		public CircleCollider2D AKUnlock;
+		public AKUnlock AKUnlock;
 		
-		public CircleCollider2D AWPUnlock;
+		public ProjectBlood.AWPUnlock AWPUnlock;
 		
-		public CircleCollider2D LaserUnlock;
+		public ProjectBlood.LaserUnlock LaserUnlock;
 		
 		public ProjectBlood.AnnihilationCore AnnihilationCore;
 		
