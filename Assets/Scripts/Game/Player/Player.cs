@@ -330,11 +330,28 @@ namespace ProjectBlood
         private void OnEnable()
         {
             Global.OnGamePausedChanged += HandleGamePausedChanged;
+            WeaponBase.OnWeaponFired += HandleWeaponFired;
         }
 
         private void OnDisable()
         {
             Global.OnGamePausedChanged -= HandleGamePausedChanged;
+            WeaponBase.OnWeaponFired -= HandleWeaponFired;
+        }
+
+        // 武器真正射出子弹时触发（弹药已扣减，见 WeaponBase.Attack / Laser.TriggerWeaponFired）。
+        // 换弹期间 gunClip.CanShoot()=false，不会产生本事件，因此按/按住左键的"空转"不会打断特殊换弹。
+        // 不做 weapon==currentWeapon 判断：血印"开火切枪"等同事件订阅者可能在本次分发中同步切走武器，
+        // 判断顺序会受订阅顺序影响；特殊换弹只可能由本局玩家触发，标志位本身已是充分门控。
+        private void HandleWeaponFired(WeaponBase weapon)
+        {
+            if (isSpecialReloadTriggered && specialReloadCoroutine != null)
+            {
+                StopCoroutine(specialReloadCoroutine);
+                isSpecialReloadTriggered = false;
+                specialReloadCoroutine = null;
+                OnSpecialReloadFinished?.Invoke();
+            }
         }
 
         // 暂停 = 自动松开开火键：进入暂停瞬间立即停火（循环开火音/激光视觉一并清理），
@@ -494,28 +511,16 @@ namespace ProjectBlood
                 && UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject();
 
             // 鼠标左键射击(朝平滑后的瞄准方向；袖剑处决期间不打断持续开火)
+            // 注意：按下/按住左键本身不打断特殊换弹——换弹期间 CanShoot()=false 不会真正开火，
+            // 只有真正射出子弹（WeaponBase.OnWeaponFired，见 HandleWeaponFired）才打断
             if (Input.GetMouseButtonDown(0) && playerBullet != null && !Global.IsGamePaused && !pointerOverUI)
             {
                 isFireHeld = true;
-                if (isSpecialReloadTriggered && specialReloadCoroutine != null)
-                {
-                    StopCoroutine(specialReloadCoroutine);
-                    isSpecialReloadTriggered = false;
-                    specialReloadCoroutine = null;
-                    OnSpecialReloadFinished?.Invoke();
-                }
                 currentWeapon.StartAttacking();
             }
             //限制为固定射速；isFireHeld 代替 GetMouseButton 直判（暂停后按住不续火）
             if (isFireHeld && playerBullet != null && !Global.IsGamePaused && !pointerOverUI)
             {
-                if (isSpecialReloadTriggered && specialReloadCoroutine != null)
-                {
-                    StopCoroutine(specialReloadCoroutine);
-                    isSpecialReloadTriggered = false;
-                    specialReloadCoroutine = null;
-                    OnSpecialReloadFinished?.Invoke();
-                }
                 currentWeapon.KeepAttacking(smoothAimDir);
             }
             if (Input.GetMouseButtonUp(0))
