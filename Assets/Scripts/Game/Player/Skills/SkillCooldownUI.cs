@@ -1,3 +1,4 @@
+using ProjectBlood;
 using QFramework;
 using TMPro;
 using UnityEngine;
@@ -40,6 +41,11 @@ public class SkillCooldownUI : MonoBehaviour
         {
             Debug.LogWarning("未找到标签为 Player 的对象,请为玩家设置标签或手动赋值 skillManager");
         }
+        GameUI.OnLoadingComplete += ResetCooldownUI;
+    }
+    private void OnDestroy()
+    {
+        GameUI.OnLoadingComplete -= ResetCooldownUI;
     }
 
     private void Update()
@@ -103,5 +109,12 @@ public class SkillCooldownUI : MonoBehaviour
                 cooldownText.text = "";
             }
         }
+    }
+
+    public void ResetCooldownUI()
+    {
+        cooldownOverlay.fillAmount = 0f;
+        chargeCDOverlay.fillAmount = 1f;
+        cooldownText.text = "";
     }
 }

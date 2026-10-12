@@ -24,5 +24,5 @@ MonoBehaviour:
     weaponAmmos: []
     weaponAttackIntervals:
     - weapons: 16
-      intervalReductionPerStack: 0.05
+      attackSpeedBonusPerStack: 0.05
     skillCooldowns: []
