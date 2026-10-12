@@ -10,6 +10,10 @@ namespace ProjectBlood
     {
         public float moveSpeed = 3.5f;
         public static Player player1;
+        // 特殊换弹触发（携 specialReloadDelay），供 CursorReloadVisualizer 记录阶段2结束时刻
+        public static event System.Action<float> OnSpecialReloadTriggered;
+        // 特殊换弹结束/中断（含左键开火中断），供 CursorReloadVisualizer 归零 SpecialFiller
+        public static event System.Action OnSpecialReloadFinished;
         // 主菜单场景标记：主菜单中的玩家仅作互动展示，禁用切枪/特殊换弹/死亡等局内逻辑
         private static bool IsMainMenuScene => UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "GameStart";
         public PlayerBullet playerBullet;
@@ -489,7 +493,7 @@ namespace ProjectBlood
                 && UnityEngine.EventSystems.EventSystem.current != null
                 && UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject();
 
-            //鼠标左键射击(朝平滑后的瞄准方向；袖剑处决期间不打断持续开火)
+            // 鼠标左键射击(朝平滑后的瞄准方向；袖剑处决期间不打断持续开火)
             if (Input.GetMouseButtonDown(0) && playerBullet != null && !Global.IsGamePaused && !pointerOverUI)
             {
                 isFireHeld = true;
@@ -498,6 +502,7 @@ namespace ProjectBlood
                     StopCoroutine(specialReloadCoroutine);
                     isSpecialReloadTriggered = false;
                     specialReloadCoroutine = null;
+                    OnSpecialReloadFinished?.Invoke();
                 }
                 currentWeapon.StartAttacking();
             }
@@ -509,6 +514,7 @@ namespace ProjectBlood
                     StopCoroutine(specialReloadCoroutine);
                     isSpecialReloadTriggered = false;
                     specialReloadCoroutine = null;
+                    OnSpecialReloadFinished?.Invoke();
                 }
                 currentWeapon.KeepAttacking(smoothAimDir);
             }
@@ -543,6 +549,7 @@ namespace ProjectBlood
                         StopCoroutine(specialReloadCoroutine);
                     }
                     specialReloadCoroutine = StartCoroutine(SpecialReloadCoroutine());
+                    OnSpecialReloadTriggered?.Invoke(specialReloadDelay);
                 }
             }
             GameUI.UpdateBloodText();
@@ -582,6 +589,7 @@ namespace ProjectBlood
             {
                 isSpecialReloadTriggered = false;
                 specialReloadCoroutine = null;
+                OnSpecialReloadFinished?.Invoke();
                 yield break;
             }
 
@@ -630,6 +638,7 @@ namespace ProjectBlood
             GameUI.UpdateClipText(currentWeapon.GetGunClip());
             isSpecialReloadTriggered = false;
             specialReloadCoroutine = null;
+            OnSpecialReloadFinished?.Invoke();
         }
 
         public void UpdateSpecialReloadCost()

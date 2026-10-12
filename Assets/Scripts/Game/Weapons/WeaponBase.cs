@@ -10,6 +10,10 @@ namespace ProjectBlood
         public static event System.Action<WeaponBase> OnWeaponFired;
         // 换弹实际开始（CanReload 通过、协程启动）时触发，供血印系统作为结束条件事件
         public static event System.Action<WeaponBase> OnWeaponReloadStarted;
+        // 普通换弹正常结束（FinishReload 后）触发，供准心遮罩切换到特殊换弹阶段
+        public static event System.Action<WeaponBase> OnWeaponReloadFinished;
+        // 普通换弹被中断（StopReload/FillClipDirectly）触发，供准心遮罩立即填满 NormalFiller
+        public static event System.Action<WeaponBase> OnWeaponReloadAborted;
         private Coroutine _reloadCoroutine;   // 原先的设计放在GunClip,这会依赖MonoBehaviour,违反单一职责原则
         [SerializeField] protected int MaxAmmo = 10;
         protected GunClip gunClip;
@@ -19,6 +23,8 @@ namespace ProjectBlood
         [SerializeField] protected float AttackInterval = 1.0f;
         private AudioPlayer _shootClipPlayer;
         [SerializeField] protected float ReloadTime = 1.5f;
+        // 普通换弹时长只读访问，供 CursorReloadVisualizer 推进 NormalFiller
+        public float ReloadDuration => ReloadTime;
         [SerializeField] protected float DryFireClickVolume = 0.7f;
         [SerializeField] protected float FireVolume = 0.3f;
         [SerializeField] protected float ReloadVolume = 0.7f;
@@ -194,6 +200,7 @@ namespace ProjectBlood
             }
 
             gunClip.FinishReload();
+            OnWeaponReloadFinished?.Invoke(this);
 
             // 血库存量足以支付当前武器换弹强化所需血量(BloodRequired)时才进行强化;
             // 血量不足时仍正常换弹补满弹夹,但不消耗血液、子弹也不会被强化
@@ -259,6 +266,7 @@ namespace ProjectBlood
         public void StopReload()
         {
             InitGunClip();
+            bool wasReloading = _reloadCoroutine != null;
             if (_reloadCoroutine != null)
             {
                 StopCoroutine(_reloadCoroutine);
@@ -266,6 +274,11 @@ namespace ProjectBlood
             }
             gunClip.CancelReload();
             AudioKitManager.Instance?.Stop(_shootClipPlayer);
+            // 仅在实际中断了一次进行中的换弹时广播，避免无协程时的噪声事件
+            if (wasReloading)
+            {
+                OnWeaponReloadAborted?.Invoke(this);
+            }
         }
 
         // 特殊换弹调用:直接补满弹夹;isEnhanced 表示这次装填的子弹是否被血库强化
