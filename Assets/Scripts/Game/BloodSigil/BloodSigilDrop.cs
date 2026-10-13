@@ -6,7 +6,7 @@ namespace ProjectBlood
     // 血印掉落物（可交互物）：靠近显示名字与效果描述，按 F 刻印。
     // 生成时由调用方（宝箱/敌人/商店）通过 Initialize 绑定具体血印，
     // 刻印后解锁对应血印并销毁自身。
-    public partial class BloodSigilDrop : InteractableBase
+    public partial class BloodSigilDrop : InteractableBase, IShopInitializable
     {
         private BloodSigilSO sigil;
 
@@ -26,6 +26,15 @@ namespace ProjectBlood
             SelfSpriteRenderer.sprite = so.icon;
             Name.text = $"{so.sigilName}";
             Tips.text = $"\n{so.description}";
+        }
+
+        // 商店购买钩子：与宝箱同源逻辑，生成时随机绑定一枚血印
+        public void InitializeFromShop()
+        {
+            var sigil = BloodSigilManager.Instance != null
+                ? BloodSigilManager.Instance.GetRandomSigil()
+                : null;
+            if (sigil != null) Initialize(sigil);
         }
 
         // 靠近时额外显示名字/描述文本，离开时隐藏
