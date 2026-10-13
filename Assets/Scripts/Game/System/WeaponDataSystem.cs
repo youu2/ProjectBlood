@@ -90,6 +90,18 @@ namespace ProjectBlood
             WeaponConfig.DE.NewWeapon(),
         };
 
+        // 查询玩家是否已持有指定名称的武器
+        public static bool HasWeapon(string weaponName)
+            => weaponDataList.Exists(w => w.weaponName == weaponName);
+
+        // 统一添加入口：已持有同名武器时拒绝，防止重复装备
+        public static bool AddWeapon(WeaponData data)
+        {
+            if (HasWeapon(data.weaponName)) return false;
+            weaponDataList.Add(data);
+            return true;
+        }
+
         // 存档导出：重建 weaponDataList 快照
         public static void ExportTo(RunSaveData data)
         {

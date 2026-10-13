@@ -53,10 +53,6 @@ namespace ProjectBlood
         public float blazingCircleDamage;
         public float bcAttackInterval;
 
-        // ---- 宝箱武器掉落进度 ----
-        // 已从宝箱掉落的武器数量（即下一次掉落的索引），对应 Chest.currentWeaponIndex
-        public int chestWeaponIndex;
-
         // ---- 地面掉落物 ----
         public List<DropSaveEntry> drops = new List<DropSaveEntry>();
     }

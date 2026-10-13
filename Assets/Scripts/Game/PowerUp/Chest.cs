@@ -6,25 +6,19 @@ namespace ProjectBlood
 {
     public partial class Chest : InteractableBase
     {
-        static int currentWeaponIndex = 0;
         [SerializeField] private List<InteractableBase> weaponUnlockList;
 
-        // 重开新局时重置宝箱武器掉落进度（static 字段不会随场景重载清零）
-        public static void ResetWeaponIndex()
+        // 扫描掉落池：返回第一个玩家未持有的武器掉落物，全已持有或池空返回 null
+        private InteractableBase FindNextUnownedWeapon()
         {
-            currentWeaponIndex = 0;
-        }
-
-        // 存档导出：static 进度不会随场景/游戏重启保留，需显式写入存档
-        public static void ExportTo(RunSaveData data)
-        {
-            data.chestWeaponIndex = currentWeaponIndex;
-        }
-
-        // 存档导入：继续游戏时恢复掉落进度，防止已获取武器被重复掉落
-        public static void ImportFrom(RunSaveData data)
-        {
-            currentWeaponIndex = Mathf.Max(0, data.chestWeaponIndex);
+            foreach (var item in weaponUnlockList)
+            {
+                if (item == null) continue;
+                var unlock = item.GetComponent<WeaponUnlockBase>();
+                if (unlock == null) continue;
+                if (!WeaponDataSystem.HasWeapon(unlock.Config.weaponName)) return item;
+            }
+            return null;
         }
 
         void Start()
@@ -40,19 +34,15 @@ namespace ProjectBlood
             isCollected = true;
             Tips.Hide();
 
-            if (currentWeaponIndex < weaponUnlockList.Count)
+            var weaponToGenerate = FindNextUnownedWeapon();
+            if (weaponToGenerate != null)
             {
-                var weaponToGenerate = weaponUnlockList[currentWeaponIndex];
                 ActionKit.DelayFrame(45, () =>
                 {
                     weaponToGenerate.Instantiate()
                     .Position(this.transform.position + new Vector3(0, 1.3f, 0))  // slight offset for better visibility
                     .Show();
                 }).Start(this);
-
-                // WeaponDataSystem.weaponDataList.Add(weaponDataList[currentWeaponIndex]);
-                Player.player1.UpdateSpecialReloadCost();
-                currentWeaponIndex++;
             }
             else
             {

@@ -679,7 +679,6 @@ namespace ProjectBlood
             WeaponDataSystem.ImportFrom(data);
             PlayerUpgradeState.ImportFrom(data, id => UpgradeManager.Instance?.FindById(id));
             BloodSigilState.ImportFrom(data, id => BloodSigilManager.Instance?.FindById(id));
-            Chest.ImportFrom(data);   // 宝箱武器掉落进度（static 字段，游戏重启后必须从存档恢复）
 
             // 5.5 玩家侧运行时状态补应用。
             // 时序原因：所有 Player.Awake 都早于本方法（MapController.Start），

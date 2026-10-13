@@ -2,15 +2,8 @@ using ProjectBlood;
 using QFramework;
 using UnityEngine;
 
-public class AKUnlock : InteractableBase
+public class AKUnlock : WeaponUnlockBase
 {
-    public AudioClip CollectSound;
-    protected override void DoInteract()
-    {
-        AudioKitManager.Instance.PlayOneShot(CollectSound, volume: 0.3f);
-        WeaponDataSystem.weaponDataList.Add(WeaponConfig.AK.NewWeapon());
-        Player.player1.UpdateSpecialReloadCost();
-        this.DestroyGameObjGracefully();
-    }
+    public override WeaponConfig Config => WeaponConfig.AK;
 }
 

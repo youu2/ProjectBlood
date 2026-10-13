@@ -44,7 +44,6 @@ namespace ProjectBlood
             WeaponDataSystem.ExportTo(data);
             PlayerUpgradeState.ExportTo(data);
             BloodSigilState.ExportTo(data);
-            Chest.ExportTo(data);
 
             // 2. 玩家网格坐标（从世界坐标向下取整）与当前手持武器索引
             if (Player.player1 != null)
@@ -76,8 +75,8 @@ namespace ProjectBlood
             Debug.Log("[RunSaveService] 存档已保存");
         }
 
-        // 收集场景地面掉落物（含血印掉落的 sigilId）
-        // 注：BloodSigilDrop 继承 InteractableBase 而非 DropItem，需单独扫描避免漏记
+        // 收集场景地面掉落物（含血印掉落的 sigilId 与武器解锁掉落）
+        // 注：BloodSigilDrop / 武器解锁均继承 InteractableBase 而非 DropItem，需单独扫描避免漏记
         private static void CollectDrops(RunSaveData data)
         {
             data.drops.Clear();
@@ -122,6 +121,22 @@ namespace ProjectBlood
                     sigilId = sigilDrop.SigilId,
                 });
             }
+
+            // 武器解锁掉落单独扫描（继承 InteractableBase 而非 DropItem）
+            // GetType().Name 产出 "AKUnlock" 等字符串，与 RestoreDrops 的 switch key 天然对齐
+            var weaponDrops = UnityEngine.Object.FindObjectsByType<WeaponUnlockBase>(FindObjectsSortMode.None);
+            foreach (var weaponDrop in weaponDrops)
+            {
+                if (!weaponDrop.gameObject.activeInHierarchy) continue;
+
+                var pos = weaponDrop.transform.position;
+                data.drops.Add(new DropSaveEntry
+                {
+                    dropType = weaponDrop.GetType().Name,
+                    gridX = Mathf.FloorToInt(pos.x),
+                    gridY = Mathf.FloorToInt(pos.y),
+                });
+            }
         }
 
         // DropItem → 类型 key（与 RestoreDrops 对应）
@@ -134,11 +149,6 @@ namespace ProjectBlood
             if (drop is Shield) return "Shield";
             if (drop is PureBlood) return "PureBlood";
             if (drop.GetComponent<AnnihilationCore>() != null) return "AnnihilationCore";
-            if (drop is MP5Unlock) return "MP5Unlock";
-            if (drop is ShotGunUnlock) return "ShotGunUnlock";
-            if (drop is AKUnlock) return "AKUnlock";
-            if (drop is AWPUnlock) return "AWPUnlock";
-            if (drop is LaserUnlock) return "LaserUnlock";
             if (drop.GetComponent<BloodSigilDrop>() != null) return "BloodSigilDrop";
             return null;
         }

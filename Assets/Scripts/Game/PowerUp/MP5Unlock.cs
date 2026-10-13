@@ -3,15 +3,8 @@ using UnityEngine;
 
 namespace ProjectBlood
 {
-    public class MP5Unlock : InteractableBase
+    public class MP5Unlock : WeaponUnlockBase
     {
-        public AudioClip CollectSound;
-        protected override void DoInteract()
-        {
-            AudioKitManager.Instance.PlayOneShot(CollectSound, volume: 0.3f);
-            WeaponDataSystem.weaponDataList.Add(WeaponConfig.MP5.NewWeapon());
-            Player.player1.UpdateSpecialReloadCost();
-            this.DestroyGameObjGracefully();
-        }
+        public override WeaponConfig Config => WeaponConfig.MP5;
     }
 }
