@@ -18,6 +18,13 @@ namespace ProjectBlood
         float GetWeightMultiplier();
     }
 
+    // 商店唯一商品契约：同一次刷新内同 key 商品全房间只允许上架一个
+    //（如武器：玩家至多持有一把，同房间重复上架必然产生买后无效的废品货架）
+    public interface IUniqueShopGoods
+    {
+        string UniqueKey { get; }
+    }
+
     [System.Serializable]
     public class ShopGoods
     {
@@ -46,25 +53,30 @@ namespace ProjectBlood
         }
 
         // 幂等刷新：已生成或已购买则跳过；由 ShopRoomZone 统一触发，全场货架同帧上架
-        public void RefreshGoods()
+        // takenKeys：本轮刷新内已被其他货架抽中的唯一商品 key（跨货架去重）
+        public void RefreshGoods(HashSet<string> takenKeys = null)
         {
             if (goods != null || isCollected) return;
-            InitGoodsFromPool();
+            InitGoodsFromPool(takenKeys);
             if (goods == null) return; // 空店：保持空货架，CanInteract 恒 false
+            var unique = goods.item.GetComponent<IUniqueShopGoods>();
+            if (unique != null) takenKeys?.Add(unique.UniqueKey);
             Icon.Show();
             PriceText.text = price.ToString();
             PriceText.Show();
         }
 
-        // 有效权重 = 基础权重 × 动态乘数（0 表示本次不出现）
-        private float EffectiveWeight(ShopGoods g)
+        // 有效权重 = 基础权重 × 动态乘数（0 表示本次不出现；已被本轮其他货架抽中的唯一商品也为 0）
+        private float EffectiveWeight(ShopGoods g, HashSet<string> takenKeys)
         {
             if (g == null || g.item == null) return 0f;
+            var unique = g.item.GetComponent<IUniqueShopGoods>();
+            if (unique != null && takenKeys != null && takenKeys.Contains(unique.UniqueKey)) return 0f;
             float mul = g.item is IShopWeightModifier m ? m.GetWeightMultiplier() : 1f;
             return Mathf.Max(0f, g.weight) * Mathf.Max(0f, mul);
         }
 
-        private void InitGoodsFromPool()
+        private void InitGoodsFromPool(HashSet<string> takenKeys)
         {
             if (goods != null)
             {
@@ -72,13 +84,13 @@ namespace ProjectBlood
             }
 
             float total = 0f;
-            foreach (var g in goodsPool) total += EffectiveWeight(g);
+            foreach (var g in goodsPool) total += EffectiveWeight(g, takenKeys);
             if (total <= 0f) return;
 
             float roll = Random.Range(0f, total);
             foreach (var g in goodsPool)
             {
-                float w = EffectiveWeight(g);
+                float w = EffectiveWeight(g, takenKeys);
                 if (w <= 0f) continue;
                 roll -= w;
                 if (roll <= 0f)

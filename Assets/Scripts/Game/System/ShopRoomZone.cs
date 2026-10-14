@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using QFramework;
 using UnityEngine;
 
@@ -43,9 +44,10 @@ namespace ProjectBlood
         {
             if (cachedRoom == null) cachedRoom = GetComponentInParent<Room>();
             if (cachedRoom == null) return;
+            var takenKeys = new HashSet<string>();
             foreach (var shop in cachedRoom.GetComponentsInChildren<ShopItem>())
             {
-                shop.RefreshGoods();
+                shop.RefreshGoods(takenKeys);
             }
         }
     }
