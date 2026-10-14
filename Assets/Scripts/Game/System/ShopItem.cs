@@ -5,9 +5,17 @@ using UnityEngine;
 namespace ProjectBlood
 {
     // 商店商品初始化钩子：生成物需要运行时绑定数据（如随机血印）时实现此接口
+    // CanDeliver 在扣款前调用；通过后同一同步帧内执行 InitializeFromShop，必然成功，无需退款路径
     public interface IShopInitializable
     {
+        bool CanDeliver();
         void InitializeFromShop();
+    }
+
+    // 商店权重修饰钩子：返回权重乘数（0 = 本次不出现，1 = 不变）
+    public interface IShopWeightModifier
+    {
+        float GetWeightMultiplier();
     }
 
     [System.Serializable]
@@ -16,6 +24,7 @@ namespace ProjectBlood
         public ViewController item;
         public int price = 1;
         [Min(1)] public int count = 1;
+        [Min(0f)] public float weight = 1f;
     }
 
     public partial class ShopItem : InteractableBase
@@ -42,6 +51,14 @@ namespace ProjectBlood
             PriceText.Show();
         }
 
+        // 有效权重 = 基础权重 × 动态乘数（0 表示本次不出现）
+        private float EffectiveWeight(ShopGoods g)
+        {
+            if (g == null || g.item == null) return 0f;
+            float mul = g.item is IShopWeightModifier m ? m.GetWeightMultiplier() : 1f;
+            return Mathf.Max(0f, g.weight) * Mathf.Max(0f, mul);
+        }
+
         private void InitGoodsFromPool()
         {
             if (goods != null)
@@ -49,19 +66,23 @@ namespace ProjectBlood
                 return;
             }
 
-            if (goodsPool.Count == 0)
-            {
-                return;
-            }
+            float total = 0f;
+            foreach (var g in goodsPool) total += EffectiveWeight(g);
+            if (total <= 0f) return;
 
-            int randomIndex = Random.Range(0, goodsPool.Count);
-            var selectedGoods = goodsPool[randomIndex];
-
-            if (selectedGoods != null && selectedGoods.item != null)
+            float roll = Random.Range(0f, total);
+            foreach (var g in goodsPool)
             {
-                goods = selectedGoods;
-                price = selectedGoods.price;
-                UpdateIcon(selectedGoods.item);
+                float w = EffectiveWeight(g);
+                if (w <= 0f) continue;
+                roll -= w;
+                if (roll <= 0f)
+                {
+                    goods = g;
+                    price = g.price;
+                    UpdateIcon(g.item);
+                    break;
+                }
             }
         }
 
@@ -81,6 +102,12 @@ namespace ProjectBlood
                 return;
             }
 
+            if (goods.item is IShopInitializable pending && !pending.CanDeliver())
+            {
+                Player.DisplayText("已售罄");
+                return;
+            }
+
             if (Global.Coin.Value >= price)
             {
                 Global.SpendCoin(price);
@@ -90,7 +117,7 @@ namespace ProjectBlood
                 {
                     var clone = goods.item.Instantiate()
                         .Position(transform.Position2D() + new Vector2(0, 0.2f));
-                    if (clone is IShopInitializable init) init.InitializeFromShop();
+                    (clone as IShopInitializable)?.InitializeFromShop();
                     clone.Show();
                 }
 

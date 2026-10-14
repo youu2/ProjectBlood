@@ -6,7 +6,7 @@ namespace ProjectBlood
     // 血印掉落物（可交互物）：靠近显示名字与效果描述，按 F 刻印。
     // 生成时由调用方（宝箱/敌人/商店）通过 Initialize 绑定具体血印，
     // 刻印后解锁对应血印并销毁自身。
-    public partial class BloodSigilDrop : InteractableBase, IShopInitializable
+    public partial class BloodSigilDrop : InteractableBase, IShopInitializable, IShopWeightModifier
     {
         private BloodSigilSO sigil;
 
@@ -28,13 +28,26 @@ namespace ProjectBlood
             Tips.text = $"\n{so.description}";
         }
 
-        // 商店购买钩子：与宝箱同源逻辑，生成时随机绑定一枚血印
+        // 商店扣款前询问：当前能否交付一枚随机血印（复用 GetRandomSigil 作无副作用谓词，
+        // 单一事实源，天然覆盖管理器未初始化/全部刻印完/激活位满三种售罄路径）
+        public bool CanDeliver()
+            => BloodSigilManager.Instance != null && BloodSigilManager.Instance.GetRandomSigil() != null;
+
+        // 商店购买钩子：生成时随机绑定一枚血印（扣款前已经 CanDeliver 同帧校验，此处必然成功）
         public void InitializeFromShop()
         {
             var sigil = BloodSigilManager.Instance != null
                 ? BloodSigilManager.Instance.GetRandomSigil()
                 : null;
             if (sigil != null) Initialize(sigil);
+        }
+
+        // 商店权重：0.8^已刻印数 递减，血印池刻印完则不刷出
+        public float GetWeightMultiplier()
+        {
+            if (BloodSigilManager.Instance == null) return 0f;
+            if (BloodSigilState.UnlockedCount >= BloodSigilState.MaxSigils) return 0f;
+            return Mathf.Pow(0.8f, BloodSigilState.UnlockedCount);
         }
 
         // 靠近时额外显示名字/描述文本，离开时隐藏

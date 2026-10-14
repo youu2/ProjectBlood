@@ -6,7 +6,7 @@ namespace ProjectBlood
     // 纯血道具（Pure Blood，简称 PB）
     // 视觉表现：吸血触发时从敌人死亡位置向四周飞射，
     // 经历短暂的惯性飞射阶段后平滑转弯追踪玩家，被玩家拾取后恢复固定治疗量。
-    public partial class PureBlood : DropItem
+    public partial class PureBlood : DropItem, IShopWeightModifier
     {
         [Header("飞射阶段")]
 
@@ -57,6 +57,14 @@ namespace ProjectBlood
 
             stateStartTime = Time.time;
             velocity = ejectDir * ejectSpeed;
+        }
+
+        // 商店权重：缺血越严重越容易出现（满血×1 → 濒死×3）
+        public float GetWeightMultiplier()
+        {
+            float maxHp = Global.INGAME_MAX_HP.Value;
+            float hpRatio = maxHp > 0f ? Mathf.Clamp01(Global.currentHP.Value / maxHp) : 1f;
+            return 1f + 2f * (1f - hpRatio);
         }
 
         private void Update()
