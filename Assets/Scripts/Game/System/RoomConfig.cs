@@ -332,7 +332,7 @@ namespace ProjectBlood
                 "2                 2",
                 "2                 2",
                 "2                 2",
-                "d                 d",
+                "d        S        d",
                 "d    s   s   s    d",
                 "d                 d",
                 "2                 2",

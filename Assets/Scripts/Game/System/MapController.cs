@@ -34,6 +34,10 @@ namespace ProjectBlood
         public Tilemap floorTilemap;
         public GameObject Portal;
 
+        // 商店房预进场触发区预制体：挂 ShopRoomZone 组件 + isTrigger BoxCollider2D
+        //（尺寸覆盖约半条走廊、以刚越过门线为限，勿伸入相邻战斗房内部）
+        public ShopRoomZone ShopRoomZone;
+
         // Boss 预制体列表：按楼层（1-3层）分别配置，X-1/X-2 的 BossRoom 直接出传送门，X-3 才出 Boss
         // 索引 0 = 第1层(1-3)，1 = 第2层(2-3)，2 = 第3层(3-3)。如果只配了1个，所有楼层都用它。
         public List<GameObject> BossPrefabs = new List<GameObject>();
@@ -41,7 +45,7 @@ namespace ProjectBlood
         public static MapController instance;
 
         // 相邻标准房间之间的走廊长度（格子数），同时决定房间定位步长
-        private const int CorridorLength = 10;
+        private const int CorridorLength = 15;
         // 相邻房间之间走廊的最小长度（格子数），由此推导房间模板尺寸上限：最大边长 = 标准边长 + CorridorLength - MinCorridorLength
         private const int MinCorridorLength = 2;
         // 标准房间尺寸（以 InitRoom 模板为准），所有房间中心固定在槽位中心，非标准尺寸通过左上角偏移吸收
@@ -468,6 +472,20 @@ namespace ProjectBlood
                     ShopItem.InstantiateWithParent(roomObj)
                         .Position2D(worldPos)
                         .Show();
+                    break;
+
+                case 'S':
+                    // 商店房预进场触发区：玩家在走廊即将进店时提前一次性刷新全场货架
+                    if (ShopRoomZone != null)
+                    {
+                        ShopRoomZone.InstantiateWithParent(roomObj)
+                            .Position2D(worldPos)
+                            .Show();
+                    }
+                    else
+                    {
+                        Debug.LogWarning("[MapController] ShopRoomZone 未配置，商店货架将永不生成商品");
+                    }
                     break;
             }
         }

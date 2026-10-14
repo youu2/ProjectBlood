@@ -39,14 +39,19 @@ namespace ProjectBlood
 
         void Start()
         {
+            // 货架初始为空：商品生成延迟到预进场触发（ShopRoomZone）或进房兜底时机，
+            // 保证基于玩家最新状态掷点，且上架过程发生在走廊中、玩家不可见
+            Icon.Hide();
+            PriceText.Hide();
+        }
+
+        // 幂等刷新：已生成或已购买则跳过；由 ShopRoomZone 统一触发，全场货架同帧上架
+        public void RefreshGoods()
+        {
+            if (goods != null || isCollected) return;
             InitGoodsFromPool();
-
-            if (goods != null)
-            {
-                Icon.Show();
-                price = goods.price;
-            }
-
+            if (goods == null) return; // 空店：保持空货架，CanInteract 恒 false
+            Icon.Show();
             PriceText.text = price.ToString();
             PriceText.Show();
         }
