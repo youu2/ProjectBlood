@@ -68,6 +68,9 @@ namespace ProjectBlood
         public int roomState;                           // RoomState 枚举转 int
         public bool chestCollected;
         public List<int> collectedShopItems = new List<int>();  // 已购商品在房间内的索引
+        // 各货架选中的商品在 goodsPool 中的索引（-1 表示尚未刷新，读档后留待进房掷点）。
+        // goodsPool 为 prefab 上静态配置，索引即可唯一标识商品种类与价格。
+        public List<int> shopGoodsIndices = new List<int>();
     }
 
     [Serializable]

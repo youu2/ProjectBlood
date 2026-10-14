@@ -52,6 +52,28 @@ namespace ProjectBlood
             PriceText.Hide();
         }
 
+        // 存档：返回当前选中商品在 goodsPool 中的索引（未刷新返回 -1）
+        public int GetSelectedGoodsIndex()
+        {
+            if (goods == null) return -1;
+            return goodsPool.IndexOf(goods);
+        }
+
+        // 读档：按索引直接还原商品，跳过随机掷点，保证存档前后货架商品一致
+        public void RestoreGoods(int index)
+        {
+            if (goods != null || isCollected) return; // 幂等
+            if (index < 0 || index >= goodsPool.Count) return; // 越界（prefab 变更）留空，待进房掷点
+            var g = goodsPool[index];
+            if (g == null || g.item == null) return;
+            goods = g;
+            price = g.price;
+            UpdateIcon(g.item);
+            Icon.Show();
+            PriceText.text = price.ToString();
+            PriceText.Show();
+        }
+
         // 幂等刷新：已生成或已购买则跳过；由 ShopRoomZone 统一触发，全场货架同帧上架
         // takenKeys：本轮刷新内已被其他货架抽中的唯一商品 key（跨货架去重）
         public void RefreshGoods(HashSet<string> takenKeys = null)

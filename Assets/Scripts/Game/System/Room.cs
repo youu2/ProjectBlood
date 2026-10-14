@@ -315,8 +315,10 @@ namespace ProjectBlood
 
             var shops = GetComponentsInChildren<ShopItem>();
             entry.collectedShopItems.Clear();
+            entry.shopGoodsIndices.Clear();
             for (int i = 0; i < shops.Length; i++)
             {
+                entry.shopGoodsIndices.Add(shops[i].GetSelectedGoodsIndex());
                 if (!shops[i].CanInteract)
                     entry.collectedShopItems.Add(i);
             }
@@ -332,7 +334,13 @@ namespace ProjectBlood
             for (int i = 0; i < shops.Length; i++)
             {
                 if (entry.collectedShopItems.Contains(i))
+                {
                     shops[i].gameObject.SetActive(false);
+                }
+                else if (i < entry.shopGoodsIndices.Count)
+                {
+                    shops[i].RestoreGoods(entry.shopGoodsIndices[i]);
+                }
             }
         }
 
