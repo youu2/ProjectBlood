@@ -26,34 +26,11 @@ namespace ProjectBlood
             //  伤害检测：使用 BoxCast（有宽度）
             var damageHit = Physics2D.BoxCast(startPos, new Vector2(laserWidth, laserWidth), 0f, shootDir, Mathf.Infinity, targetLayer);
 
-            // 如果击中了敌人，造成伤害
+            // 如果击中了敌人，统一走即时命中结算（强化乘区/致命吸血与子弹系口径一致）
             if (damageHit.collider != null)
             {
-                // 用 GetComponentInParent 兼容分离结构敌人（碰撞体在 WholeBody 子物体，伤害接口在根节点）
-                var damageable = damageHit.collider.GetComponentInParent<IDamageable>();
-                if (damageable != null)
-                {
-                    // 计算击退方向：从玩家到敌人的方向
-                    Vector2 playerToEnemyDir = (damageHit.collider.transform.position - Player.player1.transform.position).normalized;
-
-                    // 根据是否被血库强化以及强化系统加成计算伤害（未强化时伤害降低到80%）
-                    float damageMultiplier = (IsBulletEnhanced ? 1.0f : 0.8f) * PlayerUpgradeState.GetFinalDamageRatio(WeaponType);
-                    float finalDamage = HitDamage * damageMultiplier;
-
-                    // 判断本击是否致命
-                    float enemyCurrentHP = damageable.CurrentHealth;
-                    float enemyMaxHP = damageable.MaxHealth;
-                    bool isLethal = enemyCurrentHP - finalDamage <= 0f;
-
-                    damageable.TakeDamage(finalDamage, playerToEnemyDir);
-
-                    // 吸血：致命一击时按敌人总生命值换算为 PB 道具
-                    if (isLethal && Lifesteal.Level > 0 && Player.player1 != null && enemyMaxHP > 0f && (IsBulletEnhanced || damageable is BossBase))
-                    {
-                        float totalLifesteal = Lifesteal.GetLifestealAmount(enemyMaxHP);
-                        Global.GeneratePureBlood(damageHit.collider.gameObject, totalLifesteal);
-                    }
-                }
+                var ctx = new InstantHitContext(0.8f, IsBulletEnhanced, WeaponType, Lifesteal.LifestealPercent);
+                InstantHitResolver.Apply(damageHit.collider, HitDamage, ctx);
             }
             CameraUtils.ShakeMainCamera(0.04f, 5);
             OnLaserActivate?.Invoke();

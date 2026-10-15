@@ -235,8 +235,7 @@ namespace ProjectBlood
                 lr.startWidth = width;
                 lr.endWidth = width;
 
-                float angleOffset = GetLaserAngleOffset(i);
-                Vector3 laserDir = RotateVector(AimTransform.right, angleOffset);
+                Vector3 laserDir = GetLaserDirection(i);
                 lr.SetPosition(0, startPos);
                 lr.SetPosition(1, startPos + laserDir * attackRange);
             }
@@ -309,8 +308,7 @@ namespace ProjectBlood
 
                 for (int i = 0; i < laserCount; i++)
                 {
-                    float angleOffset = GetLaserAngleOffset(i);
-                    Vector3 laserDir = RotateVector(AimTransform.right, angleOffset);
+                    Vector3 laserDir = GetLaserDirection(i);
                     Vector3 startPos = transform.position + AimTransform.right * laserStartOffset;
 
                     laserPointsList[i].Clear();
@@ -323,25 +321,15 @@ namespace ProjectBlood
             }
         }
 
-        float GetLaserAngleOffset(int index)
+        // 单束激光的发射方向：随机散布 or 均匀分布（数学统一收敛到 SpreadMath）。
+        // randomSpread 时每次调用独立随机（与旧实现一致：充能/持续期间逐帧抖动）
+        Vector3 GetLaserDirection(int index)
         {
-            if (laserCount <= 1 || spreadAngle <= 0)
-                return 0f;
-
-            if (randomSpread)
-                return Random.Range(-spreadAngle / 2f, spreadAngle / 2f);
-
-            return (-spreadAngle / 2f) + (spreadAngle / (laserCount - 1f)) * index;
-        }
-
-        Vector3 RotateVector(Vector3 vector, float angleDegrees)
-        {
-            float rad = angleDegrees * Mathf.Deg2Rad;
-            return new Vector3(
-                vector.x * Mathf.Cos(rad) - vector.y * Mathf.Sin(rad),
-                vector.x * Mathf.Sin(rad) + vector.y * Mathf.Cos(rad),
-                0
-            ).normalized;
+            Vector2 baseDirection = AimTransform.right;
+            Vector2 direction = randomSpread
+                ? SpreadMath.GetRandomDirection(baseDirection, spreadAngle)
+                : SpreadMath.GetUniformDirection(baseDirection, spreadAngle, index, laserCount);
+            return direction;
         }
 
         // 计算激光路径

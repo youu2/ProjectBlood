@@ -20,38 +20,17 @@ public class PenetratingBullet : PlayerBullet
 
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            // 计算击退方向：从玩家到敌人的方向
-            Vector2 playerToEnemyDir = (collision.transform.position - Player.player1.transform.position).normalized;
-
-            // 根据子弹是否被强化计算伤害
-            float damageMultiplier = isEnhanced ? 1.0f : 0.8f; // 未强化时伤害降低到80%
-            float finalDamage = damage * damageMultiplier;
-
-            // 用 GetComponentInParent 兼容分离结构敌人（碰撞体在 WholeBody 子物体，伤害接口在根节点）
-            var damageable = collision.gameObject.GetComponentInParent<IDamageable>();
-            if (damageable == null)
+            // 伤害/吸血统一走即时命中结算（未强化系数 0.8，与历史口径一致；
+            // 强化乘区与 Boss 吸血条件由 Resolver 补齐，修复旧副本的漂移）。
+            // 返回 false（无接口/已死亡）时不消耗穿透次数，尸体不再触发吸血
+            var ctx = new InstantHitContext(0.8f, isEnhanced, weaponType, lifestealPercent);
+            if (InstantHitResolver.Apply(collision.collider, damage, ctx))
             {
-                return;
-            }
-
-            // 判断本击是否致命
-            float enemyCurrentHP = damageable.CurrentHealth;
-            float enemyMaxHP = damageable.MaxHealth;
-            bool isLethal = enemyCurrentHP - finalDamage <= 0f;
-
-            damageable.TakeDamage(finalDamage, playerToEnemyDir);
-
-            // 吸血：致命一击时按敌人总生命值换算为 PB 道具
-            if (isLethal && lifestealPercent > 0f && Player.player1 != null && enemyMaxHP > 0f)
-            {
-                float totalLifesteal = enemyMaxHP * (lifestealPercent / 100f);
-                Global.GeneratePureBlood(collision.gameObject, totalLifesteal);
-            }
-
-            currentPenetrationCount++;
-            if (currentPenetrationCount >= maxPenetrationCount)
-            {
-                Recycle();
+                currentPenetrationCount++;
+                if (currentPenetrationCount >= maxPenetrationCount)
+                {
+                    Recycle();
+                }
             }
         }
         else

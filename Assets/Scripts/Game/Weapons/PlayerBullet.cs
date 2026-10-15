@@ -62,52 +62,13 @@ public class PlayerBullet : MonoBehaviour
 
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            // 根据子弹是否被强化以及强化系统加成计算伤害（未强化时伤害降低到70%）
-            float damageMultiplier = (isEnhanced ? 1.0f : 0.7f) * PlayerUpgradeState.GetFinalDamageRatio(weaponType);
-            float finalDamage = damage * damageMultiplier;
-
-            // 计算玩家到敌人的方向
-            Vector2 playerToEnemyDir = (collision.transform.position - Player.player1.transform.position).normalized;
-
-            // 用 GetComponentInParent 兼容分离结构敌人（碰撞体在 WholeBody 子物体，伤害接口在根节点）
-            var damageable = collision.gameObject.GetComponentInParent<IDamageable>();
-            if (damageable == null)
-            {
-                // 无可伤害组件也必须走池回收，直接 Destroy 会破坏池的状态跟踪
-                Recycle();
-                return;
-            }
-
-            // 防止多弹丸同时命中时重复触发吸血）
-            if (damageable.CurrentHealth <= 0f)
-            {
-                Recycle();
-                return;
-            }
-
-            // 读取敌人当前/最大血量，判断本击是否致命
-            // 吸血机制：致命一击时改为从敌人死亡位置生成 PB 道具，不再直接加血
-            float enemyCurrentHP = damageable.CurrentHealth;
-            float enemyMaxHP = damageable.MaxHealth;
-            bool isLethal = enemyCurrentHP - finalDamage <= 0f; // 判断是否致命一击
-
-
-            // 应用伤害
-            damageable.TakeDamage(finalDamage, playerToEnemyDir);
-
-            // 吸血：致命一击时按敌人总生命值换算为 PB 道具
-            if (isLethal && lifestealPercent > 0f && Player.player1 != null && enemyMaxHP > 0f && (isEnhanced || damageable is BossBase))
-            {
-                float totalLifesteal = enemyMaxHP * (lifestealPercent / 100f);
-                Global.GeneratePureBlood(collision.gameObject, totalLifesteal);
-            }
-
-            Recycle();
+            // 伤害/吸血统一走即时命中结算（未强化系数 0.7，与历史口径一致）；
+            // 无论是否命中（无接口/已死亡）都按池规则回收
+            var ctx = new InstantHitContext(0.7f, isEnhanced, weaponType, lifestealPercent);
+            InstantHitResolver.Apply(collision.collider, damage, ctx);
         }
-        else
-        {
-            Recycle();
-        }
+
+        Recycle();
     }
 
     /// <summary>

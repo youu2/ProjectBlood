@@ -157,16 +157,10 @@ namespace ProjectBlood
             sm.PlayShellAnimation(finalDirection, transform);
         }
 
-        // 全自动武器支持随机散布
+        // 全自动武器支持随机散布（数学统一收敛到 SpreadMath）
         protected Vector2 ApplySpread(Vector2 baseDirection)
         {
-            if (spreadAngle <= 0f)
-            {
-                return baseDirection;
-            }
-            float randomAngle = Random.Range(-spreadAngle / 2f, spreadAngle / 2f);
-            Quaternion randomRotation = Quaternion.AngleAxis(randomAngle, Vector3.forward);
-            return randomRotation * baseDirection;
+            return SpreadMath.GetRandomDirection(baseDirection, spreadAngle);
         }
 
         public virtual void Reload()

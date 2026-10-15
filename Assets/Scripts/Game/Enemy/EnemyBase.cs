@@ -99,28 +99,10 @@ namespace ProjectBlood
 
             for (int i = 0; i < pelletCount; i++)
             {
-                // 计算第 i 发的偏转角度：随机散布 or 均匀分布
-                float angle;
-                if (randomScatter)
-                {
-                    angle = Random.Range(-spreadAngle / 2f, spreadAngle / 2f);
-                }
-                else if (pelletCount == 1)
-                {
-                    angle = 0f;
-                }
-                else
-                {
-                    angle = (-spreadAngle / 2f) + (spreadAngle / (pelletCount - 1f)) * i;
-                }
-
-                // 把偏转角绕 Z 轴旋到基础方向上
-                float radian = angle * Mathf.Deg2Rad;
-                Vector3 bulletDirection = new Vector3(
-                    baseDirection.x * Mathf.Cos(radian) - baseDirection.y * Mathf.Sin(radian),
-                    baseDirection.x * Mathf.Sin(radian) + baseDirection.y * Mathf.Cos(radian),
-                    0
-                ).normalized;
+                // 计算第 i 发的偏转方向：随机散布 or 均匀分布（数学统一收敛到 SpreadMath）
+                Vector3 bulletDirection = randomScatter
+                    ? SpreadMath.GetRandomDirection(baseDirection, spreadAngle)
+                    : SpreadMath.GetUniformDirection(baseDirection, spreadAngle, i, pelletCount);
 
                 EnemyBullet bullet = Instantiate(bulletPrefab, origin, Quaternion.identity);
                 bullet.direction = bulletDirection;

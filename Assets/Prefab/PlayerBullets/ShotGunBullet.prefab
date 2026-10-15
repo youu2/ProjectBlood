@@ -44,15 +44,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 2831373211923889085}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0c5e70e53d914234e91c4dde0dcc89e9, type: 3}
+  m_Script: {fileID: 11500000, guid: a9230b5945542ee4f844448ca1cff4fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   direction: {x: 0, y: 0}
   speed: 35
   damage: 25
+  lifetime: 0.3
   lifestealPercent: 0
   isEnhanced: 1
+  weaponType: 3
   BulletPrefab: {fileID: 2831373211923889085}
+  maxPenetrationCount: 3
 --- !u!50 &5529413956499864141
 Rigidbody2D:
   serializedVersion: 4
