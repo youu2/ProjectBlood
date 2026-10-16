@@ -8,7 +8,7 @@ namespace ProjectBlood
     /// </summary>
     public readonly struct InstantHitContext
     {
-        /// <summary>未强化（血库未付血）时的伤害系数，如普通子弹 0.7、激光/穿透弹 0.8。</summary>
+        /// <summary>未强化（血库未付血）时的伤害系数，如普通子弹/霰弹 0.7、激光/狙击 0.8。</summary>
         public readonly float UnenhancedRatio;
         /// <summary>当前弹夹是否被血库强化。</summary>
         public readonly bool IsEnhanced;
@@ -28,8 +28,9 @@ namespace ProjectBlood
 
     /// <summary>
     /// 即时命中结算：统一"取接口 → 死亡守卫 → 强化乘区 → 结算伤害 → 致命吸血"流程。
-    /// 收敛原先散落在 PlayerBullet / PenetratingBullet / Laser / ShotGun 的四份重复实现
-    /// （PenetratingBullet 副本曾漏掉强化乘区与 Boss 吸血条件，属复制粘贴漂移，本类已修复）。
+    /// 当前调用方：PlayerBullet、Laser、BlastAttackExecutor（霰弹枪/AWP 矩形弹道）。
+    /// 历史上 PenetratingBullet 曾是复制副本之一（且漏掉强化乘区与 Boss 吸血条件，
+    /// 属复制粘贴漂移），该武器已改为矩形即时判定，副本随之一并移除。
     /// </summary>
     public static class InstantHitResolver
     {
@@ -37,21 +38,21 @@ namespace ProjectBlood
         /// 结算一次命中。击中方向由命中点相对玩家的位置推导，与历史行为一致。
         /// </summary>
         /// <returns>true 表示伤害已实际结算；false 表示目标无 IDamageable 或已死亡。</returns>
-        public static bool Apply(Component hitSource, float baseDamage, in InstantHitContext ctx)
+        public static bool Apply(Component hitTarget, float baseDamage, in InstantHitContext ctx)
         {
             // 用 GetComponentInParent 兼容分离结构敌人（碰撞体在 WholeBody 子物体，伤害接口在根节点）
-            var damageable = hitSource.GetComponentInParent<IDamageable>();
-            return damageable != null && Apply(damageable, hitSource, baseDamage, ctx);
+            var damageable = hitTarget.GetComponentInParent<IDamageable>();
+            return damageable != null && Apply(damageable, hitTarget, baseDamage, ctx);
         }
 
         /// <summary>调用方已自行解析出 IDamageable 时使用（如霰弹枪需按敌人去重后再结算）。</summary>
-        public static bool Apply(IDamageable damageable, Component hitSource, float baseDamage, in InstantHitContext ctx)
+        public static bool Apply(IDamageable damageable, Component hitTarget, float baseDamage, in InstantHitContext ctx)
         {
             // 死亡守卫：敌人已死则跳过，防止重复结算与尸体触发吸血
             if (damageable == null || damageable.CurrentHealth <= 0f) return false;
 
             // 计算玩家到敌人的方向（供受击表现/击退使用）
-            Vector2 hitDir = ((Vector2)hitSource.transform.position - (Vector2)Player.player1.transform.position).normalized;
+            Vector2 hitDir = ((Vector2)hitTarget.transform.position - (Vector2)Player.player1.transform.position).normalized;
 
             // 伤害乘区：血库强化系数 × 强化系统统一加成
             float damageMultiplier = (ctx.IsEnhanced ? 1.0f : ctx.UnenhancedRatio) * PlayerUpgradeState.GetFinalDamageRatio(ctx.WeaponType);
@@ -69,7 +70,7 @@ namespace ProjectBlood
                 && (ctx.IsEnhanced || damageable is BossBase))
             {
                 float totalLifesteal = enemyMaxHP * (ctx.LifestealPercent / 100f);
-                Global.GeneratePureBlood(hitSource.gameObject, totalLifesteal);
+                Global.GeneratePureBlood(hitTarget.gameObject, totalLifesteal);
             }
 
             return true;

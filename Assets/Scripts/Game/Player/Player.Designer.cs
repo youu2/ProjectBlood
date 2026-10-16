@@ -27,7 +27,7 @@ namespace ProjectBlood
 		
 		public ProjectBlood.AutomaticWeapon AK;
 		
-		public ProjectBlood.SemiAutomaticWeapon AWP;
+		public ProjectBlood.AWP AWP;
 		
 		public ProjectBlood.Laser Laser;
 		

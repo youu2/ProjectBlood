@@ -4,11 +4,14 @@ using UnityEngine;
 
 namespace ProjectBlood
 {
-    public partial class Laser : AutomaticWeapon
+    public partial class Laser : AutomaticWeapon, IDirectDamageWeapon
     {
         [Header("=== 激光攻击设置 ===")]
         [Tooltip("激光实际攻击宽度")]
         public float HitDamage = 1f;
+
+        // 暂停页伤害面板读取直伤口径（保留 HitDamage 字段名，避免预制体序列化迁移）
+        public float BaseDamage => HitDamage;
         public float laserWidth = 0.5f;
         public LineRenderer SelfLineRenderer;
         public SpriteRenderer LaserPoint;

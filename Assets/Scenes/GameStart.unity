@@ -4764,7 +4764,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MaxAmmo: 6
-  BulletPrefab: {fileID: 2831373211923889085, guid: 24f127463936e9749b5781a638907b41, type: 3}
+  BulletPrefab: {fileID: 0}
   BulletSpawnPoint: {fileID: 853090404}
   AttackInterval: 1
   ReloadTime: 2
@@ -8716,7 +8716,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1317517243}
-  - component: {fileID: 1317517244}
   m_Layer: 6
   m_Name: AWPBullet
   m_TagString: Untagged
@@ -8740,27 +8739,6 @@ Transform:
   - {fileID: 282034125}
   m_Father: {fileID: 1894814113}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1317517244
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1317517242}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a9230b5945542ee4f844448ca1cff4fe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  direction: {x: 0, y: 0}
-  speed: 40
-  damage: 120
-  lifetime: 3
-  lifestealPercent: 0
-  isEnhanced: 1
-  weaponType: 1
-  BulletPrefab: {fileID: 0}
-  maxPenetrationCount: 3
 --- !u!1 &1325423352
 GameObject:
   m_ObjectHideFlags: 0
@@ -12309,11 +12287,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1894814111}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8e8808d4edbe8e64781fbe4ac76e632d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Script: {fileID: 11500000, guid: 92fa47743f914e55ba443bbe443fe075, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
   MaxAmmo: 10
-  BulletPrefab: {fileID: 6910411467665945732, guid: cc63afd8955df38438a51c84fe463e55, type: 3}
+  BulletPrefab: {fileID: 0}
   BulletSpawnPoint: {fileID: 1317517243}
   AttackInterval: 1.6
   ReloadTime: 2.4
@@ -12332,6 +12310,12 @@ MonoBehaviour:
   BloodRequired: 5
   AdditionalCameraSize: 2
   ShellPrefab: {fileID: 0}
+  pelletCount: 1
+  blastDamage: 120
+  blastLength: 20
+  hitboxWidth: 0.42
+  visualWidth: 0.42
+  blastFxPrefab: {fileID: 8082558783309498167, guid: 315302e1d2cba244db62be6478bacc09, type: 3}
 --- !u!4 &1894814113
 Transform:
   m_ObjectHideFlags: 0

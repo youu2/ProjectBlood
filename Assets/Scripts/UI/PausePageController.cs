@@ -255,16 +255,16 @@ namespace ProjectBlood
 
                 var clip = weapon.GetGunClip();
 
-                // 基础攻击力：优先读子弹预制体上的 PlayerBullet.damage；
-                // Laser 等无子弹武器改读武器脚本上的直伤字段（Laser.HitDamage），否则会显示 0
+                // 基础攻击力：子弹系武器读子弹预制体上的 PlayerBullet.damage；
+                // 直伤武器（Laser/ShotGun/AWP，无飞行子弹）读 IDirectDamageWeapon.BaseDamage
                 float baseDamage = 0f;
                 if (weapon.BulletPrefab != null && weapon.BulletPrefab.TryGetComponent<PlayerBullet>(out var bullet))
                 {
                     baseDamage = bullet.damage;
                 }
-                else if (weapon.TryGetComponent<Laser>(out var laser))
+                else if (weapon is IDirectDamageWeapon directDamageWeapon)
                 {
-                    baseDamage = laser.HitDamage;
+                    baseDamage = directDamageWeapon.BaseDamage;
                 }
                 // 最终伤害与战斗结算口径一致(含武器独立增伤/全局增伤/血印乘区)
                 float ratio = PlayerUpgradeState.GetFinalDamageRatio(row.weaponType);

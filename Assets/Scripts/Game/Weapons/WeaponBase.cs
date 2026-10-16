@@ -134,7 +134,8 @@ namespace ProjectBlood
             }
         }
 
-        private void CreateShell(Vector2 finalDirection)
+        // protected：即时命中类武器（霰弹/狙击）的 Attack 重写也需要抛壳，复用同一实现
+        protected void CreateShell(Vector2 finalDirection)
         {
             // 弹壳池为跨场景常驻对象，战斗结束进入主菜单后仍然存在，
             // 但 DropManager（弹壳模板持有者）是局内场景对象，主菜单中不存在。
@@ -371,6 +372,23 @@ namespace ProjectBlood
         protected void TriggerWeaponFired()
         {
             OnWeaponFired?.Invoke(this);
+        }
+
+        /// <summary>
+        /// 即时命中类武器（霰弹枪/狙击枪）共用的开火反馈：
+        /// 音效、枪口火焰、镜头震动、动画触发器、抛壳、OnWeaponFired 事件。
+        /// 与原 ShotGun.Attack 的反馈块逐项一致（震屏/动画参数取武器自身序列化配置）。
+        /// 不包裹 try-catch：调用方在弹药与冷却结算后调用，与基类 Attack 的衍生功能同语义。
+        /// </summary>
+        protected void PlayHitscanFireFeedback(Vector2 shootDir)
+        {
+            int randomIndex = Random.Range(0, ShootSounds.Count);
+            AudioKitManager.Instance.PlayOneShot(ShootSounds[randomIndex], volume: FireVolume);
+            fireFlash.Flash(BulletSpawnPoint.position, shootDir); // 显示枪口火焰特效
+            CameraUtils.ShakeMainCamera(CameraShakeIntensity, CameraShakeDuration);
+            WeaponAnimator.SetTrigger(ShootAnimatioTrigger);
+            CreateShell(shootDir);
+            TriggerWeaponFired();
         }
     }
 }
