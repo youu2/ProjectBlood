@@ -8,17 +8,19 @@ namespace ProjectBlood
     /// 驱动 NormalFiller（普通换弹进度）与 SpecialFiller（特殊换弹进度）两个 Image.Type=Filled 的子 Image。
     /// 颜色由用户直接在两个 Image 的 Inspector 上自行调整，本组件不接管颜色。
     ///
-    /// 两个 Filler 均常驻可见，仅 fillAmount 变化：
-    ///   - Idle：Normal=1 常驻填满，Special=0 占位可见
+    /// 两个 Filler 均常驻可见，仅 fillAmount 变化。NormalFiller 有两种模式：
+    ///   弹药余量表（Idle/SpecialReloading）：满弹 100% ↔ 空仓 0%，随开火逐发下降
+    ///   换弹进度（NormalReloading/SpecialPending）：0→1 推进，结束后自然衔接满弹量表
+    ///   - Idle：Normal=当前武器弹药余量，Special=0 占位可见
     ///   - 普通换弹中（阶段1）：Normal 0→1，Special 保持 0 占位
-    ///   - 普通换弹正常结束（无特殊）：Normal 保持 1，Special 保持 0
-    ///   - 普通换弹正常结束（已触发特殊）：Normal 保持 1，Special 0→1 推进
-    ///   - 特殊换弹结束/中断：Normal 保持 1，Special 立即归零（仍可见占位）
-    ///   - 普通换弹中断（如切枪）：Normal 立即填满；已触发特殊时立即转入阶段2推进 Special
+    ///   - 普通换弹正常结束（无特殊）：Normal=满弹药 100%，Special 保持 0
+    ///   - 普通换弹正常结束（已触发特殊）：Normal=满弹药 100%，Special 0→1 推进
+    ///   - 特殊换弹结束/中断：Normal 回到弹药余量表，Special 立即归零（仍可见占位）
+    ///   - 普通换弹中断（如切枪）：Normal 回到弹药余量表；已触发特殊时立即转入阶段2推进 Special
     /// </summary>
     public class CursorReloadVisualizer : MonoBehaviour
     {
-        [Tooltip("普通换弹遮罩：Image.Type=Filled，常驻可见。Idle 时 fillAmount=1")]
+        [Tooltip("普通换弹遮罩：Image.Type=Filled，常驻可见。Idle 时显示弹药余量（满弹 100% ↔ 空仓 0%）")]
         [SerializeField] private Image normalFiller;
         [Tooltip("特殊换弹遮罩：Image.Type=Filled，常驻可见占位。仅阶段2推进，结束/中断后归零")]
         [SerializeField] private Image specialFiller;
@@ -60,6 +62,12 @@ namespace ProjectBlood
             float t = Time.time;
             switch (_state)
             {
+                case State.Idle:
+                    {
+                        // 弹药余量表：随开火逐发下降、换弹/补弹后回升，切枪后自动跟随新武器
+                        ApplyAmmoFillFromCurrentWeapon();
+                        break;
+                    }
                 case State.NormalReloading:
                 case State.SpecialPending:
                     {
@@ -73,6 +81,9 @@ namespace ProjectBlood
                     }
                 case State.SpecialReloading:
                     {
+                        // 阶段2中 NormalFiller 回到弹药余量表（普通换弹已结束/被打断）
+                        ApplyAmmoFillFromCurrentWeapon();
+
                         float duration = _specialReloadEndTime - _specialReloadStartTime;
                         float p = duration > 0f
                             ? Mathf.Clamp01((t - _specialReloadStartTime) / duration)
@@ -81,6 +92,21 @@ namespace ProjectBlood
                         break;
                     }
             }
+        }
+
+        // 弹药余量 → NormalFiller：满弹 100%，空仓 0%（弹夹数据缺失时按满弹处理）
+        private void ApplyAmmoFill(GunClip clip)
+        {
+            if (normalFiller == null) return;
+            normalFiller.fillAmount = clip != null && clip.maxAmmo > 0
+                ? Mathf.Clamp01((float)clip.currentAmmo / clip.maxAmmo)
+                : 1f;
+        }
+
+        private void ApplyAmmoFillFromCurrentWeapon()
+        {
+            if (Player.player1 == null || Player.player1.currentWeapon == null) return;
+            ApplyAmmoFill(Player.player1.currentWeapon.GetGunClip());
         }
 
         private void ResetToIdle()
@@ -104,7 +130,8 @@ namespace ProjectBlood
         private void HandleNormalReloadFinished(WeaponBase weapon)
         {
             _normalReloadActive = false;
-            if (normalFiller != null) normalFiller.fillAmount = 1f;
+            // FinishReload 刚补满弹夹，按实际余量显示（=100%，与量表模式自然衔接）
+            ApplyAmmoFill(weapon != null ? weapon.GetGunClip() : null);
 
             if (_state == State.SpecialPending)
             {
@@ -118,11 +145,12 @@ namespace ProjectBlood
 
         private void HandleNormalReloadAborted(WeaponBase weapon)
         {
-            // 普通换弹中断（如切枪）：Normal 立即填满。
+            // 普通换弹中断（如切枪）：Normal 回到该武器的弹药余量表
+            // （CancelReload 不改弹药，空仓被打断就显示 0%）；随后 Update 自动跟随当前武器。
             // 若已触发特殊换弹（SpecialPending），其协程并不随切枪取消，
             // 视为"普通换弹阶段结束"，立即转入阶段2推进 SpecialFiller
             _normalReloadActive = false;
-            if (normalFiller != null) normalFiller.fillAmount = 1f;
+            ApplyAmmoFill(weapon != null ? weapon.GetGunClip() : null);
             if (_state == State.SpecialPending)
             {
                 StartSpecialFiller();

@@ -257,6 +257,17 @@ namespace ProjectBlood
         {
             var weaponData = WeaponDataSystem.weaponDataList[index];
 
+            // 切枪打断特殊换弹（与开火打断同一处理）：玩家主动切枪即放弃本次特殊换弹意图。
+            // 守卫使 Awake/读档等启动期的 UseWeapon(0) 调用自然跳过；
+            // 血印"开火切枪"若与开火打断在同一次事件分发中先后到达，标志位保证只广播一次
+            if (isSpecialReloadTriggered && specialReloadCoroutine != null)
+            {
+                StopCoroutine(specialReloadCoroutine);
+                isSpecialReloadTriggered = false;
+                specialReloadCoroutine = null;
+                OnSpecialReloadFinished?.Invoke();
+            }
+
             var previousWeapon = currentWeapon;
 
             // 停止上一把武器的所有状态
