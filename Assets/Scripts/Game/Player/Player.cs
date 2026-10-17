@@ -228,7 +228,7 @@ namespace ProjectBlood
                 weapon.LoadWeaponData(weaponData, updateUI: false);
             }
             NoticeText.Hide();
-            specialReloadBloodCost = (WeaponDataSystem.weaponDataList.Count - 1) * 3;   // 根据武器数量动态调整特殊换弹消耗的血库资源
+            UpdateSpecialReloadCost();   // 特殊换弹代价按"弹夹未满的其他武器数量"动态计算
             // 护盾一直挂载在玩家对象上,初始化护盾状态,捡到道具后才会激活
             shieldState.Initialize(ShieldSprite, this);
         }
@@ -556,16 +556,21 @@ namespace ProjectBlood
                 // 特殊换弹不要求血库存量充足:血量不足也允许触发,
                 // 但补装的其他武器子弹不会被强化(具体处理见 SpecialReloadCoroutine)
                 else if (!inMainMenu && currentTime - firstReloadTime <= specialReloadWindow &&
-                WeaponDataSystem.weaponDataList.Count > 2)
+                WeaponDataSystem.weaponDataList.Count > 1)
                 {
-                    isSpecialReloadTriggered = true;
-                    // 快速连按可能重复触发,先停止上一个等待中的特殊换弹协程,避免重复扣血/补弹
-                    if (specialReloadCoroutine != null)
+                    // 其他武器全部满弹(代价为0)时特殊换弹无事可做,不触发
+                    UpdateSpecialReloadCost();
+                    if (specialReloadBloodCost > 0)
                     {
-                        StopCoroutine(specialReloadCoroutine);
+                        isSpecialReloadTriggered = true;
+                        // 快速连按可能重复触发,先停止上一个等待中的特殊换弹协程,避免重复扣血/补弹
+                        if (specialReloadCoroutine != null)
+                        {
+                            StopCoroutine(specialReloadCoroutine);
+                        }
+                        specialReloadCoroutine = StartCoroutine(SpecialReloadCoroutine());
+                        OnSpecialReloadTriggered?.Invoke(specialReloadDelay);
                     }
-                    specialReloadCoroutine = StartCoroutine(SpecialReloadCoroutine());
-                    OnSpecialReloadTriggered?.Invoke(specialReloadDelay);
                 }
             }
             GameUI.UpdateBloodText();
@@ -630,6 +635,13 @@ namespace ProjectBlood
                         continue;
                     }
 
+                    // 满弹夹武器无需补弹,直接跳过:代价计算未计入它们,
+                    // 若仍 FillClipDirectly 会把未强化子弹免费强化
+                    if (weaponData.weaponCurrentAmmo >= weaponData.weaponMaxAmmo)
+                    {
+                        continue;
+                    }
+
                     var weapon = GetWeaponFromName(weaponData.weaponName);
                     if (weapon == null)
                     {
@@ -659,7 +671,23 @@ namespace ProjectBlood
 
         public void UpdateSpecialReloadCost()
         {
-            specialReloadBloodCost = (WeaponDataSystem.weaponDataList.Count - 1) * 3;
+            // 只统计除当前武器外弹夹未满、真正需要补弹的武器：
+            // 满弹夹武器不被特殊换弹改变状态(补弹循环同样跳过),不应计入血库代价。
+            // 弹药以 WeaponData 为准:非当前武器在切枪/换弹/弹药修改时都会 SaveWeaponData 同步,
+            // 而实例 gunClip 在场景重载后可能尚未补加载,不能作为依据
+            int weaponsNeedReload = 0;
+            foreach (var weaponData in WeaponDataSystem.weaponDataList)
+            {
+                if (weaponData == null || (currentWeapon != null && weaponData == currentWeapon.Data))
+                {
+                    continue;
+                }
+                if (weaponData.weaponCurrentAmmo < weaponData.weaponMaxAmmo)
+                {
+                    weaponsNeedReload++;
+                }
+            }
+            specialReloadBloodCost = weaponsNeedReload * 4;
         }
 
         // 读档还原后（MapController.RestoreFromSave，晚于 Player.Awake）调用：
