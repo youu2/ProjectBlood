@@ -30,6 +30,7 @@ namespace ProjectBlood
         [SerializeField] protected float ReloadVolume = 0.7f;
         [SerializeField] protected float ShellVolume = 0.5f;
         protected FireFlash fireFlash = new(); // 枪口火焰特效组件
+        [SerializeField] protected float fireFlashDuration = 0.15f; // 枪口火焰特效持续时间
         [SerializeField] protected float CameraShakeIntensity = 0.15f; // 开火镜头震动强度
         [SerializeField] protected float CameraShakeDuration = 3f; // 开火镜头震动持续时间(帧)
         [SerializeField] public Animator WeaponAnimator;
@@ -93,7 +94,7 @@ namespace ProjectBlood
             {
                 ApplyLifestealToBullet(bullet.GetComponent<PlayerBullet>()); // 应用吸血功能
 
-                fireFlash.Flash(BulletSpawnPoint.position, shootDir); // 显示枪口火焰特效
+                fireFlash.Flash(BulletSpawnPoint.position, shootDir, fireFlashDuration); // 显示枪口火焰特效
 
                 //镜头震动
                 CameraUtils.ShakeMainCamera(CameraShakeIntensity, CameraShakeDuration);
