@@ -102,6 +102,9 @@ namespace ProjectBlood
             // 如果打通了所有关卡，打开游戏通关面板
             if (Global.currentDifficulty >= Global.LevelConfigs.Count)
             {
+                // 兜底路径同样结算遗产点并删档，保证任何通关入口行为一致
+                LegacyUpgradeState.SettleFromRun(Global.Level.Value);
+                RunSaveService.DeleteSave();
                 UIKit.OpenPanel<UIGamePassPanel>();
                 return;
             }
@@ -800,6 +803,10 @@ namespace ProjectBlood
             Global.currentDifficulty += 1;
             if (Global.currentDifficulty >= Global.LevelConfigs.Count)
             {
+                // 通关：与死亡/波次通关对称，先结算遗产点再删本局存档，
+                // 否则主菜单"继续游戏"会读到击杀最终 Boss 前的检查点存档
+                LegacyUpgradeState.SettleFromRun(Global.Level.Value);
+                RunSaveService.DeleteSave();
                 UIKit.OpenPanel<UIGamePassPanel>();
             }
             else
