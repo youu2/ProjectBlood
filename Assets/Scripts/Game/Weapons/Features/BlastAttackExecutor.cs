@@ -75,7 +75,7 @@ namespace ProjectBlood
                 {
                     var damageable = hit.GetComponentInParent<IDamageable>();
                     if (damageable == null || !damaged.Add(damageable)) continue;
-                    InstantHitResolver.Apply(damageable, hit, p.Damage, ctx);
+                    DamageResolver.Apply(damageable, hit, p.Damage, ctx);
                 }
 
                 // 视觉：生成无碰撞体矩形，0.5 秒淡出（与判定共用截短长度，宽度独立配置）

@@ -234,6 +234,37 @@ namespace ProjectBlood
             }
         }
 
+        // 解锁瞬间对"当前状态可评估"的触发条件做一次初评，只遍历本次解锁的血印。
+        // 事件型触发（开火/击杀/受伤/切枪/技能/按键）没有"当前状态"语义，无法初评，直接跳过；
+        // 目前仅 HealthThreshold 属于状态型触发。
+        // 判定顺序与 DispatchEvent 的边沿分支保持一致，尤其必须置 TriggerLatched，
+        // 否则下一次血量变化会把"已在低血区间"误判为再次跨越，导致重复触发。
+        private static void EvaluateStateTriggers(BloodSigilSO so)
+        {
+            if (!runtimes.TryGetValue(so, out var ctx)) return;
+
+            var healthCtx = new BloodSigilFireContext
+            {
+                TriggerType = BloodSigilTriggerType.HealthThreshold,
+                HealthPercent = GetCurrentHealthPercent(),
+            };
+
+            foreach (var rt in ctx.Modules)
+            {
+                var trigger = rt.Module.trigger;
+                if (trigger == null || trigger.triggerType != BloodSigilTriggerType.HealthThreshold) continue;
+                if (!trigger.Matches(healthCtx)) continue;
+                if (!IsGateOpen(rt)) continue;
+                if (rt.TriggerLatched) continue;
+                if (!rt.CanFireByCooldown(rt.Module.triggerCooldownSeconds, Time.time)) continue;
+                if (!rt.CanFire(rt.Module.maxStacks)) continue;
+
+                rt.TriggerLatched = true;
+                FireModule(rt, healthCtx);
+                if (!runtimes.ContainsKey(so)) break;   // 献祭类效果可能在结算中移除本血印
+            }
+        }
+
         // 致命伤害拦截：在 Player.TakeDamage 判定本次伤害将致命时调用。
         // 找到第一个"触发条件=致命伤害且次数未满"的模块并 Fire（其结算可能抵消本次伤害/给予护盾），
         // 返回 true 表示本次伤害已被处理（玩家不死亡）。
@@ -460,7 +491,7 @@ namespace ProjectBlood
         }
 
         // 重建监听键并集（解锁/移除/献祭/读档后调用；低频，直接全量扫描）。
-        // 来源：触发器/结束条件上配置的 watchKeys（任意键）+ 已占用主动血印槽位键（1~4）
+        // 来源：触发器/结束条件上显式配置的 watchKeys + 已占用主动血印槽位键（1~4）
         private static void RebuildWatchedKeys()
         {
             watchedKeys.Clear();
@@ -635,10 +666,12 @@ namespace ProjectBlood
                 }
             }
 
-            // 解锁即激活的常驻模块：若其 HealthThreshold 结束条件在获得时就已满足
-            // （如低血时获得"血量低于30%即结束"的增益），按电平语义立即结束
+            // 解锁即激活的常驻模块：先对"当前状态可评估"的触发做一次初评
+            // （如低血时获得"血量低于50%增伤"的血印，应视为刚刚跨越阈值），
+            // 再评估其 HealthThreshold 结束条件是否在获得时就已满足（电平语义立即结束）
             if (runtimes.ContainsKey(so))
             {
+                EvaluateStateTriggers(so);
                 EvaluateHealthEnds(GetCurrentHealthPercent());
             }
 
@@ -719,7 +752,7 @@ namespace ProjectBlood
                 if (!runtimes.TryGetValue(sigil, out var ctx)) continue;
                 var entry = new SigilSaveEntry
                 {
-                    sigilId = string.IsNullOrEmpty(sigil.id) ? sigil.name : sigil.id,
+                    sigilId = sigil.GetStableId(),
                 };
                 foreach (var rt in ctx.Modules)
                 {
@@ -740,7 +773,7 @@ namespace ProjectBlood
             for (int i = 0; i < MaxActiveSigils; i++)
             {
                 var s = activeSigilSlots[i];
-                data.activeSigilSlotIds.Add(s == null ? string.Empty : (string.IsNullOrEmpty(s.id) ? s.name : s.id));
+                data.activeSigilSlotIds.Add(s == null ? string.Empty : s.GetStableId());
             }
         }
 

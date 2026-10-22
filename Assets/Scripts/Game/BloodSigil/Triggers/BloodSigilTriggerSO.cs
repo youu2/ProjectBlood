@@ -22,7 +22,7 @@ namespace ProjectBlood
         [Tooltip("血量百分比阈值（仅 HealthThreshold 类型生效，0~1，0.3=30%，1=满血）")]
         [Range(0f, 1f)] public float healthThreshold = 0.3f;
 
-        [Tooltip("监听按键（仅 KeyPress/KeyHold/KeyRelease 类型生效，任一键命中即可；含鼠标键 Mouse0~6）。留空=任意键")]
+        [Tooltip("监听按键（仅 KeyPress/KeyHold/KeyRelease 类型生效，任一键命中即可；含鼠标键 Mouse0~6）。留空=永不触发")]
         public List<KeyCode> watchKeys = new List<KeyCode>();
 
         // 是否为边沿触发类型：条件"由假变真"的瞬间才触发，
@@ -49,8 +49,8 @@ namespace ProjectBlood
                 case BloodSigilTriggerType.KeyPress:
                 case BloodSigilTriggerType.KeyHold:
                 case BloodSigilTriggerType.KeyRelease:
-                    // 空列表 = 不限制按键；否则事件键必须在监听列表中
-                    return watchKeys == null || watchKeys.Count == 0 || watchKeys.Contains(ctx.PressedKey);
+                    // 必须显式配置监听键；空列表 = 永不触发（避免"任意键"误触发）
+                    return watchKeys != null && watchKeys.Count > 0 && watchKeys.Contains(ctx.PressedKey);
 
                 default:
                     return true;

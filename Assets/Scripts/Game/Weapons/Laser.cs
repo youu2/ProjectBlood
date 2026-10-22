@@ -29,11 +29,11 @@ namespace ProjectBlood
             //  伤害检测：使用 BoxCast（有宽度）
             var damageHit = Physics2D.BoxCast(startPos, new Vector2(laserWidth, laserWidth), 0f, shootDir, Mathf.Infinity, targetLayer);
 
-            // 如果击中了敌人，统一走即时命中结算（强化乘区/致命吸血与子弹系口径一致）
+            // 如果击中了敌人，命中后的伤害统一走 DamageResolver（强化乘区/致命吸血与子弹系口径一致）
             if (damageHit.collider != null)
             {
                 var ctx = new InstantHitContext(0.8f, IsBulletEnhanced, WeaponType, Lifesteal.LifestealPercent);
-                InstantHitResolver.Apply(damageHit.collider, HitDamage, ctx);
+                DamageResolver.Apply(damageHit.collider, HitDamage, ctx);
             }
             CameraUtils.ShakeMainCamera(0.04f, 5);
             OnLaserActivate?.Invoke();

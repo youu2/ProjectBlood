@@ -62,10 +62,10 @@ public class PlayerBullet : MonoBehaviour
 
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            // 伤害/吸血统一走即时命中结算（未强化系数 0.7，与历史口径一致）；
+            // 命中后的伤害/吸血统一走 DamageResolver 结算（未强化系数 0.7，与历史口径一致）；
             // 无论是否命中（无接口/已死亡）都按池规则回收
             var ctx = new InstantHitContext(0.7f, isEnhanced, weaponType, lifestealPercent);
-            InstantHitResolver.Apply(collision.collider, damage, ctx);
+            DamageResolver.Apply(collision.collider, damage, ctx);
         }
 
         Recycle();

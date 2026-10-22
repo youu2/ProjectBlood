@@ -24,12 +24,12 @@ namespace ProjectBlood
         [Tooltip("血量百分比阈值（仅 HealthThreshold 类型生效，0~1，0.3=30%，1=满血）")]
         [Range(0f, 1f)] public float healthThreshold = 0.3f;
 
-        [Tooltip("监听按键（仅 InputRelease 类型生效，松开任一键即结束；含鼠标键 Mouse0~6）")]
+        [Tooltip("监听按键（仅 InputRelease 类型生效，松开任一键即结束；含鼠标键 Mouse0~6）。留空=永不结束")]
         public List<KeyCode> watchKeys = new List<KeyCode>();
 
-        // 是否监听指定键（InputRelease 用）：空列表视为任意键
+        // 是否监听指定键（InputRelease 用）：空列表视为不监听任何键（永不因松开而结束）
         public bool IsWatchingKey(KeyCode key)
-            => watchKeys == null || watchKeys.Count == 0 || watchKeys.Contains(key);
+            => watchKeys != null && watchKeys.Count > 0 && watchKeys.Contains(key);
     }
 
     // 多结束条件的匹配模式

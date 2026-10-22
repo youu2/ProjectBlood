@@ -79,8 +79,7 @@ namespace ProjectBlood
             foreach (var sigil in sigilPool)
             {
                 if (sigil == null) continue;
-                var key = string.IsNullOrEmpty(sigil.id) ? sigil.name : sigil.id;
-                if (key == id) return sigil;
+                if (sigil.GetStableId() == id) return sigil;
             }
             return null;
         }

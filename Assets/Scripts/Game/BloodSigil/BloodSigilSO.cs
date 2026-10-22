@@ -30,6 +30,11 @@ namespace ProjectBlood
         [Tooltip("存档匹配键，创建后不可修改；留空时回退使用资产名")]
         public string id;
 
+        // 存档/查找用稳定标识：优先 id，留空回退资产名。
+        // 导出、导入、掉落物、管理器查找统一走这里，避免回退逻辑在多处各写一遍后走样。
+        public string GetStableId()
+            => string.IsNullOrEmpty(id) ? name : id;
+
         [Header("掉落配置")]
         [Tooltip("是否进入随机抽取池，置 false 可临时禁用而不删除资产")]
         public bool isInPool = true;

@@ -27,12 +27,14 @@ namespace ProjectBlood
     }
 
     /// <summary>
-    /// 即时命中结算：统一"取接口 → 死亡守卫 → 强化乘区 → 结算伤害 → 致命吸血"流程。
+    /// 伤害结算器：统一"取接口 → 死亡守卫 → 强化乘区 → 结算伤害 → 致命吸血"流程。
+    /// 只负责命中之后的伤害结算，命中检测由调用方各自完成
+    /// （PlayerBullet 物理碰撞、Laser 射线、BlastAttackExecutor 矩形区域查询）。
     /// 当前调用方：PlayerBullet、Laser、BlastAttackExecutor（霰弹枪/AWP 矩形弹道）。
     /// 历史上 PenetratingBullet 曾是复制副本之一（且漏掉强化乘区与 Boss 吸血条件，
     /// 属复制粘贴漂移），该武器已改为矩形即时判定，副本随之一并移除。
     /// </summary>
-    public static class InstantHitResolver
+    public static class DamageResolver
     {
         /// <summary>
         /// 结算一次命中。击中方向由命中点相对玩家的位置推导，与历史行为一致。
