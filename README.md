@@ -89,7 +89,8 @@
 1. 使用 Unity Hub 安装 **Unity 2022.3.62f3**。
 2. 打开本仓库根目录（Unity 会自动导入依赖与 QFramework）。
 3. 打开 `Assets/Scenes/GameStart.unity`，点击 Play。
-4. 若音频无声，请确认 FMOD 插件与 bank 已正确导入。
+4. 仓库已包含 FMOD bank（`Assets/StreamingAssets/FMODBanks`），FMOD 设置已指向该目录；Windows / macOS / Linux 在编辑器中直接 Play 或打包均可正常播放音频。
+5. 如需重新构建 bank：在 FMOD Studio 中 Build 后，把 `Build/Desktop/*.bank` 复制到 `Assets/StreamingAssets/FMODBanks`（仓库不包含 FMOD Studio 工程）。其他平台需要重新导入对应的 FMOD 平台库。
 
 ## 目录结构
 
@@ -123,4 +124,4 @@ Docs/                # 存档系统专题文档
 
 ## 许可与声明
 
-本项目为个人学习与作品集项目，不用于商业分发。项目中如包含第三方素材，版权归原作者所有，仅用于原型验证。
+本项目为个人学习与作品集项目。代码、美术与音频的使用授权见 [LICENSE](LICENSE)；第三方库与素材的版权与授权见 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)。

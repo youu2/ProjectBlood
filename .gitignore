@@ -106,9 +106,11 @@ InitTestScene*.unity*
 /[Aa]ssets/Plugins/FMOD/Cache/*
 /[Aa]ssets/Plugins/FMOD/Cache.meta
 
-# Ignore FMOD Studio bank files
-/[Aa]ssets/StreamingAssets/**/*.bank
-/[Aa]ssets/StreamingAssets/**/*.bank.meta
+# FMOD Studio banks: required at runtime, must be committed
+# (kept in Assets/StreamingAssets/FMODBanks)
+
+# Personal documents (resumes etc.) must not be committed to a public repository
+/Technical Documentation/*.docx
 
 # --- Explicitly keep required FMOD files ---
 
@@ -125,3 +127,10 @@ Docs/存档系统使用手册.md
 # Docs/LevelProgressSave_Design.md
 Assets/Scripts/Game/Player/Skills/HiddenBlade.Design.md
 Technical Documentation/游戏设计.md
+# FMOD native libraries for non-target platforms are excluded from the repo
+/Assets/Plugins/FMOD/platforms/android/lib/
+/Assets/Plugins/FMOD/platforms/html5/lib/
+/Assets/Plugins/FMOD/platforms/ios/lib/
+/Assets/Plugins/FMOD/platforms/tvos/lib/
+/Assets/Plugins/FMOD/platforms/visionos/lib/
+/Assets/Plugins/FMOD/platforms/uwp/lib/
