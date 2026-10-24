@@ -17,8 +17,6 @@ namespace ProjectBlood
 		
 		public ProjectBlood.LaserUnlock LaserUnlock;
 		
-		public ProjectBlood.AnnihilationCore AnnihilationCore;
-		
 		public ProjectBlood.DirtyBlood DirtyBlood;
 		
 		public ProjectBlood.Exp Exp;

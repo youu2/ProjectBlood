@@ -12,7 +12,7 @@ public class SkillManager : MonoBehaviour
     public static event Action<string> OnSkillCasted;
 
     [Header("技能配置")]
-    [Tooltip("将你创建好的技能数据资源拖入此列表,运行时将自动生成对应的技能实例")]
+    [Tooltip("技能数据资源列表，运行时自动生成对应技能实例")]
     [SerializeField] private List<SkillData> skillDataList = new List<SkillData>();
 
     [Header("输入设置(临时)")]
@@ -110,8 +110,6 @@ public class SkillManager : MonoBehaviour
 
             skills.Add(skill);
             skillDict[data.skillName] = skill;
-
-            Debug.Log($"技能已加载：{data.skillName}");
         }
     }
 

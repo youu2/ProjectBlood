@@ -37,9 +37,6 @@ MonoBehaviour:
     - TypeName: ProjectBlood.LaserUnlock
       PathToRoot: LaserUnlock
       MemberName: LaserUnlock
-    - TypeName: ProjectBlood.AnnihilationCore
-      PathToRoot: AnnihilationCore
-      MemberName: AnnihilationCore
     - TypeName: ProjectBlood.DirtyBlood
       PathToRoot: DirtyBlood
       MemberName: DirtyBlood

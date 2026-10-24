@@ -33,7 +33,6 @@ public class SetStateEffect : SkillEffect
 
         IsDone = false;
         playerState.SetState(stateToSet);
-        Debug.Log($"状态切换：{state["previousState"]} → {stateToSet}");
     }
 
     public override void OnUpdate(EffectContext context)
@@ -73,6 +72,5 @@ public class SetStateEffect : SkillEffect
 
         PlayerState.State previousState = (PlayerState.State)state["previousState"];
         playerState.SetState(previousState);
-        Debug.Log($"状态恢复：{stateToSet} → {previousState}");
     }
 }

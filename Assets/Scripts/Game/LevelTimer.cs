@@ -68,7 +68,6 @@ namespace ProjectBlood
                     yield return null;
                     continue;
                 }
-                // yield return null;
                 // clear enemy => next wave
                 if (Global.currentNum.Value <= 0 && Global.cumulativeNum.Value >= waves.getWave1TotalNum())
                 {
@@ -88,8 +87,6 @@ namespace ProjectBlood
                     continue;
                 }
 
-                //UIKit.OpenPanel<UIGamePassPanel>(); //Survive until the countdown ends => pass the level
-                // countdown ends => next wave
                 if (Remaining <= 0 && Global.CurrentWaves.Value < Global.maxWavesNum.Value)
                 {
                     Global.CurrentWaves.Value += 1;
@@ -103,7 +100,6 @@ namespace ProjectBlood
                 && Global.cumulativeNum.Value >= waves.getWave1TotalNum())
                 {
                     AudioKitManager.Instance.PlayOneShot("WinMusic");
-                    Debug.Log("LevelTimer: Level Passed!");
                     UIKit.OpenPanel<UIGamePassPanel>(); //Survive until the last wave => pass the level
                     OnTimerFinished?.Invoke();
                     yield break;

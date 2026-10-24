@@ -110,7 +110,6 @@ namespace ProjectBlood
         {
             int gained = Mathf.Max(0, playerLevel - 1);
             LegacyPoint.Value += gained;
-            Debug.Log($"[LegacyUpgradeState] 结算获得 {gained} 遗产点，当前 {LegacyPoint.Value}");
         }
 
         // 启动时按存档等级应用全部养成效果

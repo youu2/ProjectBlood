@@ -30,8 +30,7 @@ public class SkillCooldownUI : MonoBehaviour
 
     private void Start()
     {
-        // 查找玩家身上的技能管理器
-        // 如果你的玩家对象名称不同,请相应调整
+        // 通过 Player 标签获取技能管理器
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)
         {
@@ -39,7 +38,7 @@ public class SkillCooldownUI : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("未找到标签为 Player 的对象,请为玩家设置标签或手动赋值 skillManager");
+            Debug.LogWarning("[SkillCooldownUI] 未找到 Player 标签对象，冷却 UI 无法绑定 SkillManager");
         }
         GameUI.OnLoadingComplete += ResetCooldownUI;
     }

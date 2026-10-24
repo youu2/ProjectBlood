@@ -13,8 +13,7 @@ namespace ProjectBlood
         private float _invincibleDuration;
         private SpriteRenderer shieldSprite;
         private Vector2 playerPosition;
-        private MonoBehaviour _coroutineRunner; // 需要一个MonoBehaviour来启动协程
-        // btw，runner只是我喜欢游戏的命名，实际就是指Player对象（或者是我设想中还未实现的类玩家敌人Titan）
+        private MonoBehaviour _coroutineRunner; // 用于启动护盾协程的宿主（当前为 Player）
 
         public void Initialize(SpriteRenderer sprite, MonoBehaviour runner)
         {

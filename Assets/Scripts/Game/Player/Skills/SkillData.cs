@@ -49,7 +49,7 @@ public class SkillData : ScriptableObject
     public bool useUnscaledTime = false;
 
     [Header("效果组合")]
-    [Tooltip("将你想要的效果资源拖入此列表,它们将按照列表顺序或并行执行。")]
+    [Tooltip("技能效果资源列表，按列表顺序或并行模式执行")]
     public List<SkillEffect> effects = new List<SkillEffect>();  // 效果列表
 
     [Tooltip("顺序执行：一个效果结束后才开始下一个;并行执行：所有效果同时启动")]

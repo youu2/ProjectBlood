@@ -37,7 +37,6 @@ public class EnemySpawner : MonoBehaviour
 				{
 					if (Global.currentNum.Value < maxCurrentNum && Global.cumulativeNum.Value < totalNum)
 					{
-						Debug.Log("current waves: " + Global.CurrentWaves.Value);
 						GameObject[] selectedEnemyArray = waves.SelectEnemiesByWaves();
 						GameObject enemyToSpawn = selectedEnemyArray[Random.Range(0, selectedEnemyArray.Length)];
 

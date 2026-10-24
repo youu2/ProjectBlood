@@ -13,7 +13,6 @@ namespace ProjectBlood
         protected override void OnInit(IUIData uiData = null)
         {
             mData = uiData as UIGameOverPanelData ?? new UIGameOverPanelData();
-            // please add init code here
             // 面板先被无父实例化(世界旋转=0)，再 SetParent(Common)（默认
             // worldPositionStays=true）：在相机倾斜期间打开时，本地旋转会被烤成
             // Common 世界旋转的反号（实测≈1.728°），导致与本地旋转始终为 0 的

@@ -18,9 +18,7 @@ namespace ProjectBlood
         private static bool IsMainMenuScene => UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "GameStart";
         public PlayerBullet playerBullet;
         public WeaponBase currentWeapon; // 当前装备的武器
-        // private List<WeaponBase> weapons = new List<WeaponBase>(); // 武器列表
 
-        // public BloodBank bloodBank = new BloodBank(); // 血液银行组件,特殊资源,用于弹药管理和血量管理
         private ShieldState shieldState = new ShieldState(); // 护盾状态
         private Vector2 smoothAimDir; // 平滑过渡后的瞄准方向(单位向量)
         private float firstReloadTime; // 首次按下R键的时间
@@ -285,7 +283,6 @@ namespace ProjectBlood
             // 切换到新武器
             currentWeapon = GetWeaponFromName(weaponData.weaponName);
 
-            // weaponTransform = currentWeapon.transform;
             if (WeaponDataSystem.weaponDataList.Count > 1) currentWeapon.SwitchToSet();
             currentWeapon.Show();
             currentWeapon.LoadWeaponData(weaponData);

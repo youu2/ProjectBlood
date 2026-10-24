@@ -11,11 +11,6 @@ namespace ProjectBlood
         public int weaponCurrentAmmo;
         public int weaponMaxAmmo;
         public WeaponConfig weaponConfig;
-        // public int weaponId;
-        // public string weaponName;
-        // public int weaponDamage;
-        // public int weaponRange;
-        // public int weaponReloadTime;
     }
 
     public class WeaponConfig

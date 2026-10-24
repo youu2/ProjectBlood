@@ -41,12 +41,9 @@ public class GenericSkill : SkillBase
         {
             executor.Update();
 
-            // 如果执行器报告完成，则主动结束技能
+            // 执行器完成后立即收尾：SkillManager 不保证下一帧仍会调用 Update
             if (executor.IsFinished)
             {
-                // 调用结束逻辑，但注意避免递归
-                // 我们可以在下一帧由 SkillManager 调用 OnSkillEnd，
-                // 但这里直接调用也可以，但要注意 base.OnSkillEnd 会设置 IsRunning = false
                 OnSkillEnd();
             }
         }

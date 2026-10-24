@@ -26,18 +26,13 @@ namespace ProjectBlood
                 return;
             }
 
-            // 添加日志
-            Debug.Log($"播放动画效果，参数名: {parameterName}, 类型: {parameterType}");
-
             switch (parameterType)
             {
                 case AnimatorControllerParameterType.Trigger:
                     animator.SetTrigger(parameterName);
-                    Debug.Log($"触发器已设置: {parameterName}");
                     break;
                 case AnimatorControllerParameterType.Bool:
                     animator.SetBool(parameterName, boolValue);
-                    Debug.Log($"Bool 已设置: {parameterName} = {boolValue}");
                     break;
             }
         }

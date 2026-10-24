@@ -52,7 +52,6 @@ namespace ProjectBlood
 
             isActive = true;
             elapsedTime = 0f;
-            Debug.Log($"进入无敌状态，层切换到 {invincibleLayerName}");
         }
 
         public override void OnUpdate(EffectContext context)
@@ -94,7 +93,6 @@ namespace ProjectBlood
             }
 
             isActive = false;
-            Debug.Log("无敌结束，层已恢复");
         }
     }
 }

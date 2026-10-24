@@ -48,16 +48,12 @@ namespace ProjectBlood
             var container = new GameObject("TileShadows");
             container.transform.SetParent(wallTilemap.transform, false);
 
-            int count = 0;
-            count += MergeRuns(cells, horizontal: true, container.transform);   // 第一遍：横向
-            count += MergeRuns(cells, horizontal: false, container.transform);  // 第二遍：纵向补剩余
-            foreach (var cell in cells)                                         // 第三遍：孤立单格
+            MergeRuns(cells, horizontal: true, container.transform);   // 第一遍：横向
+            MergeRuns(cells, horizontal: false, container.transform);  // 第二遍：纵向补剩余
+            foreach (var cell in cells)                                // 第三遍：孤立单格
             {
                 CreateCaster(cell.x, cell.y, 1, 1, container.transform);
-                count++;
             }
-
-            Debug.Log($"[ShadowCaster2DGenerator] 墙瓦片 {cells.Count} 个，生成 ShadowCaster2D x{count}");
         }
 
         // 为门格挂一个 1×1 隐形 caster，覆盖整个门格与相邻墙体段无缝衔接

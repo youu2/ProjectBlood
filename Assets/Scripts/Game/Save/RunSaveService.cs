@@ -72,7 +72,6 @@ namespace ProjectBlood
             lastSnapshotCrc = crc;
 
             RunSaveManager.Save(data);
-            Debug.Log("[RunSaveService] 存档已保存");
         }
 
         // 收集场景地面掉落物（含血印掉落的 sigilId 与武器解锁掉落）
@@ -140,7 +139,7 @@ namespace ProjectBlood
         }
 
         // DropItem → 类型 key（与 RestoreDrops 对应）
-        // 注：AnnihilationCore / BloodSigilDrop 不继承 DropItem，需用 GetComponent 判断
+        // 注：BloodSigilDrop 不继承 DropItem，需用 GetComponent 判断
         private static string DropTypeOf(DropItem drop)
         {
             if (drop is Coin) return "Coin";
@@ -148,7 +147,6 @@ namespace ProjectBlood
             if (drop is DirtyBlood) return "DirtyBlood";
             if (drop is Shield) return "Shield";
             if (drop is PureBlood) return "PureBlood";
-            if (drop.GetComponent<AnnihilationCore>() != null) return "AnnihilationCore";
             if (drop.GetComponent<BloodSigilDrop>() != null) return "BloodSigilDrop";
             return null;
         }
@@ -170,7 +168,6 @@ namespace ProjectBlood
                     "DirtyBlood" => dm.DirtyBlood != null ? dm.DirtyBlood.gameObject : null,
                     "Shield" => dm.Shield != null ? dm.Shield.gameObject : null,
                     "PureBlood" => dm.PureBlood != null ? dm.PureBlood.gameObject : null,
-                    "AnnihilationCore" => dm.AnnihilationCore != null ? dm.AnnihilationCore.gameObject : null,
                     "MP5Unlock" => dm.MP5Unlock != null ? dm.MP5Unlock.gameObject : null,
                     "ShotGunUnlock" => dm.ShotGunUnlock != null ? dm.ShotGunUnlock.gameObject : null,
                     "AKUnlock" => dm.AKUnlock != null ? dm.AKUnlock.gameObject : null,

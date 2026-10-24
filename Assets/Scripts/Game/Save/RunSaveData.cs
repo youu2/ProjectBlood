@@ -50,8 +50,6 @@ namespace ProjectBlood
         public int damageImmunityCharges;       // "免疫下一次伤害"充能
         public float runElapsedSeconds;
         public float remainingTime;
-        public float blazingCircleDamage;
-        public float bcAttackInterval;
 
         // ---- 地面掉落物 ----
         public List<DropSaveEntry> drops = new List<DropSaveEntry>();

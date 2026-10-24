@@ -52,9 +52,7 @@ public class PlayerState : MonoBehaviour
     {
         if (currentState == newState) return;
 
-        State oldState = currentState;
         currentState = newState;
-        Debug.Log($"玩家状态切换：{oldState} → {newState}");
 
         // 可在这里加入状态变化的额外逻辑（例如取消攻击等）
     }

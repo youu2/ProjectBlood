@@ -7,7 +7,6 @@ namespace ProjectBlood
 	{
 		void Start()
 		{
-			// Code Here
 			UIKit.OpenPanel<UIGamePanel>();
 		}
 

@@ -19,14 +19,12 @@ namespace ProjectBlood
         // 累计可选择升级次数：每次升级 +1，每选择一次强化 -1。大于 0 时显示升级提示图标，可按 Alt 打开升级面板
         public static BindableProperty<int> PendingUpgradeCount = new BindableProperty<int>(0);
 
-        public static BindableProperty<float> BlazingCircleDamage = new BindableProperty<float>(35.0f);
         public static BindableProperty<float> RemainingTime = new BindableProperty<float>(180);
         public static BindableProperty<int> currentNum = new BindableProperty<int>(0);    // current number of active enemies
         public static BindableProperty<int> cumulativeNum = new BindableProperty<int>(0);   // cumulative number of generated enemies so far
         public static BindableProperty<int> CurrentWaves = new BindableProperty<int>(1);
         //[SerializeField] private int maxWavesNum = 3;   // The total number of enemy waves generated
         public static BindableProperty<int> maxWavesNum = new BindableProperty<int>(5);  // The total number of enemy waves generated
-        public static BindableProperty<float> BCAttackInterval = new BindableProperty<float>(1.5f); // attack interval of Blazing Circle
         public static BindableProperty<int> MAX_EXP = new BindableProperty<int>(5);
         public static BindableProperty<float> CoinDropRate = new BindableProperty<float>(0.30f); // 30% chance to drop coins（由 LegacyUpgradeState.ApplyEffect 写入）
         public static Room currentRoom;
@@ -153,7 +151,6 @@ namespace ProjectBlood
                 MAX_EXP.Value = 5 + (Level.Value - 1) / 3;
                 // 累计一次可选择升级次数，不再自动打开升级面板（由玩家按 Alt 主动打开）
                 PendingUpgradeCount.Value++;
-                //Debug.Log("Level Up! current LV: " + Level.Value);
             }
         }
 
@@ -183,8 +180,6 @@ namespace ProjectBlood
             CurrentWaves.Value = 1;
             cumulativeNum.Value = 0;
             currentNum.Value = 0;
-            BlazingCircleDamage.Value = 35.0f;
-            BCAttackInterval.Value = 1.5f;
             MAX_EXP.Value = 5;
             Coin.Value = 0;
             currentDifficulty = 0;
@@ -234,8 +229,6 @@ namespace ProjectBlood
             data.pendingUpgradeCount = PendingUpgradeCount.Value;
             data.runElapsedSeconds = RunElapsedSeconds;
             data.remainingTime = RemainingTime.Value;
-            data.blazingCircleDamage = BlazingCircleDamage.Value;
-            data.bcAttackInterval = BCAttackInterval.Value;
         }
 
         // 从存档恢复数值。不涉及地图重建，仅赋值 BindableProperty（UI 自动同步）
@@ -251,8 +244,6 @@ namespace ProjectBlood
             PendingUpgradeCount.Value = data.pendingUpgradeCount;
             RunElapsedSeconds = data.runElapsedSeconds;
             RemainingTime.Value = data.remainingTime;
-            BlazingCircleDamage.Value = data.blazingCircleDamage;
-            BCAttackInterval.Value = data.bcAttackInterval;
         }
 
         // Generate drops when enemy dies
@@ -355,13 +346,6 @@ namespace ProjectBlood
             VignetteManager.GetOrCreateInstance().NotifyHeal();
             // 血印：治疗后血量变化事件（驱动"血量大于/等于阈值"类触发）
             BloodSigilState.NotifyHealthChanged();
-        }
-
-        public static void AddAnnihilationCore(int amount)
-        {
-            // Implementation for adding Annihilation Cores
-            // This is a placeholder; actual implementation may vary
-            Debug.Log("Annihilation Cores increased by " + amount);
         }
 
         public static void UpdateCameraSize(float size)

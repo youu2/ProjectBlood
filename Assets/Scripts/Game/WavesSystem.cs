@@ -106,7 +106,6 @@ public class WavesSystem : MonoBehaviour
         if (nextEnemyGlobalIndex >= sortedAllEnemies.Count)
         {
             // No more enemies to unlock
-            Debug.Log("WavesSystem: no more enemies to promote.");
             return;
         }
 
@@ -127,8 +126,6 @@ public class WavesSystem : MonoBehaviour
             currentPool.Remove(weakest);
             currentPool.Add(nextStrongest);
         }
-
-        Debug.Log($"WavesSystem: promoted enemy {nextStrongest.prefab.name} into current pool.");
     }
 
     // ================== Interface used by EnemySpawner ==================

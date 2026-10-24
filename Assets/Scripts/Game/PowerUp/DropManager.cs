@@ -19,10 +19,6 @@ namespace ProjectBlood
                 Instance = null;
             }
         }
-        void Start()
-		{
-			// Code Here
-		}
 
 	}
 }
