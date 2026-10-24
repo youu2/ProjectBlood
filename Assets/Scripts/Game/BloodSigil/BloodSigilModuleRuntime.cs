@@ -36,8 +36,12 @@ namespace ProjectBlood
         public float[] EndRemaining { get; }
         public bool[] EndLatched { get; }
 
-        // 结算效果自定义状态袋：复合键 = OutcomeKey + "|" + stateKey
-        private readonly Dictionary<string, object> outcomeStates = new Dictionary<string, object>();
+        // 结算效果自定义状态袋：键 = (效果资产引用, 状态名)。
+        // 用引用做键：唯一性由对象身份保证，不依赖人工填写的 outcomeKey（复制资产也不会串）；
+        // 值类型元组作为键在栈上构造，不产生字符串拼接与堆分配。
+        // 注意：该字典是本模块私有的运行时状态，不参与存档，也不跨进程使用。
+        private readonly Dictionary<(BloodSigilOutcomeSO outcome, string key), object> outcomeStates
+            = new Dictionary<(BloodSigilOutcomeSO outcome, string key), object>();
 
         public BloodSigilModuleRuntime(BloodSigilSO sigil, BloodSigilEffect module)
         {
@@ -178,17 +182,14 @@ namespace ProjectBlood
 
         public T GetState<T>(BloodSigilOutcomeSO outcome, string key, T defaultValue = default)
         {
-            if (outcomeStates.TryGetValue(BuildKey(outcome, key), out var v) && v is T typed)
+            if (outcomeStates.TryGetValue((outcome, key), out var v) && v is T typed)
                 return typed;
             return defaultValue;
         }
 
         public void SetState(BloodSigilOutcomeSO outcome, string key, object value)
         {
-            outcomeStates[BuildKey(outcome, key)] = value;
+            outcomeStates[(outcome, key)] = value;
         }
-
-        private static string BuildKey(BloodSigilOutcomeSO outcome, string key)
-            => (outcome != null ? outcome.OutcomeKey : "null") + "|" + key;
     }
 }
