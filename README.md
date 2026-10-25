@@ -4,6 +4,8 @@
 
 > 个人项目，持续开发中。2025.12 起玩法方向由「类吸血鬼幸存者」转向「类枪牢」，核心系统近乎重写；仓库中保留少量历史文档，已在文首标注状态。
 
+源码：[GitHub](https://github.com/youu2/ProjectBlood) ｜ Demo：[Windows Demo v0.1](https://github.com/youu2/ProjectBlood/releases/tag/v0.1-demo)
+
 ## 玩法支柱
 
 - **血库资源循环**：受伤将生命值转化为「脏血」，换弹消耗脏血强化弹丸，强化状态击杀回复生命。资源循环被打破时，袖剑击杀可回填脏血并提供兜底恢复。
@@ -83,6 +85,12 @@
 | 主动血印开关         | 1 / 2 / 3 / 4 |
 | 升级面板           | Alt           |
 | 暂停             | Esc           |
+
+## 下载 Demo
+
+Windows 10/11 64-bit：[Project Blood Demo v0.1（GitHub Releases）](https://github.com/youu2/ProjectBlood/releases/tag/v0.1-demo)
+
+> 后续版本会发布在同一 Releases 页面，历史包保留。
 
 ## 运行
 
