@@ -109,6 +109,10 @@ namespace ProjectBlood
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void InitAudioSettings()
         {
+            // 打包后 ResKit 依赖预构建的 AssetBundle，而 UI 面板未打进任何 bundle。
+            // 这里覆盖 UIKit 的默认 ResKit 加载器，统一从 Resources 读取面板 prefab，
+            // 保证编辑器与播放器的 UI 初始化路径一致。必须在任何 Start 打开面板之前执行。
+            UIKit.Config.PanelLoaderPool = new ResourcesPanelLoaderPool();
             AudioKitManager.Instance.Init();
         }
 

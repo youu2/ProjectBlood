@@ -73,6 +73,13 @@ mono_crash.*
 *.unitypackage.meta
 *.app
 
+# Local build outputs and demo archives: distributed via GitHub Releases, not committed
+/Build/
+/Builds/
+/*.zip
+/*.7z
+/*.rar
+
 # Crashlytics generated file
 crashlytics-build.properties
 
