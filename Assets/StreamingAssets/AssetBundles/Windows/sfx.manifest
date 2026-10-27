@@ -1,0 +1,107 @@
+ManifestFileVersion: 0
+CRC: 1836780455
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 781d041a7502b2f350574c76533babd0
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 9a2ca7bdbd1871f7131daf57de908e0c
+  IncrementalBuildHash:
+    serializedVersion: 2
+    Hash: 781d041a7502b2f350574c76533babd0
+HashAppended: 0
+ClassTypes:
+- Class: 83
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/Art/Sound/SFX/Attack/Fire/Light Torch with Starting Loop 1.ogg
+- Assets/Art/Sound/SFX/Attack/Fire/Firebuff 1.wav
+- Assets/Art/Sound/SFX/Attack/Fire/Torch Attack Strike 2.ogg
+- Assets/Art/Sound/SFX/Attack/Hit/EnemyHurt.wav
+- Assets/Art/Sound/SFX/Gun/Shell/bullet_shell (3).wav
+- Assets/Art/Sound/SFX/Gun/Shell/bullet_shell (5).wav
+- Assets/Art/Sound/SFX/Attack/Sharp/Blade Metal Impact Recoil 01.wav
+- Assets/Art/Sound/SFX/Enegy/ChargeWarning.wav
+- Assets/Art/Sound/SFX/Loot/LegendaryLootSFX.wav
+- Assets/Art/Sound/SFX/Player/PlayerDead.wav
+- Assets/Art/Sound/SFX/Player/LevelUp.wav
+- Assets/Art/Sound/SFX/Door/DoorClosingSfx.wav
+- Assets/Art/Sound/SFX/Gun/Reload/AKReload.wav
+- Assets/Art/Sound/SFX/Gun/Shell/bullet_shell (7).wav
+- Assets/Art/Sound/SFX/Drops/ShieldBlock.wav
+- Assets/Art/Sound/SFX/Gun/LaserEnd.wav
+- Assets/Art/Sound/SFX/Gun/AKShoot.wav
+- Assets/Art/Sound/SFX/Player/BuySound.wav
+- Assets/Art/Sound/SFX/Gun/AKShootEnd.wav
+- Assets/Art/Sound/SFX/Gun/Boss_ShotGun.wav
+- Assets/Art/Sound/SFX/Attack/Fire/Torch Impact 2.ogg
+- Assets/Art/Sound/SFX/Player/WinMusic.wav
+- Assets/Art/Sound/SFX/Drops/PureBloodPickUp.wav
+- Assets/Art/Sound/SFX/Attack/Fire/Torch Loop.ogg
+- Assets/Art/Sound/SFX/Attack/Hit/GUNAuto_Assault Rifle A Fire_01.wav
+- Assets/Art/Sound/SFX/Gun/Shell/bullet_shell (9).wav
+- Assets/Art/Sound/SFX/Player/SwitchWeapon.wav
+- Assets/Art/Sound/SFX/Gun/Shell/bullet_shell (8).wav
+- Assets/Art/Sound/SFX/Gun/Shell/bullet_shell (1).wav
+- Assets/Art/Sound/SFX/Gun/MP5ShootEnd.wav
+- Assets/Art/Sound/SFX/Gun/Reload/MP5Reload.wav
+- Assets/Art/Sound/SFX/Gun/Enemy/EnemyShoot1.wav
+- Assets/Art/Sound/SFX/Gun/ShotGunFire2.wav
+- Assets/Art/Sound/SFX/Loot/RareLootSFX.wav
+- Assets/Art/Sound/SFX/Gun/Shell/bullet_shell (4).wav
+- Assets/Art/Sound/SFX/Gun/Enemy/EnemyShoot2.wav
+- Assets/Art/Sound/SFX/Attack/Fire/Light Torch 1.ogg
+- Assets/Art/Sound/SFX/Gun/MP5Shoot.wav
+- Assets/Art/Sound/SFX/Attack/Boom/EXPLDsgn_Explosion Impact_14.wav
+- Assets/Art/Sound/SFX/Gun/Reload/AwpReload.wav
+- Assets/Art/Sound/SFX/Gun/LaserStart.wav
+- Assets/Art/Sound/SFX/Gun/AWPOneShot.wav
+- Assets/Art/Sound/SFX/Gun/Shell/bullet_shell (10).wav
+- Assets/Art/Sound/SFX/Gun/Shell/bullet_shell (2).wav
+- Assets/Art/Sound/SFX/Drops/ShieldBreak.wav
+- Assets/Art/Sound/SFX/Gun/GUNMech_Arm Weapon Rattle_10.wav
+- Assets/Art/Sound/SFX/Gun/GUNCano_Quad Cannon Fire Double_01.wav
+- Assets/Art/Sound/SFX/Button/Laptop_Spacebar_06.wav
+- Assets/Art/Sound/SFX/Gun/DESFX.wav
+- Assets/Art/Sound/SFX/Gun/MP5ShootLoop.wav
+- Assets/Art/Sound/SFX/Button/UIGlitch_Error Tone_03.wav
+- Assets/Art/Sound/SFX/Drops/ShieldPickUp.wav
+- Assets/Art/Sound/SFX/Player/Execute.wav
+- Assets/Art/Sound/SFX/Gun/AKOneShot.wav
+- Assets/Art/Sound/SFX/Gun/Reload/ShotGunReload.wav
+- Assets/Art/Sound/SFX/Player/Dash.wav
+- Assets/Art/Sound/SFX/Player/KillSFX.wav
+- Assets/Art/Sound/SFX/Gun/AKShootLoop.wav
+- Assets/Art/Sound/SFX/Attack/Hit/LASRGun_Plasma Rifle Fire_03.wav
+- Assets/Art/Sound/SFX/Drops/ExpPickup.wav
+- Assets/Art/Sound/SFX/Door/DoorOpeningSfx.wav
+- Assets/Art/Sound/SFX/Player/hurt.wav
+- Assets/Art/Sound/SFX/Attack/Fire/Fireball 1.wav
+- Assets/Art/Sound/SFX/Attack/Boom/EXPLDsgn_Implode_15.wav
+- Assets/Art/Sound/SFX/Player/HpPickUp.wav
+- Assets/Art/Sound/SFX/Gun/Enemy/EnemyShoot3.wav
+- Assets/Art/Sound/SFX/Attack/Fire/Light Torch 2.ogg
+- Assets/Art/Sound/SFX/Gun/Shell/bullet_shell (6).wav
+- Assets/Art/Sound/SFX/Button/Bank Card Placed Down 03.wav
+- Assets/Art/Sound/SFX/Drops/CoinPickup.wav
+- Assets/Art/Sound/SFX/Player/SpecialReload.wav
+- Assets/Art/Sound/SFX/Gun/MP5OneShot.wav
+- Assets/Art/Sound/SFX/Gun/DryFireClick.wav
+- Assets/Art/Sound/SFX/Drops/DirtyBloodPickUp.wav
+- Assets/Art/Sound/SFX/Attack/Fire/Light Torch with Starting Loop 2.ogg
+- Assets/Art/Sound/SFX/Gun/Reload/DeReload.wav
+- Assets/Art/Sound/SFX/Gun/WSTR_Shotgun.wav
+- Assets/Art/Sound/SFX/Attack/Boom/EXPLDsgn_Explosion Rumble Distorted_01.wav
+- Assets/Art/Sound/SFX/Attack/Fire/Torch Attack Strike 1.ogg
+- Assets/Art/Sound/SFX/Attack/Hit/PUNCH_SQUELCH_HEAVY_05.wav
+- Assets/Art/Sound/SFX/Enegy/SCIEnrg_Energy Orb_05.wav
+- Assets/Art/Sound/SFX/Attack/Fire/Torch Impact 1.ogg
+- Assets/Art/Sound/SFX/Loot/EpicLootSFX.wav
+- Assets/Art/Sound/SFX/Attack/Sharp/Dagger Slash 01.wav
+- Assets/Art/Sound/SFX/Gun/ShotGunFire.wav
+- Assets/Art/Sound/SFX/Player/WilhelmScream.wav
+- Assets/Art/Sound/SFX/Gun/Reload/LaserReload.wav
+- Assets/Art/Sound/SFX/Gun/LaserShootLoop.wav
+Dependencies: []
