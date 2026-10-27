@@ -47,7 +47,7 @@ public class SkillCooldownUI : MonoBehaviour
         GameUI.OnLoadingComplete -= ResetCooldownUI;
     }
 
-    private void Update()
+    private void LateUpdate()
     {
         // GameUI 是 DontDestroyOnLoad,场景重载后旧 Player 被销毁,引用失效时需重新查找
         if (skillManager == null)
@@ -70,7 +70,7 @@ public class SkillCooldownUI : MonoBehaviour
         int maxCharges = skillManager.GetMaxCharges(skillName);
 
         // 层数小于1时更新遮罩填充量：充能中时填充量从1递减到0,提示玩家当前无法使用技能
-        if (cooldownOverlay != null && currentCharges < 1)
+        if (cooldownOverlay != null)
         {
             cooldownOverlay.fillAmount = 1f - chargeProgress;
         }
